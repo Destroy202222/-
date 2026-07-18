@@ -1399,7 +1399,7 @@
             <label>Количество смертей</label>
             <input type="number" id="modalDeaths" value="0" min="0" />
         </div>
-        <button class="btn-submit-modal" id="modalSubmitBtn"><i class="fas fa-check"></i> Зачислить</button>
+        <button class="btn-submit-modal" id="modalSubmitBtn" onclick="submitStats()"><i class="fas fa-check"></i> Зачислить</button>
         <button class="btn-cancel-modal" onclick="closeStatsModal()"><i class="fas fa-times"></i> Отмена</button>
     </div>
 </div>
@@ -2215,35 +2215,50 @@
         modalTargetMap = null;
     }
 
+    // ===== ГЛАВНАЯ ФУНКЦИЯ ЗАЧИСЛЕНИЯ =====
     async function submitStats() {
-        console.log('📤 Отправка статистики...');
-        const kills = parseInt(document.getElementById('modalKills').value) || 0;
-        const deaths = parseInt(document.getElementById('modalDeaths').value) || 0;
+        console.log('📤 submitStats() вызвана!');
+        
+        const killsInput = document.getElementById('modalKills');
+        const deathsInput = document.getElementById('modalDeaths');
+        
+        const kills = parseInt(killsInput ? killsInput.value : 0) || 0;
+        const deaths = parseInt(deathsInput ? deathsInput.value : 0) || 0;
         const map = modalTargetMap || 'Неизвестная карта';
-        console.log('📊 Данные:', { kills, deaths, map, modalTargetUser });
+        
+        console.log('📊 Данные:', { kills, deaths, map, modalTargetUser, modalTargetServer });
+        
         if (!modalTargetUser) {
             showToast('error', 'Ошибка', 'Пользователь не найден');
             return;
         }
+        
         try {
+            // Находим пользователя по username
             const userData = await apiRequest(`/users?username=eq.${encodeURIComponent(modalTargetUser)}`);
             console.log('👤 Найден пользователь:', userData);
+            
             if (!userData || userData.length === 0) {
                 showToast('error', 'Ошибка', 'Пользователь не найден');
                 return;
             }
+            
             const user = userData[0];
             const newKills = (user.kills || 0) + kills;
             const newDeaths = (user.deaths || 0) + deaths;
             const newMatches = (user.matches || 0) + 1;
             const newServerMatches = (user.serverMatches || 0) + 1;
+            
             const matchKD = deaths > 0 ? (kills / deaths) : kills;
             const roundedKD = Math.round(matchKD * 100) / 100;
+            
             let kdHistory = user.kdHistory || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             kdHistory.push(matchKD);
             if (kdHistory.length > 10) {
                 kdHistory = kdHistory.slice(-10);
             }
+            
+            // Обновляем пользователя
             await apiRequest(`/users?id=eq.${user.id}`, {
                 method: 'PATCH',
                 body: JSON.stringify({
@@ -2254,6 +2269,8 @@
                     kdHistory: kdHistory
                 })
             });
+            
+            // Сохраняем историю матча
             const matchRecord = {
                 id: Date.now() + Math.floor(Math.random() * 1000),
                 user_id: user.id,
@@ -2266,24 +2283,31 @@
                 server_name: modalTargetServer ? `DM #${modalTargetServer}` : 'DM Сервер',
                 created_at: new Date().toISOString()
             };
+            
             await apiRequest('/match_history', {
                 method: 'POST',
                 body: JSON.stringify([matchRecord])
             });
+            
+            // Удаляем из очереди если есть
             if (modalTargetServer) {
                 await removeFromPending(modalTargetServer, user.username);
             }
+            
             closeStatsModal();
             showToast('success', 'Статистика обновлена', `Игроку ${user.username} зачислен матч на карте ${map}`);
+            
+            // Обновляем все данные
             fetchServers();
             fetchSiteStats();
             fetchTopPlayers();
+            
             if (viewingUserId === user.id) {
                 fetchUserData(user.id);
             }
         } catch (error) {
             console.error('❌ Ошибка:', error);
-            showToast('error', 'Ошибка', error.message);
+            showToast('error', 'Ошибка', error.message || 'Не удалось зачислить статистику');
         }
     }
 
@@ -2867,6 +2891,19 @@
         document.getElementById('catalogDropdown').classList.toggle('active');
     }
 
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('catalogDropdown');
+        if (!dropdown.contains(e.target)) dropdown.classList.remove('active');
+    });
+
+    document.getElementById('statsModal').addEventListener('click', function(e) {
+        if (e.target === this) closeStatsModal();
+    });
+
+    document.getElementById('announceModal').addEventListener('click', function(e) {
+        if (e.target === this) closeAnnounceModal();
+    });
+
     // ====================================================
     // ===== ОБНОВЛЕНИЕ АДМИН-ПАНЕЛИ =====
     // ====================================================
@@ -2934,11 +2971,14 @@
         document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
         document.getElementById('announceSubmitBtn').addEventListener('click', sendAnnouncement);
         
-        // ===== ГЛАВНОЕ: НАВЕШИВАЕМ ОБРАБОТЧИК НА КНОПКУ "ЗАЧИСЛИТЬ" =====
+        // ===== КНОПКА "ЗАЧИСЛИТЬ" — УЖЕ ЕСТЬ onclick В HTML, НО ДУБЛИРУЕМ ДЛЯ НАДЁЖНОСТИ =====
         const submitBtn = document.getElementById('modalSubmitBtn');
         if (submitBtn) {
-            console.log('✅ Кнопка "Зачислить" найдена, навешиваем обработчик');
-            submitBtn.addEventListener('click', submitStats);
+            console.log('✅ Кнопка "Зачислить" найдена, добавляем обработчик');
+            submitBtn.addEventListener('click', function(e) {
+                console.log('🖱️ Клик по кнопке "Зачислить" (через addEventListener)');
+                submitStats();
+            });
         } else {
             console.error('❌ Кнопка "Зачислить" не найдена!');
         }

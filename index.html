@@ -1,0 +1,46 @@
+async function addAdmin() {
+    if (!isSuperAdmin()) {
+        showToast('error', 'Доступ запрещен', 'Только главный администратор может управлять админами');
+        return;
+    }
+    const username = document.getElementById('adminIdInput').value.trim();
+    if (!username) {
+        showToast('error', 'Ошибка', 'Введите имя пользователя');
+        return;
+    }
+
+    try {
+        // Проверяем, существует ли пользователь по имени
+        const userData = await apiRequest(`/users?username=eq.${encodeURIComponent(username)}`);
+        if (!userData || userData.length === 0) {
+            showToast('error', 'Ошибка', 'Пользователь с таким именем не найден');
+            return;
+        }
+
+        const user = userData[0];
+        
+        // Проверяем, не является ли пользователь главным админом
+        if (user.username === SUPER_ADMIN_USERNAME) {
+            showToast('error', 'Ошибка', 'Нельзя добавить главного администратора');
+            return;
+        }
+
+        // Проверяем, не является ли пользователь уже админом
+        const existingAdmin = await apiRequest(`/admins?userId=eq.${user.id}`);
+        if (existingAdmin && existingAdmin.length > 0) {
+            showToast('info', 'Уже админ', 'Этот пользователь уже является администратором');
+            return;
+        }
+
+        await apiRequest('/admins', {
+            method: 'POST',
+            body: JSON.stringify([{ userId: user.id }])
+        });
+
+        document.getElementById('adminIdInput').value = '';
+        showToast('success', 'Админ добавлен', `Пользователь ${username} теперь администратор`);
+        renderAdmins();
+    } catch (error) {
+        showToast('error', 'Ошибка', error.message);
+    }
+}

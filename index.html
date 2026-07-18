@@ -1722,52 +1722,21 @@
     }
 
     // ====================================================
-    // ===== СЕРВЕРА (ГАРАНТИРОВАННО РАБОТАЕТ) =====
+    // ===== СЕРВЕРА (САМЫЙ ПРОСТОЙ ВАРИАНТ) =====
     // ====================================================
 
     async function getNextDMNumber() {
         try {
-            console.log('📊 Получение номера DM...');
-            
-            // Пробуем получить данные
-            let data = await apiRequest('/dm_counter?id=eq.1');
-            
-            if (data && data.length > 0) {
-                const current = data[0].count || 0;
-                const next = current + 1;
-                console.log(`📈 Текущий: ${current}, следующий: ${next}`);
-                
-                // Обновляем счётчик
-                await apiRequest('/dm_counter?id=eq.1', {
-                    method: 'PATCH',
-                    body: JSON.stringify({ count: next })
-                });
-                console.log('✅ Счётчик обновлён');
-                return next;
-            } else {
-                console.log('📊 Счётчик пуст, создаём...');
-                await apiRequest('/dm_counter', {
-                    method: 'POST',
-                    body: JSON.stringify([{ id: 1, count: 1 }])
-                });
-                console.log('✅ Счётчик создан');
-                return 1;
-            }
+            // Получаем все сервера и считаем их количество
+            const servers = await apiRequest('/servers?select=id');
+            const count = servers ? servers.length : 0;
+            const nextNumber = count + 1;
+            console.log(`📊 Всего серверов: ${count}, следующий номер: ${nextNumber}`);
+            return nextNumber;
         } catch (error) {
             console.error('❌ Ошибка получения номера DM:', error);
-            // Если таблицы нет — пробуем создать через прямой запрос
-            try {
-                await apiRequest('/dm_counter', {
-                    method: 'POST',
-                    body: JSON.stringify([{ id: 1, count: 1 }])
-                });
-                console.log('✅ Счётчик создан через fallback');
-                return 1;
-            } catch (e2) {
-                console.error('❌ Fallback не сработал:', e2);
-                showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера.');
-                return 0;
-            }
+            showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера');
+            return 0;
         }
     }
 
@@ -1807,8 +1776,7 @@
                 status: 'online',
                 pending: [],
                 createdAt: new Date().toISOString(),
-                createdBy: user?.username || 'admin',
-                dmNumber: dmNumber
+                createdBy: user?.username || 'admin'
             };
 
             console.log('📦 Данные сервера:', newServer);

@@ -1381,6 +1381,7 @@
 </head>
 <body data-theme="orange">
 
+<!-- ===== ТОСТ ===== -->
 <div class="toast" id="toast">
     <div class="toast-title" id="toastTitle">Успешно!</div>
     <div class="toast-text" id="toastText">Действие выполнено</div>
@@ -1423,6 +1424,7 @@
     </div>
 </div>
 
+<!-- ===== АВТОРИЗАЦИЯ ===== -->
 <div class="auth-page" id="authPage">
     <div class="auth-container">
         <div class="auth-logo"><h1>⚡ Nwole's DM</h1><p>Deathmatch Standoff 2</p></div>
@@ -1759,14 +1761,11 @@
     }
 
     // ====================================================
-    // ===== ФУНКЦИЯ ЗАЧИСЛЕНИЯ — ПРОСТАЯ И НАДЁЖНАЯ =====
+    // ===== ФУНКЦИЯ ЗАЧИСЛЕНИЯ — ИСПРАВЛЕННАЯ =====
     // ====================================================
 
     function submitStats() {
         console.log('📤 submitStats() ВЫЗВАНА!');
-        console.log('📊 modalTargetUser:', modalTargetUser);
-        console.log('📊 modalTargetServer:', modalTargetServer);
-        console.log('📊 modalTargetMap:', modalTargetMap);
         
         const killsInput = document.getElementById('modalKills');
         const deathsInput = document.getElementById('modalDeaths');
@@ -1775,38 +1774,40 @@
         const deaths = parseInt(deathsInput ? deathsInput.value : 0) || 0;
         const map = modalTargetMap || 'Неизвестная карта';
         
-        console.log('📊 Введено:', { kills, deaths, map });
+        console.log('📊 Данные:', { kills, deaths, map, modalTargetUser, modalTargetServer });
         
         if (!modalTargetUser) {
             showToast('error', 'Ошибка', 'Пользователь не найден');
-            console.error('❌ modalTargetUser пустой!');
             return;
         }
         
-        // Показываем, что идёт обработка
+        // Блокируем кнопку
         const btn = document.getElementById('modalSubmitBtn');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
         btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
         
-        // Запускаем асинхронную операцию
-        submitStatsAsync(kills, deaths, map, btn, originalText);
+        // Запускаем
+        submitStatsAsync(kills, deaths, map, btn);
     }
 
-    async function submitStatsAsync(kills, deaths, map, btn, originalText) {
+    async function submitStatsAsync(kills, deaths, map, btn) {
         try {
-            console.log('🔍 Ищем пользователя:', modalTargetUser);
+            console.log('🔍 Ищем пользователя по username:', modalTargetUser);
+            
+            // Ищем пользователя по username
             const userData = await apiRequest(`/users?username=eq.${encodeURIComponent(modalTargetUser)}`);
             console.log('👤 Найден пользователь:', userData);
             
             if (!userData || userData.length === 0) {
-                showToast('error', 'Ошибка', 'Пользователь не найден');
-                btn.innerHTML = originalText;
+                showToast('error', 'Ошибка', `Пользователь "${modalTargetUser}" не найден`);
                 btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
                 return;
             }
             
             const user = userData[0];
+            console.log('👤 Данные пользователя:', user);
+            
             const newKills = (user.kills || 0) + kills;
             const newDeaths = (user.deaths || 0) + deaths;
             const newMatches = (user.matches || 0) + 1;
@@ -1868,13 +1869,14 @@
                 fetchUserData(user.id);
             }
             
-            btn.innerHTML = originalText;
             btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
+            
         } catch (error) {
             console.error('❌ Ошибка:', error);
             showToast('error', 'Ошибка', error.message || 'Не удалось зачислить статистику');
-            btn.innerHTML = originalText;
             btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
         }
     }
 
@@ -1889,7 +1891,7 @@
             closeAnnounceModal();
         }
         
-        modalTargetUser = userId;
+        modalTargetUser = username;
         modalTargetServer = serverId;
         modalTargetMap = map || 'Неизвестная карта';
         document.getElementById('modalPlayerName').textContent = username;
@@ -2994,14 +2996,12 @@
         const submitBtn = document.getElementById('modalSubmitBtn');
         if (submitBtn) {
             console.log('✅ Кнопка "Зачислить" найдена');
-            // Убираем все предыдущие обработчики и вешаем новый
             submitBtn.onclick = null;
             submitBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                console.log('🖱️ Клик по кнопке "Зачислить" (addEventListener)');
+                console.log('🖱️ Клик по кнопке "Зачислить"');
                 submitStats();
             });
-            // Дополнительный обработчик через onclick
             submitBtn.setAttribute('onclick', 'submitStats(); return false;');
         } else {
             console.error('❌ Кнопка "Зачислить" не найдена!');

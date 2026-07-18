@@ -129,7 +129,7 @@
     .dropdown.active .dropdown-btn i.fa-chevron-down { transform:rotate(180deg); }
     .dropdown-content {
       display:none; position:absolute; right:0; top:110%;
-      min-width:220px; background:var(--bg-card); backdrop-filter:blur(12px);
+      min-width:200px; background:var(--bg-card); backdrop-filter:blur(12px);
       border-radius:16px; border:1px solid var(--border-color);
       box-shadow:0 20px 60px rgba(0,0,0,.8);
       overflow:hidden; animation:slideDown .3s ease;
@@ -395,7 +395,7 @@
     }
     .back-btn button:hover { background:var(--primary-glow); box-shadow:0 0 20px var(--primary-glow); }
 
-    /* ===== МОДАЛКИ ===== */
+    /* ===== МОДАЛКА РЕДАКТИРОВАНИЯ ===== */
     .modal-overlay {
       display:none; position:fixed; top:0; left:0; right:0; bottom:0;
       background:rgba(0,0,0,.7); backdrop-filter:blur(6px);
@@ -407,8 +407,6 @@
       border-radius:24px; padding:2.5rem; max-width:420px; width:90%;
       border:1px solid var(--border-color); box-shadow:0 20px 60px rgba(0,0,0,.9);
       animation:fadeIn .3s ease;
-      max-height:90vh;
-      overflow-y:auto;
     }
     .modal h3 { color:var(--primary); margin-bottom:1.5rem; font-size:1.3rem; text-align:center; font-weight:800; }
     .modal .form-group { margin-bottom:1.2rem; }
@@ -444,108 +442,7 @@
     }
     .modal .btn-cancel-modal:hover { border-color:var(--primary); color:var(--primary); }
 
-    /* ===== СТРАНИЦА АДМИНКИ ===== */
-    .admin-page-card {
-      background:var(--bg-card);
-      backdrop-filter:blur(12px);
-      border-radius:24px;
-      padding:2rem;
-      border:1px solid var(--border-color);
-      max-width:700px;
-      margin:0 auto;
-    }
-    .admin-page-card h3 {
-      color:var(--primary);
-      font-size:1.3rem;
-      font-weight:800;
-      margin-bottom:1.2rem;
-      display:flex;
-      align-items:center;
-      gap:.6rem;
-    }
-    .admin-page-card .form-group { margin-bottom:1.2rem; }
-    .admin-page-card .form-group label {
-      display:block;
-      color:var(--text-secondary);
-      font-weight:600;
-      font-size:.9rem;
-      margin-bottom:.3rem;
-    }
-    .admin-page-card .form-group input {
-      width:100%;
-      padding:.7rem 1rem;
-      background:var(--bg-input);
-      border:2px solid var(--border-color);
-      border-radius:12px;
-      color:var(--text-primary);
-      font-size:.95rem;
-      transition:.3s;
-    }
-    .admin-page-card .form-group input:focus {
-      outline:none;
-      border-color:var(--primary);
-      box-shadow:0 0 20px var(--primary-glow);
-    }
-    .admin-page-card .btn-action {
-      padding:.7rem 1.5rem;
-      background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));
-      border:none;
-      border-radius:40px;
-      font-weight:700;
-      color:var(--bg-main);
-      cursor:pointer;
-      transition:.3s;
-      font-size:.9rem;
-      display:inline-flex;
-      align-items:center;
-      gap:.5rem;
-    }
-    .admin-page-card .btn-action:hover { transform:scale(1.02); box-shadow:0 0 20px var(--primary-glow); }
-    .admin-page-card .admin-list {
-      margin-top:1rem;
-      display:flex;
-      flex-wrap:wrap;
-      gap:.6rem;
-    }
-    .admin-page-card .admin-tag {
-      background:var(--bg-input);
-      border:1px solid var(--border-color);
-      border-radius:40px;
-      padding:.3rem 1rem;
-      display:flex;
-      align-items:center;
-      gap:.5rem;
-      font-size:.85rem;
-      font-weight:600;
-      transition:.3s;
-    }
-    .admin-page-card .admin-tag .remove-admin {
-      color:#ff6b6b;
-      cursor:pointer;
-      font-weight:700;
-      transition:.3s;
-      background:none;
-      border:none;
-      font-size:.9rem;
-    }
-    .admin-page-card .admin-tag .remove-admin:hover { transform:scale(1.2); }
-    .admin-page-card .admin-tag .role-badge {
-      font-size:.6rem;
-      padding:.1rem .5rem;
-      border-radius:10px;
-      background:var(--primary);
-      color:var(--bg-main);
-      margin-left:.3rem;
-      font-weight:700;
-    }
-    .admin-page-card .admin-tag .role-badge.super { background:#ffd700; color:#000; }
-    .admin-page-card .divider {
-      height:1px;
-      background:var(--border-color);
-      margin:1.5rem 0;
-    }
-
-    /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
+    /* ===== ОСТАЛЬНЫЕ СТИЛИ (без изменений) ===== */
     .auth-page {
       display:flex; justify-content:center; align-items:center;
       min-height:100vh; padding:2rem;
@@ -773,7 +670,57 @@
       box-shadow:0 0 30px var(--primary-glow);
       background:linear-gradient(45deg,var(--primary-hover),var(--gradient-end));
     }
-
+    .admin-panel.visible { display:block; }
+    .admin-panel h3 { color:var(--primary); margin-bottom:1.2rem; font-size:1.5rem; text-align:center; font-weight:800; }
+    .admin-panel .form-group { margin-bottom:1.2rem; }
+    .admin-panel .form-group label { display:block; color:var(--text-secondary); margin-bottom:.3rem; font-weight:600; font-size:.9rem; }
+    .admin-panel .form-group input {
+      width:100%; padding:.7rem 1rem;
+      background:var(--bg-input); border:2px solid var(--border-color); border-radius:12px;
+      color:var(--text-primary); font-size:.95rem; transition:.3s;
+    }
+    .admin-panel .form-group input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 20px var(--primary-glow); }
+    .admin-panel .btn-create {
+      width:100%; padding:.8rem;
+      background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));
+      border:none; border-radius:40px;
+      font-weight:700; font-size:1rem; color:var(--bg-main);
+      cursor:pointer; transition:.3s; margin-top:.5rem;
+    }
+    .admin-panel .btn-create:hover { transform:scale(1.02); box-shadow:0 0 20px var(--primary-glow); }
+    .admin-system.visible { display:block; }
+    .admin-system h3 { color:var(--primary); margin-bottom:1.2rem; font-size:1.5rem; text-align:center; font-weight:800; }
+    .admin-system .form-group { display:flex; gap:1rem; flex-wrap:wrap; }
+    .admin-system .form-group input {
+      flex:1; padding:.7rem 1rem;
+      background:var(--bg-input); border:2px solid var(--border-color); border-radius:12px;
+      color:var(--text-primary); font-size:.95rem; transition:.3s;
+      min-width:200px;
+    }
+    .admin-system .form-group input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 20px var(--primary-glow); }
+    .admin-system .btn-add-admin {
+      padding:.7rem 1.5rem; background:var(--primary); border:none; border-radius:40px;
+      font-weight:700; color:var(--bg-main); cursor:pointer; transition:.3s;
+      font-size:.9rem;
+    }
+    .admin-system .btn-add-admin:hover { background:var(--primary-hover); box-shadow:0 0 20px var(--primary-glow); }
+    .admin-list { margin-top:1.5rem; display:flex; flex-wrap:wrap; gap:.6rem; }
+    .admin-tag {
+      background:var(--bg-input); border:1px solid var(--border-color); border-radius:40px;
+      padding:.3rem 1rem; display:flex; align-items:center; gap:.5rem;
+      font-size:.85rem; font-weight:600; transition:.3s;
+    }
+    .admin-tag .remove-admin {
+      color:#ff6b6b; cursor:pointer; font-weight:700; transition:.3s;
+      background:none; border:none; font-size:.9rem;
+    }
+    .admin-tag .remove-admin:hover { transform:scale(1.2); }
+    .admin-tag .role-badge {
+      font-size:.6rem; padding:.1rem .5rem; border-radius:10px;
+      background:var(--primary); color:var(--bg-main); margin-left:.3rem;
+      font-weight:700;
+    }
+    .admin-tag .role-badge.super { background:#ffd700; color:#000; }
     .top-players { max-width:800px; margin:0 auto; }
     .top-player {
       display:flex; align-items:center; gap:1rem;
@@ -854,6 +801,21 @@
       font-size:.95rem;
     }
     .settings-card .btn-save:hover { background:var(--primary-hover); box-shadow:0 0 20px var(--primary-glow); }
+    .modal .btn-submit-modal {
+      width:100%; padding:.8rem;
+      background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));
+      border:none; border-radius:40px;
+      font-weight:700; font-size:1rem; color:var(--bg-main);
+      cursor:pointer; transition:.3s; margin-top:.5rem;
+    }
+    .modal .btn-submit-modal:hover { transform:scale(1.02); box-shadow:0 0 20px var(--primary-glow); }
+    .modal .btn-cancel-modal {
+      width:100%; padding:.7rem;
+      background:transparent; border:2px solid var(--border-color); border-radius:40px;
+      font-weight:600; color:var(--text-secondary); cursor:pointer; transition:.3s;
+      margin-top:.5rem;
+    }
+    .modal .btn-cancel-modal:hover { border-color:var(--primary); color:var(--primary); }
     .footer {
       background:var(--bg-main); border-top:1px solid var(--border-color);
       padding:2rem; text-align:center;
@@ -891,6 +853,8 @@
       .top-player { flex-wrap:wrap; }
       .settings-card .setting-row { flex-direction:column; align-items:flex-start; }
       .settings-card .setting-row select { width:100%; }
+      .admin-panel,.admin-system { padding:1.5rem; }
+      .admin-system .form-group { flex-direction:column; }
       .pending-players-section .pending-player { flex-direction:column; gap:.3rem; text-align:center; }
       .prize-grid { grid-template-columns:1fr; padding:1.5rem; }
       .prize-header { flex-direction:column; gap:.5rem; text-align:center; padding:1rem; }
@@ -906,7 +870,6 @@
       .announce-top { justify-content:center; }
       .btn-announce-top { width:100%; justify-content:center; }
       .profile-avatar { width:64px; height:64px; font-size:1.6rem; }
-      .admin-page-card { padding:1.5rem; }
     }
     @media (max-width:500px) {
       .stats-grid { grid-template-columns:1fr 1fr; }
@@ -950,22 +913,22 @@
   </div>
 </div>
 
-<!-- ===== МОДАЛКА ОБЪЯВЛЕНИЯ (ИСПРАВЛЕНА) ===== -->
+<!-- ===== МОДАЛКА ОБЪЯВЛЕНИЯ ===== -->
 <div class="modal-overlay" id="announceModal">
   <div class="modal">
     <h3><i class="fas fa-bullhorn"></i> Объявление</h3>
     <p style="color:var(--text-secondary);text-align:center;margin-bottom:.5rem;font-weight:500;">Выберите время до создания DM сервера</p>
     <div class="time-options" id="timeOptions">
-      <button type="button" onclick="selectTime(5)" data-time="5">5 минут</button>
-      <button type="button" onclick="selectTime(10)" data-time="10">10 минут</button>
-      <button type="button" onclick="selectTime(15)" data-time="15">15 минут</button>
+      <button onclick="selectTime(5)" data-time="5">5 минут</button>
+      <button onclick="selectTime(10)" data-time="10">10 минут</button>
+      <button onclick="selectTime(15)" data-time="15">15 минут</button>
     </div>
     <div class="form-group">
       <label>Текст объявления (необязательно)</label>
       <textarea id="announceText" placeholder="Введите дополнительный текст..." rows="3"></textarea>
     </div>
-    <button class="btn-submit-modal" id="announceSubmitBtn" type="button"><i class="fas fa-bullhorn"></i> Отправить объявление</button>
-    <button class="btn-cancel-modal" onclick="closeAnnounceModal()" type="button"><i class="fas fa-times"></i> Отмена</button>
+    <button class="btn-submit-modal" id="announceSubmitBtn"><i class="fas fa-bullhorn"></i> Отправить объявление</button>
+    <button class="btn-cancel-modal" onclick="closeAnnounceModal()"><i class="fas fa-times"></i> Отмена</button>
   </div>
 </div>
 
@@ -985,8 +948,8 @@
       <label>ID Standoff 2</label>
       <input type="text" id="editStandoffId" placeholder="Введите ID Standoff 2" />
     </div>
-    <button class="btn-submit-modal" id="editProfileSubmitBtn" type="button"><i class="fas fa-save"></i> Сохранить</button>
-    <button class="btn-cancel-modal" onclick="closeEditProfileModal()" type="button"><i class="fas fa-times"></i> Отмена</button>
+    <button class="btn-submit-modal" id="editProfileSubmitBtn"><i class="fas fa-save"></i> Сохранить</button>
+    <button class="btn-cancel-modal" onclick="closeEditProfileModal()"><i class="fas fa-times"></i> Отмена</button>
   </div>
 </div>
 
@@ -998,7 +961,7 @@
       <h2>Вход</h2>
       <div class="form-group"><label>Имя пользователя</label><input type="text" id="loginUsername" placeholder="Введите имя" /></div>
       <div class="form-group"><label>Пароль</label><input type="password" id="loginPassword" placeholder="Введите пароль" /></div>
-      <button class="btn-submit" id="loginBtn" type="button">Войти</button>
+      <button class="btn-submit" id="loginBtn">Войти</button>
       <div class="auth-links"><a onclick="showAuthForm('register')">Нет аккаунта? Зарегистрироваться</a></div>
     </div>
     <div id="registerForm" style="display:none;">
@@ -1007,7 +970,7 @@
       <div class="form-group"><label>ID из Standoff 2 <span class="required">*</span></label><input type="text" id="regStandoffId" placeholder="Например: 123456789" /><div style="color:var(--text-muted);font-size:.8rem;margin-top:.3rem;">🔑 Только цифры</div></div>
       <div class="form-group"><label>Пароль <span class="required">*</span></label><input type="password" id="regPassword" placeholder="Минимум 8 символов" /></div>
       <div class="form-group"><label>Подтверждение пароля <span class="required">*</span></label><input type="password" id="regPasswordConfirm" placeholder="Повторите пароль" /></div>
-      <button class="btn-submit" id="registerBtn" type="button">Зарегистрироваться</button>
+      <button class="btn-submit" id="registerBtn">Зарегистрироваться</button>
       <div class="auth-links"><a onclick="showAuthForm('login')">Уже есть аккаунт? Войти</a></div>
     </div>
   </div>
@@ -1024,15 +987,12 @@
           <div class="dropdown" id="catalogDropdown">
             <button class="dropdown-btn" onclick="toggleCatalog()"><i class="fas fa-bars"></i> Каталог <i class="fas fa-chevron-down" style="font-size:.7rem;"></i></button>
             <div class="dropdown-content">
-              <a href="#" onclick="showPage('mainContent'); toggleCatalog(); return false;"><i class="fas fa-home"></i> Главная</a>
               <a href="#" onclick="showPage('profilePage'); toggleCatalog(); return false;"><i class="fas fa-user"></i> Мой профиль</a>
               <a href="#" onclick="showPage('topPlayersPage'); toggleCatalog(); return false;"><i class="fas fa-trophy"></i> Топ игроков</a>
               <a href="#" onclick="showPage('shopPage'); toggleCatalog(); return false;"><i class="fas fa-store"></i> Каталог товаров</a>
-              <a href="#" onclick="showPage('serversPage'); toggleCatalog(); return false;"><i class="fas fa-server"></i> DM Сервера</a>
               <div class="divider"></div>
               <a href="#" onclick="showPage('settingsPage'); toggleCatalog(); return false;"><i class="fas fa-cog"></i> Настройки</a>
-              <!-- ===== АДМИН-ВКЛАДКА (только для админов) ===== -->
-              <a href="#" id="adminMenuLink" onclick="showPage('adminPage'); toggleCatalog(); return false;" style="display:none;"><i class="fas fa-user-shield"></i> Админ панель</a>
+              <a href="#" onclick="showPage('serversPage'); toggleCatalog(); return false;"><i class="fas fa-server"></i> DM Сервера</a>
               <div class="divider"></div>
               <a href="#" onclick="handleLogout(); toggleCatalog(); return false;" style="color:#ff6b6b;"><i class="fas fa-sign-out-alt"></i> Выйти</a>
             </div>
@@ -1083,11 +1043,28 @@
       <div class="announce-top" id="announceTop">
         <button class="btn-announce-top" onclick="openAnnounceModal()"><i class="fas fa-bullhorn"></i> Объявление</button>
       </div>
+      <div class="admin-panel" id="adminPanel">
+        <h3><i class="fas fa-plus-circle"></i> Создать DM сервер</h3>
+        <div class="form-group"><label>Название режима</label><input type="text" id="serverNameInput" placeholder="Например: Team Deathmatch" /></div>
+        <div class="form-group"><label>Ссылка на лобби</label><input type="text" id="serverLobbyInput" placeholder="https://standoff2.com/..." /></div>
+        <div class="form-group"><label>ID игрока (владелец)</label><input type="text" id="serverPlayerIdInput" placeholder="Введите ID игрока" /></div>
+        <div class="form-group"><label>Карта</label><input type="text" id="serverMapInput" placeholder="Например: Mansion, Factory..." /></div>
+        <button class="btn-create" id="createServerBtn"><i class="fas fa-plus"></i> Создать сервер</button>
+      </div>
+      <div class="admin-system" id="adminSystem">
+        <h3><i class="fas fa-user-shield"></i> Управление администраторами</h3>
+        <p style="color:var(--text-secondary);margin-bottom:1rem;font-size:.85rem;font-weight:500;">⚠️ Только главный администратор (<strong>Admin</strong>) может добавлять/удалять админов. Добавление по имени пользователя.</p>
+        <div class="form-group">
+          <input type="text" id="adminUsernameInput" placeholder="Имя пользователя для добавления" />
+          <button class="btn-add-admin" id="addAdminBtn"><i class="fas fa-user-plus"></i> Добавить админа</button>
+        </div>
+        <div class="admin-list" id="adminList"></div>
+      </div>
       <div class="servers-grid" id="serversGrid"></div>
       <div class="back-btn"><button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
-    <!-- ===== СТРАНИЦА ПРОФИЛЯ ===== -->
+    <!-- ===== ПРОФИЛЬ ===== -->
     <div class="page-content" id="profilePage">
       <h1 class="page-title"><i class="fas fa-user"></i> Профиль игрока</h1>
       <p class="sub-title">Информация о вашем аккаунте</p>
@@ -1152,7 +1129,7 @@
       </div>
     </div>
 
-    <!-- ===== СТРАНИЦА ТОП ИГРОКОВ ===== -->
+    <!-- ===== ОСТАЛЬНЫЕ СТРАНИЦЫ ===== -->
     <div class="page-content" id="topPlayersPage">
       <h1 class="page-title"><i class="fas fa-trophy"></i> Топ игроков</h1>
       <p class="sub-title">Лучшие игроки по количеству игр на сервере</p>
@@ -1160,7 +1137,6 @@
       <div class="back-btn"><button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
-    <!-- ===== СТРАНИЦА МАГАЗИНА ===== -->
     <div class="page-content" id="shopPage">
       <h1 class="page-title"><i class="fas fa-store"></i> Каталог товаров</h1>
       <p class="sub-title">Привилегии и улучшения для вашего аккаунта</p>
@@ -1170,7 +1146,6 @@
       <div class="back-btn"><button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
-    <!-- ===== СТРАНИЦА НАСТРОЕК ===== -->
     <div class="page-content" id="settingsPage">
       <h1 class="page-title"><i class="fas fa-cog"></i> Настройки</h1>
       <p class="sub-title">Управление аккаунтом и предпочтениями</p>
@@ -1179,50 +1154,9 @@
         <div class="setting-row"><span class="label">ID Standoff 2</span><span class="value" style="color:var(--primary);" id="settingsStandoffId">123456789</span></div>
         <div class="setting-row"><span class="label">Язык</span><select id="languageSelect" onchange="changeLanguage(this.value)"><option value="ru">🇷🇺 Русский</option><option value="en">🇬🇧 English</option><option value="kz">🇰🇿 Қазақша</option></select></div>
         <div class="setting-row"><span class="label">Тема сайта</span><select id="themeSelect" onchange="changeTheme(this.value)"><option value="orange">🟠 Оранжевая</option><option value="red">🔴 Красная</option><option value="green">🟢 Зелёная</option><option value="black">⚫ Чёрная</option></select></div>
-        <button class="btn-save" id="saveSettingsBtn" type="button"><i class="fas fa-save"></i> Сохранить настройки</button>
+        <button class="btn-save" id="saveSettingsBtn"><i class="fas fa-save"></i> Сохранить настройки</button>
       </div>
       <div class="back-btn"><button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button></div>
-    </div>
-
-    <!-- ===== АДМИН ПАНЕЛЬ (ОТДЕЛЬНАЯ СТРАНИЦА) ===== -->
-    <div class="page-content" id="adminPage">
-      <h1 class="page-title"><i class="fas fa-user-shield"></i> Админ панель</h1>
-      <p class="sub-title">Управление администраторами и серверами</p>
-
-      <div class="admin-page-card" style="margin-bottom:2rem;">
-        <h3><i class="fas fa-server"></i> Создать DM сервер</h3>
-        <div class="form-group">
-          <label>Название режима</label>
-          <input type="text" id="serverNameInput" placeholder="Например: Team Deathmatch" />
-        </div>
-        <div class="form-group">
-          <label>Ссылка на лобби</label>
-          <input type="text" id="serverLobbyInput" placeholder="https://standoff2.com/..." />
-        </div>
-        <div class="form-group">
-          <label>ID игрока (владелец)</label>
-          <input type="text" id="serverPlayerIdInput" placeholder="Введите ID игрока" />
-        </div>
-        <div class="form-group">
-          <label>Карта</label>
-          <input type="text" id="serverMapInput" placeholder="Например: Mansion, Factory..." />
-        </div>
-        <button class="btn-action" id="createServerBtn" type="button"><i class="fas fa-plus"></i> Создать сервер</button>
-      </div>
-
-      <div class="admin-page-card">
-        <h3><i class="fas fa-users-cog"></i> Управление администраторами</h3>
-        <p style="color:var(--text-secondary);margin-bottom:1rem;font-size:.85rem;font-weight:500;">⚠️ Только главный администратор (<strong>Admin</strong>) может добавлять/удалять админов. Добавление по имени пользователя.</p>
-        <div class="form-group">
-          <input type="text" id="adminUsernameInput" placeholder="Имя пользователя для добавления" />
-          <button class="btn-action" id="addAdminBtn" type="button"><i class="fas fa-user-plus"></i> Добавить админа</button>
-        </div>
-        <div class="admin-list" id="adminList"></div>
-      </div>
-
-      <div class="back-btn" style="margin-top:2rem;">
-        <button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button>
-      </div>
     </div>
 
     <footer class="footer" id="footer">
@@ -1254,7 +1188,7 @@
   let currentLanguage = 'ru';
   let viewingUserId = null;
   let selectedTime = null;
-  let viewingUserData = null;
+  let viewingUserData = null; // для графика
 
   let statsTargetUserId = null;
   let statsTargetUsername = null;
@@ -1296,7 +1230,7 @@
   }
 
   // ============================================================
-  // TELEGRAM
+  // TELEGRAM (упрощённо)
   // ============================================================
   function createDmImage(dmNumber, host, mode, map) {
     const canvas = document.createElement('canvas');
@@ -1827,7 +1761,7 @@
       grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-secondary);">
         <i class="fas fa-server" style="font-size:3rem;color:var(--primary);"></i>
         <p style="margin-top:1rem;font-size:1.2rem;font-weight:600;">Нет активных серверов</p>
-        <p style="font-weight:500;">Создайте первый сервер в админ-панели</p>
+        <p style="font-weight:500;">Создайте первый сервер с помощью панели администратора</p>
       </div>`;
       return;
     }
@@ -2009,13 +1943,14 @@
     try {
       let avatarUrl = user.avatar_url || null;
 
+      // Загружаем аватарку, если выбрана
       if (file) {
         const ext = file.name.split('.').pop();
         const fileName = `${user.id}_${Date.now()}.${ext}`;
         const formData = new FormData();
         formData.append('file', file);
 
-        const uploadResp = await fetch(`${SUPABASE_URL}/storage/buckets/avatars/upload?name=${fileName}`, {
+        const uploadResp = await fetch(`${STORAGE_URL}/avatars/${fileName}`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${SUPABASE_KEY}`
@@ -2024,13 +1959,13 @@
         });
 
         if (!uploadResp.ok) {
-          const errText = await uploadResp.text();
-          throw new Error(`Ошибка загрузки аватарки: ${errText}`);
+          throw new Error('Ошибка загрузки аватарки');
         }
 
         avatarUrl = `${STORAGE_URL}/avatars/${fileName}`;
       }
 
+      // Обновляем данные пользователя
       await apiRequest(`/users?id=eq.${user.id}`, {
         method: 'PATCH',
         body: JSON.stringify({
@@ -2040,14 +1975,16 @@
         })
       });
 
+      // Обновляем локального пользователя
       const updatedUser = { ...user, username, standoffId, avatar_url: avatarUrl };
       setCurrentUser(updatedUser);
       localStorage.setItem('startup_user', JSON.stringify(updatedUser));
 
       closeEditProfileModal();
       showToast('success', 'Профиль обновлён', 'Данные успешно сохранены');
+      // Перезагружаем профиль
       if (viewingUserId === user.id) fetchUserData(user.id);
-      fetchTopPlayers();
+      fetchTopPlayers(); // обновляем аватарки в топе
 
     } catch (e) {
       showToast('error', 'Ошибка', e.message);
@@ -2075,7 +2012,7 @@
       const data = await apiRequest(`/users?id=eq.${targetId}`);
       if (data && data.length) {
         const user = data[0];
-        viewingUserData = user;
+        viewingUserData = user; // для графика
 
         if (user.isBanned) {
           const cur = getCurrentUser();
@@ -2088,6 +2025,7 @@
         updateProfileData(user);
         await fetchMatchHistory(user.id);
 
+        // Бейджи
         const isAdminUser = await isAdmin();
         const bannedBadge = document.getElementById('bannedBadge');
         const adminBadge = document.getElementById('adminBadge');
@@ -2102,6 +2040,7 @@
           adminBadge.style.display = 'none';
         }
 
+        // Кнопки
         const banContainer = document.getElementById('banButtonContainer');
         const clearContainer = document.getElementById('clearStatsContainer');
         const editContainer = document.getElementById('editProfileContainer');
@@ -2116,6 +2055,7 @@
           clearContainer.innerHTML = '';
         }
 
+        // Кнопка "Редактировать" только для владельца профиля
         if (getCurrentUser() && user.id === getCurrentUser().id) {
           editContainer.innerHTML = `<button class="btn-edit-profile" onclick="openEditProfileModal()"><i class="fas fa-edit"></i> Редактировать</button>`;
         } else {
@@ -2133,7 +2073,9 @@
     document.getElementById('profileName').textContent = user.username || 'Игрок';
     document.getElementById('profileStandoffId').textContent = user.standoffId || '123456789';
 
+    // Аватарка
     const avatarContainer = document.getElementById('profileAvatar');
+    const initialsEl = document.getElementById('profileInitials');
     const initial = user.username ? user.username.charAt(0).toUpperCase() : '?';
     if (user.avatar_url) {
       avatarContainer.innerHTML = `<img src="${user.avatar_url}" alt="avatar" /><span class="online-dot"></span>`;
@@ -2141,6 +2083,7 @@
       avatarContainer.innerHTML = `<span class="initials">${initial}</span><span class="online-dot"></span>`;
     }
 
+    // Статистика
     const matches = user.matches || 0;
     const kills = user.kills || 0;
     const deaths = user.deaths || 0;
@@ -2150,9 +2093,11 @@
     document.getElementById('profileKills').textContent = kills;
     document.getElementById('profileDeaths').textContent = deaths;
     document.getElementById('profileKD').textContent = kd.toFixed(2);
+
     document.getElementById('settingsName').textContent = user.username || 'Nwole\'s_Player';
     document.getElementById('settingsStandoffId').textContent = user.standoffId || '123456789';
 
+    // Обновляем график KD с данными просматриваемого пользователя
     updateKDChart(user.kdHistory);
   }
 
@@ -2166,6 +2111,7 @@
     const ctx = canvas.getContext('2d');
     const labels = ['Матч 1','Матч 2','Матч 3','Матч 4','Матч 5','Матч 6','Матч 7','Матч 8','Матч 9','Матч 10'];
     const data = kdHistory || [0,0,0,0,0,0,0,0,0,0];
+    // Ограничим до 10 значений
     const displayData = data.slice(-10);
     const displayLabels = labels.slice(-displayData.length);
     kdChartInstance = new Chart(ctx, {
@@ -2208,13 +2154,12 @@
     document.querySelector('.dropdown-btn').innerHTML = `<i class="fas fa-bars"></i> ${t.main} <i class="fas fa-chevron-down" style="font-size:.7rem;"></i>`;
     const items = document.querySelectorAll('.dropdown-content a');
     if (items.length >= 7) {
-      items[0].innerHTML = `<i class="fas fa-home"></i> ${t.main}`;
-      items[1].innerHTML = `<i class="fas fa-user"></i> ${t.profile}`;
-      items[2].innerHTML = `<i class="fas fa-trophy"></i> ${t.top}`;
-      items[3].innerHTML = `<i class="fas fa-store"></i> ${t.shop}`;
-      items[4].innerHTML = `<i class="fas fa-server"></i> ${t.servers}`;
-      items[6].innerHTML = `<i class="fas fa-cog"></i> ${t.settings}`;
-      items[8].innerHTML = `<i class="fas fa-sign-out-alt"></i> ${t.logout}`;
+      items[0].innerHTML = `<i class="fas fa-user"></i> ${t.profile}`;
+      items[1].innerHTML = `<i class="fas fa-trophy"></i> ${t.top}`;
+      items[2].innerHTML = `<i class="fas fa-store"></i> ${t.shop}`;
+      items[4].innerHTML = `<i class="fas fa-cog"></i> ${t.settings}`;
+      items[5].innerHTML = `<i class="fas fa-server"></i> ${t.servers}`;
+      items[7].innerHTML = `<i class="fas fa-sign-out-alt"></i> ${t.logout}`;
     }
     document.querySelector('.btn-connect').innerHTML = `<i class="fas fa-plug"></i> ${t.connect}`;
     const labels = document.querySelectorAll('.stat-block .label');
@@ -2303,20 +2248,16 @@
     document.getElementById('announceText').value = '';
     document.getElementById('announceModal').classList.add('active');
   }
-
   function closeAnnounceModal() {
     document.getElementById('announceModal').classList.remove('active');
     selectedTime = null;
     document.querySelectorAll('#timeOptions button').forEach(b => b.classList.remove('selected'));
   }
-
   function selectTime(minutes) {
     selectedTime = minutes;
     document.querySelectorAll('#timeOptions button').forEach(b => b.classList.remove('selected'));
-    const btn = document.querySelector(`#timeOptions button[data-time="${minutes}"]`);
-    if (btn) btn.classList.add('selected');
+    document.querySelector(`#timeOptions button[data-time="${minutes}"]`).classList.add('selected');
   }
-
   async function sendAnnouncement() {
     if (!selectedTime) return showToast('error','Ошибка','Выберите время');
     const custom = document.getElementById('announceText').value.trim();
@@ -2343,18 +2284,22 @@
   }
 
   // ============================================================
-  // ОБНОВЛЕНИЕ АДМИН-ПАНЕЛИ И МЕНЮ
+  // ОБНОВЛЕНИЕ АДМИН-ПАНЕЛИ
   // ============================================================
-  async function updateAdminUI() {
+  async function updateAdminPanel() {
+    const adminPanel = document.getElementById('adminPanel');
+    const adminSystem = document.getElementById('adminSystem');
+    const announceTop = document.getElementById('announceTop');
     const userIsAdmin = await isAdmin();
-    const adminMenuLink = document.getElementById('adminMenuLink');
+    const userIsSuper = isSuperAdmin();
     if (userIsAdmin) {
-      adminMenuLink.style.display = 'flex';
+      adminPanel.classList.add('visible');
+      announceTop.style.display = 'flex';
     } else {
-      adminMenuLink.style.display = 'none';
+      adminPanel.classList.remove('visible');
+      announceTop.style.display = 'none';
     }
-    // Обновляем админ-панель
-    await renderAdmins();
+    if (userIsSuper) adminSystem.classList.add('visible'); else adminSystem.classList.remove('visible');
   }
 
   // ============================================================
@@ -2376,7 +2321,8 @@
       if (isSuperAdmin()) console.log('👑 Супер-админ авторизован:', user.username);
       await fetchServers();
       await fetchSiteStats();
-      await updateAdminUI();
+      await renderAdmins();
+      await updateAdminPanel();
       await fetchTopPlayers();
       return true;
     } else {

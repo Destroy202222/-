@@ -1346,10 +1346,10 @@
 
         // Информация
         const info = [
-            { label: '👤 Хост', value: host || 'Unknown' },
-            { label: '🎯 Режим', value: mode || 'Не указан' },
-            { label: '⏱ Время', value: '10 минут' },
-            { label: '🗺 Карта', value: map || 'Не указана' }
+            { label: 'Хост', value: host || 'Unknown' },
+            { label: 'Режим', value: mode || 'Не указан' },
+            { label: 'Время', value: '10 минут' },
+            { label: 'Карта', value: map || 'Не указана' }
         ];
 
         info.forEach((item, i) => {
@@ -1391,7 +1391,6 @@
             const formData = new FormData();
             formData.append('chat_id', CHANNEL_ID);
             formData.append('photo', blob, 'dm_notification.png');
-            formData.append('caption', `🆕 Новый DM сервер!`);
             
             // Добавляем кнопку "Открыть"
             formData.append('reply_markup', JSON.stringify({
@@ -1408,12 +1407,58 @@
             const data = await response.json();
             if (!data.ok) {
                 console.error('Telegram API error:', data.description);
+                // Если не получилось отправить картинку, отправляем текст
+                await sendTelegramNotificationText(dmNumber, host, mode, map);
             } else {
                 console.log('✅ Уведомление с картинкой отправлено в Telegram');
             }
             return data;
         } catch (error) {
             console.error('Error sending Telegram notification with image:', error);
+            // Если ошибка, отправляем текстом
+            await sendTelegramNotificationText(dmNumber, host, mode, map);
+        }
+    }
+
+    // ====================================================
+    // ===== TELEGRAM ТЕКСТОВОЕ УВЕДОМЛЕНИЕ (БЕЗ КАРТИНКИ) =====
+    // ====================================================
+
+    async function sendTelegramNotificationText(dmNumber, host, mode, map) {
+        try {
+            const message = `DM #${dmNumber}
+Хост: ${host || 'Unknown'}
+Режим: ${mode || 'Не указан'}
+Время: 10 минут
+Карта: ${map || 'Не указана'}`;
+
+            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: CHANNEL_ID,
+                    text: message,
+                    parse_mode: 'HTML',
+                    disable_web_page_preview: true,
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "🚀 Открыть мини-приложение", url: APP_URL }]
+                        ]
+                    }
+                })
+            });
+            
+            const data = await response.json();
+            if (!data.ok) {
+                console.error('Telegram API error:', data.description);
+            } else {
+                console.log('✅ Текстовое уведомление отправлено в Telegram');
+            }
+            return data;
+        } catch (error) {
+            console.error('Error sending Telegram notification:', error);
         }
     }
 

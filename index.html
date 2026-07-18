@@ -1098,11 +1098,12 @@
             <p>Уникальные DM-сервера с низким пингом, рейтингом и ежедневными турнирами для настоящих бойцов!</p>
         </section>
 
+        <!-- СТАТИСТИКА: ПОМЕНЯЛИ МЕСТАМИ "В ОЧЕРЕДИ" И "ПРОВЕДЕНО ТУРНИРОВ" -->
         <div class="stats-grid">
             <div class="stat-block"><div class="number" id="usersCount">0</div><div class="label"><i class="fas fa-users"></i> Зарегистрировано</div></div>
-            <div class="stat-block"><div class="number" id="tournamentsCount">0</div><div class="label"><i class="fas fa-trophy"></i> Проведено турниров</div></div>
-            <div class="stat-block"><div class="number" id="serverCount">0</div><div class="label"><i class="fas fa-server"></i> DM серверов</div></div>
             <div class="stat-block"><div class="number" id="pendingCount">0</div><div class="label"><i class="fas fa-clock"></i> В очереди</div></div>
+            <div class="stat-block"><div class="number" id="serverCount">0</div><div class="label"><i class="fas fa-server"></i> DM серверов</div></div>
+            <div class="stat-block"><div class="number" id="tournamentsCount">0</div><div class="label"><i class="fas fa-trophy"></i> Проведено турниров</div></div>
         </div>
 
         <div class="prize-pool-section">
@@ -1315,7 +1316,7 @@
                     disable_web_page_preview: true,
                     reply_markup: {
                         inline_keyboard: [
-                            [{ text: "📱 Зарегистрироваться", url: "https://t.me/deathmatchso2bot?profile" }]
+                            [{ text: "🚀 Открыть мини-приложение", url: "https://nwolesso2dm.vercel.app" }]
                         ]
                     }
                 })
@@ -1981,18 +1982,26 @@
     }
 
     // ====================================================
-    // ===== СТАТИСТИКА =====
+    // ===== СТАТИСТИКА (ОБНОВЛЁННАЯ) =====
     // ====================================================
 
     async function fetchSiteStats() {
         try {
             const users = await apiRequest('/users?select=id');
-            const servers = await apiRequest('/servers?select=id');
+            const servers = await apiRequest('/servers');
+            
+            let pendingCount = 0;
+            if (servers && servers.length > 0) {
+                for (const server of servers) {
+                    const pending = server.pending || [];
+                    pendingCount += pending.length;
+                }
+            }
             
             document.getElementById('usersCount').textContent = users?.length || 0;
             document.getElementById('serverCount').textContent = servers?.length || 0;
             document.getElementById('tournamentsCount').textContent = '0';
-            document.getElementById('pendingCount').textContent = '0';
+            document.getElementById('pendingCount').textContent = pendingCount;
         } catch (error) {
             console.error('Error fetching stats:', error);
         }
@@ -2169,9 +2178,9 @@
         const labels = document.querySelectorAll('.stat-block .label');
         if (labels.length >= 4) {
             labels[0].innerHTML = `<i class="fas fa-users"></i> ${t.users}`;
-            labels[1].innerHTML = `<i class="fas fa-trophy"></i> ${t.tournaments}`;
+            labels[1].innerHTML = `<i class="fas fa-clock"></i> ${t.pending}`;
             labels[2].innerHTML = `<i class="fas fa-server"></i> ${t.servers_count}`;
-            labels[3].innerHTML = `<i class="fas fa-clock"></i> ${t.pending}`;
+            labels[3].innerHTML = `<i class="fas fa-trophy"></i> ${t.tournaments}`;
         }
         localStorage.setItem('startup_language', lang);
     }

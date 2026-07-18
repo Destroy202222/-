@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* ===== ВСЕ СТИЛИ БЕЗ ИЗМЕНЕНИЙ (как в предыдущей версии) ===== */
+    /* ===== СТИЛИ (сокращённые, но полные) ===== */
     :root {
       --primary: #ff7b00;
       --primary-hover: #ff9a33;
@@ -1216,6 +1216,36 @@
   }
 
   // ============================================================
+  // ОЧЕРЕДИ (с сохранением userId)
+  // ============================================================
+  async function addToPending(serverId, username, userId) {
+    try {
+      const data = await apiRequest(`/servers?id=eq.${serverId}`);
+      if (!data || !data.length) throw new Error('Сервер не найден');
+      const server = data[0];
+      let pending = server.pending || [];
+      // Проверяем, есть ли уже такой пользователь (по имени)
+      const exists = pending.some(p => p.username === username);
+      if (exists) throw new Error('Игрок уже в очереди');
+      // Добавляем объект { username, userId }
+      pending.push({ username, userId });
+      await apiRequest(`/servers?id=eq.${serverId}`, { method: 'PATCH', body: JSON.stringify({ pending }) });
+      return pending;
+    } catch (e) { throw e; }
+  }
+
+  async function removeFromPending(serverId, username) {
+    try {
+      const data = await apiRequest(`/servers?id=eq.${serverId}`);
+      if (!data || !data.length) throw new Error('Сервер не найден');
+      const server = data[0];
+      let pending = (server.pending || []).filter(p => p.username !== username);
+      await apiRequest(`/servers?id=eq.${serverId}`, { method: 'PATCH', body: JSON.stringify({ pending }) });
+      return pending;
+    } catch (e) { throw e; }
+  }
+
+  // ============================================================
   // СТАТИСТИКА (ГЛАВНАЯ ФУНКЦИЯ)
   // ============================================================
   function openStatsModal(username, userId, serverId, map) {
@@ -1228,7 +1258,6 @@
     document.getElementById('modalKills').value = 0;
     document.getElementById('modalDeaths').value = 0;
 
-    // Убедимся, что кнопка активна
     const btn = document.getElementById('modalSubmitBtn');
     btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
     btn.disabled = false;
@@ -1238,14 +1267,13 @@
 
   function closeStatsModal() {
     document.getElementById('statsModal').classList.remove('active');
-    // Очищаем данные
     statsTargetUserId = null;
     statsTargetUsername = null;
     statsTargetServerId = null;
     statsTargetMap = null;
   }
 
-  // ===== ОСНОВНАЯ ФУНКЦИЯ ЗАЧИСЛЕНИЯ (РАБОТАЕТ 100%) =====
+  // ===== ОСНОВНАЯ ФУНКЦИЯ ЗАЧИСЛЕНИЯ =====
   async function submitStats() {
     console.log('🚀 submitStats вызвана!');
     const kills = parseInt(document.getElementById('modalKills').value) || 0;
@@ -1254,19 +1282,17 @@
 
     console.log('📊 Данные:', { kills, deaths, map, statsTargetUserId, statsTargetServerId });
 
-    // Проверка, что есть целевой пользователь
     if (!statsTargetUserId) {
       showToast('error', 'Ошибка', 'Пользователь не выбран');
       return;
     }
 
-    // Блокируем кнопку, чтобы не нажали дважды
     const btn = document.getElementById('modalSubmitBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
 
     try {
-      // 1. ПОЛУЧАЕМ ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
+      // 1. Получаем данные пользователя по ID
       console.log('🔍 Ищем пользователя по ID:', statsTargetUserId);
       const users = await apiRequest(`/users?id=eq.${statsTargetUserId}`);
       if (!users || users.length === 0) {
@@ -1278,7 +1304,7 @@
       const user = users[0];
       console.log('👤 Найден пользователь:', user);
 
-      // 2. ВЫЧИСЛЯЕМ НОВЫЕ ЗНАЧЕНИЯ
+      // 2. Вычисляем новые значения
       const newKills = (user.kills || 0) + kills;
       const newDeaths = (user.deaths || 0) + deaths;
       const newMatches = (user.matches || 0) + 1;
@@ -1286,12 +1312,11 @@
       const matchKD = deaths > 0 ? (kills / deaths) : kills;
       const roundedKD = Math.round(matchKD * 100) / 100;
 
-      // Обновляем историю KD
       let kdHistory = user.kdHistory || [0,0,0,0,0,0,0,0,0,0];
       kdHistory.push(matchKD);
       if (kdHistory.length > 10) kdHistory = kdHistory.slice(-10);
 
-      // 3. ОБНОВЛЯЕМ ПОЛЬЗОВАТЕЛЯ
+      // 3. Обновляем пользователя
       console.log('📝 Обновляем пользователя...');
       await apiRequest(`/users?id=eq.${user.id}`, {
         method: 'PATCH',
@@ -1304,7 +1329,7 @@
         })
       });
 
-      // 4. СОХРАНЯЕМ ИСТОРИЮ МАТЧА
+      // 4. Сохраняем историю матча
       console.log('📝 Сохраняем историю матча...');
       const matchRecord = {
         id: Date.now() + Math.floor(Math.random() * 1000),
@@ -1323,17 +1348,17 @@
         body: JSON.stringify([matchRecord])
       });
 
-      // 5. УДАЛЯЕМ ИЗ ОЧЕРЕДИ (если есть)
+      // 5. Удаляем из очереди
       if (statsTargetServerId) {
         console.log('🗑️ Удаляем из очереди...');
         await removeFromPending(statsTargetServerId, user.username);
       }
 
-      // 6. ЗАКРЫВАЕМ МОДАЛКУ И ПОКАЗЫВАЕМ УСПЕХ
+      // 6. Закрываем модалку и показываем успех
       closeStatsModal();
       showToast('success', 'Статистика обновлена', `Игроку ${user.username} зачислен матч на карте ${map}`);
 
-      // 7. ОБНОВЛЯЕМ ВСЕ ДАННЫЕ
+      // 7. Обновляем все данные
       fetchServers();
       fetchSiteStats();
       fetchTopPlayers();
@@ -1345,7 +1370,6 @@
       console.error('❌ Ошибка:', error);
       showToast('error', 'Ошибка', error.message || 'Не удалось зачислить статистику');
     } finally {
-      // Разблокируем кнопку
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
     }
@@ -1479,16 +1503,20 @@
       const pendingHtml = pending.length > 0
         ? `<div class="pending-players-section visible">
             <h4><i class="fas fa-users"></i> Очередь (${pending.length})</h4>
-            ${pending.map(p => `
-              <div class="pending-player">
-                <span class="username"><i class="fas fa-user"></i> ${p}</span>
+            ${pending.map(p => {
+              const username = typeof p === 'string' ? p : p.username;
+              const userId = typeof p === 'string' ? null : p.userId;
+              // Если userId нет, попробуем найти по имени (для старых данных) — но в идеале userId должен быть
+              const idForStats = userId || username;
+              return `<div class="pending-player">
+                <span class="username"><i class="fas fa-user"></i> ${username}</span>
                 ${isAdminUser ? `
                 <div class="actions">
-                  <button class="btn-stats" onclick="openStatsModal('${p}', '${p}', ${server.id}, '${server.map}')"><i class="fas fa-chart-bar"></i> Статистика</button>
-                  <button class="btn-cancel" onclick="cancelAndRefresh(${server.id}, '${p}')"><i class="fas fa-times"></i> Отменить</button>
+                  <button class="btn-stats" onclick="openStatsModal('${username}', '${idForStats}', ${server.id}, '${server.map}')"><i class="fas fa-chart-bar"></i> Статистика</button>
+                  <button class="btn-cancel" onclick="cancelAndRefresh(${server.id}, '${username}')"><i class="fas fa-times"></i> Отменить</button>
                 </div>` : ''}
-              </div>
-            `).join('')}
+              </div>`;
+            }).join('')}
           </div>`
         : '';
       const card = document.createElement('div');
@@ -1517,37 +1545,15 @@
   }
 
   // ============================================================
-  // ОЧЕРЕДИ
+  // ПОДКЛЮЧЕНИЕ К СЕРВЕРУ (с сохранением ID)
   // ============================================================
-  async function addToPending(serverId, username) {
-    try {
-      const data = await apiRequest(`/servers?id=eq.${serverId}`);
-      if (!data || !data.length) throw new Error('Сервер не найден');
-      const server = data[0];
-      const pending = server.pending || [];
-      if (pending.includes(username)) throw new Error('Игрок уже в очереди');
-      pending.push(username);
-      await apiRequest(`/servers?id=eq.${serverId}`, { method: 'PATCH', body: JSON.stringify({ pending }) });
-      return pending;
-    } catch (e) { throw e; }
-  }
-
-  async function removeFromPending(serverId, username) {
-    try {
-      const data = await apiRequest(`/servers?id=eq.${serverId}`);
-      if (!data || !data.length) throw new Error('Сервер не найден');
-      const server = data[0];
-      const pending = (server.pending || []).filter(p => p !== username);
-      await apiRequest(`/servers?id=eq.${serverId}`, { method: 'PATCH', body: JSON.stringify({ pending }) });
-      return pending;
-    } catch (e) { throw e; }
-  }
-
   async function joinServer(serverId, lobby, username) {
     window.open(lobby, '_blank');
     if (username) {
       try {
-        await addToPending(serverId, username);
+        const user = getCurrentUser();
+        if (!user) throw new Error('Не авторизован');
+        await addToPending(serverId, username, user.id);
         showToast('success', 'Вы в очереди!', 'Ваш никнейм добавлен под сервером');
         fetchServers(); fetchSiteStats();
       } catch (e) {
@@ -1578,7 +1584,8 @@
       let pendingCount = 0;
       if (servers && servers.length) {
         for (const s of servers) {
-          pendingCount += (s.pending || []).length;
+          const p = s.pending || [];
+          pendingCount += p.length;
         }
       }
       document.getElementById('usersCount').textContent = users?.length || 0;
@@ -1919,13 +1926,10 @@
     document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
     document.getElementById('announceSubmitBtn').addEventListener('click', sendAnnouncement);
 
-    // ===== КНОПКА "ЗАЧИСЛИТЬ" — НАДЁЖНЫЙ ОБРАБОТЧИК =====
     const submitBtn = document.getElementById('modalSubmitBtn');
     if (submitBtn) {
       console.log('✅ Кнопка "Зачислить" найдена');
-      // Удаляем все старые обработчики
       submitBtn.onclick = null;
-      // Вешаем новый
       submitBtn.addEventListener('click', function(e) {
         e.preventDefault();
         console.log('🖱️ Клик по кнопке "Зачислить"');

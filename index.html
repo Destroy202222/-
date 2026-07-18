@@ -77,7 +77,7 @@
     .stars { display:none !important; }
     .main-wrapper { position:relative; z-index:1; min-height:100vh; }
 
-    /* ===== НАВИГАЦИЯ (такой же фон как у сайта) ===== */
+    /* ===== НАВИГАЦИЯ ===== */
     .header {
       background: var(--bg-main);
       border-bottom:2px solid var(--primary);
@@ -157,7 +157,7 @@
     }
     .btn-connect:hover { transform:scale(1.05); box-shadow:0 0 30px var(--primary-glow); }
 
-    /* ===== ПРОФИЛЬ (только существующие данные) ===== */
+    /* ===== ПРОФИЛЬ ===== */
     .profile-card {
       background: var(--bg-card);
       backdrop-filter:blur(12px);
@@ -172,8 +172,6 @@
       transition:.3s;
     }
     .profile-card:hover { border-color:var(--primary); box-shadow:0 20px 60px var(--shadow-color); }
-
-    /* Шапка */
     .profile-header {
       display:flex;
       align-items:center;
@@ -196,6 +194,18 @@
       flex-shrink:0;
       transition:transform .3s;
       position:relative;
+      overflow:hidden;
+    }
+    .profile-avatar img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .profile-avatar .initials {
+      position:absolute;
+      font-size:2rem;
+      font-weight:900;
+      color:var(--bg-main);
     }
     .profile-avatar:hover { transform:scale(1.05); }
     .profile-avatar .online-dot {
@@ -225,7 +235,6 @@
       font-weight:700;
     }
 
-    /* Бейджи */
     .profile-badges {
       display:flex;
       gap:.6rem;
@@ -244,11 +253,9 @@
       gap:.3rem;
     }
     .badge.primary { background:var(--primary-glow); color:var(--primary); border:1px solid var(--primary); }
-    .badge.premium { background:linear-gradient(45deg,#ffd700,#ffb300); color:#1a1a2e; border:1px solid #ffd700; }
     .badge.admin { background:#ff6b6b20; color:#ff6b6b; border:1px solid #ff6b6b; }
     .badge.banned { background:#ff6b6b40; color:#ff6b6b; border:1px solid #ff6b6b; }
 
-    /* Статистика (4 блока) */
     .stats-grid-profile {
       display:grid;
       grid-template-columns:repeat(4,1fr);
@@ -290,7 +297,6 @@
       -webkit-text-fill-color:transparent;
     }
 
-    /* Кнопки */
     .profile-actions {
       display:flex;
       gap:.6rem;
@@ -310,6 +316,12 @@
       display:inline-flex; align-items:center; gap:.4rem;
     }
     .btn-clear-stats:hover { background:#c82333; transform:scale(1.05); box-shadow:0 0 20px rgba(220,53,69,.3); }
+    .btn-edit-profile {
+      background:var(--primary); color:var(--bg-main); border:none; padding:.35rem 1rem; border-radius:40px;
+      font-weight:700; cursor:pointer; transition:.3s; font-size:.7rem;
+      display:inline-flex; align-items:center; gap:.4rem;
+    }
+    .btn-edit-profile:hover { background:var(--primary-hover); transform:scale(1.05); box-shadow:0 0 20px var(--primary-glow); }
 
     .chart-container {
       margin:1.2rem 0;
@@ -382,6 +394,53 @@
       font-weight:700; font-size:.8rem; cursor:pointer; transition:.3s;
     }
     .back-btn button:hover { background:var(--primary-glow); box-shadow:0 0 20px var(--primary-glow); }
+
+    /* ===== МОДАЛКА РЕДАКТИРОВАНИЯ ===== */
+    .modal-overlay {
+      display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+      background:rgba(0,0,0,.7); backdrop-filter:blur(6px);
+      z-index:10000; justify-content:center; align-items:center;
+    }
+    .modal-overlay.active { display:flex; }
+    .modal {
+      background:var(--bg-card); backdrop-filter:blur(12px);
+      border-radius:24px; padding:2.5rem; max-width:420px; width:90%;
+      border:1px solid var(--border-color); box-shadow:0 20px 60px rgba(0,0,0,.9);
+      animation:fadeIn .3s ease;
+    }
+    .modal h3 { color:var(--primary); margin-bottom:1.5rem; font-size:1.3rem; text-align:center; font-weight:800; }
+    .modal .form-group { margin-bottom:1.2rem; }
+    .modal .form-group label { display:block; color:var(--text-secondary); margin-bottom:.3rem; font-weight:600; font-size:.9rem; }
+    .modal .form-group input {
+      width:100%; padding:.7rem 1rem;
+      background:var(--bg-input); border:2px solid var(--border-color); border-radius:12px;
+      color:var(--text-primary); font-size:.95rem; transition:.3s;
+    }
+    .modal .form-group input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 20px var(--primary-glow); }
+    .modal .form-group input[type="file"] {
+      padding:.4rem;
+      background:var(--bg-input);
+      border:2px dashed var(--border-color);
+      border-radius:12px;
+      color:var(--text-secondary);
+      cursor:pointer;
+    }
+    .modal .form-group input[type="file"]:hover { border-color:var(--primary); }
+    .modal .btn-submit-modal {
+      width:100%; padding:.8rem;
+      background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));
+      border:none; border-radius:40px;
+      font-weight:700; font-size:1rem; color:var(--bg-main);
+      cursor:pointer; transition:.3s; margin-top:.5rem;
+    }
+    .modal .btn-submit-modal:hover { transform:scale(1.02); box-shadow:0 0 20px var(--primary-glow); }
+    .modal .btn-cancel-modal {
+      width:100%; padding:.7rem;
+      background:transparent; border:2px solid var(--border-color); border-radius:40px;
+      font-weight:600; color:var(--text-secondary); cursor:pointer; transition:.3s;
+      margin-top:.5rem;
+    }
+    .modal .btn-cancel-modal:hover { border-color:var(--primary); color:var(--primary); }
 
     /* ===== ОСТАЛЬНЫЕ СТИЛИ (без изменений) ===== */
     .auth-page {
@@ -680,6 +739,10 @@
       display:flex; align-items:center; justify-content:center;
       font-size:1rem; font-weight:700; color:var(--bg-main);
       flex-shrink:0;
+      overflow:hidden;
+    }
+    .top-player .avatar-small img {
+      width:100%; height:100%; object-fit:cover;
     }
     .top-player .info { flex:1; cursor:pointer; }
     .top-player .info .name { font-weight:700; font-size:1rem; }
@@ -738,45 +801,6 @@
       font-size:.95rem;
     }
     .settings-card .btn-save:hover { background:var(--primary-hover); box-shadow:0 0 20px var(--primary-glow); }
-    .modal-overlay {
-      display:none; position:fixed; top:0; left:0; right:0; bottom:0;
-      background:rgba(0,0,0,.7); backdrop-filter:blur(6px);
-      z-index:10000; justify-content:center; align-items:center;
-    }
-    .modal-overlay.active { display:flex; }
-    .modal {
-      background:var(--bg-card); backdrop-filter:blur(12px);
-      border-radius:24px; padding:2.5rem; max-width:420px; width:90%;
-      border:1px solid var(--border-color); box-shadow:0 20px 60px rgba(0,0,0,.9);
-      animation:fadeIn .3s ease;
-    }
-    .modal h3 { color:var(--primary); margin-bottom:1.5rem; font-size:1.3rem; text-align:center; font-weight:800; }
-    .modal .form-group { margin-bottom:1.2rem; }
-    .modal .form-group label { display:block; color:var(--text-secondary); margin-bottom:.3rem; font-weight:600; font-size:.9rem; }
-    .modal .form-group input {
-      width:100%; padding:.7rem 1rem;
-      background:var(--bg-input); border:2px solid var(--border-color); border-radius:12px;
-      color:var(--text-primary); font-size:.95rem; transition:.3s;
-    }
-    .modal .form-group input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 20px var(--primary-glow); }
-    .modal .form-group textarea {
-      width:100%; padding:.7rem 1rem;
-      background:var(--bg-input); border:2px solid var(--border-color); border-radius:12px;
-      color:var(--text-primary); font-size:.95rem; transition:.3s;
-      resize:vertical; min-height:80px; font-family:inherit;
-    }
-    .modal .form-group textarea:focus { outline:none; border-color:var(--primary); box-shadow:0 0 20px var(--primary-glow); }
-    .time-options {
-      display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin:1rem 0 1.5rem;
-    }
-    .time-options button {
-      padding:.7rem 1.5rem; border-radius:40px; border:2px solid var(--border-color);
-      background:var(--bg-input); color:var(--text-primary);
-      font-weight:700; font-size:1rem; cursor:pointer; transition:.3s;
-      min-width:90px;
-    }
-    .time-options button:hover { border-color:var(--primary); background:var(--primary-glow); transform:scale(1.05); }
-    .time-options button.selected { border-color:var(--primary); background:var(--primary); color:var(--bg-main); }
     .modal .btn-submit-modal {
       width:100%; padding:.8rem;
       background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));
@@ -871,7 +895,7 @@
   <div class="toast-text" id="toastText">Действие выполнено</div>
 </div>
 
-<!-- ===== МОДАЛКИ ===== -->
+<!-- ===== МОДАЛКА СТАТИСТИКИ ===== -->
 <div class="modal-overlay" id="statsModal">
   <div class="modal">
     <h3><i class="fas fa-chart-bar"></i> Ввести статистику</h3>
@@ -889,6 +913,7 @@
   </div>
 </div>
 
+<!-- ===== МОДАЛКА ОБЪЯВЛЕНИЯ ===== -->
 <div class="modal-overlay" id="announceModal">
   <div class="modal">
     <h3><i class="fas fa-bullhorn"></i> Объявление</h3>
@@ -904,6 +929,27 @@
     </div>
     <button class="btn-submit-modal" id="announceSubmitBtn"><i class="fas fa-bullhorn"></i> Отправить объявление</button>
     <button class="btn-cancel-modal" onclick="closeAnnounceModal()"><i class="fas fa-times"></i> Отмена</button>
+  </div>
+</div>
+
+<!-- ===== МОДАЛКА РЕДАКТИРОВАНИЯ ПРОФИЛЯ ===== -->
+<div class="modal-overlay" id="editProfileModal">
+  <div class="modal">
+    <h3><i class="fas fa-user-edit"></i> Редактировать профиль</h3>
+    <div class="form-group">
+      <label>Аватарка</label>
+      <input type="file" id="editAvatar" accept="image/*" />
+    </div>
+    <div class="form-group">
+      <label>Никнейм</label>
+      <input type="text" id="editUsername" placeholder="Введите никнейм" />
+    </div>
+    <div class="form-group">
+      <label>ID Standoff 2</label>
+      <input type="text" id="editStandoffId" placeholder="Введите ID Standoff 2" />
+    </div>
+    <button class="btn-submit-modal" id="editProfileSubmitBtn"><i class="fas fa-save"></i> Сохранить</button>
+    <button class="btn-cancel-modal" onclick="closeEditProfileModal()"><i class="fas fa-times"></i> Отмена</button>
   </div>
 </div>
 
@@ -1018,14 +1064,14 @@
       <div class="back-btn"><button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
-    <!-- ===== ПРОФИЛЬ (только реальные данные) ===== -->
+    <!-- ===== ПРОФИЛЬ ===== -->
     <div class="page-content" id="profilePage">
       <h1 class="page-title"><i class="fas fa-user"></i> Профиль игрока</h1>
       <p class="sub-title">Информация о вашем аккаунте</p>
       <div class="profile-card" id="profileCard">
         <div class="profile-header">
           <div class="profile-avatar" id="profileAvatar">
-            N
+            <span class="initials" id="profileInitials">N</span>
             <span class="online-dot"></span>
           </div>
           <div class="profile-info">
@@ -1034,15 +1080,12 @@
           </div>
         </div>
 
-        <!-- Бейджи -->
         <div class="profile-badges">
           <span class="badge primary"><i class="fas fa-shield-alt"></i> Игрок</span>
-          <span class="badge premium" id="premiumBadge" style="display:none;"><i class="fas fa-crown"></i> PREMIUM</span>
           <span class="badge admin" id="adminBadge" style="display:none;"><i class="fas fa-user-shield"></i> Админ</span>
           <span class="badge banned" id="bannedBadge" style="display:none;"><i class="fas fa-ban"></i> Забанен</span>
         </div>
 
-        <!-- Статистика (4 блока) -->
         <div class="stats-grid-profile">
           <div class="stat-item">
             <div class="number" id="profileMatches">0</div>
@@ -1062,19 +1105,17 @@
           </div>
         </div>
 
-        <!-- Кнопки действий -->
         <div class="profile-actions" id="profileActions">
           <div id="banButtonContainer"></div>
           <div id="clearStatsContainer"></div>
+          <div id="editProfileContainer"></div>
         </div>
 
-        <!-- График KD -->
         <div class="chart-container">
           <h3><i class="fas fa-chart-line" style="color:var(--primary);"></i> Динамика KD</h3>
           <canvas id="kdChart"></canvas>
         </div>
 
-        <!-- История матчей -->
         <div class="match-history-section">
           <h3><i class="fas fa-history"></i> История матчей <span class="match-count" id="matchCount">(0)</span></h3>
           <div class="match-list" id="matchList">
@@ -1133,6 +1174,7 @@
   const SUPER_ADMIN_USERNAME = 'Admin';
   const SUPABASE_URL = 'https://dlprylagddsmtzpmzxqy.supabase.co/rest/v1';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
+  const STORAGE_URL = 'https://dlprylagddsmtzpmzxqy.supabase.co/storage/v1/object/public';
   const BOT_TOKEN = '8708031992:AAGVzZfMEjgIMG9USRu34K1hF20hL4avKxk';
   const CHANNEL_ID = '-1004438412918';
   const APP_URL = 'https://nwolesso2dm.vercel.app';
@@ -1146,6 +1188,7 @@
   let currentLanguage = 'ru';
   let viewingUserId = null;
   let selectedTime = null;
+  let viewingUserData = null; // для графика
 
   let statsTargetUserId = null;
   let statsTargetUsername = null;
@@ -1306,7 +1349,8 @@
         kdHistory: [0,0,0,0,0,0,0,0,0,0],
         registered: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
-        isBanned: false
+        isBanned: false,
+        avatar_url: null
       };
       const data = await apiRequest('/users', { method: 'POST', body: JSON.stringify([newUser]) });
       const user = data[0] || newUser;
@@ -1842,9 +1886,12 @@
     container.innerHTML = players.map((p, i) => {
       const kd = p.deaths > 0 ? (p.kills / p.deaths).toFixed(2) : (p.kills > 0 ? p.kills.toFixed(2) : '0.00');
       const initial = p.username ? p.username.charAt(0).toUpperCase() : '?';
+      const avatarHtml = p.avatar_url
+        ? `<img src="${p.avatar_url}" alt="avatar" />`
+        : initial;
       return `<div class="top-player">
         <div class="rank ${classes[i]||''}">${medals[i]||(i+1)}</div>
-        <div class="avatar-small">${initial}</div>
+        <div class="avatar-small">${avatarHtml}</div>
         <div class="info" onclick="viewProfile('${p.id}')" style="cursor:pointer;">
           <div class="name">${p.username} ${p.isBanned ? '🚫' : ''}</div>
           <div class="id">ID: ${p.standoffId || 'Нет'}</div>
@@ -1854,6 +1901,97 @@
         ${isSuper ? `<button class="clear-btn" onclick="clearPlayerStats('${p.id}')"><i class="fas fa-trash-alt"></i> Очистить</button>` : ''}
       </div>`;
     }).join('');
+  }
+
+  // ============================================================
+  // РЕДАКТИРОВАНИЕ ПРОФИЛЯ
+  // ============================================================
+  function openEditProfileModal() {
+    const user = getCurrentUser();
+    if (!user) return;
+    document.getElementById('editUsername').value = user.username || '';
+    document.getElementById('editStandoffId').value = user.standoffId || '';
+    document.getElementById('editProfileModal').classList.add('active');
+  }
+
+  function closeEditProfileModal() {
+    document.getElementById('editProfileModal').classList.remove('active');
+  }
+
+  async function saveProfileChanges() {
+    const username = document.getElementById('editUsername').value.trim();
+    const standoffId = document.getElementById('editStandoffId').value.trim();
+    const fileInput = document.getElementById('editAvatar');
+    const file = fileInput.files[0];
+
+    if (!username) {
+      showToast('error', 'Ошибка', 'Никнейм не может быть пустым');
+      return;
+    }
+    if (!standoffId || !/^\d+$/.test(standoffId)) {
+      showToast('error', 'Ошибка', 'ID Standoff 2 должен содержать только цифры');
+      return;
+    }
+
+    const user = getCurrentUser();
+    if (!user) return;
+
+    const btn = document.getElementById('editProfileSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Сохранение...';
+
+    try {
+      let avatarUrl = user.avatar_url || null;
+
+      // Загружаем аватарку, если выбрана
+      if (file) {
+        const ext = file.name.split('.').pop();
+        const fileName = `${user.id}_${Date.now()}.${ext}`;
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const uploadResp = await fetch(`${STORAGE_URL}/avatars/${fileName}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          },
+          body: formData
+        });
+
+        if (!uploadResp.ok) {
+          throw new Error('Ошибка загрузки аватарки');
+        }
+
+        avatarUrl = `${STORAGE_URL}/avatars/${fileName}`;
+      }
+
+      // Обновляем данные пользователя
+      await apiRequest(`/users?id=eq.${user.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          username: username,
+          standoffId: standoffId,
+          avatar_url: avatarUrl
+        })
+      });
+
+      // Обновляем локального пользователя
+      const updatedUser = { ...user, username, standoffId, avatar_url: avatarUrl };
+      setCurrentUser(updatedUser);
+      localStorage.setItem('startup_user', JSON.stringify(updatedUser));
+
+      closeEditProfileModal();
+      showToast('success', 'Профиль обновлён', 'Данные успешно сохранены');
+      // Перезагружаем профиль
+      if (viewingUserId === user.id) fetchUserData(user.id);
+      fetchTopPlayers(); // обновляем аватарки в топе
+
+    } catch (e) {
+      showToast('error', 'Ошибка', e.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-save"></i> Сохранить';
+    }
   }
 
   // ============================================================
@@ -1874,6 +2012,8 @@
       const data = await apiRequest(`/users?id=eq.${targetId}`);
       if (data && data.length) {
         const user = data[0];
+        viewingUserData = user; // для графика
+
         if (user.isBanned) {
           const cur = getCurrentUser();
           if (cur && cur.id === user.id) {
@@ -1889,7 +2029,6 @@
         const isAdminUser = await isAdmin();
         const bannedBadge = document.getElementById('bannedBadge');
         const adminBadge = document.getElementById('adminBadge');
-        const premiumBadge = document.getElementById('premiumBadge');
         if (user.isBanned) {
           bannedBadge.style.display = 'inline-flex';
         } else {
@@ -1900,11 +2039,12 @@
         } else {
           adminBadge.style.display = 'none';
         }
-        premiumBadge.style.display = 'none'; // нет данных
 
         // Кнопки
         const banContainer = document.getElementById('banButtonContainer');
         const clearContainer = document.getElementById('clearStatsContainer');
+        const editContainer = document.getElementById('editProfileContainer');
+
         if (isSuperAdmin() && user.id !== getCurrentUser()?.id) {
           banContainer.innerHTML = user.isBanned
             ? `<button class="btn-ban" onclick="unbanUser('${user.id}')"><i class="fas fa-check"></i> Разбанить</button>`
@@ -1914,6 +2054,14 @@
           banContainer.innerHTML = '';
           clearContainer.innerHTML = '';
         }
+
+        // Кнопка "Редактировать" только для владельца профиля
+        if (getCurrentUser() && user.id === getCurrentUser().id) {
+          editContainer.innerHTML = `<button class="btn-edit-profile" onclick="openEditProfileModal()"><i class="fas fa-edit"></i> Редактировать</button>`;
+        } else {
+          editContainer.innerHTML = '';
+        }
+
         return user;
       }
     } catch (e) { console.error('fetchUserData error:', e); }
@@ -1922,13 +2070,18 @@
 
   function updateProfileData(user) {
     if (!user) return;
-    // Основные данные
     document.getElementById('profileName').textContent = user.username || 'Игрок';
     document.getElementById('profileStandoffId').textContent = user.standoffId || '123456789';
 
-    // Аватар
+    // Аватарка
+    const avatarContainer = document.getElementById('profileAvatar');
+    const initialsEl = document.getElementById('profileInitials');
     const initial = user.username ? user.username.charAt(0).toUpperCase() : '?';
-    document.getElementById('profileAvatar').innerHTML = `${initial} <span class="online-dot"></span>`;
+    if (user.avatar_url) {
+      avatarContainer.innerHTML = `<img src="${user.avatar_url}" alt="avatar" /><span class="online-dot"></span>`;
+    } else {
+      avatarContainer.innerHTML = `<span class="initials">${initial}</span><span class="online-dot"></span>`;
+    }
 
     // Статистика
     const matches = user.matches || 0;
@@ -1941,26 +2094,31 @@
     document.getElementById('profileDeaths').textContent = deaths;
     document.getElementById('profileKD').textContent = kd.toFixed(2);
 
-    // Настройки
     document.getElementById('settingsName').textContent = user.username || 'Nwole\'s_Player';
     document.getElementById('settingsStandoffId').textContent = user.standoffId || '123456789';
 
-    setTimeout(initKDChart, 100);
+    // Обновляем график KD с данными просматриваемого пользователя
+    updateKDChart(user.kdHistory);
   }
 
-  function initKDChart() {
+  function updateKDChart(kdHistory) {
     const canvas = document.getElementById('kdChart');
     if (!canvas) return;
-    if (kdChartInstance) kdChartInstance.destroy();
-    const user = getCurrentUser();
+    if (kdChartInstance) {
+      kdChartInstance.destroy();
+      kdChartInstance = null;
+    }
     const ctx = canvas.getContext('2d');
     const labels = ['Матч 1','Матч 2','Матч 3','Матч 4','Матч 5','Матч 6','Матч 7','Матч 8','Матч 9','Матч 10'];
-    const data = user?.kdHistory || [0,0,0,0,0,0,0,0,0,0];
+    const data = kdHistory || [0,0,0,0,0,0,0,0,0,0];
+    // Ограничим до 10 значений
+    const displayData = data.slice(-10);
+    const displayLabels = labels.slice(-displayData.length);
     kdChartInstance = new Chart(ctx, {
       type: 'line',
       data: {
-        labels,
-        datasets: [{ label: 'KD', data, borderColor: '#ff7b00', backgroundColor: 'rgba(255,123,0,0.1)', borderWidth: 2, pointBackgroundColor: '#ff7b00', pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, tension: 0.3, fill: true }]
+        labels: displayLabels,
+        datasets: [{ label: 'KD', data: displayData, borderColor: '#ff7b00', backgroundColor: 'rgba(255,123,0,0.1)', borderWidth: 2, pointBackgroundColor: '#ff7b00', pointBorderColor: '#fff', pointBorderWidth: 1, pointRadius: 3, tension: 0.3, fill: true }]
       },
       options: {
         responsive: true,
@@ -2077,6 +2235,9 @@
   document.getElementById('announceModal').addEventListener('click', function(e) {
     if (e.target === this) closeAnnounceModal();
   });
+  document.getElementById('editProfileModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditProfileModal();
+  });
 
   // ============================================================
   // ОБЪЯВЛЕНИЕ
@@ -2185,6 +2346,7 @@
     document.getElementById('addAdminBtn').addEventListener('click', addAdmin);
     document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
     document.getElementById('announceSubmitBtn').addEventListener('click', sendAnnouncement);
+    document.getElementById('editProfileSubmitBtn').addEventListener('click', saveProfileChanges);
 
     const submitBtn = document.getElementById('modalSubmitBtn');
     if (submitBtn) {
@@ -2209,6 +2371,7 @@
       if (e.key === 'Escape') {
         closeStatsModal();
         closeAnnounceModal();
+        closeEditProfileModal();
       }
     });
 

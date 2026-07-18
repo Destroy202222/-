@@ -1020,6 +1020,7 @@
 </head>
 <body data-theme="orange">
 
+<!-- Toast уведомления -->
 <div class="toast" id="toast">
     <div class="toast-title" id="toastTitle">Успешно!</div>
     <div class="toast-text" id="toastText">Действие выполнено</div>
@@ -1043,6 +1044,7 @@
     </div>
 </div>
 
+<!-- Страница авторизации -->
 <div class="auth-page" id="authPage">
     <div class="auth-container">
         <div class="auth-logo"><h1>⚡ Nwole's DM</h1><p>Deathmatch Standoff 2</p></div>
@@ -1065,6 +1067,7 @@
     </div>
 </div>
 
+<!-- Основной сайт -->
 <div class="main-content" id="mainSite">
 
     <header class="header visible" id="header">
@@ -1726,44 +1729,31 @@
 
     async function getNextDMNumber() {
         try {
-            // Пробуем получить данные из таблицы dm_counter
+            console.log('📊 Проверка таблицы dm_counter...');
             const data = await apiRequest('/dm_counter?id=eq.1');
-            
-            let nextNumber = 1;
+            console.log('📊 Данные:', data);
             
             if (data && data.length > 0) {
                 const current = data[0].count || 0;
-                nextNumber = current + 1;
-                
-                // Обновляем счётчик
+                const next = current + 1;
+                console.log(`📈 Текущий: ${current}, следующий: ${next}`);
                 await apiRequest('/dm_counter?id=eq.1', {
                     method: 'PATCH',
-                    body: JSON.stringify({ count: nextNumber })
+                    body: JSON.stringify({ count: next })
                 });
+                return next;
             } else {
-                // Если таблица пустая — создаём запись
-                await apiRequest('/dm_counter', {
-                    method: 'POST',
-                    body: JSON.stringify([{ id: 1, count: 1 }])
-                });
-                nextNumber = 1;
-            }
-            
-            return nextNumber;
-        } catch (error) {
-            console.error('Ошибка получения номера DM:', error);
-            // Если таблицы нет — создаём её прямо здесь
-            try {
-                // Пробуем создать таблицу через SQL (если есть права)
+                console.log('📊 Таблица пуста, создаём запись...');
                 await apiRequest('/dm_counter', {
                     method: 'POST',
                     body: JSON.stringify([{ id: 1, count: 1 }])
                 });
                 return 1;
-            } catch (e) {
-                showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера. Проверьте таблицу dm_counter в Supabase.');
-                return 0;
             }
+        } catch (error) {
+            console.error('❌ Ошибка:', error);
+            showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера. Проверьте таблицу dm_counter в Supabase.');
+            return 0;
         }
     }
 
@@ -1785,8 +1775,8 @@
 
         try {
             const user = getCurrentUser();
-            
             const dmNumber = await getNextDMNumber();
+            
             if (dmNumber === 0) {
                 return;
             }
@@ -1828,7 +1818,7 @@
             fetchServers();
             fetchSiteStats();
         } catch (error) {
-            console.error('Ошибка создания сервера:', error);
+            console.error('❌ Ошибка создания сервера:', error);
             showToast('error', 'Ошибка', error.message);
         }
     }

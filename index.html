@@ -7,14 +7,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    /* ===== КОРНЕВЫЕ ПЕРЕМЕННЫЕ ===== */
     :root {
       --primary: #ff7b00;
       --primary-hover: #ff9a33;
       --primary-glow: rgba(255,123,0,0.25);
-      --bg-main: #2a2a2a;
-      --bg-card: rgba(25,25,25,0.85);
-      --bg-input: rgba(30,30,30,0.8);
-      --border-color: rgba(255,255,255,0.12);
+      --bg-main: #1e1e2e;
+      --bg-card: rgba(30,30,46,0.85);
+      --bg-input: rgba(40,40,58,0.8);
+      --border-color: rgba(255,255,255,0.08);
       --text-primary: #f5f0e8;
       --text-secondary: #c8c0b8;
       --text-muted: #888080;
@@ -28,6 +29,7 @@
       --gold: #ffd700;
       --silver: #c0c0c0;
       --bronze: #cd7f32;
+      --avatar-gradient: linear-gradient(135deg, #ff7b00, #ffb347);
     }
     body[data-theme="red"] {
       --primary: #e03131;
@@ -36,6 +38,7 @@
       --gradient-start: #e03131;
       --gradient-end: #fa5252;
       --shadow-color: rgba(224,49,49,0.15);
+      --avatar-gradient: linear-gradient(135deg, #e03131, #fa5252);
     }
     body[data-theme="green"] {
       --primary: #2b8a3e;
@@ -44,6 +47,7 @@
       --gradient-start: #2b8a3e;
       --gradient-end: #40c057;
       --shadow-color: rgba(43,138,62,0.15);
+      --avatar-gradient: linear-gradient(135deg, #2b8a3e, #40c057);
     }
     body[data-theme="black"] {
       --primary: #ffffff;
@@ -52,35 +56,30 @@
       --gradient-start: #ffffff;
       --gradient-end: #888888;
       --shadow-color: rgba(255,255,255,0.1);
-      --bg-main: #1a1a1a;
+      --bg-main: #0d0d0d;
       --bg-card: rgba(20,20,20,0.85);
-      --border-color: rgba(255,255,255,0.08);
+      --border-color: rgba(255,255,255,0.06);
       --text-primary: #ffffff;
       --text-secondary: #aaaaaa;
       --text-muted: #666666;
-      --bg-input: rgba(10,10,10,0.8);
+      --avatar-gradient: linear-gradient(135deg, #ffffff, #888888);
     }
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
     body {
-      background: #7a7a7a;
+      background: var(--bg-main);
       color: var(--text-primary);
       min-height:100vh;
       transition: background .3s,color .3s;
       overflow-x:hidden;
       position:relative;
     }
-    body::before {
-      content:'';
-      position:fixed;
-      top:0;left:0;width:100%;height:100%;
-      background-image:linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px);
-      background-size:50px 50px;
-      pointer-events:none; z-index:0;
-    }
+    /* ===== УБРАЛИ КЛЕТКУ ===== */
+    body::before { display: none; }
     .stars { display:none !important; }
     .main-wrapper { position:relative; z-index:1; min-height:100vh; }
     .header {
-      background:transparent;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter:blur(12px);
       padding:.6rem 2rem;
       border-bottom:2px solid var(--primary);
       position:sticky; top:0; z-index:1000;
@@ -126,7 +125,7 @@
     .dropdown.active .dropdown-btn i.fa-chevron-down { transform:rotate(180deg); }
     .dropdown-content {
       display:none; position:absolute; right:0; top:110%;
-      min-width:200px; background:rgba(20,20,20,.92); backdrop-filter:blur(12px);
+      min-width:200px; background:rgba(20,20,30,.95); backdrop-filter:blur(12px);
       border-radius:16px; border:1px solid var(--border-color);
       box-shadow:0 20px 60px rgba(0,0,0,.8);
       overflow:hidden; animation:slideDown .3s ease;
@@ -372,15 +371,22 @@
       max-width:1300px; margin:0 auto 1.5rem; padding:0 2rem;
       display:flex; justify-content:flex-end; position:relative; z-index:2;
     }
+    /* ===== ОРАНЖЕВАЯ КНОПКА ОБЪЯВЛЕНИЯ ===== */
     .btn-announce-top {
-      background:linear-gradient(45deg,#7d2e7d,#9a3a9a); color:#ff6bff;
-      padding:.6rem 1.8rem; border-radius:40px; border:2px solid #ff6bff !important;
+      background:linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+      color: var(--bg-main);
+      padding:.6rem 1.8rem; border-radius:40px;
+      border:2px solid var(--primary) !important;
       font-weight:700; font-size:.95rem; cursor:pointer;
       display:inline-flex; align-items:center; gap:.6rem;
-      box-shadow:0 0 20px rgba(255,107,255,.15);
+      box-shadow:0 0 20px var(--primary-glow);
       transition:.3s;
     }
-    .btn-announce-top:hover { transform:scale(1.05); box-shadow:0 0 30px rgba(255,107,255,.3); background:linear-gradient(45deg,#9a3a9a,#b84ab8); }
+    .btn-announce-top:hover {
+      transform:scale(1.05);
+      box-shadow:0 0 30px var(--primary-glow);
+      background:linear-gradient(45deg, var(--primary-hover), var(--gradient-end));
+    }
     .admin-panel.visible { display:block; }
     .admin-panel h3 { color:var(--primary); margin-bottom:1.2rem; font-size:1.5rem; text-align:center; font-weight:800; }
     .admin-panel .form-group { margin-bottom:1.2rem; }
@@ -432,37 +438,136 @@
       font-weight:700;
     }
     .admin-tag .role-badge.super { background:#ffd700; color:#000; }
+
+    /* ===== СОВРЕМЕННЫЙ ДИЗАЙН ПРОФИЛЯ ===== */
     .profile-card {
-      background:var(--bg-card); backdrop-filter:blur(8px);
-      border-radius:24px; padding:2.5rem;
-      border:1px solid var(--border-color); max-width:900px; margin:0 auto;
+      background:var(--bg-card);
+      backdrop-filter:blur(12px);
+      border-radius:28px;
+      padding:2.5rem;
+      border:1px solid var(--border-color);
+      max-width:900px;
+      margin:0 auto;
       position:relative;
+      overflow:hidden;
+      box-shadow:0 20px 60px rgba(0,0,0,0.4);
     }
-    .profile-header { display:flex; align-items:center; gap:2rem; margin-bottom:2rem; flex-wrap:wrap; }
-    .profile-header .avatar { font-size:4rem; color:var(--primary); }
-    .profile-header .info h2 { font-size:1.8rem; font-weight:800; }
-    .profile-header .info .nickname { color:var(--primary); font-size:1.1rem; font-weight:700; }
-    .profile-header .info .standoff-id { color:var(--text-secondary); font-size:.85rem; margin-top:.3rem; font-weight:500; }
-    .profile-header .info .standoff-id span { color:var(--primary); font-weight:700; }
-    .profile-details {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1rem; margin:2rem 0;
+    .profile-card::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0;
+      height:4px;
+      background:linear-gradient(90deg,var(--gradient-start),var(--gradient-end));
     }
-    .profile-details .detail-item {
-      background:var(--bg-input); padding:1rem; border-radius:12px; text-align:center;
+    .profile-header {
+      display:flex;
+      align-items:center;
+      gap:2rem;
+      margin-bottom:2.5rem;
+      flex-wrap:wrap;
     }
-    .profile-details .detail-item .number { font-size:1.6rem; font-weight:800; color:var(--primary); }
-    .profile-details .detail-item .label { color:var(--text-secondary); font-size:.8rem; margin-top:.2rem; font-weight:600; }
-    .profile-details .detail-item .kd-value {
-      font-size:1.8rem; font-weight:900;
+    /* Аватарка из CSS */
+    .profile-avatar {
+      width:100px;
+      height:100px;
+      border-radius:50%;
+      background:var(--avatar-gradient);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:2.8rem;
+      font-weight:900;
+      color:var(--bg-main);
+      box-shadow:0 8px 30px rgba(255,123,0,0.3);
+      border:3px solid var(--primary);
+      flex-shrink:0;
+      transition:transform .3s;
+    }
+    .profile-avatar:hover { transform:scale(1.05); }
+    .profile-info {
+      flex:1;
+    }
+    .profile-info h2 {
+      font-size:2rem;
+      font-weight:800;
+      margin-bottom:.2rem;
+      display:flex;
+      align-items:center;
+      gap:.8rem;
+      flex-wrap:wrap;
+    }
+    .profile-info .nickname {
+      color:var(--primary);
+      font-size:1.1rem;
+      font-weight:600;
+    }
+    .profile-info .standoff-id {
+      color:var(--text-secondary);
+      font-size:.9rem;
+      font-weight:500;
+      margin-top:.3rem;
+    }
+    .profile-info .standoff-id span {
+      color:var(--primary);
+      font-weight:700;
+    }
+    .profile-stats-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:1.2rem;
+      margin:2rem 0;
+    }
+    .profile-stat-item {
+      background:var(--bg-input);
+      padding:1.2rem 1rem;
+      border-radius:16px;
+      text-align:center;
+      border:1px solid var(--border-color);
+      transition:.3s;
+    }
+    .profile-stat-item:hover {
+      border-color:var(--primary);
+      transform:translateY(-2px);
+    }
+    .profile-stat-item .number {
+      font-size:1.8rem;
+      font-weight:800;
       background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .profile-stat-item .label {
+      color:var(--text-secondary);
+      font-size:.8rem;
+      font-weight:600;
+      margin-top:.2rem;
+    }
+    .profile-stat-item .kd-value {
+      font-size:2rem;
+      font-weight:900;
+      background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .profile-actions {
+      display:flex;
+      gap:.8rem;
+      flex-wrap:wrap;
+      margin-top:1.5rem;
     }
     .btn-ban {
-      background:#ff6b6b; color:#fff; border:none; padding:.4rem 1.2rem; border-radius:40px;
+      background:#ff6b6b; color:#fff; border:none; padding:.5rem 1.4rem; border-radius:40px;
       font-weight:700; cursor:pointer; transition:.3s; font-size:.8rem;
-      margin-top:1rem; display:inline-block;
+      display:inline-flex; align-items:center; gap:.5rem;
     }
     .btn-ban:hover { background:#ff4444; transform:scale(1.05); box-shadow:0 0 20px rgba(255,0,0,.3); }
+    .btn-clear-stats {
+      background:#dc3545; color:#fff; border:none; padding:.5rem 1.4rem; border-radius:40px;
+      font-weight:700; cursor:pointer; transition:.3s; font-size:.8rem;
+      display:inline-flex; align-items:center; gap:.5rem;
+    }
+    .btn-clear-stats:hover { background:#c82333; transform:scale(1.05); box-shadow:0 0 20px rgba(220,53,69,.3); }
+
     .chart-container h3 { color:var(--text-primary); margin-bottom:1rem; font-size:1.1rem; font-weight:700; }
     .chart-container canvas { max-height:250px; }
     .match-history-section {
@@ -512,14 +617,20 @@
       display:flex; align-items:center; gap:1rem;
       padding:.8rem 1.2rem; background:var(--bg-card); backdrop-filter:blur(8px);
       border-radius:16px; margin-bottom:.6rem;
-      border:1px solid var(--border-color); transition:.3s; cursor:pointer;
+      border:1px solid var(--border-color); transition:.3s; cursor:default;
     }
     .top-player:hover { border-color:var(--primary); transform:translateX(5px); }
     .top-player .rank { font-size:1.3rem; font-weight:800; color:var(--primary); min-width:40px; }
     .top-player .rank.gold { color:#ffd700; }
     .top-player .rank.silver { color:#c0c0c0; }
     .top-player .rank.bronze { color:#cd7f32; }
-    .top-player .avatar-small { font-size:2rem; color:var(--primary); }
+    .top-player .avatar-small {
+      width:40px; height:40px; border-radius:50%;
+      background:var(--avatar-gradient);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; font-weight:700; color:var(--bg-main);
+      flex-shrink:0;
+    }
     .top-player .info { flex:1; }
     .top-player .info .name { font-weight:700; font-size:1rem; }
     .top-player .info .id { color:var(--text-secondary); font-size:.75rem; font-weight:500; }
@@ -529,6 +640,13 @@
       background:var(--primary-glow); color:var(--primary);
       font-weight:700; min-width:45px; text-align:center; white-space:nowrap;
     }
+    .top-player .clear-btn {
+      background:#dc3545; color:#fff; border:none; padding:.2rem .8rem;
+      border-radius:20px; font-weight:700; font-size:.7rem;
+      cursor:pointer; transition:.3s; display:inline-flex; align-items:center; gap:.3rem;
+    }
+    .top-player .clear-btn:hover { background:#c82333; transform:scale(1.05); }
+
     .shop-grid {
       display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:2rem; max-width:400px; margin:0 auto;
     }
@@ -577,7 +695,7 @@
     }
     .modal-overlay.active { display:flex; }
     .modal {
-      background:rgba(20,20,20,.92); backdrop-filter:blur(12px);
+      background:rgba(20,20,30,.95); backdrop-filter:blur(12px);
       border-radius:24px; padding:2.5rem; max-width:420px; width:90%;
       border:1px solid var(--border-color); box-shadow:0 20px 60px rgba(0,0,0,.9);
       animation:fadeIn .3s ease;
@@ -625,7 +743,7 @@
     }
     .modal .btn-cancel-modal:hover { border-color:var(--primary); color:var(--primary); }
     .footer {
-      background:rgba(20,20,20,.7); backdrop-filter:blur(8px);
+      background:rgba(0,0,0,0.6); backdrop-filter:blur(8px);
       border-top:1px solid var(--border-color); padding:2rem; text-align:center;
       color:var(--text-muted); margin-top:3rem; position:relative; z-index:2;
     }
@@ -635,7 +753,7 @@
     .hidden { display:none !important; }
     .toast {
       position:fixed; bottom:2rem; right:2rem;
-      background:rgba(20,20,20,.92); backdrop-filter:blur(12px);
+      background:rgba(20,20,30,.95); backdrop-filter:blur(12px);
       border:1px solid var(--border-color); border-radius:16px;
       padding:1rem 1.5rem; box-shadow:0 20px 60px rgba(0,0,0,.8);
       transform:translateY(100px); opacity:0;
@@ -657,7 +775,7 @@
       .btn-connect { width:100%; justify-content:center; font-size:.8rem; }
       .servers-grid { grid-template-columns:1fr; }
       .profile-header { flex-direction:column; text-align:center; }
-      .profile-details { grid-template-columns:1fr 1fr; }
+      .profile-stats-grid { grid-template-columns:1fr 1fr; }
       .top-player { flex-wrap:wrap; }
       .settings-card .setting-row { flex-direction:column; align-items:flex-start; }
       .settings-card .setting-row select { width:100%; }
@@ -677,12 +795,13 @@
       .time-options button { padding:.5rem 1rem; font-size:.85rem; min-width:70px; }
       .announce-top { justify-content:center; }
       .btn-announce-top { width:100%; justify-content:center; }
+      .profile-avatar { width:80px; height:80px; font-size:2rem; }
     }
     @media (max-width:500px) {
       .stats-grid { grid-template-columns:1fr 1fr; }
       .info-grid { grid-template-columns:1fr; }
       .page-content .page-title { font-size:1.8rem; }
-      .profile-details { grid-template-columns:1fr; }
+      .profile-stats-grid { grid-template-columns:1fr; }
       .top-player .rank { min-width:30px; font-size:1rem; }
       .shop-grid { grid-template-columns:1fr; }
       .prize-amount { font-size:1.3rem; }
@@ -691,11 +810,13 @@
       .highlight-card h2 { font-size:1.4rem; }
       .highlight-card p { font-size:.95rem; }
       .match-item .match-left { flex-direction:column; align-items:flex-start; gap:.3rem; }
+      .profile-avatar { width:70px; height:70px; font-size:1.6rem; }
     }
   </style>
 </head>
 <body data-theme="orange">
 
+<!-- ===== TOAST ===== -->
 <div class="toast" id="toast">
   <div class="toast-title" id="toastTitle">Успешно!</div>
   <div class="toast-text" id="toastText">Действие выполнено</div>
@@ -853,19 +974,23 @@
       <p class="sub-title">Информация о вашем аккаунте</p>
       <div class="profile-card" id="profileCard">
         <div class="profile-header">
-          <div class="avatar"><i class="fas fa-user-circle"></i></div>
-          <div class="info">
+          <div class="profile-avatar" id="profileAvatar">N</div>
+          <div class="profile-info">
             <h2 id="profileName">Игрок</h2>
             <div class="nickname" id="profileNickname">@Nwole's_Player</div>
             <div class="standoff-id">🔫 ID Standoff 2: <span id="profileStandoffId">123456789</span></div>
-            <div id="banButtonContainer"></div>
           </div>
         </div>
-        <div class="profile-details">
-          <div class="detail-item"><div class="number" id="profileMatches">0</div><div class="label">Сыграно матчей</div></div>
-          <div class="detail-item"><div class="kd-value" id="profileKD">0.00</div><div class="label">KD</div></div>
-          <div class="detail-item"><div class="number" id="profileKills">0</div><div class="label">Убийств</div></div>
-          <div class="detail-item"><div class="number" id="profileDeaths">0</div><div class="label">Смертей</div></div>
+        <div class="profile-stats-grid" id="profileStatsGrid">
+          <div class="profile-stat-item"><div class="number" id="profileMatches">0</div><div class="label">Сыграно матчей</div></div>
+          <div class="profile-stat-item"><div class="kd-value" id="profileKD">0.00</div><div class="label">KD</div></div>
+          <div class="profile-stat-item"><div class="number" id="profileKills">0</div><div class="label">Убийств</div></div>
+          <div class="profile-stat-item"><div class="number" id="profileDeaths">0</div><div class="label">Смертей</div></div>
+        </div>
+        <div class="profile-actions" id="profileActions">
+          <div id="banButtonContainer"></div>
+          <!-- Кнопка очистки статистики для суперадмина -->
+          <div id="clearStatsContainer"></div>
         </div>
         <div class="chart-container"><h3><i class="fas fa-chart-line" style="color:var(--primary);"></i> Динамика KD (последние 10 матчей)</h3><canvas id="kdChart"></canvas></div>
         <div class="match-history-section">
@@ -937,10 +1062,10 @@
   let selectedTime = null;
 
   // Данные для модалки статистики
-  let statsTargetUserId = null;      // ID пользователя (или имя для fallback)
-  let statsTargetUsername = null;   // имя пользователя
-  let statsTargetServerId = null;   // ID сервера
-  let statsTargetMap = null;        // карта
+  let statsTargetUserId = null;
+  let statsTargetUsername = null;
+  let statsTargetServerId = null;
+  let statsTargetMap = null;
 
   // ============================================================
   // API
@@ -1164,6 +1289,37 @@
   }
 
   // ============================================================
+  // ОЧИСТКА СТАТИСТИКИ (для суперадмина)
+  // ============================================================
+  async function clearPlayerStats(userId) {
+    if (!isSuperAdmin()) return showToast('error', 'Доступ запрещен', 'Только главный админ');
+    if (!confirm('Вы уверены, что хотите очистить всю статистику этого игрока?')) return;
+    try {
+      // Сбрасываем поля пользователя
+      await apiRequest(`/users?id=eq.${userId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          kills: 0,
+          deaths: 0,
+          matches: 0,
+          serverMatches: 0,
+          kdHistory: [0,0,0,0,0,0,0,0,0,0]
+        })
+      });
+      // Удаляем все записи истории матчей
+      await apiRequest(`/match_history?user_id=eq.${userId}`, { method: 'DELETE' });
+
+      showToast('success', 'Статистика очищена', 'Все данные игрока сброшены');
+      // Обновляем текущий просмотр
+      if (viewingUserId === userId) fetchUserData(userId);
+      fetchTopPlayers();
+      fetchSiteStats();
+    } catch (e) {
+      showToast('error', 'Ошибка', e.message);
+    }
+  }
+
+  // ============================================================
   // АДМИНЫ
   // ============================================================
   async function addAdmin() {
@@ -1215,7 +1371,7 @@
   }
 
   // ============================================================
-  // ОЧЕРЕДИ (храним объекты с username и userId)
+  // ОЧЕРЕДИ
   // ============================================================
   async function addToPending(serverId, username, userId) {
     try {
@@ -1223,7 +1379,6 @@
       if (!data || !data.length) throw new Error('Сервер не найден');
       const server = data[0];
       let pending = server.pending || [];
-      // Проверяем по userId
       const exists = pending.some(p => {
         if (typeof p === 'string') return p === username;
         return p.userId === userId;
@@ -1277,7 +1432,6 @@
     statsTargetMap = null;
   }
 
-  // ===== ОСНОВНАЯ ФУНКЦИЯ ЗАЧИСЛЕНИЯ (с fallback-поиском) =====
   async function submitStats() {
     console.log('🚀 submitStats вызвана!');
     const kills = parseInt(document.getElementById('modalKills').value) || 0;
@@ -1297,15 +1451,13 @@
 
     try {
       let user = null;
-
-      // 1. Пытаемся найти по ID (если statsTargetUserId похож на ID)
+      // Пытаемся найти по ID
       if (statsTargetUserId && !isNaN(parseInt(statsTargetUserId)) && statsTargetUserId.length > 5) {
         console.log('🔍 Ищем по ID:', statsTargetUserId);
         const users = await apiRequest(`/users?id=eq.${statsTargetUserId}`);
         if (users && users.length) user = users[0];
       }
-
-      // 2. Если не найден, ищем по имени
+      // Если не найден, ищем по имени
       if (!user && statsTargetUsername) {
         console.log('🔍 Ищем по имени:', statsTargetUsername);
         const users = await apiRequest(`/users?username=eq.${encodeURIComponent(statsTargetUsername)}`);
@@ -1321,7 +1473,6 @@
 
       console.log('👤 Найден пользователь:', user);
 
-      // 3. Вычисляем новые значения
       const newKills = (user.kills || 0) + kills;
       const newDeaths = (user.deaths || 0) + deaths;
       const newMatches = (user.matches || 0) + 1;
@@ -1333,8 +1484,6 @@
       kdHistory.push(matchKD);
       if (kdHistory.length > 10) kdHistory = kdHistory.slice(-10);
 
-      // 4. Обновляем пользователя
-      console.log('📝 Обновляем пользователя...');
       await apiRequest(`/users?id=eq.${user.id}`, {
         method: 'PATCH',
         body: JSON.stringify({
@@ -1346,8 +1495,6 @@
         })
       });
 
-      // 5. Сохраняем историю матча
-      console.log('📝 Сохраняем историю матча...');
       const matchRecord = {
         id: Date.now() + Math.floor(Math.random() * 1000),
         user_id: user.id,
@@ -1365,24 +1512,19 @@
         body: JSON.stringify([matchRecord])
       });
 
-      // 6. Удаляем из очереди
       if (statsTargetServerId) {
-        console.log('🗑️ Удаляем из очереди...');
         await removeFromPending(statsTargetServerId, user.username);
       }
 
-      // 7. Закрываем модалку и показываем успех
       closeStatsModal();
       showToast('success', 'Статистика обновлена', `Игроку ${user.username} зачислен матч на карте ${map}`);
 
-      // 8. Обновляем все данные
       fetchServers();
       fetchSiteStats();
       fetchTopPlayers();
       if (viewingUserId === user.id) fetchUserData(user.id);
 
       console.log('✅ Готово!');
-
     } catch (error) {
       console.error('❌ Ошибка:', error);
       showToast('error', 'Ошибка', error.message || 'Не удалось зачислить статистику');
@@ -1521,10 +1663,8 @@
         ? `<div class="pending-players-section visible">
             <h4><i class="fas fa-users"></i> Очередь (${pending.length})</h4>
             ${pending.map(p => {
-              // Если p — объект с username и userId
               const username = typeof p === 'string' ? p : p.username;
               const userId = typeof p === 'string' ? null : p.userId;
-              // Передаём userId, если есть, иначе — имя (для fallback)
               const idForStats = userId || username;
               return `<div class="pending-player">
                 <span class="username"><i class="fas fa-user"></i> ${username}</span>
@@ -1562,9 +1702,6 @@
     }
   }
 
-  // ============================================================
-  // ПОДКЛЮЧЕНИЕ К СЕРВЕРУ
-  // ============================================================
   async function joinServer(serverId, lobby, username) {
     window.open(lobby, '_blank');
     if (username) {
@@ -1614,7 +1751,7 @@
   }
 
   // ============================================================
-  // ТОП ИГРОКОВ
+  // ТОП ИГРОКОВ (с кнопкой очистки для суперадмина)
   // ============================================================
   async function fetchTopPlayers() {
     try {
@@ -1634,17 +1771,20 @@
     }
     const medals = ['🥇','🥈','🥉','4','5','6','7','8','9','10'];
     const classes = ['gold','silver','bronze','','','','','','',''];
+    const isSuper = isSuperAdmin();
     container.innerHTML = players.map((p, i) => {
       const kd = p.deaths > 0 ? (p.kills / p.deaths).toFixed(2) : (p.kills > 0 ? p.kills.toFixed(2) : '0.00');
-      return `<div class="top-player" onclick="viewProfile('${p.id}')">
+      const initial = p.username ? p.username.charAt(0).toUpperCase() : '?';
+      return `<div class="top-player">
         <div class="rank ${classes[i]||''}">${medals[i]||(i+1)}</div>
-        <div class="avatar-small"><i class="fas fa-user-circle"></i></div>
-        <div class="info">
+        <div class="avatar-small">${initial}</div>
+        <div class="info" onclick="viewProfile('${p.id}')" style="cursor:pointer;">
           <div class="name">${p.username} ${p.isBanned ? '🚫' : ''}</div>
           <div class="id">ID: ${p.standoffId || 'Нет'}</div>
         </div>
         <span class="kd-badge">KD: ${kd}</span>
         <div class="server-matches">🎮 ${p.serverMatches || 0} игр</div>
+        ${isSuper ? `<button class="clear-btn" onclick="clearPlayerStats('${p.id}')"><i class="fas fa-trash-alt"></i> Очистить</button>` : ''}
       </div>`;
     }).join('');
   }
@@ -1677,13 +1817,17 @@
         }
         updateProfileData(user);
         await fetchMatchHistory(user.id);
-        const container = document.getElementById('banButtonContainer');
+        // Кнопки действий
+        const banContainer = document.getElementById('banButtonContainer');
+        const clearContainer = document.getElementById('clearStatsContainer');
         if (isSuperAdmin() && user.id !== getCurrentUser()?.id) {
-          container.innerHTML = user.isBanned
-            ? `<button class="btn-ban" style="background:#2e7d32;" onclick="unbanUser('${user.id}')"><i class="fas fa-check"></i> Разбанить</button>`
+          banContainer.innerHTML = user.isBanned
+            ? `<button class="btn-ban" onclick="unbanUser('${user.id}')"><i class="fas fa-check"></i> Разбанить</button>`
             : `<button class="btn-ban" onclick="banUser('${user.id}')"><i class="fas fa-ban"></i> Забанить</button>`;
+          clearContainer.innerHTML = `<button class="btn-clear-stats" onclick="clearPlayerStats('${user.id}')"><i class="fas fa-trash-alt"></i> Очистить статистику</button>`;
         } else {
-          container.innerHTML = '';
+          banContainer.innerHTML = '';
+          clearContainer.innerHTML = '';
         }
         return user;
       }
@@ -1703,6 +1847,11 @@
     document.getElementById('profileDeaths').textContent = user.deaths || 0;
     document.getElementById('settingsName').textContent = user.username || 'Nwole\'s_Player';
     document.getElementById('settingsStandoffId').textContent = user.standoffId || '123456789';
+
+    // Обновляем аватарку
+    const initial = user.username ? user.username.charAt(0).toUpperCase() : '?';
+    document.getElementById('profileAvatar').textContent = initial;
+
     setTimeout(initKDChart, 100);
   }
 

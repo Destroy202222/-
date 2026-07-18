@@ -28,6 +28,9 @@
             --gold: #ffd700;
             --silver: #c0c0c0;
             --bronze: #cd7f32;
+            --match-win: #2e7d32;
+            --match-lose: #7d2e2e;
+            --match-draw: #7d7d2e;
         }
         body[data-theme="red"] {
             --primary: #e03131;
@@ -71,7 +74,6 @@
             position: relative;
         }
 
-        /* ===== ФОН В КЛЕТОЧКУ (серый + белая сетка) ===== */
         body::before {
             content: '';
             position: fixed;
@@ -95,7 +97,6 @@
             min-height: 100vh;
         }
 
-        /* ===== НАВИГАЦИЯ — ПОЛНОСТЬЮ ПРОЗРАЧНАЯ, ТОЛЬКО ОРАНЖЕВАЯ ОБВОДКА ===== */
         .header {
             background: transparent;
             backdrop-filter: none;
@@ -108,7 +109,6 @@
             display: none;
             transition: border-color 0.3s;
         }
-        /* Убираем клетку с навигации */
         .header::before { display: none; }
         .header > * { position: relative; z-index: 1; }
         .header.visible { display: block; }
@@ -243,7 +243,7 @@
             border-radius: 24px;
             padding: 2.5rem;
             border: 1px solid var(--border-color);
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             position: relative;
         }
@@ -548,7 +548,6 @@
         .main-content { display: none; }
         .main-content.visible { display: block; }
 
-        /* ===== ГЕРОЙ — УБРАН ДУБЛИРУЮЩИЙСЯ ТЕКСТ ===== */
         .hero { max-width: 1300px; margin: 2rem auto 1rem; padding: 0 2rem; text-align: center; position: relative; z-index: 2; }
         .hero .tag {
             display: inline-block;
@@ -562,9 +561,46 @@
             margin-bottom: 1rem;
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
-        /* Убираем дублирующий текст в hero */
         .hero h2 { display: none; }
         .hero p { display: none; }
+
+        .highlight-block {
+            max-width: 1300px;
+            margin: 0.5rem auto 1.5rem;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        .highlight-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 2.5rem 3rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: 0.3s;
+        }
+        .highlight-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px var(--shadow-color);
+        }
+        .highlight-card h2 {
+            font-size: 2.4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.8rem;
+        }
+        .highlight-card p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-weight: 500;
+            max-width: 700px;
+            margin: 0 auto;
+        }
 
         .stats-grid {
             max-width: 1300px;
@@ -619,45 +655,6 @@
         }
         .info-card:hover { border-color: var(--primary); transform: translateY(-5px); }
         .info-card .icon { font-size: 2.2rem; color: var(--primary); margin-bottom: 0.8rem; }
-
-        /* ===== БЛОК С ИНФОРМАЦИЕЙ (оставлен) ===== */
-        .highlight-block {
-            max-width: 1300px;
-            margin: 0.5rem auto 1.5rem;
-            padding: 0 2rem;
-            position: relative;
-            z-index: 2;
-        }
-        .highlight-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(8px);
-            border-radius: 20px;
-            padding: 2.5rem 3rem;
-            border: 1px solid var(--border-color);
-            text-align: center;
-            transition: 0.3s;
-        }
-        .highlight-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 40px var(--shadow-color);
-        }
-        .highlight-card h2 {
-            font-size: 2.4rem;
-            font-weight: 900;
-            background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.8rem;
-        }
-        .highlight-card p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            font-weight: 500;
-            max-width: 700px;
-            margin: 0 auto;
-        }
 
         .page-content {
             display: none;
@@ -940,6 +937,138 @@
         .chart-container h3 { color: var(--text-primary); margin-bottom: 1rem; font-size: 1.1rem; font-weight: 700; }
         .chart-container canvas { max-height: 250px; }
 
+        /* ===== ИСТОРИЯ МАТЧЕЙ ===== */
+        .match-history-section {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+        .match-history-section h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .match-history-section h3 i {
+            color: var(--primary);
+        }
+        .match-history-section .match-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .match-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.3rem;
+        }
+        .match-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .match-list::-webkit-scrollbar-track {
+            background: var(--bg-input);
+            border-radius: 4px;
+        }
+        .match-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .match-item {
+            background: var(--bg-input);
+            border-radius: 14px;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.3s;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .match-item:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+        .match-item .match-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .match-item .match-number {
+            font-weight: 700;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            min-width: 50px;
+        }
+        .match-item .match-map {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+        .match-item .match-map i {
+            margin-right: 0.3rem;
+        }
+        .match-item .match-date {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .match-item .match-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .match-item .match-stats .stat-badge {
+            font-size: 0.8rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            background: var(--bg-card);
+            font-weight: 600;
+        }
+        .match-item .match-stats .stat-badge.kills {
+            color: #51cf66;
+        }
+        .match-item .match-stats .stat-badge.deaths {
+            color: #ff6b6b;
+        }
+        .match-item .match-stats .stat-badge.kd {
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .match-item .match-stats .stat-badge.kd.good {
+            color: #51cf66;
+        }
+        .match-item .match-stats .stat-badge.kd.bad {
+            color: #ff6b6b;
+        }
+        .match-item .match-stats .stat-badge.kd.ok {
+            color: #ffd93d;
+        }
+
+        .match-empty {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+        .match-empty i {
+            font-size: 2.5rem;
+            color: var(--border-color);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .match-empty p {
+            font-weight: 500;
+        }
+
         .top-players { max-width: 800px; margin: 0 auto; }
         .top-player:hover { border-color: var(--primary); transform: translateX(5px); }
         .top-player .rank { font-size: 1.3rem; font-weight: 800; color: var(--primary); min-width: 40px; }
@@ -1136,6 +1265,8 @@
             .prize-total { font-size: 1.3rem; }
             .highlight-card { padding: 1.5rem; }
             .highlight-card h2 { font-size: 1.8rem; }
+            .match-item { flex-direction: column; align-items: flex-start; }
+            .match-item .match-stats { width: 100%; justify-content: flex-start; }
         }
         @media (max-width: 500px) {
             .stats-grid { grid-template-columns: 1fr 1fr; }
@@ -1149,6 +1280,7 @@
             .highlight-card { padding: 1rem; }
             .highlight-card h2 { font-size: 1.4rem; }
             .highlight-card p { font-size: 0.95rem; }
+            .match-item .match-left { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
         }
     </style>
 </head>
@@ -1170,6 +1302,10 @@
         <div class="form-group">
             <label>Количество смертей</label>
             <input type="number" id="modalDeaths" value="0" min="0" />
+        </div>
+        <div class="form-group">
+            <label>Карта</label>
+            <input type="text" id="modalMap" placeholder="Например: Mansion" />
         </div>
         <button class="btn-submit-modal" id="modalSubmitBtn"><i class="fas fa-check"></i> Зачислить</button>
         <button class="btn-cancel-modal" onclick="closeStatsModal()"><i class="fas fa-times"></i> Отмена</button>
@@ -1227,12 +1363,10 @@
     </header>
 
     <div id="mainContent">
-        <!-- ===== ТЕГ #1 ===== -->
         <section class="hero">
             <div class="tag"><i class="fas fa-bolt"></i> #1 Deathmatch Standoff 2</div>
         </section>
 
-        <!-- ===== БЛОК С ИНФОРМАЦИЕЙ (ОСТАВЛЕН) ===== -->
         <div class="highlight-block">
             <div class="highlight-card">
                 <h2>Nwole's Deathmatch Arena</h2>
@@ -1326,6 +1460,18 @@
                 <div class="detail-item"><div class="number" id="profileDeaths">0</div><div class="label">Смертей</div></div>
             </div>
             <div class="chart-container"><h3><i class="fas fa-chart-line" style="color: var(--primary);"></i> Динамика KD (последние 10 матчей)</h3><canvas id="kdChart"></canvas></div>
+
+            <!-- ===== ИСТОРИЯ МАТЧЕЙ ===== -->
+            <div class="match-history-section">
+                <h3><i class="fas fa-history"></i> История матчей <span class="match-count" id="matchCount">(0)</span></h3>
+                <div class="match-list" id="matchList">
+                    <div class="match-empty">
+                        <i class="fas fa-gamepad"></i>
+                        <p>Нет сыгранных матчей</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="back-btn" style="margin-top: 2rem;"><button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button></div>
         </div>
     </div>
@@ -1392,6 +1538,7 @@
     let viewingUserId = null;
     let modalTargetUser = null;
     let modalTargetServer = null;
+    let modalTargetMap = null;
 
     // ====================================================
     // ===== API ЗАПРОСЫ =====
@@ -1443,7 +1590,7 @@
     }
 
     // ====================================================
-    // ===== СОЗДАНИЕ КАРТИНКИ + ТЕКСТ ДЛЯ TELEGRAM =====
+    // ===== СОЗДАНИЕ КАРТИНКИ ДЛЯ TELEGRAM =====
     // ====================================================
 
     function createDmImage(dmNumber, host, mode, map) {
@@ -1900,7 +2047,7 @@
     }
 
     // ====================================================
-    // ===== СТАТИСТИКА (MODAL) =====
+    // ===== СТАТИСТИКА С ИСТОРИЕЙ МАТЧЕЙ =====
     // ====================================================
 
     function openStatsModal(username, userId, serverId) {
@@ -1909,6 +2056,7 @@
         document.getElementById('modalPlayerName').textContent = username;
         document.getElementById('modalKills').value = 0;
         document.getElementById('modalDeaths').value = 0;
+        document.getElementById('modalMap').value = '';
         document.getElementById('statsModal').classList.add('active');
     }
 
@@ -1921,6 +2069,7 @@
     async function submitStats() {
         const kills = parseInt(document.getElementById('modalKills').value) || 0;
         const deaths = parseInt(document.getElementById('modalDeaths').value) || 0;
+        const map = document.getElementById('modalMap').value.trim() || 'Неизвестная карта';
         
         if (!modalTargetUser) {
             showToast('error', 'Ошибка', 'Пользователь не найден');
@@ -1928,6 +2077,7 @@
         }
 
         try {
+            // Находим пользователя по username
             const userData = await apiRequest(`/users?username=eq.${encodeURIComponent(modalTargetUser)}`);
             if (!userData || userData.length === 0) {
                 showToast('error', 'Ошибка', 'Пользователь не найден');
@@ -1941,6 +2091,7 @@
             const newServerMatches = (user.serverMatches || 0) + 1;
             
             const matchKD = deaths > 0 ? (kills / deaths) : kills;
+            const roundedKD = Math.round(matchKD * 100) / 100;
             
             let kdHistory = user.kdHistory || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             kdHistory.push(matchKD);
@@ -1948,6 +2099,7 @@
                 kdHistory = kdHistory.slice(-10);
             }
             
+            // Обновляем пользователя
             await apiRequest(`/users?id=eq.${user.id}`, {
                 method: 'PATCH',
                 body: JSON.stringify({
@@ -1958,23 +2110,103 @@
                     kdHistory: kdHistory
                 })
             });
+
+            // ===== СОХРАНЯЕМ ИСТОРИЮ МАТЧА =====
+            const matchRecord = {
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                user_id: user.id,
+                username: user.username,
+                map: map,
+                kills: kills,
+                deaths: deaths,
+                kd: roundedKD,
+                match_date: new Date().toISOString(),
+                server_name: modalTargetServer ? `DM #${modalTargetServer}` : 'DM Сервер',
+                created_at: new Date().toISOString()
+            };
+
+            await apiRequest('/match_history', {
+                method: 'POST',
+                body: JSON.stringify([matchRecord])
+            });
             
+            // Удаляем из очереди если есть
             if (modalTargetServer) {
                 await removeFromPending(modalTargetServer, user.username);
             }
             
             closeStatsModal();
-            showToast('success', 'Статистика обновлена', `Игроку ${user.username} зачислен матч`);
+            showToast('success', 'Статистика обновлена', `Игроку ${user.username} зачислен матч на карте ${map}`);
             
             fetchServers();
             fetchSiteStats();
             fetchTopPlayers();
+            
+            // Если смотрим профиль этого пользователя — обновляем
             if (viewingUserId === user.id) {
                 fetchUserData(user.id);
             }
         } catch (error) {
             showToast('error', 'Ошибка', error.message);
         }
+    }
+
+    // ====================================================
+    // ===== ЗАГРУЗКА ИСТОРИИ МАТЧЕЙ =====
+    // ====================================================
+
+    async function fetchMatchHistory(userId) {
+        try {
+            const data = await apiRequest(`/match_history?user_id=eq.${userId}&order=match_date.desc&limit=50`);
+            renderMatchHistory(data || []);
+            return data;
+        } catch (error) {
+            console.error('Error fetching match history:', error);
+            return [];
+        }
+    }
+
+    function renderMatchHistory(matches) {
+        const container = document.getElementById('matchList');
+        const countEl = document.getElementById('matchCount');
+        
+        countEl.textContent = `(${matches.length})`;
+
+        if (!matches || matches.length === 0) {
+            container.innerHTML = `
+                <div class="match-empty">
+                    <i class="fas fa-gamepad"></i>
+                    <p>Нет сыгранных матчей</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = matches.map((match, index) => {
+            const totalMatches = matches.length;
+            const matchNumber = totalMatches - index;
+            const kdClass = match.kd >= 2.0 ? 'good' : (match.kd >= 1.0 ? 'ok' : 'bad');
+            const date = new Date(match.match_date || match.created_at);
+            const formattedDate = date.toLocaleDateString('ru-RU', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+
+            return `
+                <div class="match-item">
+                    <div class="match-left">
+                        <span class="match-number">#${matchNumber}</span>
+                        <span class="match-map"><i class="fas fa-map"></i> ${match.map || 'Неизвестная карта'}</span>
+                        <span class="match-date"><i class="far fa-clock"></i> ${formattedDate}</span>
+                    </div>
+                    <div class="match-stats">
+                        <span class="stat-badge kills"><i class="fas fa-skull"></i> ${match.kills}</span>
+                        <span class="stat-badge deaths"><i class="fas fa-heart-broken"></i> ${match.deaths}</span>
+                        <span class="stat-badge kd ${kdClass}"><i class="fas fa-chart-line"></i> ${match.kd.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
     // ====================================================
@@ -2354,6 +2586,9 @@
                 }
                 
                 updateProfileData(user);
+                
+                // Загружаем историю матчей
+                await fetchMatchHistory(user.id);
                 
                 const container = document.getElementById('banButtonContainer');
                 if (isSuperAdmin() && user.id !== getCurrentUser()?.id) {

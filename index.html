@@ -71,6 +71,7 @@
             position: relative;
         }
 
+        /* ===== ФОН В КЛЕТОЧКУ (серый + белая сетка) ===== */
         body::before {
             content: '';
             position: fixed;
@@ -94,9 +95,9 @@
             min-height: 100vh;
         }
 
+        /* ===== НАВИГАЦИЯ — ЧЁРНАЯ, БЕЗ КЛЕТКИ ===== */
         .header {
-            background: rgba(20, 20, 20, 0.75);
-            backdrop-filter: blur(10px);
+            background: #0a0a0a;
             padding: 0.6rem 2rem;
             border-bottom: 2px solid var(--primary);
             box-shadow: 0 0 40px var(--shadow-color);
@@ -105,22 +106,9 @@
             z-index: 1000;
             display: none;
             transition: border-color 0.3s, box-shadow 0.3s;
-            position: relative;
         }
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
+        /* Убираем клетку с навигации */
+        .header::before { display: none; }
         .header > * { position: relative; z-index: 1; }
         .header.visible { display: block; }
 
@@ -1085,6 +1073,57 @@
         .toast .toast-title.info { color: var(--primary); }
         .toast .toast-text { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; }
 
+        /* ===== НОВЫЙ БЛОК С ИНФОРМАЦИЕЙ (как на скрине) ===== */
+        .info-highlight {
+            max-width: 1300px;
+            margin: 1.5rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+        .info-highlight .highlight-item {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: 0.3s;
+        }
+        .info-highlight .highlight-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .info-highlight .highlight-item .icon {
+            font-size: 1.8rem;
+            color: var(--primary);
+            min-width: 40px;
+            text-align: center;
+        }
+        .info-highlight .highlight-item .content {
+            flex: 1;
+        }
+        .info-highlight .highlight-item .content .number {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .info-highlight .highlight-item .content .label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        .info-highlight .highlight-item .content .sub-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
         @media (max-width: 800px) {
             .header-inner { flex-direction: column; align-items: center; text-align: center; }
             .logo-center h1 { font-size: 1.4rem; }
@@ -1106,6 +1145,7 @@
             .prize-grid { grid-template-columns: 1fr; padding: 1.5rem; }
             .prize-header { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1rem; }
             .prize-total { font-size: 1.3rem; }
+            .info-highlight { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 500px) {
             .hero h2 { font-size: 1.8rem; }
@@ -1117,6 +1157,7 @@
             .shop-grid { grid-template-columns: 1fr; }
             .prize-amount { font-size: 1.3rem; }
             .prize-place { font-size: 0.8rem; }
+            .info-highlight { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -1200,6 +1241,38 @@
             <h2><span class="highlight">Nwole's</span><br/>Deathmatch Arena</h2>
             <p>Уникальные DM-сервера с низким пингом, рейтингом и ежедневными турнирами для настоящих бойцов!</p>
         </section>
+
+        <!-- ===== НОВЫЙ БЛОК С ИНФОРМАЦИЕЙ ===== -->
+        <div class="info-highlight">
+            <div class="highlight-item">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <div class="content">
+                    <div class="number" id="highlightUsers">0</div>
+                    <div class="label">Зарегистрировано</div>
+                </div>
+            </div>
+            <div class="highlight-item">
+                <div class="icon"><i class="fas fa-clock"></i></div>
+                <div class="content">
+                    <div class="number" id="highlightPending">0</div>
+                    <div class="label">В очереди</div>
+                </div>
+            </div>
+            <div class="highlight-item">
+                <div class="icon"><i class="fas fa-server"></i></div>
+                <div class="content">
+                    <div class="number" id="highlightServers">0</div>
+                    <div class="label">DM серверов</div>
+                </div>
+            </div>
+            <div class="highlight-item">
+                <div class="icon"><i class="fas fa-trophy"></i></div>
+                <div class="content">
+                    <div class="number" id="highlightTournaments">0</div>
+                    <div class="label">Проведено турниров</div>
+                </div>
+            </div>
+        </div>
 
         <div class="stats-grid">
             <div class="stat-block"><div class="number" id="usersCount">0</div><div class="label"><i class="fas fa-users"></i> Зарегистрировано</div></div>
@@ -1403,7 +1476,7 @@
     }
 
     // ====================================================
-    // ===== СОЗДАНИЕ КАРТИНКИ + ТЕКСТ ДЛЯ TELEGRAM =====
+    // ===== СОЗДАНИЕ КАРТИНКИ ДЛЯ TELEGRAM =====
     // ====================================================
 
     function createDmImage(dmNumber, host, mode, map) {
@@ -1470,7 +1543,6 @@
         return canvas;
     }
 
-    // ===== ОТПРАВКА В TELEGRAM: ТОЛЬКО "ЛОББИ #N создано!" + КАРТИНКА + КНОПКА =====
     async function sendTelegramNotificationWithImage(dmNumber, host, mode, map) {
         try {
             console.log('🖼️ Создаём картинку для Telegram...');
@@ -1481,7 +1553,6 @@
             formData.append('chat_id', CHANNEL_ID);
             formData.append('photo', blob, 'dm_notification.png');
             
-            // ===== ТОЛЬКО ЭТОТ ТЕКСТ =====
             const caption = `📢 <b>ЛОББИ #${dmNumber} создано!</b>`;
             
             formData.append('caption', caption);
@@ -1512,7 +1583,6 @@
         }
     }
 
-    // Повторная попытка
     async function sendTelegramNotificationWithImageRetry(dmNumber, host, mode, map) {
         try {
             console.log('🔄 Повторная отправка картинки в Telegram...');
@@ -2228,10 +2298,17 @@
                 }
             }
             
+            // Обновляем основные блоки
             document.getElementById('usersCount').textContent = users?.length || 0;
             document.getElementById('serverCount').textContent = servers?.length || 0;
             document.getElementById('tournamentsCount').textContent = '0';
             document.getElementById('pendingCount').textContent = pendingCount;
+            
+            // ===== ОБНОВЛЯЕМ НОВЫЙ БЛОК =====
+            document.getElementById('highlightUsers').textContent = users?.length || 0;
+            document.getElementById('highlightPending').textContent = pendingCount;
+            document.getElementById('highlightServers').textContent = servers?.length || 0;
+            document.getElementById('highlightTournaments').textContent = '0';
         } catch (error) {
             console.error('Error fetching stats:', error);
         }

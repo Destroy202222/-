@@ -1849,15 +1849,41 @@
     }
 
     // ====================================================
-    // ===== СЕРВЕРА =====
+    // ===== СЕРВЕРА (ПОСТОЯННАЯ НУМЕРАЦИЯ) =====
     // ====================================================
 
     async function getNextDMNumber() {
         try {
-            const servers = await apiRequest('/servers?select=id');
-            const count = servers ? servers.length : 0;
-            const nextNumber = count + 1;
-            console.log(`📊 Всего серверов: ${count}, следующий номер: ${nextNumber}`);
+            console.log('📊 Получение следующего номера DM...');
+            
+            // Пробуем получить данные из dm_counter
+            let data = await apiRequest('/dm_counter?id=eq.1');
+            console.log('📊 Данные dm_counter:', data);
+            
+            let nextNumber = 1;
+            
+            if (data && data.length > 0) {
+                const current = data[0].count || 0;
+                nextNumber = current + 1;
+                console.log(`📈 Текущий счётчик: ${current}, следующий: ${nextNumber}`);
+                
+                // Обновляем счётчик
+                await apiRequest('/dm_counter?id=eq.1', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ count: nextNumber })
+                });
+                console.log('✅ Счётчик обновлён');
+            } else {
+                console.log('📊 Счётчик пуст, создаём...');
+                await apiRequest('/dm_counter', {
+                    method: 'POST',
+                    body: JSON.stringify([{ id: 1, count: 1 }])
+                });
+                console.log('✅ Счётчик создан');
+                nextNumber = 1;
+            }
+            
+            console.log(`🎯 Итоговый номер DM: ${nextNumber}`);
             return nextNumber;
         } catch (error) {
             console.error('❌ Ошибка получения номера DM:', error);
@@ -1902,7 +1928,8 @@
                 status: 'online',
                 pending: [],
                 createdAt: new Date().toISOString(),
-                createdBy: user?.username || 'admin'
+                createdBy: user?.username || 'admin',
+                dmNumber: dmNumber
             };
 
             console.log('📦 Данные сервера:', newServer);
@@ -1917,14 +1944,14 @@
             document.getElementById('serverPlayerIdInput').value = '';
             document.getElementById('serverMapInput').value = '';
             
-            // ========== ОТПРАВЛЯЕМ В TELEGRAM С КАРТИНКОЙ ==========
+            // ========== ОТПРАВЛЯЕМ В TELEGRAM ==========
             await sendTelegramNotificationWithImage(
                 dmNumber,
                 user?.username || 'Unknown',
                 name,
                 map
             );
-            // =====================================================
+            // ============================================
             
             showToast('success', 'Сервер создан', `Сервер "${serverName}" успешно добавлен`);
             fetchServers();

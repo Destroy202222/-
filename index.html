@@ -95,35 +95,21 @@
             min-height: 100vh;
         }
 
-        /* ===== НАВИГАЦИЯ — ПРОЗРАЧНАЯ, С КЛЕТКОЙ ===== */
+        /* ===== НАВИГАЦИЯ — ПОЛНОСТЬЮ ПРОЗРАЧНАЯ, ТОЛЬКО ОРАНЖЕВАЯ ОБВОДКА ===== */
         .header {
-            background: rgba(20, 20, 20, 0.5);
-            backdrop-filter: blur(10px);
+            background: transparent;
+            backdrop-filter: none;
             padding: 0.6rem 2rem;
             border-bottom: 2px solid var(--primary);
-            box-shadow: 0 0 40px var(--shadow-color);
+            box-shadow: none;
             position: sticky;
             top: 0;
             z-index: 1000;
             display: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            position: relative;
+            transition: border-color 0.3s;
         }
-        /* ===== КЛЕТКА НА НАВИГАЦИИ (совпадает с фоном) ===== */
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
-            z-index: 0;
-        }
+        /* Убираем клетку с навигации */
+        .header::before { display: none; }
         .header > * { position: relative; z-index: 1; }
         .header.visible { display: block; }
 
@@ -562,7 +548,8 @@
         .main-content { display: none; }
         .main-content.visible { display: block; }
 
-        .hero { max-width: 1300px; margin: 3rem auto; padding: 0 2rem; text-align: center; position: relative; z-index: 2; }
+        /* ===== ГЕРОЙ — УБРАН ДУБЛИРУЮЩИЙСЯ ТЕКСТ ===== */
+        .hero { max-width: 1300px; margin: 2rem auto 1rem; padding: 0 2rem; text-align: center; position: relative; z-index: 2; }
         .hero .tag {
             display: inline-block;
             background: var(--primary-glow);
@@ -575,9 +562,9 @@
             margin-bottom: 1rem;
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
-        .hero h2 { font-size: 3rem; font-weight: 900; line-height: 1.2; margin-bottom: 1rem; }
-        .hero h2 .highlight { background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 2rem; line-height: 1.6; font-weight: 500; }
+        /* Убираем дублирующий текст в hero */
+        .hero h2 { display: none; }
+        .hero p { display: none; }
 
         .stats-grid {
             max-width: 1300px;
@@ -633,10 +620,10 @@
         .info-card:hover { border-color: var(--primary); transform: translateY(-5px); }
         .info-card .icon { font-size: 2.2rem; color: var(--primary); margin-bottom: 0.8rem; }
 
-        /* ===== НОВЫЙ БЛОК — КАК ТЫ ВЫДЕЛИЛ ===== */
+        /* ===== БЛОК С ИНФОРМАЦИЕЙ (оставлен) ===== */
         .highlight-block {
             max-width: 1300px;
-            margin: 1.5rem auto;
+            margin: 0.5rem auto 1.5rem;
             padding: 0 2rem;
             position: relative;
             z-index: 2;
@@ -1130,7 +1117,6 @@
         @media (max-width: 800px) {
             .header-inner { flex-direction: column; align-items: center; text-align: center; }
             .logo-center h1 { font-size: 1.4rem; }
-            .hero h2 { font-size: 2.2rem; }
             .right-buttons { flex-direction: column; width: 100%; }
             .dropdown { width: 100%; }
             .dropdown-btn { width: 100%; justify-content: center; font-size: 0.8rem; }
@@ -1152,7 +1138,6 @@
             .highlight-card h2 { font-size: 1.8rem; }
         }
         @media (max-width: 500px) {
-            .hero h2 { font-size: 1.8rem; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
             .info-grid { grid-template-columns: 1fr; }
             .page-content .page-title { font-size: 1.8rem; }
@@ -1242,13 +1227,12 @@
     </header>
 
     <div id="mainContent">
+        <!-- ===== ТЕГ #1 ===== -->
         <section class="hero">
             <div class="tag"><i class="fas fa-bolt"></i> #1 Deathmatch Standoff 2</div>
-            <h2><span class="highlight">Nwole's</span><br/>Deathmatch Arena</h2>
-            <p>Уникальные DM-сервера с низким пингом, рейтингом и ежедневными турнирами для настоящих бойцов!</p>
         </section>
 
-        <!-- ===== НОВЫЙ БЛОК — КАК ТЫ ВЫДЕЛИЛ ===== -->
+        <!-- ===== БЛОК С ИНФОРМАЦИЕЙ (ОСТАВЛЕН) ===== -->
         <div class="highlight-block">
             <div class="highlight-card">
                 <h2>Nwole's Deathmatch Arena</h2>
@@ -1536,7 +1520,6 @@
             formData.append('chat_id', CHANNEL_ID);
             formData.append('photo', blob, 'dm_notification.png');
             
-            // ===== ТЕКСТ: "ЛОББИ #N создано!" + ссылка на ТГК с информацией =====
             const caption = `📢 <b>ЛОББИ #${dmNumber} создано!</b>\n\n` +
                            `📢 <b>ТГК с информацией о мини-приложение:</b>\n` +
                            `<a href="${INFO_CHANNEL_URL}">${INFO_CHANNEL_URL}</a>`;
@@ -2086,7 +2069,6 @@
             document.getElementById('serverPlayerIdInput').value = '';
             document.getElementById('serverMapInput').value = '';
             
-            // ===== ОТПРАВКА В TELEGRAM =====
             await sendTelegramNotificationWithImage(
                 gameNumber,
                 user?.username || 'Unknown',

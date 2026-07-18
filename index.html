@@ -1098,7 +1098,6 @@
             <p>Уникальные DM-сервера с низким пингом, рейтингом и ежедневными турнирами для настоящих бойцов!</p>
         </section>
 
-        <!-- СТАТИСТИКА: ПОМЕНЯЛИ МЕСТАМИ "В ОЧЕРЕДИ" И "ПРОВЕДЕНО ТУРНИРОВ" -->
         <div class="stats-grid">
             <div class="stat-block"><div class="number" id="usersCount">0</div><div class="label"><i class="fas fa-users"></i> Зарегистрировано</div></div>
             <div class="stat-block"><div class="number" id="pendingCount">0</div><div class="label"><i class="fas fa-clock"></i> В очереди</div></div>
@@ -1721,27 +1720,32 @@
     }
 
     // ====================================================
-    // ===== СЕРВЕРА =====
+    // ===== СЕРВЕРА (С ИСПРАВЛЕННОЙ НУМЕРАЦИЕЙ) =====
     // ====================================================
 
     async function getNextDMNumber() {
         try {
+            // Получаем текущее значение счётчика
             const data = await apiRequest('/dm_counter?id=eq.1');
+            let nextNumber = 1;
+            
             if (data && data.length > 0) {
                 const current = data[0].count || 0;
-                const next = current + 1;
+                nextNumber = current + 1;
+                // Обновляем счётчик
                 await apiRequest('/dm_counter?id=eq.1', {
                     method: 'PATCH',
-                    body: JSON.stringify({ count: next })
+                    body: JSON.stringify({ count: nextNumber })
                 });
-                return next;
             } else {
+                // Если счётчик не существует — создаём
                 await apiRequest('/dm_counter', {
                     method: 'POST',
                     body: JSON.stringify([{ id: 1, count: 1 }])
                 });
-                return 1;
+                nextNumber = 1;
             }
+            return nextNumber;
         } catch (error) {
             console.error('Error getting DM number:', error);
             return 0;
@@ -1982,7 +1986,7 @@
     }
 
     // ====================================================
-    // ===== СТАТИСТИКА (ОБНОВЛЁННАЯ) =====
+    // ===== СТАТИСТИКА =====
     // ====================================================
 
     async function fetchSiteStats() {

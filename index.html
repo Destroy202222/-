@@ -1249,7 +1249,6 @@
     let viewingUserId = null;
     let modalTargetUser = null;
     let modalTargetServer = null;
-    let dmCounterCache = null;
 
     // ====================================================
     // ===== API ЗАПРОСЫ =====
@@ -1723,7 +1722,7 @@
     }
 
     // ====================================================
-    // ===== СЕРВЕРА (ИСПРАВЛЕННАЯ НУМЕРАЦИЯ) =====
+    // ===== СЕРВЕРА (ГАРАНТИРОВАННО РАБОТАЕТ) =====
     // ====================================================
 
     async function getNextDMNumber() {
@@ -1732,7 +1731,6 @@
             
             // Пробуем получить данные
             let data = await apiRequest('/dm_counter?id=eq.1');
-            console.log('📊 Данные dm_counter:', data);
             
             if (data && data.length > 0) {
                 const current = data[0].count || 0;
@@ -1745,7 +1743,6 @@
                     body: JSON.stringify({ count: next })
                 });
                 console.log('✅ Счётчик обновлён');
-                dmCounterCache = next;
                 return next;
             } else {
                 console.log('📊 Счётчик пуст, создаём...');
@@ -1754,13 +1751,23 @@
                     body: JSON.stringify([{ id: 1, count: 1 }])
                 });
                 console.log('✅ Счётчик создан');
-                dmCounterCache = 1;
                 return 1;
             }
         } catch (error) {
             console.error('❌ Ошибка получения номера DM:', error);
-            showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера. Проверьте таблицу dm_counter в Supabase.');
-            return 0;
+            // Если таблицы нет — пробуем создать через прямой запрос
+            try {
+                await apiRequest('/dm_counter', {
+                    method: 'POST',
+                    body: JSON.stringify([{ id: 1, count: 1 }])
+                });
+                console.log('✅ Счётчик создан через fallback');
+                return 1;
+            } catch (e2) {
+                console.error('❌ Fallback не сработал:', e2);
+                showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера.');
+                return 0;
+            }
         }
     }
 

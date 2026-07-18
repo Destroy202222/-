@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* ===== ВСЕ СТИЛИ БЕЗ ИЗМЕНЕНИЙ ===== */
         :root {
             --primary: #ff7b00;
             --primary-hover: #ff9a33;
@@ -1326,6 +1325,7 @@
 </head>
 <body data-theme="orange">
 
+<!-- ===== ТОСТ ===== -->
 <div class="toast" id="toast">
     <div class="toast-title" id="toastTitle">Успешно!</div>
     <div class="toast-text" id="toastText">Действие выполнено</div>
@@ -1368,6 +1368,7 @@
     </div>
 </div>
 
+<!-- ===== АВТОРИЗАЦИЯ ===== -->
 <div class="auth-page" id="authPage">
     <div class="auth-container">
         <div class="auth-logo"><h1>⚡ Nwole's DM</h1><p>Deathmatch Standoff 2</p></div>
@@ -2143,7 +2144,7 @@
     // ====================================================
 
     function openStatsModal(username, userId, serverId, map) {
-        console.log('📊 Открытие модалки для:', username);
+        console.log('📊 openStatsModal вызвана для:', username);
         
         if (document.getElementById('announceModal').classList.contains('active')) {
             closeAnnounceModal();
@@ -2157,70 +2158,49 @@
         document.getElementById('modalKills').value = 0;
         document.getElementById('modalDeaths').value = 0;
         
-        const btn = document.getElementById('modalSubmitBtn');
-        btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
-        btn.disabled = false;
-        
         document.getElementById('statsModal').classList.add('active');
     }
 
     function closeStatsModal() {
-        console.log('❌ Закрытие модалки');
+        console.log('❌ closeStatsModal вызвана');
         document.getElementById('statsModal').classList.remove('active');
-        modalTargetUserId = null;
-        modalTargetUsername = null;
-        modalTargetServer = null;
-        modalTargetMap = null;
     }
 
-    // ===== ФУНКЦИЯ ЗАЧИСЛЕНИЯ =====
-    function submitStats() {
-        console.log('📤 submitStats() ВЫЗВАНА!');
-        console.log('📊 modalTargetUserId:', modalTargetUserId);
-        console.log('📊 modalTargetUsername:', modalTargetUsername);
-        console.log('📊 modalTargetServer:', modalTargetServer);
-        console.log('📊 modalTargetMap:', modalTargetMap);
+    // ===== ПРОСТАЯ ФУНКЦИЯ ЗАЧИСЛЕНИЯ =====
+    async function submitStats() {
+        console.log('📤 submitStats вызвана!');
         
-        const killsInput = document.getElementById('modalKills');
-        const deathsInput = document.getElementById('modalDeaths');
-        
-        const kills = parseInt(killsInput ? killsInput.value : 0) || 0;
-        const deaths = parseInt(deathsInput ? deathsInput.value : 0) || 0;
+        const kills = parseInt(document.getElementById('modalKills').value) || 0;
+        const deaths = parseInt(document.getElementById('modalDeaths').value) || 0;
         const map = modalTargetMap || 'Неизвестная карта';
         
-        console.log('📊 Введено:', { kills, deaths, map });
+        console.log('📊 Данные:', { 
+            kills, deaths, map, 
+            modalTargetUserId, 
+            modalTargetUsername, 
+            modalTargetServer 
+        });
         
         if (!modalTargetUserId) {
-            showToast('error', 'Ошибка', 'Пользователь не найден');
-            console.error('❌ modalTargetUserId пустой!');
+            showToast('error', 'Ошибка', 'Пользователь не выбран');
             return;
         }
-        
-        const btn = document.getElementById('modalSubmitBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
-        
-        submitStatsAsync(kills, deaths, map, btn);
-    }
 
-    async function submitStatsAsync(kills, deaths, map, btn) {
         try {
+            // 1. ПОЛУЧАЕМ ПОЛЬЗОВАТЕЛЯ
             console.log('🔍 Ищем пользователя по ID:', modalTargetUserId);
-            
-            // Ищем пользователя по ID
             const userData = await apiRequest(`/users?id=eq.${modalTargetUserId}`);
             console.log('👤 Найден пользователь:', userData);
             
             if (!userData || userData.length === 0) {
-                showToast('error', 'Ошибка', `Пользователь не найден`);
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
+                showToast('error', 'Ошибка', 'Пользователь не найден');
                 return;
             }
             
             const user = userData[0];
-            console.log('👤 Данные пользователя:', user);
             
+            // 2. ОБНОВЛЯЕМ СТАТИСТИКУ
+            console.log('📝 Обновляем статистику...');
             const newKills = (user.kills || 0) + kills;
             const newDeaths = (user.deaths || 0) + deaths;
             const newMatches = (user.matches || 0) + 1;
@@ -2235,7 +2215,6 @@
                 kdHistory = kdHistory.slice(-10);
             }
             
-            console.log('📝 Обновляем пользователя...');
             await apiRequest(`/users?id=eq.${user.id}`, {
                 method: 'PATCH',
                 body: JSON.stringify({
@@ -2247,6 +2226,7 @@
                 })
             });
             
+            // 3. СОХРАНЯЕМ ИСТОРИЮ МАТЧА
             console.log('📝 Сохраняем историю матча...');
             const matchRecord = {
                 id: Date.now() + Math.floor(Math.random() * 1000),
@@ -2266,14 +2246,17 @@
                 body: JSON.stringify([matchRecord])
             });
             
+            // 4. УДАЛЯЕМ ИЗ ОЧЕРЕДИ
             if (modalTargetServer) {
                 console.log('🗑️ Удаляем из очереди...');
                 await removeFromPending(modalTargetServer, user.username);
             }
             
+            // 5. ЗАКРЫВАЕМ МОДАЛКУ И ПОКАЗЫВАЕМ УСПЕХ
             closeStatsModal();
             showToast('success', 'Статистика обновлена', `Игроку ${user.username} зачислен матч на карте ${map}`);
             
+            // 6. ОБНОВЛЯЕМ ДАННЫЕ
             fetchServers();
             fetchSiteStats();
             fetchTopPlayers();
@@ -2282,14 +2265,11 @@
                 fetchUserData(user.id);
             }
             
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
+            console.log('✅ Готово!');
             
         } catch (error) {
             console.error('❌ Ошибка:', error);
             showToast('error', 'Ошибка', error.message || 'Не удалось зачислить статистику');
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
         }
     }
 
@@ -2926,7 +2906,7 @@
     // ====================================================
 
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🚀 DOM загружен, навешиваем обработчики...');
+        console.log('🚀 DOM загружен');
         
         document.getElementById('loginBtn').addEventListener('click', handleLogin);
         document.getElementById('registerBtn').addEventListener('click', handleRegister);
@@ -2935,16 +2915,15 @@
         document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
         document.getElementById('announceSubmitBtn').addEventListener('click', sendAnnouncement);
         
+        // ===== НАВЕШИВАЕМ ОБРАБОТЧИК НА КНОПКУ "ЗАЧИСЛИТЬ" =====
         const submitBtn = document.getElementById('modalSubmitBtn');
         if (submitBtn) {
             console.log('✅ Кнопка "Зачислить" найдена');
-            submitBtn.onclick = null;
             submitBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 console.log('🖱️ Клик по кнопке "Зачислить"');
                 submitStats();
             });
-            submitBtn.setAttribute('onclick', 'submitStats(); return false;');
         } else {
             console.error('❌ Кнопка "Зачислить" не найдена!');
         }

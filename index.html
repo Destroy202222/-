@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* ===== ВСЕ СТИЛИ БЕЗ ИЗМЕНЕНИЙ ===== */
         :root {
             --primary: #ff7b00;
             --primary-hover: #ff9a33;
@@ -73,7 +74,6 @@
             overflow-x: hidden;
             position: relative;
         }
-
         body::before {
             content: '';
             position: fixed;
@@ -88,15 +88,8 @@
             pointer-events: none;
             z-index: 0;
         }
-
         .stars { display: none !important; }
-
-        .main-wrapper {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-        }
-
+        .main-wrapper { position: relative; z-index: 1; min-height: 100vh; }
         .header {
             background: transparent;
             backdrop-filter: none;
@@ -112,7 +105,6 @@
         .header::before { display: none; }
         .header > * { position: relative; z-index: 1; }
         .header.visible { display: block; }
-
         .auth-page {
             display: flex;
             justify-content: center;
@@ -135,7 +127,6 @@
             position: relative;
             z-index: 3;
         }
-
         .stat-block {
             background: var(--bg-card);
             backdrop-filter: blur(8px);
@@ -158,7 +149,6 @@
             font-size: 0.9rem;
             margin-top: 0.2rem;
         }
-
         .prize-header {
             display: flex;
             justify-content: space-between;
@@ -199,7 +189,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .info-card {
             background: var(--bg-card);
             backdrop-filter: blur(8px);
@@ -220,7 +209,6 @@
             line-height: 1.6;
             font-weight: 500;
         }
-
         .server-card {
             background: var(--bg-card);
             backdrop-filter: blur(8px);
@@ -236,7 +224,6 @@
             font-weight: 800;
             color: var(--primary);
         }
-
         .profile-card {
             background: var(--bg-card);
             backdrop-filter: blur(8px);
@@ -247,7 +234,6 @@
             margin: 0 auto;
             position: relative;
         }
-
         .settings-card {
             max-width: 600px;
             margin: 0 auto;
@@ -257,7 +243,6 @@
             padding: 2rem;
             border: 1px solid var(--border-color);
         }
-
         .admin-panel {
             background: var(--bg-card);
             backdrop-filter: blur(8px);
@@ -270,7 +255,6 @@
             margin-right: auto;
             display: none;
         }
-
         .admin-system {
             background: var(--bg-card);
             backdrop-filter: blur(8px);
@@ -283,7 +267,6 @@
             margin-right: auto;
             display: none;
         }
-
         .top-player {
             display: flex;
             align-items: center;
@@ -301,7 +284,6 @@
             font-weight: 700;
             font-size: 1rem;
         }
-
         .shop-card {
             background: var(--bg-card);
             backdrop-filter: blur(8px);
@@ -317,7 +299,6 @@
             color: var(--primary);
             margin-bottom: 0.5rem;
         }
-
         .modal {
             background: rgba(20, 20, 20, 0.92);
             backdrop-filter: blur(12px);
@@ -329,7 +310,6 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
             animation: fadeIn 0.3s ease;
         }
-
         .footer {
             background: rgba(20, 20, 20, 0.7);
             backdrop-filter: blur(8px);
@@ -345,7 +325,6 @@
             font-size: 0.85rem;
             font-weight: 500;
         }
-
         .chart-container {
             background: var(--bg-input);
             border-radius: 16px;
@@ -353,7 +332,6 @@
             margin-top: 2rem;
             border: 1px solid var(--border-color);
         }
-
         .pending-players-section {
             background: var(--bg-input);
             border-radius: 12px;
@@ -362,12 +340,10 @@
             margin-top: 0.8rem;
             display: none;
         }
-
         .dropdown-content {
             background: rgba(20, 20, 20, 0.92);
             backdrop-filter: blur(12px);
         }
-
         .toast {
             background: rgba(20, 20, 20, 0.92);
             backdrop-filter: blur(12px);
@@ -381,7 +357,6 @@
             z-index: 9999;
             max-width: 400px;
         }
-
         .header-inner {
             max-width: 1300px;
             margin: 0 auto;
@@ -483,7 +458,6 @@
         .dropdown-content a:hover { background: var(--primary-glow); color: var(--primary); }
         .dropdown-content a i { width: 18px; color: var(--primary); font-size: 0.9rem; }
         .dropdown-content .divider { height: 1px; background: var(--border-color); margin: 0.2rem 0; }
-
         .btn-connect {
             background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
             color: var(--bg-main);
@@ -501,7 +475,6 @@
             box-shadow: 0 0 20px var(--primary-glow);
         }
         .btn-connect:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--primary-glow); }
-
         .auth-container .auth-logo { text-align: center; margin-bottom: 2rem; }
         .auth-container .auth-logo h1 {
             font-size: 2rem;
@@ -544,10 +517,8 @@
         .auth-container .auth-links { text-align: center; margin-top: 1.5rem; }
         .auth-container .auth-links a { color: var(--primary); text-decoration: none; cursor: pointer; font-weight: 600; transition: 0.3s; }
         .auth-container .auth-links a:hover { text-decoration: underline; color: var(--primary-hover); }
-
         .main-content { display: none; }
         .main-content.visible { display: block; }
-
         .hero { max-width: 1300px; margin: 2rem auto 1rem; padding: 0 2rem; text-align: center; position: relative; z-index: 2; }
         .hero .tag {
             display: inline-block;
@@ -563,7 +534,6 @@
         }
         .hero h2 { display: none; }
         .hero p { display: none; }
-
         .highlight-block {
             max-width: 1300px;
             margin: 0.5rem auto 1.5rem;
@@ -601,7 +571,6 @@
             max-width: 700px;
             margin: 0 auto;
         }
-
         .stats-grid {
             max-width: 1300px;
             margin: 2rem auto;
@@ -612,7 +581,6 @@
             position: relative;
             z-index: 2;
         }
-
         .prize-pool-section {
             max-width: 1300px;
             margin: 1.5rem auto;
@@ -642,7 +610,6 @@
             display: inline-block;
             font-weight: 700;
         }
-
         .info-grid {
             max-width: 1300px;
             margin: 2rem auto;
@@ -655,7 +622,6 @@
         }
         .info-card:hover { border-color: var(--primary); transform: translateY(-5px); }
         .info-card .icon { font-size: 2.2rem; color: var(--primary); margin-bottom: 0.8rem; }
-
         .page-content {
             display: none;
             max-width: 1300px;
@@ -693,7 +659,6 @@
             box-shadow: none;
         }
         .page-content .back-btn button:hover { background: var(--primary-glow); box-shadow: 0 0 20px var(--primary-glow); }
-
         .servers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -772,7 +737,6 @@
             color: #7986cb;
         }
         .btn-stats:hover { background: #283593; transform: scale(1.05); }
-
         .btn-join {
             width: 100%;
             padding: 0.7rem;
@@ -787,7 +751,6 @@
             margin-top: 0.5rem;
         }
         .btn-join:hover { background: var(--primary-hover); box-shadow: 0 0 20px var(--primary-glow); transform: scale(1.02); }
-
         .server-actions {
             display: flex;
             gap: 0.5rem;
@@ -807,7 +770,6 @@
         }
         .btn-delete { background: #ff6b6b20; color: #ff6b6b; border: 1px solid #ff6b6b !important; }
         .btn-delete:hover { background: #ff6b6b40; }
-
         .announce-top {
             max-width: 1300px;
             margin: 0 auto 1.5rem;
@@ -840,7 +802,6 @@
         .btn-announce-top i {
             font-size: 1rem;
         }
-
         .admin-panel.visible { display: block; }
         .admin-panel h3 { color: var(--primary); margin-bottom: 1.2rem; font-size: 1.5rem; text-align: center; font-weight: 800; }
         .admin-panel .form-group { margin-bottom: 1.2rem; }
@@ -870,7 +831,6 @@
             margin-top: 0.5rem;
         }
         .admin-panel .btn-create:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--primary-glow); }
-
         .admin-system.visible { display: block; }
         .admin-system h3 { color: var(--primary); margin-bottom: 1.2rem; font-size: 1.5rem; text-align: center; font-weight: 800; }
         .admin-system .form-group { display: flex; gap: 1rem; flex-wrap: wrap; }
@@ -931,7 +891,6 @@
             font-weight: 700;
         }
         .admin-tag .role-badge.super { background: #ffd700; color: #000; }
-
         .profile-header { display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
         .profile-header .avatar { font-size: 4rem; color: var(--primary); }
         .profile-header .info h2 { font-size: 1.8rem; font-weight: 800; }
@@ -974,10 +933,8 @@
         }
         .btn-ban:hover { background: #ff4444; transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 0, 0, 0.3); }
         .btn-ban i { margin-right: 0.4rem; }
-
         .chart-container h3 { color: var(--text-primary); margin-bottom: 1rem; font-size: 1.1rem; font-weight: 700; }
         .chart-container canvas { max-height: 250px; }
-
         .match-history-section {
             margin-top: 2rem;
             border-top: 1px solid var(--border-color);
@@ -1019,7 +976,6 @@
             background: var(--primary);
             border-radius: 4px;
         }
-
         .match-item {
             background: var(--bg-input);
             border-radius: 14px;
@@ -1093,7 +1049,6 @@
         .match-item .match-stats .stat-badge.kd.ok {
             color: #ffd93d;
         }
-
         .match-empty {
             text-align: center;
             padding: 2rem;
@@ -1108,7 +1063,6 @@
         .match-empty p {
             font-weight: 500;
         }
-
         .top-players { max-width: 800px; margin: 0 auto; }
         .top-player:hover { border-color: var(--primary); transform: translateX(5px); }
         .top-player .rank { font-size: 1.3rem; font-weight: 800; color: var(--primary); min-width: 40px; }
@@ -1131,7 +1085,6 @@
             text-align: center;
             white-space: nowrap;
         }
-
         .shop-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1156,7 +1109,6 @@
             font-size: 0.9rem;
         }
         .shop-card .btn-buy:hover { background: var(--primary-hover); box-shadow: 0 0 20px var(--primary-glow); }
-
         .settings-card .setting-row {
             display: flex;
             justify-content: space-between;
@@ -1197,7 +1149,6 @@
             font-size: 0.95rem;
         }
         .settings-card .btn-save:hover { background: var(--primary-hover); box-shadow: 0 0 20px var(--primary-glow); }
-
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1260,7 +1211,6 @@
             border-color: var(--primary);
             box-shadow: 0 0 20px var(--primary-glow);
         }
-
         .time-options {
             display: flex;
             gap: 0.8rem;
@@ -1290,7 +1240,6 @@
             background: var(--primary);
             color: var(--bg-main);
         }
-
         .modal .btn-submit-modal {
             width: 100%;
             padding: 0.8rem;
@@ -1318,20 +1267,16 @@
             margin-top: 0.5rem;
         }
         .modal .btn-cancel-modal:hover { border-color: var(--primary); color: var(--primary); }
-
         .footer .socials { font-size: 1.5rem; margin-bottom: 1rem; }
         .footer .socials a { color: var(--text-secondary); margin: 0 0.8rem; transition: 0.3s; }
         .footer .socials a:hover { color: var(--primary); transform: scale(1.1); }
-
         .hidden { display: none !important; }
-
         .toast.visible { transform: translateY(0); opacity: 1; }
         .toast .toast-title { font-weight: 800; margin-bottom: 0.3rem; }
         .toast .toast-title.success { color: #51cf66; }
         .toast .toast-title.error { color: #ff6b6b; }
         .toast .toast-title.info { color: var(--primary); }
         .toast .toast-text { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; }
-
         @media (max-width: 800px) {
             .header-inner { flex-direction: column; align-items: center; text-align: center; }
             .logo-center h1 { font-size: 1.4rem; }
@@ -1381,7 +1326,6 @@
 </head>
 <body data-theme="orange">
 
-<!-- ===== ТОСТ ===== -->
 <div class="toast" id="toast">
     <div class="toast-title" id="toastTitle">Успешно!</div>
     <div class="toast-text" id="toastText">Действие выполнено</div>
@@ -1424,7 +1368,6 @@
     </div>
 </div>
 
-<!-- ===== АВТОРИЗАЦИЯ ===== -->
 <div class="auth-page" id="authPage">
     <div class="auth-container">
         <div class="auth-logo"><h1>⚡ Nwole's DM</h1><p>Deathmatch Standoff 2</p></div>
@@ -1654,7 +1597,8 @@
     let kdChartInstance = null;
     let currentLanguage = 'ru';
     let viewingUserId = null;
-    let modalTargetUser = null;
+    let modalTargetUserId = null;
+    let modalTargetUsername = null;
     let modalTargetServer = null;
     let modalTargetMap = null;
     let selectedTime = null;
@@ -1760,158 +1704,118 @@
         return canvas;
     }
 
-    // ====================================================
-    // ===== ФУНКЦИЯ ЗАЧИСЛЕНИЯ — ИСПРАВЛЕННАЯ =====
-    // ====================================================
-
-    function submitStats() {
-        console.log('📤 submitStats() ВЫЗВАНА!');
-        
-        const killsInput = document.getElementById('modalKills');
-        const deathsInput = document.getElementById('modalDeaths');
-        
-        const kills = parseInt(killsInput ? killsInput.value : 0) || 0;
-        const deaths = parseInt(deathsInput ? deathsInput.value : 0) || 0;
-        const map = modalTargetMap || 'Неизвестная карта';
-        
-        console.log('📊 Данные:', { kills, deaths, map, modalTargetUser, modalTargetServer });
-        
-        if (!modalTargetUser) {
-            showToast('error', 'Ошибка', 'Пользователь не найден');
-            return;
+    async function sendTelegramNotificationWithImage(dmNumber, host, mode, map) {
+        try {
+            console.log('🖼️ Создаём картинку для Telegram...');
+            const canvas = createDmImage(dmNumber, host, mode, map);
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const formData = new FormData();
+            formData.append('chat_id', CHANNEL_ID);
+            formData.append('photo', blob, 'dm_notification.png');
+            const caption = `📢 <b>ЛОББИ #${dmNumber} создано!</b>\n\n` +
+                           `📢 <b>ТГК с информацией о мини-приложение:</b>\n` +
+                           `<a href="${INFO_CHANNEL_URL}">${INFO_CHANNEL_URL}</a>`;
+            formData.append('caption', caption);
+            formData.append('parse_mode', 'HTML');
+            formData.append('reply_markup', JSON.stringify({
+                inline_keyboard: [
+                    [{ text: "🚀 Открыть мини-приложение", url: APP_URL }]
+                ]
+            }));
+            console.log(`📤 Отправка запроса в Telegram API...`);
+            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            console.log('📨 Ответ Telegram API:', data);
+            if (!data.ok) {
+                console.error('❌ Telegram API error:', data.description);
+                await sendTelegramNotificationText(dmNumber, host, mode, map);
+                return false;
+            } else {
+                console.log('✅ Уведомление с картинкой отправлено в Telegram');
+                return true;
+            }
+        } catch (error) {
+            console.error('❌ Ошибка отправки в Telegram:', error);
+            await sendTelegramNotificationText(dmNumber, host, mode, map);
+            return false;
         }
-        
-        // Блокируем кнопку
-        const btn = document.getElementById('modalSubmitBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
-        
-        // Запускаем
-        submitStatsAsync(kills, deaths, map, btn);
     }
 
-    async function submitStatsAsync(kills, deaths, map, btn) {
+    async function sendTelegramNotificationText(dmNumber, host, mode, map) {
         try {
-            console.log('🔍 Ищем пользователя по username:', modalTargetUser);
-            
-            // Ищем пользователя по username
-            const userData = await apiRequest(`/users?username=eq.${encodeURIComponent(modalTargetUser)}`);
-            console.log('👤 Найден пользователь:', userData);
-            
-            if (!userData || userData.length === 0) {
-                showToast('error', 'Ошибка', `Пользователь "${modalTargetUser}" не найден`);
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
-                return;
-            }
-            
-            const user = userData[0];
-            console.log('👤 Данные пользователя:', user);
-            
-            const newKills = (user.kills || 0) + kills;
-            const newDeaths = (user.deaths || 0) + deaths;
-            const newMatches = (user.matches || 0) + 1;
-            const newServerMatches = (user.serverMatches || 0) + 1;
-            
-            const matchKD = deaths > 0 ? (kills / deaths) : kills;
-            const roundedKD = Math.round(matchKD * 100) / 100;
-            
-            let kdHistory = user.kdHistory || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            kdHistory.push(matchKD);
-            if (kdHistory.length > 10) {
-                kdHistory = kdHistory.slice(-10);
-            }
-            
-            console.log('📝 Обновляем пользователя...');
-            await apiRequest(`/users?id=eq.${user.id}`, {
-                method: 'PATCH',
+            console.log('📝 Отправка текстового уведомления в Telegram...');
+            const message = `📢 <b>ЛОББИ #${dmNumber} создано!</b>\n\n` +
+                           `👤 Хост: <b>${host || 'Unknown'}</b>\n` +
+                           `🎮 Режим: <b>${mode || 'Не указан'}</b>\n` +
+                           `🕐 Время: <b>10 минут</b>\n` +
+                           `🗺️ Карта: <b>${map || 'Не указана'}</b>\n\n` +
+                           `📢 <b>ТГК с информацией о мини-приложение:</b>\n` +
+                           `<a href="${INFO_CHANNEL_URL}">${INFO_CHANNEL_URL}</a>`;
+            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    kills: newKills,
-                    deaths: newDeaths,
-                    matches: newMatches,
-                    serverMatches: newServerMatches,
-                    kdHistory: kdHistory
+                    chat_id: CHANNEL_ID,
+                    text: message,
+                    parse_mode: 'HTML',
+                    disable_web_page_preview: true,
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "🚀 Открыть мини-приложение", url: APP_URL }]
+                        ]
+                    }
                 })
             });
-            
-            console.log('📝 Сохраняем историю матча...');
-            const matchRecord = {
-                id: Date.now() + Math.floor(Math.random() * 1000),
-                user_id: user.id,
-                username: user.username,
-                map: map,
-                kills: kills,
-                deaths: deaths,
-                kd: roundedKD,
-                match_date: new Date().toISOString(),
-                server_name: modalTargetServer ? `DM #${modalTargetServer}` : 'DM Сервер',
-                created_at: new Date().toISOString()
-            };
-            
-            await apiRequest('/match_history', {
-                method: 'POST',
-                body: JSON.stringify([matchRecord])
-            });
-            
-            if (modalTargetServer) {
-                console.log('🗑️ Удаляем из очереди...');
-                await removeFromPending(modalTargetServer, user.username);
+            const data = await response.json();
+            if (!data.ok) {
+                console.error('❌ Ошибка отправки текста:', data.description);
+            } else {
+                console.log('✅ Текстовое уведомление отправлено в Telegram');
             }
-            
-            closeStatsModal();
-            showToast('success', 'Статистика обновлена', `Игроку ${user.username} зачислен матч на карте ${map}`);
-            
-            fetchServers();
-            fetchSiteStats();
-            fetchTopPlayers();
-            
-            if (viewingUserId === user.id) {
-                fetchUserData(user.id);
-            }
-            
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
-            
+            return data;
         } catch (error) {
-            console.error('❌ Ошибка:', error);
-            showToast('error', 'Ошибка', error.message || 'Не удалось зачислить статистику');
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
+            console.error('❌ Ошибка отправки текстового уведомления:', error);
         }
     }
 
-    // ====================================================
-    // ===== МОДАЛКА СТАТИСТИКИ =====
-    // ====================================================
-
-    function openStatsModal(username, userId, serverId, map) {
-        console.log('📊 Открытие модалки для:', username);
-        
-        if (document.getElementById('announceModal').classList.contains('active')) {
-            closeAnnounceModal();
+    async function sendAnnouncementToTelegram(minutes, customText) {
+        try {
+            let message = `⚡️ • <b>ДМ сервер будет создан через ${minutes} минут!</b>`;
+            if (customText && customText.trim()) {
+                message += `\n\n📝 ${customText.trim()}`;
+            }
+            message += `\n\n📢 <b>ТГК с информацией о мини-приложение:</b>\n` +
+                       `<a href="${INFO_CHANNEL_URL}">${INFO_CHANNEL_URL}</a>`;
+            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: CHANNEL_ID,
+                    text: message,
+                    parse_mode: 'HTML',
+                    disable_web_page_preview: true,
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "🚀 Открыть мини-приложение", url: APP_URL }]
+                        ]
+                    }
+                })
+            });
+            const data = await response.json();
+            if (!data.ok) {
+                console.error('❌ Ошибка отправки объявления:', data.description);
+                return false;
+            } else {
+                console.log(`✅ Объявление отправлено в Telegram: ДМ сервер через ${minutes} минут`);
+                return true;
+            }
+        } catch (error) {
+            console.error('❌ Ошибка отправки объявления:', error);
+            return false;
         }
-        
-        modalTargetUser = username;
-        modalTargetServer = serverId;
-        modalTargetMap = map || 'Неизвестная карта';
-        document.getElementById('modalPlayerName').textContent = username;
-        document.getElementById('modalKills').value = 0;
-        document.getElementById('modalDeaths').value = 0;
-        
-        // Сбрасываем кнопку
-        const btn = document.getElementById('modalSubmitBtn');
-        btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
-        btn.disabled = false;
-        
-        document.getElementById('statsModal').classList.add('active');
-    }
-
-    function closeStatsModal() {
-        console.log('❌ Закрытие модалки');
-        document.getElementById('statsModal').classList.remove('active');
-        modalTargetUser = null;
-        modalTargetServer = null;
-        modalTargetMap = null;
     }
 
     // ====================================================
@@ -1955,43 +1859,6 @@
         } catch (error) {
             showToast('error', 'Ошибка', error.message);
             closeAnnounceModal();
-        }
-    }
-
-    async function sendAnnouncementToTelegram(minutes, customText) {
-        try {
-            let message = `⚡️ • <b>ДМ сервер будет создан через ${minutes} минут!</b>`;
-            if (customText && customText.trim()) {
-                message += `\n\n📝 ${customText.trim()}`;
-            }
-            message += `\n\n📢 <b>ТГК с информацией о мини-приложение:</b>\n` +
-                       `<a href="${INFO_CHANNEL_URL}">${INFO_CHANNEL_URL}</a>`;
-            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: CHANNEL_ID,
-                    text: message,
-                    parse_mode: 'HTML',
-                    disable_web_page_preview: true,
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{ text: "🚀 Открыть мини-приложение", url: APP_URL }]
-                        ]
-                    }
-                })
-            });
-            const data = await response.json();
-            if (!data.ok) {
-                console.error('❌ Ошибка отправки объявления:', data.description);
-                return false;
-            } else {
-                console.log(`✅ Объявление отправлено в Telegram: ДМ сервер через ${minutes} минут`);
-                return true;
-            }
-        } catch (error) {
-            console.error('❌ Ошибка отправки объявления:', error);
-            return false;
         }
     }
 
@@ -2272,6 +2139,161 @@
     }
 
     // ====================================================
+    // ===== СТАТИСТИКА С ИСТОРИЕЙ МАТЧЕЙ =====
+    // ====================================================
+
+    function openStatsModal(username, userId, serverId, map) {
+        console.log('📊 Открытие модалки для:', username);
+        
+        if (document.getElementById('announceModal').classList.contains('active')) {
+            closeAnnounceModal();
+        }
+        
+        modalTargetUserId = userId;
+        modalTargetUsername = username;
+        modalTargetServer = serverId;
+        modalTargetMap = map || 'Неизвестная карта';
+        document.getElementById('modalPlayerName').textContent = username;
+        document.getElementById('modalKills').value = 0;
+        document.getElementById('modalDeaths').value = 0;
+        
+        const btn = document.getElementById('modalSubmitBtn');
+        btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
+        btn.disabled = false;
+        
+        document.getElementById('statsModal').classList.add('active');
+    }
+
+    function closeStatsModal() {
+        console.log('❌ Закрытие модалки');
+        document.getElementById('statsModal').classList.remove('active');
+        modalTargetUserId = null;
+        modalTargetUsername = null;
+        modalTargetServer = null;
+        modalTargetMap = null;
+    }
+
+    // ===== ФУНКЦИЯ ЗАЧИСЛЕНИЯ =====
+    function submitStats() {
+        console.log('📤 submitStats() ВЫЗВАНА!');
+        console.log('📊 modalTargetUserId:', modalTargetUserId);
+        console.log('📊 modalTargetUsername:', modalTargetUsername);
+        console.log('📊 modalTargetServer:', modalTargetServer);
+        console.log('📊 modalTargetMap:', modalTargetMap);
+        
+        const killsInput = document.getElementById('modalKills');
+        const deathsInput = document.getElementById('modalDeaths');
+        
+        const kills = parseInt(killsInput ? killsInput.value : 0) || 0;
+        const deaths = parseInt(deathsInput ? deathsInput.value : 0) || 0;
+        const map = modalTargetMap || 'Неизвестная карта';
+        
+        console.log('📊 Введено:', { kills, deaths, map });
+        
+        if (!modalTargetUserId) {
+            showToast('error', 'Ошибка', 'Пользователь не найден');
+            console.error('❌ modalTargetUserId пустой!');
+            return;
+        }
+        
+        const btn = document.getElementById('modalSubmitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
+        
+        submitStatsAsync(kills, deaths, map, btn);
+    }
+
+    async function submitStatsAsync(kills, deaths, map, btn) {
+        try {
+            console.log('🔍 Ищем пользователя по ID:', modalTargetUserId);
+            
+            // Ищем пользователя по ID
+            const userData = await apiRequest(`/users?id=eq.${modalTargetUserId}`);
+            console.log('👤 Найден пользователь:', userData);
+            
+            if (!userData || userData.length === 0) {
+                showToast('error', 'Ошибка', `Пользователь не найден`);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
+                return;
+            }
+            
+            const user = userData[0];
+            console.log('👤 Данные пользователя:', user);
+            
+            const newKills = (user.kills || 0) + kills;
+            const newDeaths = (user.deaths || 0) + deaths;
+            const newMatches = (user.matches || 0) + 1;
+            const newServerMatches = (user.serverMatches || 0) + 1;
+            
+            const matchKD = deaths > 0 ? (kills / deaths) : kills;
+            const roundedKD = Math.round(matchKD * 100) / 100;
+            
+            let kdHistory = user.kdHistory || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            kdHistory.push(matchKD);
+            if (kdHistory.length > 10) {
+                kdHistory = kdHistory.slice(-10);
+            }
+            
+            console.log('📝 Обновляем пользователя...');
+            await apiRequest(`/users?id=eq.${user.id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    kills: newKills,
+                    deaths: newDeaths,
+                    matches: newMatches,
+                    serverMatches: newServerMatches,
+                    kdHistory: kdHistory
+                })
+            });
+            
+            console.log('📝 Сохраняем историю матча...');
+            const matchRecord = {
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                user_id: user.id,
+                username: user.username,
+                map: map,
+                kills: kills,
+                deaths: deaths,
+                kd: roundedKD,
+                match_date: new Date().toISOString(),
+                server_name: modalTargetServer ? `DM #${modalTargetServer}` : 'DM Сервер',
+                created_at: new Date().toISOString()
+            };
+            
+            await apiRequest('/match_history', {
+                method: 'POST',
+                body: JSON.stringify([matchRecord])
+            });
+            
+            if (modalTargetServer) {
+                console.log('🗑️ Удаляем из очереди...');
+                await removeFromPending(modalTargetServer, user.username);
+            }
+            
+            closeStatsModal();
+            showToast('success', 'Статистика обновлена', `Игроку ${user.username} зачислен матч на карте ${map}`);
+            
+            fetchServers();
+            fetchSiteStats();
+            fetchTopPlayers();
+            
+            if (viewingUserId === user.id) {
+                fetchUserData(user.id);
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
+            
+        } catch (error) {
+            console.error('❌ Ошибка:', error);
+            showToast('error', 'Ошибка', error.message || 'Не удалось зачислить статистику');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
+        }
+    }
+
+    // ====================================================
     // ===== ЗАГРУЗКА ИСТОРИИ МАТЧЕЙ =====
     // ====================================================
 
@@ -2405,7 +2427,6 @@
             document.getElementById('serverPlayerIdInput').value = '';
             document.getElementById('serverMapInput').value = '';
             
-            // Отправка в Telegram
             await sendTelegramNotificationWithImage(
                 gameNumber,
                 user?.username || 'Unknown',
@@ -2419,84 +2440,6 @@
         } catch (error) {
             console.error('❌ Ошибка создания сервера:', error);
             showToast('error', 'Ошибка', error.message);
-        }
-    }
-
-    async function sendTelegramNotificationWithImage(dmNumber, host, mode, map) {
-        try {
-            console.log('🖼️ Создаём картинку для Telegram...');
-            const canvas = createDmImage(dmNumber, host, mode, map);
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-            const formData = new FormData();
-            formData.append('chat_id', CHANNEL_ID);
-            formData.append('photo', blob, 'dm_notification.png');
-            const caption = `📢 <b>ЛОББИ #${dmNumber} создано!</b>\n\n` +
-                           `📢 <b>ТГК с информацией о мини-приложение:</b>\n` +
-                           `<a href="${INFO_CHANNEL_URL}">${INFO_CHANNEL_URL}</a>`;
-            formData.append('caption', caption);
-            formData.append('parse_mode', 'HTML');
-            formData.append('reply_markup', JSON.stringify({
-                inline_keyboard: [
-                    [{ text: "🚀 Открыть мини-приложение", url: APP_URL }]
-                ]
-            }));
-            console.log(`📤 Отправка запроса в Telegram API...`);
-            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
-            console.log('📨 Ответ Telegram API:', data);
-            if (!data.ok) {
-                console.error('❌ Telegram API error:', data.description);
-                // Пробуем отправить текст
-                await sendTelegramNotificationText(dmNumber, host, mode, map);
-                return false;
-            } else {
-                console.log('✅ Уведомление с картинкой отправлено в Telegram');
-                return true;
-            }
-        } catch (error) {
-            console.error('❌ Ошибка отправки в Telegram:', error);
-            await sendTelegramNotificationText(dmNumber, host, mode, map);
-            return false;
-        }
-    }
-
-    async function sendTelegramNotificationText(dmNumber, host, mode, map) {
-        try {
-            console.log('📝 Отправка текстового уведомления в Telegram...');
-            const message = `📢 <b>ЛОББИ #${dmNumber} создано!</b>\n\n` +
-                           `👤 Хост: <b>${host || 'Unknown'}</b>\n` +
-                           `🎮 Режим: <b>${mode || 'Не указан'}</b>\n` +
-                           `🕐 Время: <b>10 минут</b>\n` +
-                           `🗺️ Карта: <b>${map || 'Не указана'}</b>\n\n` +
-                           `📢 <b>ТГК с информацией о мини-приложение:</b>\n` +
-                           `<a href="${INFO_CHANNEL_URL}">${INFO_CHANNEL_URL}</a>`;
-            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: CHANNEL_ID,
-                    text: message,
-                    parse_mode: 'HTML',
-                    disable_web_page_preview: true,
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{ text: "🚀 Открыть мини-приложение", url: APP_URL }]
-                        ]
-                    }
-                })
-            });
-            const data = await response.json();
-            if (!data.ok) {
-                console.error('❌ Ошибка отправки текста:', data.description);
-            } else {
-                console.log('✅ Текстовое уведомление отправлено в Telegram');
-            }
-            return data;
-        } catch (error) {
-            console.error('❌ Ошибка отправки текстового уведомления:', error);
         }
     }
 
@@ -2992,7 +2935,6 @@
         document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
         document.getElementById('announceSubmitBtn').addEventListener('click', sendAnnouncement);
         
-        // ===== КНОПКА "ЗАЧИСЛИТЬ" =====
         const submitBtn = document.getElementById('modalSubmitBtn');
         if (submitBtn) {
             console.log('✅ Кнопка "Зачислить" найдена');

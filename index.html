@@ -772,6 +772,18 @@
             color: #7986cb;
         }
         .btn-stats:hover { background: #283593; transform: scale(1.05); }
+
+        /* ===== НОВАЯ КНОПКА "ОБЪЯВЛЕНИЕ" ===== */
+        .btn-announce {
+            background: #7d2e7d;
+            color: #ff6bff;
+            border: 1px solid #ff6bff !important;
+        }
+        .btn-announce:hover {
+            background: #9a3a9a;
+            transform: scale(1.02);
+        }
+
         .btn-join {
             width: 100%;
             padding: 0.7rem;
@@ -786,7 +798,13 @@
             margin-top: 0.5rem;
         }
         .btn-join:hover { background: var(--primary-hover); box-shadow: 0 0 20px var(--primary-glow); transform: scale(1.02); }
-        .server-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+
+        .server-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
         .server-actions button {
             flex: 1;
             padding: 0.4rem;
@@ -796,6 +814,7 @@
             cursor: pointer;
             transition: 0.3s;
             font-size: 0.8rem;
+            min-width: 80px;
         }
         .btn-delete { background: #ff6b6b20; color: #ff6b6b; border: 1px solid #ff6b6b !important; }
         .btn-delete:hover { background: #ff6b6b40; }
@@ -1201,6 +1220,38 @@
             border-color: var(--primary); 
             box-shadow: 0 0 20px var(--primary-glow); 
         }
+
+        /* ===== СТИЛИ ДЛЯ МОДАЛКИ ВЫБОРА ВРЕМЕНИ ===== */
+        .time-options {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+        .time-options button {
+            padding: 0.7rem 1.5rem;
+            border-radius: 40px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            min-width: 90px;
+        }
+        .time-options button:hover {
+            border-color: var(--primary);
+            background: var(--primary-glow);
+            transform: scale(1.05);
+        }
+        .time-options button.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: var(--bg-main);
+        }
+
         .modal .btn-submit-modal {
             width: 100%;
             padding: 0.8rem;
@@ -1266,6 +1317,10 @@
             .highlight-card h2 { font-size: 1.8rem; }
             .match-item { flex-direction: column; align-items: flex-start; }
             .match-item .match-stats { width: 100%; justify-content: flex-start; }
+            .server-actions { flex-direction: column; }
+            .server-actions button { min-width: 100%; }
+            .time-options { gap: 0.5rem; }
+            .time-options button { padding: 0.5rem 1rem; font-size: 0.85rem; min-width: 70px; }
         }
         @media (max-width: 500px) {
             .stats-grid { grid-template-columns: 1fr 1fr; }
@@ -1290,6 +1345,7 @@
     <div class="toast-text" id="toastText">Действие выполнено</div>
 </div>
 
+<!-- ===== МОДАЛКА ДЛЯ СТАТИСТИКИ ===== -->
 <div class="modal-overlay" id="statsModal">
     <div class="modal">
         <h3><i class="fas fa-chart-bar"></i> Ввести статистику</h3>
@@ -1304,6 +1360,21 @@
         </div>
         <button class="btn-submit-modal" id="modalSubmitBtn"><i class="fas fa-check"></i> Зачислить</button>
         <button class="btn-cancel-modal" onclick="closeStatsModal()"><i class="fas fa-times"></i> Отмена</button>
+    </div>
+</div>
+
+<!-- ===== МОДАЛКА ДЛЯ ОБЪЯВЛЕНИЯ ===== -->
+<div class="modal-overlay" id="announceModal">
+    <div class="modal">
+        <h3><i class="fas fa-bullhorn"></i> Объявление</h3>
+        <p style="color: var(--text-secondary); text-align: center; margin-bottom: 0.5rem; font-weight: 500;">Выберите время до создания DM сервера</p>
+        <div class="time-options" id="timeOptions">
+            <button onclick="selectTime(5)" data-time="5">5 минут</button>
+            <button onclick="selectTime(10)" data-time="10">10 минут</button>
+            <button onclick="selectTime(15)" data-time="15">15 минут</button>
+        </div>
+        <button class="btn-submit-modal" id="announceSubmitBtn"><i class="fas fa-bullhorn"></i> Отправить объявление</button>
+        <button class="btn-cancel-modal" onclick="closeAnnounceModal()"><i class="fas fa-times"></i> Отмена</button>
     </div>
 </div>
 
@@ -1534,6 +1605,11 @@
     let modalTargetServer = null;
     let modalTargetMap = null;
 
+    // Для модалки объявления
+    let announceTargetServer = null;
+    let announceTargetServerName = null;
+    let selectedTime = null;
+
     // ====================================================
     // ===== API ЗАПРОСЫ =====
     // ====================================================
@@ -1651,7 +1727,7 @@
         return canvas;
     }
 
-    // ===== ОТПРАВКА В TELEGRAM С ГАРАНТИЕЙ =====
+    // ===== ОТПРАВКА В TELEGRAM =====
     async function sendTelegramNotificationWithImage(dmNumber, host, mode, map) {
         try {
             console.log('🖼️ Создаём картинку для Telegram...');
@@ -1686,7 +1762,6 @@
             
             if (!data.ok) {
                 console.error('❌ Telegram API error:', data.description);
-                // ПРОБУЕМ ОТПРАВИТЬ БЕЗ КАРТИНКИ
                 await sendTelegramNotificationText(dmNumber, host, mode, map);
                 return false;
             } else {
@@ -1695,13 +1770,12 @@
             }
         } catch (error) {
             console.error('❌ Ошибка отправки в Telegram:', error);
-            // ПРОБУЕМ ОТПРАВИТЬ БЕЗ КАРТИНКИ
             await sendTelegramNotificationText(dmNumber, host, mode, map);
             return false;
         }
     }
 
-    // ===== ЗАПАСНОЙ ВАРИАНТ — ТЕКСТОВОЕ УВЕДОМЛЕНИЕ =====
+    // ===== ОТПРАВКА ТЕКСТОВОГО УВЕДОМЛЕНИЯ =====
     async function sendTelegramNotificationText(dmNumber, host, mode, map) {
         try {
             console.log('📝 Отправка текстового уведомления в Telegram...');
@@ -1740,6 +1814,100 @@
             return data;
         } catch (error) {
             console.error('❌ Ошибка отправки текстового уведомления:', error);
+        }
+    }
+
+    // ===== ОТПРАВКА ОБЪЯВЛЕНИЯ В TELEGRAM =====
+    async function sendAnnouncementToTelegram(minutes, serverName) {
+        try {
+            const message = `⚡️ • <b>ДМ сервер будет создан через ${minutes} минут!</b>\n\n` +
+                           `🔹 <b>Сервер:</b> ${serverName || 'DM Сервер'}\n` +
+                           `🔹 <b>Время:</b> ${minutes} минут\n\n` +
+                           `📢 <b>ТГК с информацией о мини-приложение:</b>\n` +
+                           `<a href="${INFO_CHANNEL_URL}">${INFO_CHANNEL_URL}</a>`;
+
+            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: CHANNEL_ID,
+                    text: message,
+                    parse_mode: 'HTML',
+                    disable_web_page_preview: true,
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "🚀 Открыть мини-приложение", url: APP_URL }]
+                        ]
+                    }
+                })
+            });
+            
+            const data = await response.json();
+            if (!data.ok) {
+                console.error('❌ Ошибка отправки объявления:', data.description);
+                return false;
+            } else {
+                console.log(`✅ Объявление отправлено в Telegram: ДМ сервер через ${minutes} минут`);
+                return true;
+            }
+        } catch (error) {
+            console.error('❌ Ошибка отправки объявления:', error);
+            return false;
+        }
+    }
+
+    // ====================================================
+    // ===== МОДАЛКА ОБЪЯВЛЕНИЯ =====
+    // ====================================================
+
+    function openAnnounceModal(serverId, serverName) {
+        announceTargetServer = serverId;
+        announceTargetServerName = serverName || 'DM Сервер';
+        selectedTime = null;
+        document.querySelectorAll('#timeOptions button').forEach(btn => btn.classList.remove('selected'));
+        document.getElementById('announceModal').classList.add('active');
+    }
+
+    function closeAnnounceModal() {
+        document.getElementById('announceModal').classList.remove('active');
+        announceTargetServer = null;
+        announceTargetServerName = null;
+        selectedTime = null;
+        document.querySelectorAll('#timeOptions button').forEach(btn => btn.classList.remove('selected'));
+    }
+
+    function selectTime(minutes) {
+        selectedTime = minutes;
+        document.querySelectorAll('#timeOptions button').forEach(btn => btn.classList.remove('selected'));
+        document.querySelector(`#timeOptions button[data-time="${minutes}"]`).classList.add('selected');
+    }
+
+    async function sendAnnouncement() {
+        if (!selectedTime) {
+            showToast('error', 'Ошибка', 'Выберите время');
+            return;
+        }
+
+        if (!announceTargetServer) {
+            showToast('error', 'Ошибка', 'Сервер не найден');
+            return;
+        }
+
+        try {
+            const success = await sendAnnouncementToTelegram(selectedTime, announceTargetServerName);
+            
+            if (success) {
+                showToast('success', 'Объявление отправлено', `ДМ сервер будет создан через ${selectedTime} минут!`);
+            } else {
+                showToast('error', 'Ошибка', 'Не удалось отправить объявление');
+            }
+            
+            closeAnnounceModal();
+        } catch (error) {
+            showToast('error', 'Ошибка', error.message);
+            closeAnnounceModal();
         }
     }
 
@@ -2250,7 +2418,6 @@
         }
     }
 
-    // ===== СОЗДАНИЕ СЕРВЕРА С ОТПРАВКОЙ В TELEGRAM =====
     async function createServer() {
         if (!await isAdmin()) {
             showToast('error', 'Доступ запрещен', 'Только администраторы могут создавать DM сервера');
@@ -2303,10 +2470,9 @@
             document.getElementById('serverPlayerIdInput').value = '';
             document.getElementById('serverMapInput').value = '';
             
-            // ===== ОТПРАВКА В TELEGRAM — ВСЕГДА =====
+            // ===== ОТПРАВКА В TELEGRAM =====
             console.log(`📤 Отправляем уведомление в Telegram для DM #${gameNumber}...`);
             
-            // ПЕРВАЯ ПОПЫТКА С КАРТИНКОЙ
             let sent = await sendTelegramNotificationWithImage(
                 gameNumber,
                 user?.username || 'Unknown',
@@ -2314,7 +2480,6 @@
                 map
             );
             
-            // ЕСЛИ НЕ ОТПРАВИЛОСЬ — ПОВТОРНАЯ ПОПЫТКА ЧЕРЕЗ 2 СЕКУНДЫ
             if (!sent) {
                 console.log('⏳ Первая попытка не удалась, повтор через 2 секунды...');
                 setTimeout(async () => {
@@ -2326,7 +2491,6 @@
                     );
                 }, 2000);
                 
-                // ТРЕТЬЯ ПОПЫТКА ЧЕРЕЗ 5 СЕКУНД
                 setTimeout(async () => {
                     await sendTelegramNotificationWithImage(
                         gameNumber,
@@ -2430,6 +2594,7 @@
                 ${isAdminUser ? `
                     <div class="server-actions">
                         <button class="btn-delete" onclick="deleteServer(${server.id})"><i class="fas fa-trash"></i> Удалить</button>
+                        <button class="btn-announce" onclick="openAnnounceModal(${server.id}, '${server.name}')"><i class="fas fa-bullhorn"></i> Объявление</button>
                     </div>
                 ` : ''}
                 ${pendingHtml}
@@ -2782,6 +2947,12 @@
         if (e.target === this) closeStatsModal();
     });
 
+    document.getElementById('announceModal').addEventListener('click', function(e) {
+        if (e.target === this) closeAnnounceModal();
+    });
+
+    document.getElementById('announceSubmitBtn').addEventListener('click', sendAnnouncement);
+
     // ====================================================
     // ===== ОБНОВЛЕНИЕ АДМИН-ПАНЕЛИ =====
     // ====================================================
@@ -2855,6 +3026,7 @@
             }
             if (e.key === 'Escape') {
                 closeStatsModal();
+                closeAnnounceModal();
             }
         });
     });

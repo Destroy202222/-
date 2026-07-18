@@ -1303,10 +1303,6 @@
             <label>Количество смертей</label>
             <input type="number" id="modalDeaths" value="0" min="0" />
         </div>
-        <div class="form-group">
-            <label>Карта</label>
-            <input type="text" id="modalMap" placeholder="Например: Mansion" />
-        </div>
         <button class="btn-submit-modal" id="modalSubmitBtn"><i class="fas fa-check"></i> Зачислить</button>
         <button class="btn-cancel-modal" onclick="closeStatsModal()"><i class="fas fa-times"></i> Отмена</button>
     </div>
@@ -2050,13 +2046,13 @@
     // ===== СТАТИСТИКА С ИСТОРИЕЙ МАТЧЕЙ =====
     // ====================================================
 
-    function openStatsModal(username, userId, serverId) {
+    function openStatsModal(username, userId, serverId, map) {
         modalTargetUser = userId;
         modalTargetServer = serverId;
+        modalTargetMap = map || 'Неизвестная карта';
         document.getElementById('modalPlayerName').textContent = username;
         document.getElementById('modalKills').value = 0;
         document.getElementById('modalDeaths').value = 0;
-        document.getElementById('modalMap').value = '';
         document.getElementById('statsModal').classList.add('active');
     }
 
@@ -2064,12 +2060,13 @@
         document.getElementById('statsModal').classList.remove('active');
         modalTargetUser = null;
         modalTargetServer = null;
+        modalTargetMap = null;
     }
 
     async function submitStats() {
         const kills = parseInt(document.getElementById('modalKills').value) || 0;
         const deaths = parseInt(document.getElementById('modalDeaths').value) || 0;
-        const map = document.getElementById('modalMap').value.trim() || 'Неизвестная карта';
+        const map = modalTargetMap || 'Неизвестная карта';
         
         if (!modalTargetUser) {
             showToast('error', 'Ошибка', 'Пользователь не найден');
@@ -2372,7 +2369,7 @@
                                 <span class="username"><i class="fas fa-user"></i> ${p}</span>
                                 ${isAdminUser ? `
                                 <div class="actions">
-                                    <button class="btn-stats" onclick="openStatsModal('${p}', '${p}', ${server.id})"><i class="fas fa-chart-bar"></i> Статистика</button>
+                                    <button class="btn-stats" onclick="openStatsModal('${p}', '${p}', ${server.id}, '${server.map}')"><i class="fas fa-chart-bar"></i> Статистика</button>
                                     <button class="btn-cancel" onclick="cancelAndRefresh(${server.id}, '${p}')"><i class="fas fa-times"></i> Отменить</button>
                                 </div>` : ''}
                             </div>

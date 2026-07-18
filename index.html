@@ -1756,6 +1756,7 @@
             return nextNumber;
         } catch (error) {
             console.error('❌ Ошибка получения номера DM:', error);
+            showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера. Проверьте таблицу dm_counter в Supabase.');
             return 0;
         }
     }

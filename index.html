@@ -1308,25 +1308,21 @@
         canvas.height = 400;
         const ctx = canvas.getContext('2d');
 
-        // Фон
         const grad = ctx.createLinearGradient(0, 0, 800, 400);
         grad.addColorStop(0, '#141210');
         grad.addColorStop(1, '#0a0a0a');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, 800, 400);
 
-        // Рамка
         ctx.strokeStyle = '#ff7b00';
         ctx.lineWidth = 4;
         ctx.strokeRect(15, 15, 770, 370);
 
-        // Номер DM
         ctx.textAlign = 'right';
         ctx.fillStyle = '#ff7b00';
         ctx.font = 'bold 22px Arial';
         ctx.fillText(`DM #${dmNumber}`, 750, 50);
 
-        // Заголовок
         ctx.textAlign = 'center';
         ctx.fillStyle = '#ff7b00';
         ctx.font = 'bold 42px Arial';
@@ -1336,7 +1332,6 @@
         ctx.font = '16px Arial';
         ctx.fillText('✦ DEATHMATCH STANDOFF 2 ✦', 400, 110);
 
-        // Линия
         ctx.strokeStyle = 'rgba(255,123,0,0.3)';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -1344,7 +1339,6 @@
         ctx.lineTo(650, 130);
         ctx.stroke();
 
-        // Информация
         const info = [
             { label: 'Хост', value: host || 'Unknown' },
             { label: 'Режим', value: mode || 'Не указан' },
@@ -1364,7 +1358,6 @@
             ctx.fillText(item.value, 370, y);
         });
 
-        // Подвал
         ctx.textAlign = 'center';
         ctx.fillStyle = '#8f877a';
         ctx.font = '14px Arial';
@@ -1373,26 +1366,15 @@
         return canvas;
     }
 
-    // ====================================================
-    // ===== TELEGRAM УВЕДОМЛЕНИЯ С КАРТИНКОЙ =====
-    // ====================================================
-
     async function sendTelegramNotificationWithImage(dmNumber, host, mode, map) {
         try {
             console.log('🖼️ Создаём картинку для Telegram...');
-            
-            // Создаём картинку
             const canvas = createDmImage(dmNumber, host, mode, map);
-            
-            // Конвертируем в Blob
             const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
             
-            // Отправляем в Telegram
             const formData = new FormData();
             formData.append('chat_id', CHANNEL_ID);
             formData.append('photo', blob, 'dm_notification.png');
-            
-            // Добавляем кнопку "Открыть"
             formData.append('reply_markup', JSON.stringify({
                 inline_keyboard: [
                     [{ text: "🚀 Открыть мини-приложение", url: APP_URL }]
@@ -1407,7 +1389,6 @@
             const data = await response.json();
             if (!data.ok) {
                 console.error('Telegram API error:', data.description);
-                // Если не получилось отправить картинку, отправляем текст
                 await sendTelegramNotificationText(dmNumber, host, mode, map);
             } else {
                 console.log('✅ Уведомление с картинкой отправлено в Telegram');
@@ -1415,14 +1396,9 @@
             return data;
         } catch (error) {
             console.error('Error sending Telegram notification with image:', error);
-            // Если ошибка, отправляем текстом
             await sendTelegramNotificationText(dmNumber, host, mode, map);
         }
     }
-
-    // ====================================================
-    // ===== TELEGRAM ТЕКСТОВОЕ УВЕДОМЛЕНИЕ (БЕЗ КАРТИНКИ) =====
-    // ====================================================
 
     async function sendTelegramNotificationText(dmNumber, host, mode, map) {
         try {
@@ -1849,45 +1825,41 @@
     }
 
     // ====================================================
-    // ===== СЕРВЕРА (ПОСТОЯННАЯ НУМЕРАЦИЯ) =====
+    // ===== СЕРВЕРА =====
     // ====================================================
 
-    async function getNextDMNumber() {
+    async function getNextGameNumber() {
         try {
-            console.log('📊 Получение следующего номера DM...');
-            
-            // Пробуем получить данные из dm_counter
-            let data = await apiRequest('/dm_counter?id=eq.1');
-            console.log('📊 Данные dm_counter:', data);
+            console.log('📊 Получение следующего номера игры...');
+            let data = await apiRequest('/server_counter?id=eq.1');
+            console.log('📊 Данные server_counter:', data);
             
             let nextNumber = 1;
             
             if (data && data.length > 0) {
-                const current = data[0].count || 0;
+                const current = data[0].game_count || 0;
                 nextNumber = current + 1;
                 console.log(`📈 Текущий счётчик: ${current}, следующий: ${nextNumber}`);
-                
-                // Обновляем счётчик
-                await apiRequest('/dm_counter?id=eq.1', {
+                await apiRequest('/server_counter?id=eq.1', {
                     method: 'PATCH',
-                    body: JSON.stringify({ count: nextNumber })
+                    body: JSON.stringify({ game_count: nextNumber })
                 });
                 console.log('✅ Счётчик обновлён');
             } else {
                 console.log('📊 Счётчик пуст, создаём...');
-                await apiRequest('/dm_counter', {
+                await apiRequest('/server_counter', {
                     method: 'POST',
-                    body: JSON.stringify([{ id: 1, count: 1 }])
+                    body: JSON.stringify([{ id: 1, game_count: 1 }])
                 });
                 console.log('✅ Счётчик создан');
                 nextNumber = 1;
             }
             
-            console.log(`🎯 Итоговый номер DM: ${nextNumber}`);
+            console.log(`🎯 Итоговый номер игры: ${nextNumber}`);
             return nextNumber;
         } catch (error) {
-            console.error('❌ Ошибка получения номера DM:', error);
-            showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера');
+            console.error('❌ Ошибка получения номера игры:', error);
+            showToast('error', 'Ошибка', 'Не удалось получить номер игры. Проверьте таблицу server_counter в Supabase.');
             return 0;
         }
     }
@@ -1910,13 +1882,13 @@
 
         try {
             const user = getCurrentUser();
-            const dmNumber = await getNextDMNumber();
+            const gameNumber = await getNextGameNumber();
             
-            if (dmNumber === 0) {
+            if (gameNumber === 0) {
                 return;
             }
             
-            const serverName = `DM #${dmNumber} | ${name}`;
+            const serverName = `DM #${gameNumber} | ${name}`;
             console.log(`📝 Создаём сервер: ${serverName}`);
             
             const newServer = {
@@ -1929,7 +1901,7 @@
                 pending: [],
                 createdAt: new Date().toISOString(),
                 createdBy: user?.username || 'admin',
-                dmNumber: dmNumber
+                dm_number: gameNumber
             };
 
             console.log('📦 Данные сервера:', newServer);
@@ -1944,14 +1916,12 @@
             document.getElementById('serverPlayerIdInput').value = '';
             document.getElementById('serverMapInput').value = '';
             
-            // ========== ОТПРАВЛЯЕМ В TELEGRAM ==========
             await sendTelegramNotificationWithImage(
-                dmNumber,
+                gameNumber,
                 user?.username || 'Unknown',
                 name,
                 map
             );
-            // ============================================
             
             showToast('success', 'Сервер создан', `Сервер "${serverName}" успешно добавлен`);
             fetchServers();

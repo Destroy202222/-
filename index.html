@@ -11,13 +11,13 @@
             --primary: #ff7b00;
             --primary-hover: #ff9a33;
             --primary-glow: rgba(255, 123, 0, 0.25);
-            --bg-main: #0a0a0a;
-            --bg-card: #141210;
-            --bg-input: #0a0a0a;
-            --border-color: #2a241e;
+            --bg-main: #2a2a2a;
+            --bg-card: rgba(30, 30, 30, 0.92);
+            --bg-input: #1a1a1a;
+            --border-color: #3a3a3a;
             --text-primary: #e0dcd0;
-            --text-secondary: #8f877a;
-            --text-muted: #6b6356;
+            --text-secondary: #a0a0a0;
+            --text-muted: #707070;
             --shadow-color: rgba(255, 123, 0, 0.15);
             --gradient-start: #ff7b00;
             --gradient-end: #ffb347;
@@ -52,15 +52,16 @@
             --gradient-start: #ffffff;
             --gradient-end: #888888;
             --shadow-color: rgba(255, 255, 255, 0.1);
-            --bg-main: #000000;
-            --bg-card: #0a0a0a;
-            --border-color: #1a1a1a;
+            --bg-main: #1a1a1a;
+            --bg-card: rgba(20, 20, 20, 0.92);
+            --border-color: #2a2a2a;
             --text-primary: #ffffff;
             --text-secondary: #aaaaaa;
             --text-muted: #666666;
-            --bg-input: #000000;
+            --bg-input: #0a0a0a;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        
         body {
             background: var(--bg-main);
             color: var(--text-primary);
@@ -70,8 +71,24 @@
             position: relative;
         }
 
-        /* ===== ФОН С ПАДАЮЩИМИ ПРЕДМЕТАМИ ===== */
-        .bg-particles {
+        /* ===== ФОН В КЛЕТОЧКУ ===== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== ЗВЁЗДЫ ===== */
+        .stars {
             position: fixed;
             top: 0;
             left: 0;
@@ -81,60 +98,22 @@
             z-index: 0;
             overflow: hidden;
         }
-        .particle {
+        .star {
             position: absolute;
-            top: -60px;
-            font-size: 28px;
-            opacity: 0;
-            animation: fall linear infinite;
-            user-select: none;
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite alternate;
         }
-        @keyframes fall {
-            0% {
-                transform: translateY(-60px) rotate(0deg) scale(0.8);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.9;
-            }
-            90% {
-                opacity: 0.9;
-            }
-            100% {
-                transform: translateY(calc(100vh + 60px)) rotate(720deg) scale(1.2);
-                opacity: 0;
-            }
-        }
+        .star:nth-child(odd) { animation-delay: 0.5s; }
+        .star:nth-child(3n) { animation-delay: 1s; }
+        .star:nth-child(5n) { animation-delay: 1.5s; }
+        .star:nth-child(7n) { animation-delay: 2s; }
 
-        /* ===== ФОНОВЫЕ ИКОНКИ ===== */
-        .bg-icons {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.04;
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            grid-template-rows: repeat(10, 1fr);
-        }
-        .bg-icons i {
-            font-size: 32px;
-            color: #ff7b00;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: pulse 4s ease-in-out infinite;
-        }
-        .bg-icons i:nth-child(odd) { animation-delay: 1s; }
-        .bg-icons i:nth-child(3n) { animation-delay: 2s; }
-        .bg-icons i:nth-child(5n) { animation-delay: 0.5s; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.1); }
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
         }
 
         /* ===== ГЛАВНЫЙ КОНТЕЙНЕР ===== */
@@ -146,7 +125,7 @@
 
         /* ===== HEADER (УМЕНЬШЕННЫЙ) ===== */
         .header {
-            background: rgba(20, 18, 16, 0.92);
+            background: rgba(30, 30, 30, 0.92);
             backdrop-filter: blur(12px);
             padding: 0.6rem 2rem;
             border-bottom: 2px solid var(--primary);
@@ -286,7 +265,7 @@
             align-items: center;
             min-height: 100vh;
             padding: 2rem;
-            background: radial-gradient(ellipse at center, var(--bg-card) 0%, var(--bg-main) 100%);
+            background: var(--bg-main);
             position: relative;
             z-index: 2;
             transition: background 0.3s;
@@ -294,7 +273,7 @@
         .auth-container {
             max-width: 420px;
             width: 100%;
-            background: rgba(20, 18, 16, 0.95);
+            background: rgba(30, 30, 30, 0.95);
             backdrop-filter: blur(12px);
             border-radius: 24px;
             padding: 2.5rem;
@@ -306,7 +285,7 @@
             z-index: 3;
         }
 
-        /* ===== ОСТАЛЬНЫЕ СТИЛИ (СОХРАНЯЕМ) ===== */
+        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
         .auth-container .auth-logo { text-align: center; margin-bottom: 2rem; }
         .auth-container .auth-logo h1 {
             font-size: 2rem;
@@ -383,7 +362,7 @@
             z-index: 2;
         }
         .stat-block {
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 16px;
             padding: 1.5rem 1rem;
@@ -413,7 +392,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 16px 16px 0 0;
             padding: 1rem 2rem;
@@ -441,7 +420,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 0 0 16px 16px;
             padding: 1.5rem 2rem 2rem 2rem;
@@ -506,7 +485,7 @@
             z-index: 2;
         }
         .info-card {
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 20px;
             padding: 2rem 1.5rem;
@@ -519,7 +498,7 @@
         .info-card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
         .info-card p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
 
-        /* ===== ОСТАЛЬНЫЕ СТИЛИ (ПРЕЖНИЕ) ===== */
+        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
         .page-content {
             display: none;
             max-width: 1300px;
@@ -565,7 +544,7 @@
             gap: 2rem;
         }
         .server-card {
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 24px;
             padding: 1.8rem 1.5rem;
@@ -685,7 +664,7 @@
 
         /* ===== АДМИН ПАНЕЛИ ===== */
         .admin-panel {
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 24px;
             padding: 2rem;
@@ -727,7 +706,7 @@
         .admin-panel .btn-create:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--primary-glow); }
 
         .admin-system {
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 24px;
             padding: 2rem;
@@ -799,7 +778,7 @@
 
         /* ===== ПРОФИЛЬ ===== */
         .profile-card {
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 24px;
             padding: 2.5rem;
@@ -868,7 +847,7 @@
             align-items: center;
             gap: 1rem;
             padding: 0.8rem 1.2rem;
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 16px;
             margin-bottom: 0.6rem;
@@ -907,7 +886,7 @@
             margin: 0 auto;
         }
         .shop-card {
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 24px;
             padding: 2rem;
@@ -938,7 +917,7 @@
         .settings-card {
             max-width: 600px;
             margin: 0 auto;
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 24px;
             padding: 2rem;
@@ -1068,7 +1047,7 @@
 
         /* ===== FOOTER ===== */
         .footer {
-            background: rgba(20, 18, 16, 0.85);
+            background: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(8px);
             border-top: 1px solid var(--border-color);
             padding: 2rem;
@@ -1131,7 +1110,6 @@
             .prize-grid { grid-template-columns: 1fr; padding: 1.5rem; }
             .prize-header { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1rem; }
             .prize-total { font-size: 1.3rem; }
-            .bg-icons { display: none; }
         }
         @media (max-width: 500px) {
             .hero h2 { font-size: 1.8rem; }
@@ -1143,17 +1121,13 @@
             .shop-grid { grid-template-columns: 1fr; }
             .prize-amount { font-size: 1.3rem; }
             .prize-place { font-size: 0.8rem; }
-            .bg-particles .particle { font-size: 18px; }
         }
     </style>
 </head>
 <body data-theme="orange">
 
-<!-- ===== ФОНОВЫЕ ПАРТИКЛЫ (ПАДАЮЩИЕ ПРЕДМЕТЫ) ===== -->
-<div class="bg-particles" id="bgParticles"></div>
-
-<!-- ===== ФОНОВЫЕ ИКОНКИ ===== -->
-<div class="bg-icons" id="bgIcons"></div>
+<!-- ===== ЗВЁЗДЫ ===== -->
+<div class="stars" id="stars"></div>
 
 <div class="toast" id="toast">
     <div class="toast-title" id="toastTitle">Успешно!</div>
@@ -1364,41 +1338,22 @@
 
 <script>
     // ====================================================
-    // ===== ФОНОВЫЕ ПАРТИКЛЫ =====
+    // ===== ЗВЁЗДЫ =====
     // ====================================================
 
-    function createParticles() {
-        const container = document.getElementById('bgParticles');
-        const items = ['🔫', '💣', '⚔️', '🎯', '🏹', '🗡️', '🛡️', '💥', '🔥', '⭐', '🎮', '⚡'];
-        const colors = ['#ff7b00', '#ff9a33', '#ff6b6b', '#ffd700', '#51cf66', '#4dabf7'];
-        
-        for (let i = 0; i < 30; i++) {
-            const el = document.createElement('div');
-            el.className = 'particle';
-            el.textContent = items[Math.floor(Math.random() * items.length)];
-            el.style.left = Math.random() * 100 + '%';
-            el.style.fontSize = (16 + Math.random() * 24) + 'px';
-            el.style.animationDuration = (12 + Math.random() * 20) + 's';
-            el.style.animationDelay = (Math.random() * 15) + 's';
-            el.style.color = colors[Math.floor(Math.random() * colors.length)];
-            el.style.opacity = 0.2 + Math.random() * 0.3;
-            container.appendChild(el);
-        }
-    }
-
-    // ====================================================
-    // ===== ФОНОВЫЕ ИКОНКИ =====
-    // ====================================================
-
-    function createBgIcons() {
-        const container = document.getElementById('bgIcons');
-        const icons = ['fa-crosshairs', 'fa-bullseye', 'fa-shield-halved', 'fa-gun', 'fa-bomb', 'fa-fire', 'fa-bolt', 'fa-star', 'fa-trophy', 'fa-medal'];
-        
-        for (let i = 0; i < 50; i++) {
-            const el = document.createElement('i');
-            el.className = 'fas ' + icons[Math.floor(Math.random() * icons.length)];
-            el.style.animationDelay = (Math.random() * 4) + 's';
-            container.appendChild(el);
+    function createStars() {
+        const container = document.getElementById('stars');
+        for (let i = 0; i < 120; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = 1 + Math.random() * 3;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', (2 + Math.random() * 4) + 's');
+            star.style.animationDelay = (Math.random() * 5) + 's';
+            container.appendChild(star);
         }
     }
 
@@ -1486,7 +1441,7 @@
         const ctx = canvas.getContext('2d');
 
         const grad = ctx.createLinearGradient(0, 0, 800, 400);
-        grad.addColorStop(0, '#141210');
+        grad.addColorStop(0, '#1a1a1a');
         grad.addColorStop(1, '#0a0a0a');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, 800, 400);
@@ -2607,9 +2562,8 @@
         document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
         document.getElementById('modalSubmitBtn').addEventListener('click', submitStats);
         
-        // Запускаем фоновые эффекты
-        createParticles();
-        createBgIcons();
+        // Запускаем звёзды
+        createStars();
         
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {

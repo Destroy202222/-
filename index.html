@@ -1315,7 +1315,7 @@
                     disable_web_page_preview: true,
                     reply_markup: {
                         inline_keyboard: [
-                            [{ text: "🚀 Открыть мини-приложение", url: "https://nwolesso2dm.vercel.app" }]
+                            [{ text: "Открыть мини-приложение", url: "https://nwolesso2dm.vercel.app" }]
                         ]
                     }
                 })
@@ -1725,29 +1725,37 @@
 
     async function getNextDMNumber() {
         try {
-            // Получаем текущее значение счётчика
+            console.log('🔄 Получение следующего номера DM...');
+            
             const data = await apiRequest('/dm_counter?id=eq.1');
+            console.log('📊 Данные счётчика:', data);
+            
             let nextNumber = 1;
             
             if (data && data.length > 0) {
                 const current = data[0].count || 0;
                 nextNumber = current + 1;
-                // Обновляем счётчик
+                console.log(`📈 Текущий счётчик: ${current}, следующий: ${nextNumber}`);
+                
                 await apiRequest('/dm_counter?id=eq.1', {
                     method: 'PATCH',
                     body: JSON.stringify({ count: nextNumber })
                 });
+                console.log('✅ Счётчик обновлён');
             } else {
-                // Если счётчик не существует — создаём
+                console.log('🆕 Счётчик не найден, создаём новый...');
                 await apiRequest('/dm_counter', {
                     method: 'POST',
                     body: JSON.stringify([{ id: 1, count: 1 }])
                 });
+                console.log('✅ Счётчик создан');
                 nextNumber = 1;
             }
+            
+            console.log(`🎯 Итоговый номер DM: ${nextNumber}`);
             return nextNumber;
         } catch (error) {
-            console.error('Error getting DM number:', error);
+            console.error('❌ Ошибка получения номера DM:', error);
             return 0;
         }
     }
@@ -1769,9 +1777,17 @@
         }
 
         try {
+            console.log('🚀 Начинаем создание сервера...');
             const user = getCurrentUser();
+            
             const dmNumber = await getNextDMNumber();
+            if (dmNumber === 0) {
+                showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера');
+                return;
+            }
+            
             const serverName = `DM #${dmNumber} | ${name}`;
+            console.log(`📝 Имя сервера: ${serverName}`);
             
             const newServer = {
                 id: Date.now(),
@@ -1786,10 +1802,13 @@
                 dmNumber: dmNumber
             };
 
+            console.log('📦 Данные сервера:', newServer);
+
             await apiRequest('/servers', {
                 method: 'POST',
                 body: JSON.stringify([newServer])
             });
+            console.log('✅ Сервер создан');
 
             document.getElementById('serverNameInput').value = '';
             document.getElementById('serverLobbyInput').value = '';
@@ -1797,15 +1816,11 @@
             document.getElementById('serverMapInput').value = '';
             
             const message = `
-🆕 <b>Создан новый DM сервер!</b>
-
-📌 <b>Название:</b> ${serverName}
-🗺️ <b>Карта:</b> ${map}
-👤 <b>Создатель:</b> ${user?.username || 'Unknown'}
-🆔 <b>ID создателя:</b> ${playerId}
-⏰ <b>Время:</b> ${new Date().toLocaleString()}
-
-#DM #Standoff2 #Nwoles
+DM #${dmNumber}
+Хост: ${user?.username || 'Unknown'}
+Режим: ${name}
+Время: 10 минут
+Карта: ${map}
             `;
             
             await sendTelegramNotification(message);
@@ -1814,6 +1829,7 @@
             fetchServers();
             fetchSiteStats();
         } catch (error) {
+            console.error('❌ Ошибка создания сервера:', error);
             showToast('error', 'Ошибка', error.message);
         }
     }

@@ -1236,6 +1236,7 @@
 
     const BOT_TOKEN = '8708031992:AAGVzZfMEjgIMG9USRu34K1hF20hL4avKxk';
     const CHANNEL_ID = '-1004438412918';
+    const APP_URL = 'https://nwolesso2dm.vercel.app';
 
     // ====================================================
     // ===== СОСТОЯНИЕ =====
@@ -1315,7 +1316,7 @@
                     disable_web_page_preview: true,
                     reply_markup: {
                         inline_keyboard: [
-                            [{ text: "Открыть мини-приложение", url: "https://nwolesso2dm.vercel.app" }]
+                            [{ text: "Открыть мини-приложение", url: APP_URL }]
                         ]
                     }
                 })
@@ -1720,44 +1721,49 @@
     }
 
     // ====================================================
-    // ===== СЕРВЕРА (С ИСПРАВЛЕННОЙ НУМЕРАЦИЕЙ) =====
+    // ===== СЕРВЕРА =====
     // ====================================================
 
     async function getNextDMNumber() {
         try {
-            console.log('🔄 Получение следующего номера DM...');
-            
+            // Пробуем получить данные из таблицы dm_counter
             const data = await apiRequest('/dm_counter?id=eq.1');
-            console.log('📊 Данные счётчика:', data);
             
             let nextNumber = 1;
             
             if (data && data.length > 0) {
                 const current = data[0].count || 0;
                 nextNumber = current + 1;
-                console.log(`📈 Текущий счётчик: ${current}, следующий: ${nextNumber}`);
                 
+                // Обновляем счётчик
                 await apiRequest('/dm_counter?id=eq.1', {
                     method: 'PATCH',
                     body: JSON.stringify({ count: nextNumber })
                 });
-                console.log('✅ Счётчик обновлён');
             } else {
-                console.log('🆕 Счётчик не найден, создаём новый...');
+                // Если таблица пустая — создаём запись
                 await apiRequest('/dm_counter', {
                     method: 'POST',
                     body: JSON.stringify([{ id: 1, count: 1 }])
                 });
-                console.log('✅ Счётчик создан');
                 nextNumber = 1;
             }
             
-            console.log(`🎯 Итоговый номер DM: ${nextNumber}`);
             return nextNumber;
         } catch (error) {
-            console.error('❌ Ошибка получения номера DM:', error);
-            showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера. Проверьте таблицу dm_counter в Supabase.');
-            return 0;
+            console.error('Ошибка получения номера DM:', error);
+            // Если таблицы нет — создаём её прямо здесь
+            try {
+                // Пробуем создать таблицу через SQL (если есть права)
+                await apiRequest('/dm_counter', {
+                    method: 'POST',
+                    body: JSON.stringify([{ id: 1, count: 1 }])
+                });
+                return 1;
+            } catch (e) {
+                showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера. Проверьте таблицу dm_counter в Supabase.');
+                return 0;
+            }
         }
     }
 
@@ -1778,17 +1784,14 @@
         }
 
         try {
-            console.log('🚀 Начинаем создание сервера...');
             const user = getCurrentUser();
             
             const dmNumber = await getNextDMNumber();
             if (dmNumber === 0) {
-                showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера');
                 return;
             }
             
             const serverName = `DM #${dmNumber} | ${name}`;
-            console.log(`📝 Имя сервера: ${serverName}`);
             
             const newServer = {
                 id: Date.now(),
@@ -1803,26 +1806,21 @@
                 dmNumber: dmNumber
             };
 
-            console.log('📦 Данные сервера:', newServer);
-
             await apiRequest('/servers', {
                 method: 'POST',
                 body: JSON.stringify([newServer])
             });
-            console.log('✅ Сервер создан');
 
             document.getElementById('serverNameInput').value = '';
             document.getElementById('serverLobbyInput').value = '';
             document.getElementById('serverPlayerIdInput').value = '';
             document.getElementById('serverMapInput').value = '';
             
-            const message = `
-DM #${dmNumber}
+            const message = `DM #${dmNumber}
 Хост: ${user?.username || 'Unknown'}
 Режим: ${name}
 Время: 10 минут
-Карта: ${map}
-            `;
+Карта: ${map}`;
             
             await sendTelegramNotification(message);
             
@@ -1830,7 +1828,7 @@ DM #${dmNumber}
             fetchServers();
             fetchSiteStats();
         } catch (error) {
-            console.error('❌ Ошибка создания сервера:', error);
+            console.error('Ошибка создания сервера:', error);
             showToast('error', 'Ошибка', error.message);
         }
     }

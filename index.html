@@ -62,7 +62,6 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
         body { background: var(--bg-main); color: var(--text-primary); min-height: 100vh; transition: background 0.3s, color 0.3s; }
-
         .header {
             background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-main) 100%);
             padding: 1.2rem 2rem;
@@ -176,7 +175,6 @@
         .dropdown-content a:hover { background: var(--primary-glow); color: var(--primary); }
         .dropdown-content a i { width: 20px; color: var(--primary); font-size: 1.1rem; }
         .dropdown-content .divider { height: 1px; background: var(--border-color); margin: 0.3rem 0; }
-
         .btn-connect {
             background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
             color: var(--bg-main);
@@ -194,7 +192,6 @@
             box-shadow: 0 0 30px var(--primary-glow);
         }
         .btn-connect:hover { transform: scale(1.05); box-shadow: 0 0 50px var(--primary-glow); }
-
         .auth-page {
             display: flex;
             justify-content: center;
@@ -257,10 +254,8 @@
         .auth-container .auth-links { text-align: center; margin-top: 1.5rem; }
         .auth-container .auth-links a { color: var(--primary); text-decoration: none; cursor: pointer; font-weight: 500; transition: 0.3s; }
         .auth-container .auth-links a:hover { text-decoration: underline; color: var(--primary-hover); }
-
         .main-content { display: none; }
         .main-content.visible { display: block; }
-
         .hero { max-width: 1300px; margin: 3rem auto; padding: 0 2rem; text-align: center; }
         .hero .tag {
             display: inline-block;
@@ -276,7 +271,6 @@
         .hero h2 { font-size: 3.5rem; font-weight: 900; line-height: 1.2; margin-bottom: 1rem; }
         .hero h2 .highlight { background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero p { font-size: 1.2rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 2rem; line-height: 1.6; }
-
         .stats-grid {
             max-width: 1300px;
             margin: 2rem auto;
@@ -302,7 +296,6 @@
             -webkit-text-fill-color: transparent;
         }
         .stat-block .label { color: var(--text-secondary); font-weight: 500; margin-top: 0.2rem; }
-
         .prize-pool-section {
             max-width: 1300px;
             margin: 1.5rem auto;
@@ -393,7 +386,6 @@
         .prize-card.first .prize-badge { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
         .prize-card.second .prize-badge { background: rgba(192, 192, 192, 0.15); color: #c0c0c0; }
         .prize-card.third .prize-badge { background: rgba(205, 127, 50, 0.2); color: #cd7f32; }
-
         .info-grid {
             max-width: 1300px;
             margin: 2rem auto;
@@ -414,7 +406,6 @@
         .info-card .icon { font-size: 2.5rem; color: var(--primary); margin-bottom: 0.8rem; }
         .info-card h3 { font-size: 1.3rem; margin-bottom: 0.5rem; }
         .info-card p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; }
-
         .page-content {
             display: none;
             max-width: 1300px;
@@ -450,7 +441,6 @@
             box-shadow: none;
         }
         .page-content .back-btn button:hover { background: var(--primary-glow); box-shadow: 0 0 30px var(--primary-glow); }
-
         .servers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -506,7 +496,6 @@
             display: inline-block;
         }
         .server-card .server-creator i { color: var(--primary); margin-right: 0.3rem; }
-        
         .pending-players-section {
             background: var(--bg-card);
             border-radius: 12px;
@@ -547,7 +536,6 @@
             color: #7986cb;
         }
         .btn-stats:hover { background: #283593; transform: scale(1.05); }
-
         .btn-join {
             width: 100%;
             padding: 0.8rem;
@@ -562,7 +550,6 @@
             margin-top: 0.5rem;
         }
         .btn-join:hover { background: var(--primary-hover); box-shadow: 0 0 30px var(--primary-glow); transform: scale(1.02); }
-
         .server-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
         .server-actions button {
             flex: 1;
@@ -576,7 +563,6 @@
         }
         .btn-delete { background: #ff6b6b20; color: #ff6b6b; border: 1px solid #ff6b6b !important; }
         .btn-delete:hover { background: #ff6b6b40; }
-
         .admin-panel {
             background: var(--bg-card);
             border-radius: 24px;
@@ -617,7 +603,6 @@
             margin-top: 0.5rem;
         }
         .admin-panel .btn-create:hover { transform: scale(1.02); box-shadow: 0 0 30px var(--primary-glow); }
-
         .admin-system {
             background: var(--bg-card);
             border-radius: 24px;
@@ -687,7 +672,6 @@
             margin-left: 0.3rem;
         }
         .admin-tag .role-badge.super { background: #ffd700; color: #000; }
-
         .profile-card {
             background: var(--bg-card);
             border-radius: 24px;
@@ -724,7 +708,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .btn-ban {
             background: #ff6b6b;
             color: #fff;
@@ -740,7 +723,6 @@
         }
         .btn-ban:hover { background: #ff4444; transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 0, 0, 0.3); }
         .btn-ban i { margin-right: 0.5rem; }
-
         .chart-container {
             background: var(--bg-input);
             border-radius: 16px;
@@ -750,7 +732,6 @@
         }
         .chart-container h3 { color: var(--text-primary); margin-bottom: 1rem; font-size: 1.2rem; }
         .chart-container canvas { max-height: 300px; }
-
         .top-players { max-width: 800px; margin: 0 auto; }
         .top-player {
             display: flex;
@@ -785,7 +766,6 @@
             text-align: center;
             white-space: nowrap;
         }
-
         .shop-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -819,7 +799,6 @@
             font-size: 1rem;
         }
         .shop-card .btn-buy:hover { background: var(--primary-hover); box-shadow: 0 0 30px var(--primary-glow); }
-
         .settings-card {
             max-width: 600px;
             margin: 0 auto;
@@ -867,7 +846,6 @@
             font-size: 1rem;
         }
         .settings-card .btn-save:hover { background: var(--primary-hover); box-shadow: 0 0 30px var(--primary-glow); }
-
         .modal-overlay {
             display: none;
             position: fixed;
@@ -946,7 +924,6 @@
             margin-top: 0.5rem;
         }
         .modal .btn-cancel-modal:hover { border-color: var(--primary); color: var(--primary); }
-
         .footer {
             background: var(--bg-card);
             border-top: 1px solid var(--border-color);
@@ -960,7 +937,6 @@
         .footer .socials a { color: var(--text-secondary); margin: 0 1rem; transition: 0.3s; }
         .footer .socials a:hover { color: var(--primary); transform: scale(1.1); }
         .hidden { display: none !important; }
-
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -982,7 +958,6 @@
         .toast .toast-title.error { color: #ff6b6b; }
         .toast .toast-title.info { color: var(--primary); }
         .toast .toast-text { color: var(--text-secondary); font-size: 0.95rem; }
-
         @media (max-width: 800px) {
             .header-inner { flex-direction: column; align-items: center; text-align: center; }
             .logo-center h1 { font-size: 1.8rem; }
@@ -1020,7 +995,6 @@
 </head>
 <body data-theme="orange">
 
-<!-- Toast уведомления -->
 <div class="toast" id="toast">
     <div class="toast-title" id="toastTitle">Успешно!</div>
     <div class="toast-text" id="toastText">Действие выполнено</div>
@@ -1044,7 +1018,6 @@
     </div>
 </div>
 
-<!-- Страница авторизации -->
 <div class="auth-page" id="authPage">
     <div class="auth-container">
         <div class="auth-logo"><h1>⚡ Nwole's DM</h1><p>Deathmatch Standoff 2</p></div>
@@ -1067,7 +1040,6 @@
     </div>
 </div>
 
-<!-- Основной сайт -->
 <div class="main-content" id="mainSite">
 
     <header class="header visible" id="header">
@@ -1724,36 +1696,60 @@
     }
 
     // ====================================================
-    // ===== СЕРВЕРА =====
+    // ===== СЕРВЕРА (ПРОСТОЙ СЧЁТЧИК) =====
     // ====================================================
+
+    let dmCounterCache = null;
 
     async function getNextDMNumber() {
         try {
-            console.log('📊 Проверка таблицы dm_counter...');
-            const data = await apiRequest('/dm_counter?id=eq.1');
-            console.log('📊 Данные:', data);
+            console.log('📊 Получение номера DM...');
+            
+            // Пробуем получить данные
+            let data = await apiRequest('/dm_counter?id=eq.1');
+            console.log('📊 Данные dm_counter:', data);
+            
+            let nextNumber = 1;
             
             if (data && data.length > 0) {
                 const current = data[0].count || 0;
-                const next = current + 1;
-                console.log(`📈 Текущий: ${current}, следующий: ${next}`);
+                nextNumber = current + 1;
+                console.log(`📈 Текущий: ${current}, следующий: ${nextNumber}`);
+                
+                // Обновляем счётчик
                 await apiRequest('/dm_counter?id=eq.1', {
                     method: 'PATCH',
-                    body: JSON.stringify({ count: next })
+                    body: JSON.stringify({ count: nextNumber })
                 });
-                return next;
+                console.log('✅ Счётчик обновлён');
             } else {
-                console.log('📊 Таблица пуста, создаём запись...');
+                console.log('📊 Счётчик пуст, создаём...');
                 await apiRequest('/dm_counter', {
                     method: 'POST',
                     body: JSON.stringify([{ id: 1, count: 1 }])
                 });
-                return 1;
+                console.log('✅ Счётчик создан');
+                nextNumber = 1;
             }
+            
+            dmCounterCache = nextNumber;
+            console.log(`🎯 Итоговый номер: ${nextNumber}`);
+            return nextNumber;
         } catch (error) {
             console.error('❌ Ошибка:', error);
-            showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера. Проверьте таблицу dm_counter в Supabase.');
-            return 0;
+            // Пробуем создать таблицу через прямой запрос
+            try {
+                await apiRequest('/dm_counter', {
+                    method: 'POST',
+                    body: JSON.stringify([{ id: 1, count: 1 }])
+                });
+                console.log('✅ Счётчик создан через fallback');
+                return 1;
+            } catch (e2) {
+                console.error('❌ Fallback тоже не сработал:', e2);
+                showToast('error', 'Ошибка', 'Не удалось получить номер DM сервера. Проверьте таблицу dm_counter в Supabase.');
+                return 0;
+            }
         }
     }
 

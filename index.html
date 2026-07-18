@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* ===== СТИЛИ (сокращённые, но полные) ===== */
     :root {
       --primary: #ff7b00;
       --primary-hover: #ff9a33;
@@ -938,7 +937,7 @@
   let selectedTime = null;
 
   // Данные для модалки статистики
-  let statsTargetUserId = null;      // ID пользователя
+  let statsTargetUserId = null;      // ID пользователя (или имя для fallback)
   let statsTargetUsername = null;   // имя пользователя
   let statsTargetServerId = null;   // ID сервера
   let statsTargetMap = null;        // карта
@@ -1216,7 +1215,7 @@
   }
 
   // ============================================================
-  // ОЧЕРЕДИ (с сохранением userId)
+  // ОЧЕРЕДИ (храним объекты с username и userId)
   // ============================================================
   async function addToPending(serverId, username, userId) {
     try {
@@ -1224,10 +1223,12 @@
       if (!data || !data.length) throw new Error('Сервер не найден');
       const server = data[0];
       let pending = server.pending || [];
-      // Проверяем, есть ли уже такой пользователь (по имени)
-      const exists = pending.some(p => p.username === username);
+      // Проверяем по userId
+      const exists = pending.some(p => {
+        if (typeof p === 'string') return p === username;
+        return p.userId === userId;
+      });
       if (exists) throw new Error('Игрок уже в очереди');
-      // Добавляем объект { username, userId }
       pending.push({ username, userId });
       await apiRequest(`/servers?id=eq.${serverId}`, { method: 'PATCH', body: JSON.stringify({ pending }) });
       return pending;
@@ -1239,17 +1240,20 @@
       const data = await apiRequest(`/servers?id=eq.${serverId}`);
       if (!data || !data.length) throw new Error('Сервер не найден');
       const server = data[0];
-      let pending = (server.pending || []).filter(p => p.username !== username);
+      let pending = (server.pending || []).filter(p => {
+        if (typeof p === 'string') return p !== username;
+        return p.username !== username;
+      });
       await apiRequest(`/servers?id=eq.${serverId}`, { method: 'PATCH', body: JSON.stringify({ pending }) });
       return pending;
     } catch (e) { throw e; }
   }
 
   // ============================================================
-  // СТАТИСТИКА (ГЛАВНАЯ ФУНКЦИЯ)
+  // СТАТИСТИКА
   // ============================================================
-  function openStatsModal(username, userId, serverId, map) {
-    statsTargetUserId = userId;
+  function openStatsModal(username, userIdOrName, serverId, map) {
+    statsTargetUserId = userIdOrName;
     statsTargetUsername = username;
     statsTargetServerId = serverId;
     statsTargetMap = map || 'Неизвестная карта';
@@ -1273,16 +1277,16 @@
     statsTargetMap = null;
   }
 
-  // ===== ОСНОВНАЯ ФУНКЦИЯ ЗАЧИСЛЕНИЯ =====
+  // ===== ОСНОВНАЯ ФУНКЦИЯ ЗАЧИСЛЕНИЯ (с fallback-поиском) =====
   async function submitStats() {
     console.log('🚀 submitStats вызвана!');
     const kills = parseInt(document.getElementById('modalKills').value) || 0;
     const deaths = parseInt(document.getElementById('modalDeaths').value) || 0;
     const map = statsTargetMap || 'Неизвестная карта';
 
-    console.log('📊 Данные:', { kills, deaths, map, statsTargetUserId, statsTargetServerId });
+    console.log('📊 Данные:', { kills, deaths, map, statsTargetUserId, statsTargetUsername });
 
-    if (!statsTargetUserId) {
+    if (!statsTargetUserId && !statsTargetUsername) {
       showToast('error', 'Ошибка', 'Пользователь не выбран');
       return;
     }
@@ -1292,19 +1296,32 @@
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
 
     try {
-      // 1. Получаем данные пользователя по ID
-      console.log('🔍 Ищем пользователя по ID:', statsTargetUserId);
-      const users = await apiRequest(`/users?id=eq.${statsTargetUserId}`);
-      if (!users || users.length === 0) {
+      let user = null;
+
+      // 1. Пытаемся найти по ID (если statsTargetUserId похож на ID)
+      if (statsTargetUserId && !isNaN(parseInt(statsTargetUserId)) && statsTargetUserId.length > 5) {
+        console.log('🔍 Ищем по ID:', statsTargetUserId);
+        const users = await apiRequest(`/users?id=eq.${statsTargetUserId}`);
+        if (users && users.length) user = users[0];
+      }
+
+      // 2. Если не найден, ищем по имени
+      if (!user && statsTargetUsername) {
+        console.log('🔍 Ищем по имени:', statsTargetUsername);
+        const users = await apiRequest(`/users?username=eq.${encodeURIComponent(statsTargetUsername)}`);
+        if (users && users.length) user = users[0];
+      }
+
+      if (!user) {
         showToast('error', 'Ошибка', 'Пользователь не найден');
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-check"></i> Зачислить';
         return;
       }
-      const user = users[0];
+
       console.log('👤 Найден пользователь:', user);
 
-      // 2. Вычисляем новые значения
+      // 3. Вычисляем новые значения
       const newKills = (user.kills || 0) + kills;
       const newDeaths = (user.deaths || 0) + deaths;
       const newMatches = (user.matches || 0) + 1;
@@ -1316,7 +1333,7 @@
       kdHistory.push(matchKD);
       if (kdHistory.length > 10) kdHistory = kdHistory.slice(-10);
 
-      // 3. Обновляем пользователя
+      // 4. Обновляем пользователя
       console.log('📝 Обновляем пользователя...');
       await apiRequest(`/users?id=eq.${user.id}`, {
         method: 'PATCH',
@@ -1329,7 +1346,7 @@
         })
       });
 
-      // 4. Сохраняем историю матча
+      // 5. Сохраняем историю матча
       console.log('📝 Сохраняем историю матча...');
       const matchRecord = {
         id: Date.now() + Math.floor(Math.random() * 1000),
@@ -1348,17 +1365,17 @@
         body: JSON.stringify([matchRecord])
       });
 
-      // 5. Удаляем из очереди
+      // 6. Удаляем из очереди
       if (statsTargetServerId) {
         console.log('🗑️ Удаляем из очереди...');
         await removeFromPending(statsTargetServerId, user.username);
       }
 
-      // 6. Закрываем модалку и показываем успех
+      // 7. Закрываем модалку и показываем успех
       closeStatsModal();
       showToast('success', 'Статистика обновлена', `Игроку ${user.username} зачислен матч на карте ${map}`);
 
-      // 7. Обновляем все данные
+      // 8. Обновляем все данные
       fetchServers();
       fetchSiteStats();
       fetchTopPlayers();
@@ -1504,9 +1521,10 @@
         ? `<div class="pending-players-section visible">
             <h4><i class="fas fa-users"></i> Очередь (${pending.length})</h4>
             ${pending.map(p => {
+              // Если p — объект с username и userId
               const username = typeof p === 'string' ? p : p.username;
               const userId = typeof p === 'string' ? null : p.userId;
-              // Если userId нет, попробуем найти по имени (для старых данных) — но в идеале userId должен быть
+              // Передаём userId, если есть, иначе — имя (для fallback)
               const idForStats = userId || username;
               return `<div class="pending-player">
                 <span class="username"><i class="fas fa-user"></i> ${username}</span>
@@ -1545,7 +1563,7 @@
   }
 
   // ============================================================
-  // ПОДКЛЮЧЕНИЕ К СЕРВЕРУ (с сохранением ID)
+  // ПОДКЛЮЧЕНИЕ К СЕРВЕРУ
   // ============================================================
   async function joinServer(serverId, lobby, username) {
     window.open(lobby, '_blank');

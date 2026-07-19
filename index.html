@@ -934,7 +934,7 @@
   <div class="toast-text" id="toastText">Действие выполнено</div>
 </div>
 
-<!-- ===== МОДАЛКА СТАТИСТИКИ ===== -->
+<!-- ===== МОДАЛКИ ===== -->
 <div class="modal-overlay" id="statsModal">
   <div class="modal">
     <h3><i class="fas fa-chart-bar"></i> Ввести статистику</h3>
@@ -952,7 +952,6 @@
   </div>
 </div>
 
-<!-- ===== МОДАЛКА ОБЪЯВЛЕНИЯ ===== -->
 <div class="modal-overlay" id="announceModal">
   <div class="modal">
     <h3><i class="fas fa-bullhorn"></i> Объявление</h3>
@@ -971,7 +970,6 @@
   </div>
 </div>
 
-<!-- ===== МОДАЛКА РЕДАКТИРОВАНИЯ ПРОФИЛЯ ===== -->
 <div class="modal-overlay" id="editProfileModal">
   <div class="modal">
     <h3><i class="fas fa-user-edit"></i> Редактировать профиль</h3>
@@ -1033,7 +1031,6 @@
               <a href="#" onclick="showPage('serversPage'); toggleCatalog(); return false;"><i class="fas fa-server"></i> DM Сервера</a>
               <div class="divider"></div>
               <a href="#" onclick="showPage('settingsPage'); toggleCatalog(); return false;"><i class="fas fa-cog"></i> Настройки</a>
-              <!-- Админ-вкладка (видна только админам) -->
               <a href="#" id="adminMenuLink" class="admin-link" style="display:none;" onclick="showPage('adminPage'); toggleCatalog(); return false;"><i class="fas fa-user-shield"></i> Администрирование</a>
               <div class="divider"></div>
               <a href="#" onclick="handleLogout(); toggleCatalog(); return false;" style="color:#ff6b6b;"><i class="fas fa-sign-out-alt"></i> Выйти</a>
@@ -1088,7 +1085,6 @@
         </button>
       </div>
 
-      <!-- Панель создания сервера (видна админам) -->
       <div class="admin-panel" id="adminPanel">
         <h3><i class="fas fa-plus-circle"></i> Создать DM сервер</h3>
         <div class="form-grid">
@@ -1104,11 +1100,10 @@
       <div class="back-btn"><button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
-    <!-- ===== СТРАНИЦА АДМИНИСТРИРОВАНИЯ (только управление админами) ===== -->
+    <!-- ===== СТРАНИЦА АДМИНИСТРИРОВАНИЯ ===== -->
     <div class="page-content" id="adminPage">
       <h1 class="page-title"><i class="fas fa-user-shield"></i> Администрирование</h1>
       <p class="sub-title">Управление администраторами</p>
-
       <div class="admin-system" id="adminSystem">
         <h3><i class="fas fa-users-cog"></i> Управление администраторами</h3>
         <p style="color:var(--text-secondary);margin-bottom:1rem;font-size:.85rem;font-weight:500;">⚠️ Только главный администратор (<strong>Admin</strong>) может добавлять/удалять админов. Добавление по имени пользователя.</p>
@@ -1118,7 +1113,6 @@
         </div>
         <div class="admin-list" id="adminList"></div>
       </div>
-
       <div class="back-btn"><button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
@@ -1137,53 +1131,31 @@
             <div class="standoff-id">🔫 Standoff ID: <span id="profileStandoffId">123456789</span></div>
           </div>
         </div>
-
         <div class="profile-badges">
           <span class="badge primary"><i class="fas fa-shield-alt"></i> Игрок</span>
           <span class="badge admin" id="adminBadge" style="display:none;"><i class="fas fa-user-shield"></i> Админ</span>
           <span class="badge banned" id="bannedBadge" style="display:none;"><i class="fas fa-ban"></i> Забанен</span>
         </div>
-
         <div class="stats-grid-profile">
-          <div class="stat-item">
-            <div class="number" id="profileMatches">0</div>
-            <div class="label">Матчи</div>
-          </div>
-          <div class="stat-item">
-            <div class="number" id="profileKills">0</div>
-            <div class="label">Убийства</div>
-          </div>
-          <div class="stat-item">
-            <div class="number" id="profileDeaths">0</div>
-            <div class="label">Смерти</div>
-          </div>
-          <div class="stat-item">
-            <div class="kd-value" id="profileKD">0.00</div>
-            <div class="label">К/Д</div>
-          </div>
+          <div class="stat-item"><div class="number" id="profileMatches">0</div><div class="label">Матчи</div></div>
+          <div class="stat-item"><div class="number" id="profileKills">0</div><div class="label">Убийства</div></div>
+          <div class="stat-item"><div class="number" id="profileDeaths">0</div><div class="label">Смерти</div></div>
+          <div class="stat-item"><div class="kd-value" id="profileKD">0.00</div><div class="label">К/Д</div></div>
         </div>
-
         <div class="profile-actions" id="profileActions">
           <div id="banButtonContainer"></div>
           <div id="clearStatsContainer"></div>
           <div id="editProfileContainer"></div>
         </div>
-
         <div class="chart-container">
           <h3><i class="fas fa-chart-line" style="color:var(--primary);"></i> Динамика KD</h3>
           <canvas id="kdChart"></canvas>
         </div>
-
         <div class="match-history-section">
           <h3><i class="fas fa-history"></i> История матчей <span class="match-count" id="matchCount">(0)</span></h3>
-          <div class="match-list" id="matchList">
-            <div class="match-empty"><i class="fas fa-gamepad"></i><p>Нет сыгранных матчей</p></div>
-          </div>
+          <div class="match-list" id="matchList"><div class="match-empty"><i class="fas fa-gamepad"></i><p>Нет сыгранных матчей</p></div></div>
         </div>
-
-        <div class="back-btn">
-          <button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button>
-        </div>
+        <div class="back-btn"><button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button></div>
       </div>
     </div>
 
@@ -1232,7 +1204,8 @@
   const SUPER_ADMIN_USERNAME = 'Admin';
   const SUPABASE_URL = 'https://dlprylagddsmtzpmzxqy.supabase.co/rest/v1';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
-  const STORAGE_URL = 'https://dlprylagddsmtzpmzxqy.supabase.co/storage/v1/object/public';
+  const BUCKET_NAME = 'avatars';
+  const STORAGE_URL = `https://dlprylagddsmtzpmzxqy.supabase.co/storage/v1/object/public/${BUCKET_NAME}`;
   const BOT_TOKEN = '8708031992:AAGVzZfMEjgIMG9USRu34K1hF20hL4avKxk';
   const CHANNEL_ID = '-1004438412918';
   const APP_URL = 'https://nwolesso2dm.vercel.app';
@@ -1243,11 +1216,8 @@
   // ============================================================
   let currentUser = null;
   let kdChartInstance = null;
-  let currentLanguage = 'ru';
   let viewingUserId = null;
   let selectedTime = null;
-  let viewingUserData = null;
-
   let statsTargetUserId = null;
   let statsTargetUsername = null;
   let statsTargetServerId = null;
@@ -1453,7 +1423,7 @@
   }
 
   // ============================================================
-  // БАН
+  // БАН / ОЧИСТКА
   // ============================================================
   async function banUser(userId) {
     if (!isSuperAdmin()) return showToast('error', 'Доступ запрещен', 'Только главный админ');
@@ -1475,9 +1445,6 @@
     } catch (e) { showToast('error', 'Ошибка', e.message); }
   }
 
-  // ============================================================
-  // ОЧИСТКА СТАТИСТИКИ
-  // ============================================================
   async function clearPlayerStats(userId) {
     if (!isSuperAdmin()) return showToast('error', 'Доступ запрещен', 'Только главный админ');
     if (!confirm('Вы уверены, что хотите очистить всю статистику этого игрока?')) return;
@@ -1485,10 +1452,7 @@
       await apiRequest(`/users?id=eq.${userId}`, {
         method: 'PATCH',
         body: JSON.stringify({
-          kills: 0,
-          deaths: 0,
-          matches: 0,
-          serverMatches: 0,
+          kills: 0, deaths: 0, matches: 0, serverMatches: 0,
           kdHistory: [0,0,0,0,0,0,0,0,0,0]
         })
       });
@@ -1977,6 +1941,38 @@
     }
   }
 
+  async function uploadAvatar(file, userId) {
+    // Проверяем существование бакета
+    const bucketCheck = await fetch(
+      `https://dlprylagddsmtzpmzxqy.supabase.co/storage/v1/bucket/${BUCKET_NAME}`,
+      { headers: { 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+    );
+    if (bucketCheck.status === 404) {
+      throw new Error(
+        `❌ Бакет "${BUCKET_NAME}" не найден в Supabase.\n` +
+        `Создайте его вручную: Storage → Create bucket → имя: ${BUCKET_NAME}, Public: ON`
+      );
+    }
+
+    const ext = file.name.split('.').pop();
+    const fileName = `${userId}_${Date.now()}.${ext}`;
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const uploadResp = await fetch(`${STORAGE_URL}/${fileName}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${SUPABASE_KEY}` },
+      body: formData
+    });
+
+    if (!uploadResp.ok) {
+      const errText = await uploadResp.text();
+      throw new Error(`Ошибка загрузки: ${errText || uploadResp.status}`);
+    }
+
+    return `${STORAGE_URL}/${fileName}`;
+  }
+
   function openEditProfileModal() {
     const user = getCurrentUser();
     if (!user) return;
@@ -2021,32 +2017,11 @@
       let avatarUrl = user.avatar_url || null;
 
       if (file) {
-        if (file.size > 2 * 1024 * 1024) {
-          throw new Error('Файл слишком большой (максимум 2MB)');
+        if (file.size > 2 * 1024 * 1024) throw new Error('Файл > 2MB');
+        if (!['image/jpeg','image/png','image/gif','image/webp'].includes(file.type)) {
+          throw new Error('Поддерживаются JPEG, PNG, GIF, WEBP');
         }
-        if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
-          throw new Error('Поддерживаются только JPEG, PNG, GIF, WEBP');
-        }
-
-        const ext = file.name.split('.').pop();
-        const fileName = `${user.id}_${Date.now()}.${ext}`;
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const uploadResp = await fetch(`${STORAGE_URL}/avatars/${fileName}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${SUPABASE_KEY}`
-          },
-          body: formData
-        });
-
-        if (!uploadResp.ok) {
-          const errText = await uploadResp.text();
-          throw new Error(`Ошибка загрузки аватарки: ${errText || uploadResp.status}`);
-        }
-
-        avatarUrl = `${STORAGE_URL}/avatars/${fileName}`;
+        avatarUrl = await uploadAvatar(file, user.id);
       }
 
       await apiRequest(`/users?id=eq.${user.id}`, {
@@ -2093,8 +2068,6 @@
       const data = await apiRequest(`/users?id=eq.${targetId}`);
       if (data && data.length) {
         const user = data[0];
-        viewingUserData = user;
-
         if (user.isBanned) {
           const cur = getCurrentUser();
           if (cur && cur.id === user.id) {
@@ -2361,14 +2334,13 @@
   // ОБНОВЛЕНИЕ АДМИН-ПАНЕЛИ И МЕНЮ
   // ============================================================
   async function updateAdminPanel() {
-    const adminPanel = document.getElementById('adminPanel'); // на странице серверов
-    const adminSystem = document.getElementById('adminSystem'); // на странице администрирования
+    const adminPanel = document.getElementById('adminPanel');
+    const adminSystem = document.getElementById('adminSystem');
     const announceTop = document.getElementById('announceTop');
     const adminMenuLink = document.getElementById('adminMenuLink');
     const userIsAdmin = await isAdmin();
     const userIsSuper = isSuperAdmin();
 
-    // Панель создания сервера — видна админам
     if (userIsAdmin) {
       adminPanel.classList.add('visible');
       announceTop.style.display = 'flex';
@@ -2377,14 +2349,12 @@
       announceTop.style.display = 'none';
     }
 
-    // Управление админами — только супер-админу
     if (userIsSuper) {
       adminSystem.classList.add('visible');
     } else {
       adminSystem.classList.remove('visible');
     }
 
-    // Пункт "Администрирование" в меню — виден админам
     if (userIsAdmin) {
       adminMenuLink.style.display = 'flex';
     } else {

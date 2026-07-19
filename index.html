@@ -1153,11 +1153,12 @@
             <div class="dropdown-content">
               <a href="#" onclick="showPage('profilePage'); toggleCatalog(); return false;"><i class="fas fa-user"></i> Мой профиль</a>
               <a href="#" onclick="showPage('topPlayersPage'); toggleCatalog(); return false;"><i class="fas fa-trophy"></i> Топ игроков</a>
+              <!-- НОВАЯ ВКЛАДКА ТОП АДМИНОВ -->
+              <a href="#" onclick="showPage('topAdminsPage'); toggleCatalog(); return false;"><i class="fas fa-crown"></i> Топ админов</a>
               <a href="#" onclick="showPage('shopPage'); toggleCatalog(); return false;"><i class="fas fa-store"></i> Каталог товаров</a>
               <a href="#" onclick="showPage('serversPage'); toggleCatalog(); return false;"><i class="fas fa-server"></i> DM Сервера</a>
               <div class="divider"></div>
               <a href="#" onclick="showPage('settingsPage'); toggleCatalog(); return false;"><i class="fas fa-cog"></i> Настройки</a>
-              <!-- Админ-вкладка (видна только админам) -->
               <a href="#" id="adminMenuLink" class="admin-link" style="display:none;" onclick="showPage('adminPage'); toggleCatalog(); return false;"><i class="fas fa-user-shield"></i> Администрирование</a>
               <div class="divider"></div>
               <a href="#" onclick="handleLogout(); toggleCatalog(); return false;" style="color:#ff6b6b;"><i class="fas fa-sign-out-alt"></i> Выйти</a>
@@ -1223,6 +1224,12 @@
       <!-- Создание сервера -->
       <div class="admin-panel visible" id="adminPanel">
         <h3><i class="fas fa-plus-circle"></i> Создать DM сервер</h3>
+        <!-- КНОПКА ОБЪЯВЛЕНИЕ В АДМИН-ПАНЕЛИ -->
+        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+          <button class="btn-announce-top" onclick="openAnnounceModal()">
+            <i class="fas fa-bullhorn"></i> Объявление
+          </button>
+        </div>
         <div class="form-grid">
           <div class="form-group"><label>Название режима</label><input type="text" id="serverNameInput" placeholder="Например: Team Deathmatch" /></div>
           <div class="form-group"><label>Ссылка на лобби</label><input type="text" id="serverLobbyInput" placeholder="https://standoff2.com/..." /></div>
@@ -1309,6 +1316,14 @@
           <button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button>
         </div>
       </div>
+    </div>
+
+    <!-- ===== СТРАНИЦА ТОП АДМИНОВ (НОВАЯ) ===== -->
+    <div class="page-content" id="topAdminsPage">
+      <h1 class="page-title"><i class="fas fa-crown"></i> Топ админов</h1>
+      <p class="sub-title">Лучшие администраторы по количеству созданных DM</p>
+      <div class="top-players" id="topAdminsList"></div>
+      <div class="back-btn"><button onclick="showPage('mainContent'); return false;"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== ОСТАЛЬНЫЕ СТРАНИЦЫ ===== -->
@@ -1532,7 +1547,8 @@
         registered: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
         isBanned: false,
-        avatar_url: null
+        avatar_url: null,
+        createdServersCount: 0  // новое поле
       };
       const data = await apiRequest('/users', { method: 'POST', body: JSON.stringify([newUser]) });
       const user = data[0] || newUser;
@@ -1642,6 +1658,7 @@
       document.getElementById('adminUsernameInput').value = '';
       showToast('success', 'Админ добавлен', `Пользователь ${username} теперь администратор`);
       renderAdmins();
+      fetchTopAdmins();
     } catch (e) { showToast('error', 'Ошибка', e.message); }
   }
   async function removeAdmin(userId) {
@@ -1654,6 +1671,7 @@
       await apiRequest(`/admins?userId=eq.${userId}`, { method: 'DELETE' });
       showToast('info', 'Админ удалён', '');
       renderAdmins();
+      fetchTopAdmins();
     } catch (e) { showToast('error', 'Ошибка', e.message); }
   }
   async function renderAdmins() {
@@ -1908,13 +1926,24 @@
         dm_number: num
       };
       await apiRequest('/servers', { method: 'POST', body: JSON.stringify([newServer]) });
+      
+      // Увеличиваем счётчик созданных серверов у пользователя
+      if (user) {
+        const updatedUser = { ...user, createdServersCount: (user.createdServersCount || 0) + 1 };
+        setCurrentUser(updatedUser);
+        await apiRequest(`/users?id=eq.${user.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ createdServersCount: updatedUser.createdServersCount })
+        });
+      }
+
       document.getElementById('serverNameInput').value = '';
       document.getElementById('serverLobbyInput').value = '';
       document.getElementById('serverPlayerIdInput').value = '';
       document.getElementById('serverMapInput').value = '';
       await sendTelegramNotificationWithImage(num, user?.username || 'Unknown', name, map);
       showToast('success', 'Сервер создан', `Сервер "${serverName}" успешно добавлен`);
-      fetchServers(); fetchSiteStats();
+      fetchServers(); fetchSiteStats(); fetchTopAdmins();
     } catch (e) { showToast('error','Ошибка',e.message); }
   }
 
@@ -2085,6 +2114,54 @@
   }
 
   // ============================================================
+  // ТОП АДМИНОВ (НОВАЯ ФУНКЦИЯ)
+  // ============================================================
+  async function fetchTopAdmins() {
+    try {
+      const adminsData = await apiRequest('/admins');
+      if (!adminsData || adminsData.length === 0) {
+        renderTopAdmins([]);
+        return;
+      }
+      const adminIds = adminsData.map(a => a.userId);
+      const allUsers = await apiRequest('/users?createdServersCount=gt.0&order=createdServersCount.desc');
+      const admins = allUsers.filter(u => adminIds.includes(u.id));
+      renderTopAdmins(admins);
+    } catch (e) {
+      console.error('fetchTopAdmins error:', e);
+      renderTopAdmins([]);
+    }
+  }
+
+  function renderTopAdmins(admins) {
+    const container = document.getElementById('topAdminsList');
+    if (!admins || admins.length === 0) {
+      container.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--text-secondary);">
+        <i class="fas fa-crown" style="font-size:3rem;color:var(--primary);"></i>
+        <p style="margin-top:1rem;font-weight:600;">Нет данных об администраторах</p>
+      </div>`;
+      return;
+    }
+    const medals = ['🥇','🥈','🥉','4','5','6','7','8','9','10'];
+    const classes = ['gold','silver','bronze','','','','','','',''];
+    container.innerHTML = admins.map((p, i) => {
+      const initial = p.username ? p.username.charAt(0).toUpperCase() : '?';
+      const avatarHtml = p.avatar_url
+        ? `<img src="${p.avatar_url}" alt="avatar" />`
+        : initial;
+      return `<div class="top-player">
+        <div class="rank ${classes[i]||''}">${medals[i]||(i+1)}</div>
+        <div class="avatar-small">${avatarHtml}</div>
+        <div class="info" onclick="viewProfile('${p.id}')" style="cursor:pointer;">
+          <div class="name">${p.username} ${p.isBanned ? '🚫' : ''}</div>
+          <div class="id">ID: ${p.standoffId || 'Нет'}</div>
+        </div>
+        <div class="server-matches">📦 Создано DM: ${p.createdServersCount || 0}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ============================================================
   // РЕДАКТИРОВАНИЕ ПРОФИЛЯ
   // ============================================================
   function previewAvatar(input) {
@@ -2145,33 +2222,23 @@
       let avatarUrl = user.avatar_url || null;
 
       if (file) {
-        // Проверка размера файла (максимум 2MB)
-        if (file.size > 2 * 1024 * 1024) {
-          throw new Error('Файл слишком большой (максимум 2MB)');
-        }
-        // Проверка типа
+        if (file.size > 2 * 1024 * 1024) throw new Error('Файл слишком большой (максимум 2MB)');
         if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
           throw new Error('Поддерживаются только JPEG, PNG, GIF, WEBP');
         }
-
         const ext = file.name.split('.').pop();
         const fileName = `${user.id}_${Date.now()}.${ext}`;
         const formData = new FormData();
         formData.append('file', file);
-
         const uploadResp = await fetch(`${STORAGE_URL}/avatars/${fileName}`, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${SUPABASE_KEY}`
-          },
+          headers: { 'Authorization': `Bearer ${SUPABASE_KEY}` },
           body: formData
         });
-
         if (!uploadResp.ok) {
           const errText = await uploadResp.text();
           throw new Error(`Ошибка загрузки аватарки: ${errText || uploadResp.status}`);
         }
-
         avatarUrl = `${STORAGE_URL}/avatars/${fileName}`;
       }
 
@@ -2192,6 +2259,7 @@
       showToast('success', 'Профиль обновлён', 'Данные успешно сохранены');
       if (viewingUserId === user.id) fetchUserData(user.id);
       fetchTopPlayers();
+      fetchTopAdmins();
 
     } catch (e) {
       showToast('error', 'Ошибка', e.message);
@@ -2352,14 +2420,15 @@
     if (!t) return;
     document.querySelector('.dropdown-btn').innerHTML = `<i class="fas fa-bars"></i> ${t.main} <i class="fas fa-chevron-down" style="font-size:.7rem;"></i>`;
     const items = document.querySelectorAll('.dropdown-content a');
-    if (items.length >= 8) {
+    if (items.length >= 9) {
       items[0].innerHTML = `<i class="fas fa-user"></i> ${t.profile}`;
       items[1].innerHTML = `<i class="fas fa-trophy"></i> ${t.top}`;
-      items[2].innerHTML = `<i class="fas fa-store"></i> ${t.shop}`;
-      items[3].innerHTML = `<i class="fas fa-server"></i> ${t.servers}`;
-      items[5].innerHTML = `<i class="fas fa-cog"></i> ${t.settings}`;
-      if (items[6]) items[6].innerHTML = `<i class="fas fa-user-shield"></i> Администрирование`;
-      items[8].innerHTML = `<i class="fas fa-sign-out-alt"></i> ${t.logout}`;
+      items[2].innerHTML = `<i class="fas fa-crown"></i> Топ админов`; // оставляем без перевода, можно добавить позже
+      items[3].innerHTML = `<i class="fas fa-store"></i> ${t.shop}`;
+      items[4].innerHTML = `<i class="fas fa-server"></i> ${t.servers}`;
+      items[6].innerHTML = `<i class="fas fa-cog"></i> ${t.settings}`;
+      if (items[7]) items[7].innerHTML = `<i class="fas fa-user-shield"></i> Администрирование`;
+      items[9].innerHTML = `<i class="fas fa-sign-out-alt"></i> ${t.logout}`;
     }
     document.querySelector('.btn-connect').innerHTML = `<i class="fas fa-plug"></i> ${t.connect}`;
     const labels = document.querySelectorAll('.stat-block .label');
@@ -2494,7 +2563,6 @@
     const userIsAdmin = await isAdmin();
     const userIsSuper = isSuperAdmin();
 
-    // Панель создания сервера — видна админам
     if (userIsAdmin) {
       adminPanel.classList.add('visible');
       announceTop.style.display = 'flex';
@@ -2503,14 +2571,12 @@
       announceTop.style.display = 'none';
     }
 
-    // Управление админами — только супер-админу
     if (userIsSuper) {
       adminSystem.classList.add('visible');
     } else {
       adminSystem.classList.remove('visible');
     }
 
-    // Пункт "Администрирование" в меню — виден админам
     if (userIsAdmin) {
       adminMenuLink.style.display = 'flex';
     } else {
@@ -2540,6 +2606,7 @@
       await renderAdmins();
       await updateAdminPanel();
       await fetchTopPlayers();
+      await fetchTopAdmins(); // загружаем топ админов
       return true;
     } else {
       clearCurrentUser();

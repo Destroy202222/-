@@ -1153,7 +1153,6 @@
             <div class="dropdown-content">
               <a href="#" onclick="showPage('profilePage'); toggleCatalog(); return false;"><i class="fas fa-user"></i> Мой профиль</a>
               <a href="#" onclick="showPage('topPlayersPage'); toggleCatalog(); return false;"><i class="fas fa-trophy"></i> Топ игроков</a>
-              <!-- НОВАЯ ВКЛАДКА ТОП АДМИНОВ -->
               <a href="#" onclick="showPage('topAdminsPage'); toggleCatalog(); return false;"><i class="fas fa-crown"></i> Топ админов</a>
               <a href="#" onclick="showPage('shopPage'); toggleCatalog(); return false;"><i class="fas fa-store"></i> Каталог товаров</a>
               <a href="#" onclick="showPage('serversPage'); toggleCatalog(); return false;"><i class="fas fa-server"></i> DM Сервера</a>
@@ -1318,7 +1317,7 @@
       </div>
     </div>
 
-    <!-- ===== СТРАНИЦА ТОП АДМИНОВ (НОВАЯ) ===== -->
+    <!-- ===== СТРАНИЦА ТОП АДМИНОВ ===== -->
     <div class="page-content" id="topAdminsPage">
       <h1 class="page-title"><i class="fas fa-crown"></i> Топ админов</h1>
       <p class="sub-title">Лучшие администраторы по количеству созданных DM</p>
@@ -1548,7 +1547,7 @@
         lastLogin: new Date().toISOString(),
         isBanned: false,
         avatar_url: null,
-        createdServersCount: 0  // новое поле
+        createdserverscount: 0   // исправлено: нижний регистр
       };
       const data = await apiRequest('/users', { method: 'POST', body: JSON.stringify([newUser]) });
       const user = data[0] || newUser;
@@ -1927,13 +1926,16 @@
       };
       await apiRequest('/servers', { method: 'POST', body: JSON.stringify([newServer]) });
       
-      // Увеличиваем счётчик созданных серверов у пользователя
+      // Увеличиваем счётчик созданных серверов у пользователя (createdserverscount)
       if (user) {
-        const updatedUser = { ...user, createdServersCount: (user.createdServersCount || 0) + 1 };
+        const updatedUser = { 
+          ...user, 
+          createdserverscount: (user.createdserverscount || 0) + 1 
+        };
         setCurrentUser(updatedUser);
         await apiRequest(`/users?id=eq.${user.id}`, {
           method: 'PATCH',
-          body: JSON.stringify({ createdServersCount: updatedUser.createdServersCount })
+          body: JSON.stringify({ createdserverscount: updatedUser.createdserverscount })
         });
       }
 
@@ -2114,7 +2116,7 @@
   }
 
   // ============================================================
-  // ТОП АДМИНОВ (НОВАЯ ФУНКЦИЯ)
+  // ТОП АДМИНОВ (исправлено: createdserverscount)
   // ============================================================
   async function fetchTopAdmins() {
     try {
@@ -2124,7 +2126,7 @@
         return;
       }
       const adminIds = adminsData.map(a => a.userId);
-      const allUsers = await apiRequest('/users?createdServersCount=gt.0&order=createdServersCount.desc');
+      const allUsers = await apiRequest('/users?createdserverscount=gt.0&order=createdserverscount.desc');
       const admins = allUsers.filter(u => adminIds.includes(u.id));
       renderTopAdmins(admins);
     } catch (e) {
@@ -2156,7 +2158,7 @@
           <div class="name">${p.username} ${p.isBanned ? '🚫' : ''}</div>
           <div class="id">ID: ${p.standoffId || 'Нет'}</div>
         </div>
-        <div class="server-matches">📦 Создано DM: ${p.createdServersCount || 0}</div>
+        <div class="server-matches">📦 Создано DM: ${p.createdserverscount || 0}</div>
       </div>`;
     }).join('');
   }
@@ -2423,7 +2425,7 @@
     if (items.length >= 9) {
       items[0].innerHTML = `<i class="fas fa-user"></i> ${t.profile}`;
       items[1].innerHTML = `<i class="fas fa-trophy"></i> ${t.top}`;
-      items[2].innerHTML = `<i class="fas fa-crown"></i> Топ админов`; // оставляем без перевода, можно добавить позже
+      items[2].innerHTML = `<i class="fas fa-crown"></i> Топ админов`;
       items[3].innerHTML = `<i class="fas fa-store"></i> ${t.shop}`;
       items[4].innerHTML = `<i class="fas fa-server"></i> ${t.servers}`;
       items[6].innerHTML = `<i class="fas fa-cog"></i> ${t.settings}`;
@@ -2606,7 +2608,7 @@
       await renderAdmins();
       await updateAdminPanel();
       await fetchTopPlayers();
-      await fetchTopAdmins(); // загружаем топ админов
+      await fetchTopAdmins();
       return true;
     } else {
       clearCurrentUser();

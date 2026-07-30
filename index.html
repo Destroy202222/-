@@ -283,21 +283,6 @@
       transition: all 0.3s ease;
       white-space: nowrap;
     }
-    .bottom-nav .nav-item .nav-badge {
-      position: absolute;
-      top: -4px;
-      right: -6px;
-      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-      color: #fff;
-      font-size: 0.5rem;
-      font-weight: 700;
-      padding: 0.05rem 0.4rem;
-      border-radius: 50px;
-      min-width: 18px;
-      text-align: center;
-      box-shadow: 0 2px 10px rgba(255,107,107,0.4);
-      border: 2px solid rgba(10,14,26,0.8);
-    }
     .bottom-nav .nav-item .nav-glow {
       position: absolute;
       top: 50%;
@@ -1384,7 +1369,6 @@
       .bottom-nav .nav-item { padding: 0.3rem 0.5rem; min-width: 44px; }
       .bottom-nav .nav-item .nav-icon { font-size: 1.3rem; }
       .bottom-nav .nav-item .nav-label { font-size: 0.5rem; }
-      .bottom-nav .nav-item .nav-badge { font-size: 0.45rem; min-width: 16px; top: -2px; right: -4px; }
       .bottom-nav .nav-item.active .nav-icon { transform: translateY(-3px) scale(1.05); }
       .page-content .page-title { font-size: 1.4rem; }
       .profile-header { flex-direction: column; text-align: center; }
@@ -1519,7 +1503,7 @@
     <!-- ===== ХЕДЕР ===== -->
     <header class="header visible" id="header">
       <div class="header-inner">
-        <div class="logo-center" onclick="showPage('mainContent')" title="На главную">
+        <div class="logo-center" onclick="window.navigateTo('mainContent')" title="На главную">
           <h1>⚡ <span class="highlight">GRINDROOM</span> <span class="badge">DM</span><span class="sub">✦ DEATHMATCH STANDOFF 2 ✦</span></h1>
         </div>
       </div>
@@ -1565,7 +1549,7 @@
       <h1 class="page-title"><i class="fas fa-server"></i> DM Сервера</h1>
       <p class="sub-title">Выбери сервер и присоединяйся к битве!</p>
       <div class="servers-grid" id="serversGrid"></div>
-      <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== ПРОФИЛЬ ===== -->
@@ -1614,7 +1598,7 @@
             </div>
           </div>
         </div>
-        <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+        <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
       </div>
     </div>
 
@@ -1623,7 +1607,7 @@
       <h1 class="page-title"><i class="fas fa-trophy"></i> Топ игроков</h1>
       <p class="sub-title">Лучшие игроки по количеству игр на сервере</p>
       <div class="top-players" id="topPlayersList"></div>
-      <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== ТОП АДМИНОВ ===== -->
@@ -1631,7 +1615,7 @@
       <h1 class="page-title"><i class="fas fa-crown"></i> Топ админов</h1>
       <p class="sub-title">Лучшие администраторы по количеству созданных DM</p>
       <div class="top-players" id="topAdminsList"></div>
-      <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== КАТАЛОГ ===== -->
@@ -1641,7 +1625,7 @@
       <div class="shop-grid">
         <div class="shop-card"><div class="icon">👑</div><h3>Хостер</h3><div class="price">150₽ <span class="old-price">200₽</span></div><div class="desc">При покупке роли «Хостер» вы сможете проводить deathmatch!</div><button class="btn-buy" onclick="showToast('info','Покупка','Функция в разработке')">Купить</button></div>
       </div>
-      <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== АДМИНИСТРИРОВАНИЕ ===== -->
@@ -1667,7 +1651,7 @@
         </div>
         <div class="admin-list" id="adminList"></div>
       </div>
-      <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
@@ -1681,7 +1665,7 @@
         <div class="setting-row"><span class="label">Тема</span><select id="themeSelect" onchange="changeTheme(this.value)"><option value="default">🔵 Синяя</option><option value="red">🔴 Красная</option><option value="green">🟢 Зелёная</option><option value="black">⚫ Чёрная</option></select></div>
         <button class="btn-save" id="saveSettingsBtn"><i class="fas fa-save"></i> Сохранить</button>
       </div>
-      <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== ФУТЕР ===== -->
@@ -1694,34 +1678,34 @@
   </div>
 </div>
 
-<!-- ===== НИЖНЯЯ НАВИГАЦИЯ (УВЕЛИЧЕННАЯ) ===== -->
+<!-- ===== НИЖНЯЯ НАВИГАЦИЯ ===== -->
 <nav class="bottom-nav" id="bottomNav">
-  <button class="nav-item active" data-page="mainContent" onclick="navigateTo('mainContent')">
+  <button class="nav-item active" data-page="mainContent" onclick="window.navigateTo('mainContent')">
     <span class="nav-glow"></span>
     <i class="fas fa-home nav-icon"></i>
     <span class="nav-label">Главная</span>
   </button>
-  <button class="nav-item" data-page="serversPage" onclick="navigateTo('serversPage')">
+  <button class="nav-item" data-page="serversPage" onclick="window.navigateTo('serversPage')">
     <span class="nav-glow"></span>
     <i class="fas fa-server nav-icon"></i>
     <span class="nav-label">Сервера</span>
   </button>
-  <button class="nav-item" data-page="profilePage" onclick="navigateTo('profilePage')">
+  <button class="nav-item" data-page="profilePage" onclick="window.navigateTo('profilePage')">
     <span class="nav-glow"></span>
     <i class="fas fa-user nav-icon"></i>
     <span class="nav-label">Профиль</span>
   </button>
-  <button class="nav-item" data-page="topPlayersPage" onclick="navigateTo('topPlayersPage')">
+  <button class="nav-item" data-page="topPlayersPage" onclick="window.navigateTo('topPlayersPage')">
     <span class="nav-glow"></span>
     <i class="fas fa-trophy nav-icon"></i>
     <span class="nav-label">Топ</span>
   </button>
-  <button class="nav-item" data-page="shopPage" onclick="navigateTo('shopPage')">
+  <button class="nav-item" data-page="shopPage" onclick="window.navigateTo('shopPage')">
     <span class="nav-glow"></span>
     <i class="fas fa-store nav-icon"></i>
     <span class="nav-label">Каталог</span>
   </button>
-  <button class="nav-item logout-item" onclick="handleLogout()">
+  <button class="nav-item logout-item" onclick="window.handleLogout()">
     <span class="nav-glow"></span>
     <i class="fas fa-sign-out-alt nav-icon"></i>
     <span class="nav-label">Выйти</span>
@@ -1730,35 +1714,50 @@
 
 <script>
   // ============================================================
-  // НАВИГАЦИЯ (ГЛАВНАЯ ФУНКЦИЯ)
+  // ГЛОБАЛЬНАЯ ФУНКЦИЯ НАВИГАЦИИ (РАБОТАЕТ СРАЗУ)
   // ============================================================
-  function navigateTo(pageId) {
+  window.navigateTo = function(pageId) {
+    console.log('🔀 Переход на страницу:', pageId);
+    
     // Скрываем все страницы
     document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
     
     if (pageId === 'mainContent') {
-      document.getElementById('mainContent').classList.remove('hidden');
+      const mainContent = document.getElementById('mainContent');
+      if (mainContent) mainContent.classList.remove('hidden');
       document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-      document.getElementById('footer').classList.remove('hidden');
+      const footer = document.getElementById('footer');
+      if (footer) footer.classList.remove('hidden');
     } else {
-      document.getElementById('mainContent').classList.add('hidden');
+      const mainContent = document.getElementById('mainContent');
+      if (mainContent) mainContent.classList.add('hidden');
       const target = document.getElementById(pageId);
       if (target) target.classList.add('active');
-      document.getElementById('footer').classList.add('hidden');
+      const footer = document.getElementById('footer');
+      if (footer) footer.classList.add('hidden');
     }
     
     // Обновляем активную навигацию
     document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-      item.classList.toggle('active', item.dataset.page === pageId);
+      const isActive = item.dataset.page === pageId;
+      item.classList.toggle('active', isActive);
     });
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  };
 
-  // Алиас для совместимости
-  function showPage(pageId) {
-    navigateTo(pageId);
-  }
+  // Алиас для showPage
+  window.showPage = window.navigateTo;
+
+  // ============================================================
+  // ГЛОБАЛЬНЫЙ ВЫХОД
+  // ============================================================
+  window.handleLogout = function() {
+    localStorage.removeItem('startup_user');
+    localStorage.removeItem('startup_token');
+    showToast('info', 'Выход выполнен', 'Вы вышли из аккаунта');
+    setTimeout(() => location.reload(), 500);
+  };
 
   // ============================================================
   // ЗАГРУЗЧИК
@@ -1902,12 +1901,6 @@
     } catch (e) { showToast('error', 'Ошибка регистрации', e.message); }
   }
 
-  function handleLogout() {
-    clearCurrentUser();
-    showToast('info', 'Выход выполнен', 'Вы вышли из аккаунта');
-    setTimeout(() => location.reload(), 500);
-  }
-
   function getCurrentUser() {
     try { return JSON.parse(localStorage.getItem('startup_user')); } catch { return null; }
   }
@@ -1936,7 +1929,7 @@
   }
 
   // ============================================================
-  // ФУНКЦИИ (сокращённые)
+  // ОСТАЛЬНЫЕ ФУНКЦИИ
   // ============================================================
   let currentUser = null;
   let kdChartInstance = null;
@@ -1946,7 +1939,7 @@
   let statsTargetServerId = null;
   let statsTargetMap = null;
 
-  // БАН / РАЗБАН
+  // БАН
   async function banUser(userId) {
     if (!isSuperAdmin()) return showToast('error', 'Доступ запрещен', 'Только главный админ');
     if (!confirm('Забанить пользователя?')) return;
@@ -1954,7 +1947,7 @@
       await apiRequest(`/users?id=eq.${userId}`, { method: 'PATCH', body: JSON.stringify({ isBanned: true }) });
       showToast('success', 'Пользователь забанен', '');
       const cur = getCurrentUser();
-      if (cur && cur.id === userId) handleLogout();
+      if (cur && cur.id === userId) window.handleLogout();
       if (viewingUserId === userId) fetchUserData(userId);
     } catch (e) { showToast('error', 'Ошибка', e.message); }
   }
@@ -1967,7 +1960,7 @@
     } catch (e) { showToast('error', 'Ошибка', e.message); }
   }
 
-  // ОЧИСТКА СТАТИСТИКИ
+  // ОЧИСТКА
   async function clearPlayerStats(userId) {
     if (!isSuperAdmin()) return showToast('error', 'Доступ запрещен', 'Только главный админ');
     if (!confirm('Очистить статистику?')) return;
@@ -2157,7 +2150,7 @@
     }
   }
 
-  // ИСТОРИЯ МАТЧЕЙ
+  // ИСТОРИЯ
   async function fetchMatchHistory(userId) {
     try {
       const data = await apiRequest(`/match_history?user_id=eq.${userId}&order=match_date.desc&limit=50`);
@@ -2527,7 +2520,7 @@
     if (!userId) return;
     viewingUserId = userId;
     await fetchUserData(userId);
-    navigateTo('profilePage');
+    window.navigateTo('profilePage');
   }
   async function fetchUserData(userId = null) {
     const targetId = userId || getCurrentUser()?.id;
@@ -2542,7 +2535,7 @@
           const cur = getCurrentUser();
           if (cur && cur.id === user.id) {
             showToast('error','Вы забанены','Ваш аккаунт забанен');
-            handleLogout();
+            window.handleLogout();
             return null;
           }
         }
@@ -2706,7 +2699,7 @@
       document.getElementById('header').classList.add('visible');
       document.getElementById('bottomNav').classList.add('visible');
       const fresh = await fetchUserData(user.id);
-      if (fresh && fresh.isBanned) { handleLogout(); return false; }
+      if (fresh && fresh.isBanned) { window.handleLogout(); return false; }
       loadSettings();
       if (isSuperAdmin()) console.log('👑 Супер-админ авторизован:', user.username);
       await fetchServers();

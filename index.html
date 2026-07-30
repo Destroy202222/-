@@ -34,6 +34,8 @@
       --gradient-start: #4a7cf7;
       --gradient-end: #6c8cff;
       --avatar-gradient: linear-gradient(135deg, #4a7cf7, #6c8cff);
+      --nav-bg: rgba(10,14,26,0.92);
+      --nav-active: #4a7cf7;
     }
 
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
@@ -143,6 +145,7 @@
       position: relative;
       z-index: 1;
       min-height: 100vh;
+      padding-bottom: 80px;
     }
 
     /* ===== ЭКРАН ЗАГРУЗКИ ===== */
@@ -225,76 +228,129 @@
       font-weight: 800;
     }
 
-    /* ===== НАВИГАЦИЯ (НИЖНЯЯ) ===== */
+    /* ===== СОВРЕМЕННАЯ НАВИГАЦИЯ ===== */
     .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
       background: rgba(10,14,26,0.92);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border-color);
+      backdrop-filter: blur(24px) saturate(180%);
+      border-top: 1px solid rgba(255,255,255,0.06);
       display: flex;
       justify-content: space-around;
       align-items: center;
-      padding: 0.5rem 0.5rem 0.7rem;
+      padding: 0.4rem 0.2rem 0.6rem;
       z-index: 1000;
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+      box-shadow: 0 -10px 60px rgba(0,0,0,0.6);
+      transform: translateY(100%);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .bottom-nav.visible {
+      transform: translateY(0);
     }
     .bottom-nav .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.2rem;
-      padding: 0.3rem 0.8rem;
-      border-radius: 12px;
+      gap: 0.15rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 16px;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       text-decoration: none;
       color: var(--text-muted);
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       font-weight: 600;
       border: none;
       background: transparent;
-      min-width: 50px;
+      min-width: 44px;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .bottom-nav .nav-item .nav-icon {
+      font-size: 1.2rem;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative;
     }
-    .bottom-nav .nav-item i {
-      font-size: 1.2rem;
-      transition: 0.3s;
+    .bottom-nav .nav-item .nav-label {
+      font-size: 0.5rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
+    .bottom-nav .nav-item .nav-badge {
+      position: absolute;
+      top: -6px;
+      right: -10px;
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      color: #fff;
+      font-size: 0.45rem;
+      font-weight: 700;
+      padding: 0.05rem 0.4rem;
+      border-radius: 50px;
+      min-width: 16px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(255,107,107,0.4);
+      border: 2px solid rgba(10,14,26,0.8);
+    }
+    .bottom-nav .nav-item .nav-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--nav-active);
+      opacity: 0;
+      transition: all 0.4s ease;
+      filter: blur(20px);
+      pointer-events: none;
     }
     .bottom-nav .nav-item:hover {
       color: var(--text-secondary);
+      transform: translateY(-2px);
+    }
+    .bottom-nav .nav-item:active {
+      transform: scale(0.92);
     }
     .bottom-nav .nav-item.active {
+      color: var(--primary);
+    }
+    .bottom-nav .nav-item.active .nav-glow {
+      opacity: 0.3;
+      width: 60px;
+      height: 60px;
+    }
+    .bottom-nav .nav-item.active .nav-icon {
+      transform: translateY(-4px) scale(1.1);
+      text-shadow: 0 0 30px var(--primary-glow);
+    }
+    .bottom-nav .nav-item.active .nav-label {
+      opacity: 1;
       color: var(--primary);
     }
     .bottom-nav .nav-item.active::before {
       content: '';
       position: absolute;
       top: -1px;
-      left: 30%;
-      right: 30%;
+      left: 25%;
+      right: 25%;
       height: 2px;
       background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
       border-radius: 2px;
+      box-shadow: 0 0 20px var(--primary-glow);
     }
-    .bottom-nav .nav-item.active i {
-      transform: translateY(-2px);
-      text-shadow: 0 0 20px var(--primary-glow);
+    .bottom-nav .nav-item.logout-item {
+      color: #ff6b6b;
     }
-    .bottom-nav .nav-item .badge-nav {
-      position: absolute;
-      top: 0;
-      right: 0;
-      background: #ff6b6b;
-      color: #fff;
-      font-size: 0.5rem;
-      font-weight: 700;
-      padding: 0.1rem 0.4rem;
-      border-radius: 50%;
-      min-width: 16px;
-      text-align: center;
+    .bottom-nav .nav-item.logout-item:hover {
+      color: #ff8787;
+    }
+    .bottom-nav .nav-item.logout-item.active {
+      color: #ff6b6b;
     }
 
     /* ===== ХЕДЕР ===== */
@@ -359,10 +415,7 @@
       margin-top: 0.1rem;
     }
 
-    /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
-    .main-content { display: none; padding-bottom: 80px; }
-    .main-content.visible { display: block; }
-
+    /* ===== АВТОРИЗАЦИЯ ===== */
     .auth-page {
       display: flex;
       justify-content: center;
@@ -462,7 +515,10 @@
       color: var(--primary-hover);
     }
 
-    /* ===== СТРАНИЦЫ ===== */
+    /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+    .main-content { display: none; }
+    .main-content.visible { display: block; }
+
     .page-content {
       display: none;
       max-width: 1300px;
@@ -795,7 +851,7 @@
       background: rgba(10,14,26,0.8);
       backdrop-filter: blur(10px);
       border-top: 1px solid var(--border-color);
-      padding: 1.5rem 1rem 5rem;
+      padding: 1.5rem 1rem;
       text-align: center;
       color: var(--text-muted);
       margin-top: 2rem;
@@ -813,7 +869,7 @@
     /* ===== TOAST ===== */
     .toast {
       position: fixed;
-      bottom: 80px;
+      bottom: 90px;
       right: 1rem;
       left: 1rem;
       max-width: 400px;
@@ -988,7 +1044,6 @@
       font-weight: 700;
     }
 
-    /* ===== СТАТИСТИКА ===== */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -1067,7 +1122,6 @@
       margin: 0 auto;
     }
 
-    /* ===== КНОПКА НАЗАД ===== */
     .back-btn { text-align: center; margin-top: 1rem; }
     .back-btn button {
       background: transparent;
@@ -1087,7 +1141,6 @@
       box-shadow: 0 0 30px var(--primary-glow);
     }
 
-    /* ===== ЧАРТ ===== */
     .chart-container {
       margin: 1rem 0;
       background: var(--bg-input);
@@ -1103,12 +1156,233 @@
     }
     .chart-container canvas { max-height: 150px; }
 
+    .admin-panel, .admin-system {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+    .admin-panel.visible, .admin-system.visible { display: block; }
+    .admin-panel h3, .admin-system h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .admin-panel .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .admin-panel .form-group label,
+    .admin-system .form-group label {
+      display: block;
+      color: var(--text-secondary);
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    .admin-panel .form-group input,
+    .admin-system .form-group input {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      transition: 0.3s;
+    }
+    .admin-panel .form-group input:focus,
+    .admin-system .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+    .admin-panel .btn-create,
+    .admin-system .btn-add-admin {
+      padding: 0.7rem;
+      background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+      border: none;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #ffffff;
+      cursor: pointer;
+      transition: 0.3s;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .admin-panel .btn-create:hover,
+    .admin-system .btn-add-admin:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+    .admin-system .form-group {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .admin-system .form-group input { flex: 1; min-width: 150px; }
+    .admin-system .btn-add-admin { width: auto; margin-top: 0; }
+    .admin-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .admin-tag {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 40px;
+      padding: 0.2rem 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .admin-tag .remove-admin {
+      color: #ff6b6b;
+      cursor: pointer;
+      font-weight: 700;
+      background: none;
+      border: none;
+      font-size: 0.8rem;
+    }
+    .admin-tag .remove-admin:hover { transform: scale(1.2); }
+    .admin-tag .role-badge {
+      font-size: 0.55rem;
+      padding: 0.05rem 0.4rem;
+      border-radius: 10px;
+      background: var(--primary);
+      color: var(--bg-main);
+      margin-left: 0.2rem;
+      font-weight: 700;
+    }
+    .admin-tag .role-badge.super { background: #ffd700; color: #000; }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .shop-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+      text-align: center;
+      transition: 0.3s;
+    }
+    .shop-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .shop-card .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .shop-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    .shop-card .price {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .shop-card .old-price {
+      text-decoration: line-through;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-left: 0.3rem;
+    }
+    .shop-card .desc {
+      color: var(--text-secondary);
+      margin: 0.5rem 0;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .shop-card .btn-buy {
+      background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 0.85rem;
+    }
+    .shop-card .btn-buy:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+
+    .settings-card .setting-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border-color);
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .settings-card .setting-row:last-child { border-bottom: none; }
+    .settings-card .setting-row .label {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .settings-card .setting-row .value {
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .settings-card .setting-row select {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.3rem 0.7rem;
+      color: var(--text-primary);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.3s;
+      min-width: 120px;
+      font-weight: 600;
+    }
+    .settings-card .setting-row select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+    .settings-card .btn-save {
+      margin-top: 1.2rem;
+      width: 100%;
+      padding: 0.7rem;
+      background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+      border: none;
+      border-radius: 40px;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 0.9rem;
+    }
+    .settings-card .btn-save:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+
     /* ===== АДАПТИВ ===== */
     @media (max-width: 600px) {
-      .bottom-nav .nav-item { padding: 0.2rem 0.4rem; font-size: 0.5rem; min-width: 40px; }
-      .bottom-nav .nav-item i { font-size: 1rem; }
-      .bottom-nav .nav-item span { display: none; }
-      .bottom-nav .nav-item .badge-nav { font-size: 0.4rem; min-width: 14px; top: -2px; right: -2px; }
+      .bottom-nav .nav-item { padding: 0.2rem 0.4rem; min-width: 36px; }
+      .bottom-nav .nav-item .nav-icon { font-size: 1rem; }
+      .bottom-nav .nav-item .nav-label { font-size: 0.45rem; }
+      .bottom-nav .nav-item .nav-badge { font-size: 0.4rem; min-width: 14px; top: -4px; right: -8px; }
+      .bottom-nav .nav-item.active .nav-icon { transform: translateY(-2px) scale(1.05); }
       .page-content .page-title { font-size: 1.4rem; }
       .profile-header { flex-direction: column; text-align: center; }
       .stats-grid-profile { grid-template-columns: 1fr 1fr; }
@@ -1116,17 +1390,20 @@
       .servers-grid { grid-template-columns: 1fr; }
       .top-player { flex-wrap: wrap; }
       .auth-container { padding: 1.5rem; }
+      .admin-panel .form-grid { grid-template-columns: 1fr; }
+      .admin-system .form-group { flex-direction: column; }
+      .admin-system .btn-add-admin { width: 100%; }
     }
     @media (max-width: 400px) {
-      .bottom-nav .nav-item { min-width: 32px; padding: 0.15rem 0.2rem; }
-      .bottom-nav .nav-item i { font-size: 0.85rem; }
+      .bottom-nav .nav-item { min-width: 28px; padding: 0.15rem 0.2rem; }
+      .bottom-nav .nav-item .nav-icon { font-size: 0.85rem; }
+      .bottom-nav .nav-item .nav-label { display: none; }
       .logo-center h1 { font-size: 1rem; }
       .stats-grid-profile { grid-template-columns: 1fr 1fr; gap: 0.3rem; }
       .stat-item { padding: 0.3rem 0.1rem; }
       .stat-item .number { font-size: 0.9rem; }
     }
 
-    /* ===== СКРЫТЫЕ ЭЛЕМЕНТЫ ===== */
     .hidden { display: none !important; }
     .announce-top { display: none !important; }
   </style>
@@ -1279,6 +1556,14 @@
       </div>
     </div>
 
+    <!-- ===== СЕРВЕРА ===== -->
+    <div class="page-content" id="serversPage">
+      <h1 class="page-title"><i class="fas fa-server"></i> DM Сервера</h1>
+      <p class="sub-title">Выбери сервер и присоединяйся к битве!</p>
+      <div class="servers-grid" id="serversGrid"></div>
+      <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+    </div>
+
     <!-- ===== ПРОФИЛЬ ===== -->
     <div class="page-content" id="profilePage">
       <h1 class="page-title"><i class="fas fa-user"></i> Профиль</h1>
@@ -1329,14 +1614,6 @@
       </div>
     </div>
 
-    <!-- ===== СЕРВЕРА ===== -->
-    <div class="page-content" id="serversPage">
-      <h1 class="page-title"><i class="fas fa-server"></i> DM Сервера</h1>
-      <p class="sub-title">Выбери сервер и присоединяйся к битве!</p>
-      <div class="servers-grid" id="serversGrid"></div>
-      <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
-    </div>
-
     <!-- ===== ТОП ИГРОКОВ ===== -->
     <div class="page-content" id="topPlayersPage">
       <h1 class="page-title"><i class="fas fa-trophy"></i> Топ игроков</h1>
@@ -1357,14 +1634,8 @@
     <div class="page-content" id="shopPage">
       <h1 class="page-title"><i class="fas fa-store"></i> Каталог</h1>
       <p class="sub-title">Привилегии и улучшения для вашего аккаунта</p>
-      <div class="shop-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;max-width:400px;margin:0 auto;">
-        <div class="shop-card" style="background:var(--bg-card);backdrop-filter:blur(20px);border-radius:20px;padding:1.5rem;border:1px solid var(--border-color);text-align:center;transition:0.3s;">
-          <div class="icon" style="font-size:2rem;margin-bottom:0.5rem;">👑</div>
-          <h3 style="font-size:1.1rem;font-weight:700;color:var(--primary);">Хостер</h3>
-          <div class="price" style="font-size:1.3rem;font-weight:800;color:var(--primary);">150₽ <span style="text-decoration:line-through;color:var(--text-muted);font-size:0.9rem;font-weight:600;margin-left:0.3rem;">200₽</span></div>
-          <div class="desc" style="color:var(--text-secondary);margin:0.5rem 0;font-size:0.85rem;font-weight:500;">При покупке роли «Хостер» вы сможете проводить deathmatch!</div>
-          <button class="btn-buy" style="background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));border:none;padding:0.5rem 1.5rem;border-radius:40px;font-weight:700;color:#ffffff;cursor:pointer;transition:0.3s;font-size:0.85rem;" onclick="showToast('info','Покупка','Функция в разработке')">Купить</button>
-        </div>
+      <div class="shop-grid">
+        <div class="shop-card"><div class="icon">👑</div><h3>Хостер</h3><div class="price">150₽ <span class="old-price">200₽</span></div><div class="desc">При покупке роли «Хостер» вы сможете проводить deathmatch!</div><button class="btn-buy" onclick="showToast('info','Покупка','Функция в разработке')">Купить</button></div>
       </div>
       <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
@@ -1373,24 +1644,24 @@
     <div class="page-content" id="adminPage">
       <h1 class="page-title"><i class="fas fa-user-shield"></i> Администрирование</h1>
       <p class="sub-title">Управление серверами и администраторами</p>
-      <div class="admin-panel" id="adminPanel" style="background:var(--bg-card);backdrop-filter:blur(20px);border-radius:20px;padding:1.5rem;border:1px solid var(--border-color);margin-bottom:1.5rem;display:none;">
-        <h3 style="color:var(--primary);margin-bottom:1rem;font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;"><i class="fas fa-plus-circle"></i> Создать DM сервер</h3>
-        <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div class="form-group"><label style="display:block;color:var(--text-secondary);margin-bottom:0.3rem;font-weight:600;font-size:0.8rem;">Название режима</label><input type="text" id="serverNameInput" placeholder="Например: Team Deathmatch" style="width:100%;padding:0.6rem 1rem;background:var(--bg-input);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-size:0.9rem;transition:0.3s;" /></div>
-          <div class="form-group"><label style="display:block;color:var(--text-secondary);margin-bottom:0.3rem;font-weight:600;font-size:0.8rem;">Ссылка на лобби</label><input type="text" id="serverLobbyInput" placeholder="https://standoff2.com/..." style="width:100%;padding:0.6rem 1rem;background:var(--bg-input);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-size:0.9rem;transition:0.3s;" /></div>
-          <div class="form-group"><label style="display:block;color:var(--text-secondary);margin-bottom:0.3rem;font-weight:600;font-size:0.8rem;">ID игрока</label><input type="text" id="serverPlayerIdInput" placeholder="Введите ID" style="width:100%;padding:0.6rem 1rem;background:var(--bg-input);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-size:0.9rem;transition:0.3s;" /></div>
-          <div class="form-group"><label style="display:block;color:var(--text-secondary);margin-bottom:0.3rem;font-weight:600;font-size:0.8rem;">Карта</label><input type="text" id="serverMapInput" placeholder="Например: Mansion" style="width:100%;padding:0.6rem 1rem;background:var(--bg-input);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-size:0.9rem;transition:0.3s;" /></div>
+      <div class="admin-panel" id="adminPanel">
+        <h3><i class="fas fa-plus-circle"></i> Создать DM сервер</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Название режима</label><input type="text" id="serverNameInput" placeholder="Например: Team Deathmatch" /></div>
+          <div class="form-group"><label>Ссылка на лобби</label><input type="text" id="serverLobbyInput" placeholder="https://standoff2.com/..." /></div>
+          <div class="form-group"><label>ID игрока</label><input type="text" id="serverPlayerIdInput" placeholder="Введите ID" /></div>
+          <div class="form-group"><label>Карта</label><input type="text" id="serverMapInput" placeholder="Например: Mansion" /></div>
         </div>
-        <button class="btn-create" id="createServerBtn" style="grid-column:1/-1;padding:0.7rem;background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));border:none;border-radius:40px;font-weight:700;font-size:0.9rem;color:#ffffff;cursor:pointer;transition:0.3s;margin-top:0.5rem;width:100%;"><i class="fas fa-plus"></i> Создать сервер</button>
+        <button class="btn-create" id="createServerBtn"><i class="fas fa-plus"></i> Создать сервер</button>
       </div>
-      <div class="admin-system" id="adminSystem" style="background:var(--bg-card);backdrop-filter:blur(20px);border-radius:20px;padding:1.5rem;border:1px solid var(--border-color);margin-bottom:1.5rem;display:none;">
-        <h3 style="color:var(--primary);margin-bottom:1rem;font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;"><i class="fas fa-users-cog"></i> Управление админами</h3>
+      <div class="admin-system" id="adminSystem">
+        <h3><i class="fas fa-users-cog"></i> Управление админами</h3>
         <p style="color:var(--text-secondary);margin-bottom:0.8rem;font-size:0.8rem;font-weight:500;">⚠️ Только главный администратор (<strong>Admin</strong>) может добавлять/удалять админов.</p>
-        <div class="form-group" style="display:flex;gap:0.8rem;flex-wrap:wrap;">
-          <input type="text" id="adminUsernameInput" placeholder="Имя пользователя" style="flex:1;padding:0.6rem 1rem;background:var(--bg-input);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-size:0.9rem;transition:0.3s;min-width:150px;" />
-          <button class="btn-add-admin" id="addAdminBtn" style="padding:0.6rem 1.2rem;background:var(--primary);border:none;border-radius:40px;font-weight:700;color:var(--bg-main);cursor:pointer;transition:0.3s;font-size:0.85rem;white-space:nowrap;"><i class="fas fa-user-plus"></i> Добавить</button>
+        <div class="form-group">
+          <input type="text" id="adminUsernameInput" placeholder="Имя пользователя" />
+          <button class="btn-add-admin" id="addAdminBtn"><i class="fas fa-user-plus"></i> Добавить</button>
         </div>
-        <div class="admin-list" id="adminList" style="margin-top:1rem;display:flex;flex-wrap:wrap;gap:0.5rem;"></div>
+        <div class="admin-list" id="adminList"></div>
       </div>
       <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
@@ -1400,32 +1671,11 @@
       <h1 class="page-title"><i class="fas fa-cog"></i> Настройки</h1>
       <p class="sub-title">Управление аккаунтом и предпочтениями</p>
       <div class="settings-card">
-        <div class="setting-row" style="display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border-color);align-items:center;flex-wrap:wrap;gap:0.5rem;">
-          <span class="label" style="color:var(--text-secondary);font-size:0.85rem;font-weight:600;">Имя пользователя</span>
-          <span class="value" style="color:var(--text-primary);font-weight:700;font-size:0.85rem;" id="settingsName">GRINDROOM_Player</span>
-        </div>
-        <div class="setting-row" style="display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border-color);align-items:center;flex-wrap:wrap;gap:0.5rem;">
-          <span class="label" style="color:var(--text-secondary);font-size:0.85rem;font-weight:600;">ID Standoff 2</span>
-          <span class="value" style="color:var(--primary);font-weight:700;font-size:0.85rem;" id="settingsStandoffId">123456789</span>
-        </div>
-        <div class="setting-row" style="display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border-color);align-items:center;flex-wrap:wrap;gap:0.5rem;">
-          <span class="label" style="color:var(--text-secondary);font-size:0.85rem;font-weight:600;">Язык</span>
-          <select id="languageSelect" onchange="changeLanguage(this.value)" style="background:var(--bg-input);border:1px solid var(--border-color);border-radius:12px;padding:0.3rem 0.7rem;color:var(--text-primary);font-size:0.8rem;cursor:pointer;transition:0.3s;min-width:120px;font-weight:600;">
-            <option value="ru">🇷🇺 Русский</option>
-            <option value="en">🇬🇧 English</option>
-            <option value="kz">🇰🇿 Қазақша</option>
-          </select>
-        </div>
-        <div class="setting-row" style="display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border-color);align-items:center;flex-wrap:wrap;gap:0.5rem;">
-          <span class="label" style="color:var(--text-secondary);font-size:0.85rem;font-weight:600;">Тема</span>
-          <select id="themeSelect" onchange="changeTheme(this.value)" style="background:var(--bg-input);border:1px solid var(--border-color);border-radius:12px;padding:0.3rem 0.7rem;color:var(--text-primary);font-size:0.8rem;cursor:pointer;transition:0.3s;min-width:120px;font-weight:600;">
-            <option value="default">🔵 Синяя</option>
-            <option value="red">🔴 Красная</option>
-            <option value="green">🟢 Зелёная</option>
-            <option value="black">⚫ Чёрная</option>
-          </select>
-        </div>
-        <button class="btn-save" id="saveSettingsBtn" style="margin-top:1.2rem;width:100%;padding:0.7rem;background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));border:none;border-radius:40px;font-weight:700;color:#ffffff;cursor:pointer;transition:0.3s;font-size:0.9rem;"><i class="fas fa-save"></i> Сохранить</button>
+        <div class="setting-row"><span class="label">Имя пользователя</span><span class="value" id="settingsName">GRINDROOM_Player</span></div>
+        <div class="setting-row"><span class="label">ID Standoff 2</span><span class="value" style="color:var(--primary);" id="settingsStandoffId">123456789</span></div>
+        <div class="setting-row"><span class="label">Язык</span><select id="languageSelect" onchange="changeLanguage(this.value)"><option value="ru">🇷🇺 Русский</option><option value="en">🇬🇧 English</option><option value="kz">🇰🇿 Қазақша</option></select></div>
+        <div class="setting-row"><span class="label">Тема</span><select id="themeSelect" onchange="changeTheme(this.value)"><option value="default">🔵 Синяя</option><option value="red">🔴 Красная</option><option value="green">🟢 Зелёная</option><option value="black">⚫ Чёрная</option></select></div>
+        <button class="btn-save" id="saveSettingsBtn"><i class="fas fa-save"></i> Сохранить</button>
       </div>
       <div class="back-btn"><button onclick="showPage('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
@@ -1440,31 +1690,43 @@
   </div>
 </div>
 
-<!-- ===== НИЖНЯЯ НАВИГАЦИЯ ===== -->
-<nav class="bottom-nav" id="bottomNav" style="display:none;">
+<!-- ===== НИЖНЯЯ НАВИГАЦИЯ (СОВРЕМЕННАЯ) ===== -->
+<nav class="bottom-nav" id="bottomNav">
+  <!-- Главная -->
   <button class="nav-item active" onclick="showPage('mainContent')" data-page="mainContent">
-    <i class="fas fa-home"></i>
-    <span>Главная</span>
+    <span class="nav-glow"></span>
+    <i class="fas fa-home nav-icon"></i>
+    <span class="nav-label">Главная</span>
   </button>
+  <!-- Сервера -->
   <button class="nav-item" onclick="showPage('serversPage')" data-page="serversPage">
-    <i class="fas fa-server"></i>
-    <span>Сервера</span>
+    <span class="nav-glow"></span>
+    <i class="fas fa-server nav-icon"></i>
+    <span class="nav-label">Сервера</span>
   </button>
+  <!-- Профиль -->
   <button class="nav-item" onclick="showPage('profilePage')" data-page="profilePage">
-    <i class="fas fa-user"></i>
-    <span>Профиль</span>
+    <span class="nav-glow"></span>
+    <i class="fas fa-user nav-icon"></i>
+    <span class="nav-label">Профиль</span>
   </button>
+  <!-- Топ игроков -->
   <button class="nav-item" onclick="showPage('topPlayersPage')" data-page="topPlayersPage">
-    <i class="fas fa-trophy"></i>
-    <span>Топ</span>
+    <span class="nav-glow"></span>
+    <i class="fas fa-trophy nav-icon"></i>
+    <span class="nav-label">Топ</span>
   </button>
+  <!-- Каталог -->
   <button class="nav-item" onclick="showPage('shopPage')" data-page="shopPage">
-    <i class="fas fa-store"></i>
-    <span>Каталог</span>
+    <span class="nav-glow"></span>
+    <i class="fas fa-store nav-icon"></i>
+    <span class="nav-label">Каталог</span>
   </button>
-  <button class="nav-item" onclick="handleLogout()" style="color:#ff6b6b;">
-    <i class="fas fa-sign-out-alt"></i>
-    <span>Выйти</span>
+  <!-- Выход -->
+  <button class="nav-item logout-item" onclick="handleLogout()" data-page="logout">
+    <span class="nav-glow"></span>
+    <i class="fas fa-sign-out-alt nav-icon"></i>
+    <span class="nav-label">Выйти</span>
   </button>
 </nav>
 
@@ -1487,7 +1749,7 @@
     } else {
       setTimeout(() => {
         loader.classList.add('hidden');
-        document.getElementById('bottomNav').style.display = 'flex';
+        document.getElementById('bottomNav').classList.add('visible');
         checkAuth();
       }, 400);
     }
@@ -1645,7 +1907,7 @@
   }
 
   // ============================================================
-  // ФУНКЦИИ (упрощённые)
+  // ФУНКЦИИ (сокращённые)
   // ============================================================
   let currentUser = null;
   let kdChartInstance = null;
@@ -1730,14 +1992,14 @@
     try {
       const data = await apiRequest('/admins');
       const admins = data || [];
-      let html = `<div class="admin-tag" style="background:var(--bg-input);border:1px solid var(--border-color);border-radius:40px;padding:0.2rem 0.8rem;display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;font-weight:600;"><i class="fas fa-crown" style="color:#ffd700;"></i> ${SUPER_ADMIN_USERNAME} <span style="font-size:0.55rem;padding:0.05rem 0.4rem;border-radius:10px;background:#ffd700;color:#000;margin-left:0.2rem;font-weight:700;">Главный</span></div>`;
+      let html = `<div class="admin-tag"><i class="fas fa-crown" style="color:#ffd700;"></i> ${SUPER_ADMIN_USERNAME} <span class="role-badge super">Главный</span></div>`;
       if (admins.length === 0) {
         html += '<p style="color:var(--text-muted);margin-top:0.8rem;font-weight:500;font-size:0.8rem;">Нет дополнительных администраторов</p>';
       } else {
         for (const admin of admins) {
           const u = await apiRequest(`/users?id=eq.${admin.userId}`);
           const name = u && u.length ? u[0].username : admin.userId;
-          html += `<div class="admin-tag" style="background:var(--bg-input);border:1px solid var(--border-color);border-radius:40px;padding:0.2rem 0.8rem;display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;font-weight:600;"><i class="fas fa-user-shield" style="color:var(--primary);"></i> ${name} <span style="font-size:0.55rem;padding:0.05rem 0.4rem;border-radius:10px;background:var(--primary);color:var(--bg-main);margin-left:0.2rem;font-weight:700;">Админ</span>${isSuperAdmin() ? `<button class="remove-admin" onclick="removeAdmin('${admin.userId}')" style="color:#ff6b6b;cursor:pointer;font-weight:700;transition:0.3s;background:none;border:none;font-size:0.8rem;">✕</button>` : ''}</div>`;
+          html += `<div class="admin-tag"><i class="fas fa-user-shield" style="color:var(--primary);"></i> ${name} <span class="role-badge">Админ</span>${isSuperAdmin() ? `<button class="remove-admin" onclick="removeAdmin('${admin.userId}')">✕</button>` : ''}</div>`;
         }
       }
       list.innerHTML = html;
@@ -1987,7 +2249,7 @@
     for (const server of servers) {
       const pending = server.pending || [];
       const pendingHtml = pending.length > 0
-        ? `<div class="pending-players-section visible" style="background:var(--bg-input);border-radius:10px;padding:0.6rem;border:1px solid var(--border-color);margin-top:0.6rem;">
+        ? `<div class="pending-players-section" style="background:var(--bg-input);border-radius:10px;padding:0.6rem;border:1px solid var(--border-color);margin-top:0.6rem;">
             <h4 style="color:var(--primary);font-size:0.8rem;margin-bottom:0.4rem;font-weight:700;"><i class="fas fa-users"></i> Очередь (${pending.length})</h4>
             ${pending.map(p => {
               const username = typeof p === 'string' ? p : p.username;
@@ -2006,19 +2268,18 @@
         : '';
       const card = document.createElement('div');
       card.className = 'server-card';
-      card.style.cssText = 'background:var(--bg-card);backdrop-filter:blur(20px);border-radius:20px;padding:1.2rem;border:1px solid var(--border-color);transition:0.3s;position:relative;overflow:hidden;';
       card.innerHTML = `
-        <div class="server-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
-          <span class="server-name" style="font-size:1.1rem;font-weight:800;color:var(--primary);">${server.name}</span>
-          <span class="server-status online" style="padding:0.1rem 0.6rem;border-radius:40px;font-size:0.6rem;font-weight:700;background:rgba(46,125,50,0.3);color:#81c784;"><i class="fas fa-circle"></i> Онлайн</span>
+        <div class="server-header">
+          <span class="server-name">${server.name}</span>
+          <span class="server-status online"><i class="fas fa-circle"></i> Онлайн</span>
         </div>
-        <div class="server-info" style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin:0.6rem 0;">
-          <div class="info-item" style="background:var(--bg-input);padding:0.3rem;border-radius:10px;text-align:center;"><div class="label" style="color:var(--text-muted);font-size:0.55rem;font-weight:600;">Карта</div><div class="value" style="color:var(--text-primary);font-weight:700;font-size:0.8rem;">${server.map}</div></div>
-          <div class="info-item" style="background:var(--bg-input);padding:0.3rem;border-radius:10px;text-align:center;"><div class="label" style="color:var(--text-muted);font-size:0.55rem;font-weight:600;">ID игрока</div><div class="value" style="color:var(--text-primary);font-weight:700;font-size:0.8rem;">${server.playerId}</div></div>
+        <div class="server-info">
+          <div class="info-item"><div class="label">Карта</div><div class="value">${server.map}</div></div>
+          <div class="info-item"><div class="label">ID игрока</div><div class="value">${server.playerId}</div></div>
         </div>
-        <div class="server-creator" style="font-size:0.65rem;color:var(--text-secondary);padding:0.1rem 0.5rem;background:var(--bg-input);border-radius:8px;display:inline-block;font-weight:600;"><i class="fas fa-user" style="color:var(--primary);margin-right:0.2rem;"></i> Создал: ${server.createdBy || 'Unknown'}</div>
+        <div class="server-creator"><i class="fas fa-user"></i> Создал: ${server.createdBy || 'Unknown'}</div>
         <div style="margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted);word-break:break-all;font-weight:500;"><i class="fas fa-link"></i> ${server.lobby}</div>
-        <button class="btn-join" onclick="joinServer(${server.id}, '${server.lobby}', '${currentUsername || ''}')" style="width:100%;padding:0.5rem;background:linear-gradient(45deg,var(--gradient-start),var(--gradient-end));border:none;border-radius:40px;font-weight:700;color:#ffffff;cursor:pointer;transition:0.3s;font-size:0.8rem;margin-top:0.4rem;"><i class="fas fa-sign-in-alt"></i> Подключиться</button>
+        <button class="btn-join" onclick="joinServer(${server.id}, '${server.lobby}', '${currentUsername || ''}')"><i class="fas fa-sign-in-alt"></i> Подключиться</button>
         ${isAdminUser ? `<div class="server-actions" style="display:flex;gap:0.4rem;margin-top:0.4rem;flex-wrap:wrap;"><button class="btn-delete" onclick="deleteServer(${server.id})" style="flex:1;padding:0.3rem;border:none;border-radius:40px;font-weight:700;cursor:pointer;transition:0.3s;font-size:0.7rem;min-width:70px;background:rgba(255,107,107,0.2);color:#ff6b6b;border:1px solid #ff6b6b !important;"><i class="fas fa-trash"></i> Удалить</button></div>` : ''}
         ${pendingHtml}
       `;
@@ -2093,15 +2354,15 @@
       const kd = p.deaths > 0 ? (p.kills / p.deaths).toFixed(2) : (p.kills > 0 ? p.kills.toFixed(2) : '0.00');
       const initial = p.username ? p.username.charAt(0).toUpperCase() : '?';
       const avatarHtml = p.avatar_url ? `<img src="${p.avatar_url}" alt="avatar" />` : initial;
-      return `<div class="top-player" style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.8rem;background:var(--bg-card);backdrop-filter:blur(20px);border-radius:14px;margin-bottom:0.4rem;border:1px solid var(--border-color);transition:0.3s;">
-        <div class="rank ${classes[i]||''}" style="font-size:1rem;font-weight:800;color:var(--primary);min-width:28px;">${medals[i]||(i+1)}</div>
-        <div class="avatar-small" style="width:28px;height:28px;border-radius:50%;background:var(--avatar-gradient);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#ffffff;flex-shrink:0;overflow:hidden;">${avatarHtml}</div>
-        <div class="info" onclick="viewProfile('${p.id}')" style="flex:1;cursor:pointer;">
-          <div class="name" style="font-weight:700;font-size:0.85rem;">${p.username} ${p.isBanned ? '🚫' : ''}</div>
-          <div class="id" style="color:var(--text-secondary);font-size:0.65rem;font-weight:500;">ID: ${p.standoffId || 'Нет'}</div>
+      return `<div class="top-player">
+        <div class="rank ${classes[i]||''}">${medals[i]||(i+1)}</div>
+        <div class="avatar-small">${avatarHtml}</div>
+        <div class="info" onclick="viewProfile('${p.id}')">
+          <div class="name">${p.username} ${p.isBanned ? '🚫' : ''}</div>
+          <div class="id">ID: ${p.standoffId || 'Нет'}</div>
         </div>
-        <span class="kd-badge" style="font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:20px;background:var(--primary-glow);color:var(--primary);font-weight:700;min-width:36px;text-align:center;">KD: ${kd}</span>
-        <div class="server-matches" style="font-size:0.8rem;font-weight:700;color:#51cf66;">🎮 ${p.serverMatches || 0}</div>
+        <span class="kd-badge">KD: ${kd}</span>
+        <div class="server-matches">🎮 ${p.serverMatches || 0}</div>
         ${isSuper ? `<button class="clear-btn" onclick="clearPlayerStats('${p.id}')" style="background:#dc3545;color:#fff;border:none;padding:0.15rem 0.6rem;border-radius:20px;font-weight:700;font-size:0.6rem;cursor:pointer;transition:0.3s;display:inline-flex;align-items:center;gap:0.2rem;"><i class="fas fa-trash-alt"></i> Очистить</button>` : ''}
       </div>`;
     }).join('');
@@ -2138,14 +2399,14 @@
     container.innerHTML = admins.map((p, i) => {
       const initial = p.username ? p.username.charAt(0).toUpperCase() : '?';
       const avatarHtml = p.avatar_url ? `<img src="${p.avatar_url}" alt="avatar" />` : initial;
-      return `<div class="top-player" style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.8rem;background:var(--bg-card);backdrop-filter:blur(20px);border-radius:14px;margin-bottom:0.4rem;border:1px solid var(--border-color);transition:0.3s;">
-        <div class="rank ${classes[i]||''}" style="font-size:1rem;font-weight:800;color:var(--primary);min-width:28px;">${medals[i]||(i+1)}</div>
-        <div class="avatar-small" style="width:28px;height:28px;border-radius:50%;background:var(--avatar-gradient);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#ffffff;flex-shrink:0;overflow:hidden;">${avatarHtml}</div>
-        <div class="info" onclick="viewProfile('${p.id}')" style="flex:1;cursor:pointer;">
-          <div class="name" style="font-weight:700;font-size:0.85rem;">${p.username} ${p.isBanned ? '🚫' : ''}</div>
-          <div class="id" style="color:var(--text-secondary);font-size:0.65rem;font-weight:500;">ID: ${p.standoffId || 'Нет'}</div>
+      return `<div class="top-player">
+        <div class="rank ${classes[i]||''}">${medals[i]||(i+1)}</div>
+        <div class="avatar-small">${avatarHtml}</div>
+        <div class="info" onclick="viewProfile('${p.id}')">
+          <div class="name">${p.username} ${p.isBanned ? '🚫' : ''}</div>
+          <div class="id">ID: ${p.standoffId || 'Нет'}</div>
         </div>
-        <div class="server-matches" style="font-size:0.8rem;font-weight:700;color:#51cf66;">📦 Создано DM: ${p.createdserverscount || 0}</div>
+        <div class="server-matches">📦 Создано DM: ${p.createdserverscount || 0}</div>
       </div>`;
     }).join('');
   }
@@ -2353,14 +2614,14 @@
   function changeLanguage(lang) {
     const t = translations[lang];
     if (!t) return;
-    const navItems = document.querySelectorAll('.bottom-nav .nav-item span');
-    if (navItems.length >= 6) {
-      navItems[0].textContent = t.main;
-      navItems[1].textContent = t.servers;
-      navItems[2].textContent = t.profile;
-      navItems[3].textContent = t.top;
-      navItems[4].textContent = t.shop;
-      navItems[5].textContent = t.logout;
+    const labels = document.querySelectorAll('.bottom-nav .nav-label');
+    if (labels.length >= 6) {
+      labels[0].textContent = t.main;
+      labels[1].textContent = t.servers;
+      labels[2].textContent = t.profile;
+      labels[3].textContent = t.top;
+      labels[4].textContent = t.shop;
+      labels[5].textContent = t.logout;
     }
     localStorage.setItem('startup_language', lang);
   }
@@ -2380,6 +2641,7 @@
 
   // УПРАВЛЕНИЕ СТРАНИЦАМИ
   function showPage(pageId) {
+    // Скрываем все страницы
     document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
     if (pageId === 'mainContent') {
       document.getElementById('mainContent').classList.remove('hidden');
@@ -2387,15 +2649,42 @@
       document.getElementById('footer').classList.remove('hidden');
     } else {
       document.getElementById('mainContent').classList.add('hidden');
-      document.getElementById(pageId).classList.add('active');
+      const target = document.getElementById(pageId);
+      if (target) target.classList.add('active');
       document.getElementById('footer').classList.add('hidden');
     }
     // Обновляем активную навигацию
     document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
       item.classList.toggle('active', item.dataset.page === pageId);
     });
+    // Показываем/скрываем админку в навигации
+    updateAdminNav();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  async function updateAdminNav() {
+    const isAdminUser = await isAdmin();
+    // Добавляем кнопку админки в навигацию, если есть права
+    const nav = document.getElementById('bottomNav');
+    // Удаляем старую кнопку админки если есть
+    const oldAdmin = nav.querySelector('.nav-item.admin-nav-item');
+    if (oldAdmin) oldAdmin.remove();
+    if (isAdminUser) {
+      const adminBtn = document.createElement('button');
+      adminBtn.className = 'nav-item admin-nav-item';
+      adminBtn.setAttribute('data-page', 'adminPage');
+      adminBtn.innerHTML = `
+        <span class="nav-glow"></span>
+        <i class="fas fa-user-shield nav-icon"></i>
+        <span class="nav-label">Админ</span>
+      `;
+      adminBtn.onclick = function() { showPage('adminPage'); };
+      // Вставляем перед выходом
+      const logoutBtn = nav.querySelector('.logout-item');
+      nav.insertBefore(adminBtn, logoutBtn);
+    }
+  }
+
   function showToast(type, title, text) {
     const toast = document.getElementById('toast');
     const titleEl = document.getElementById('toastTitle');
@@ -2422,8 +2711,6 @@
     const userIsSuper = isSuperAdmin();
     adminPanel.style.display = userIsAdmin ? 'block' : 'none';
     adminSystem.style.display = userIsSuper ? 'block' : 'none';
-    const adminMenuLink = document.querySelector('.bottom-nav .nav-item .admin-link');
-    // добавляем скрытую ссылку на админку через навигацию
   }
 
   // ПРОВЕРКА АВТОРИЗАЦИИ
@@ -2434,7 +2721,7 @@
       document.getElementById('authPage').style.display = 'none';
       document.getElementById('mainSite').classList.add('visible');
       document.getElementById('header').classList.add('visible');
-      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('bottomNav').classList.add('visible');
       const fresh = await fetchUserData(user.id);
       if (fresh && fresh.isBanned) { handleLogout(); return false; }
       loadSettings();
@@ -2443,6 +2730,7 @@
       await fetchSiteStats();
       await renderAdmins();
       await updateAdminPanel();
+      await updateAdminNav();
       await fetchTopPlayers();
       await fetchTopAdmins();
       return true;
@@ -2451,7 +2739,7 @@
       document.getElementById('authPage').style.display = 'flex';
       document.getElementById('mainSite').classList.remove('visible');
       document.getElementById('header').classList.remove('visible');
-      document.getElementById('bottomNav').style.display = 'none';
+      document.getElementById('bottomNav').classList.remove('visible');
       return false;
     }
   }

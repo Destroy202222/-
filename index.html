@@ -161,7 +161,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      transition: opacity 1s ease, visibility 1s ease;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
     }
     #loader.hidden {
       opacity: 0;
@@ -228,7 +228,7 @@
       font-weight: 800;
     }
 
-    /* ===== СОВРЕМЕННАЯ НАВИГАЦИЯ (УВЕЛИЧЕННАЯ) ===== */
+    /* ===== НАВИГАЦИЯ ===== */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -336,9 +336,6 @@
     }
     .bottom-nav .nav-item.logout-item:hover {
       color: #ff8787;
-    }
-    .bottom-nav .nav-item.logout-item.active {
-      color: #ff6b6b;
     }
 
     /* ===== ХЕДЕР ===== */
@@ -1503,7 +1500,7 @@
     <!-- ===== ХЕДЕР ===== -->
     <header class="header visible" id="header">
       <div class="header-inner">
-        <div class="logo-center" onclick="window.navigateTo('mainContent')" title="На главную">
+        <div class="logo-center" onclick="navigateTo('mainContent')" title="На главную">
           <h1>⚡ <span class="highlight">GRINDROOM</span> <span class="badge">DM</span><span class="sub">✦ DEATHMATCH STANDOFF 2 ✦</span></h1>
         </div>
       </div>
@@ -1549,7 +1546,7 @@
       <h1 class="page-title"><i class="fas fa-server"></i> DM Сервера</h1>
       <p class="sub-title">Выбери сервер и присоединяйся к битве!</p>
       <div class="servers-grid" id="serversGrid"></div>
-      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== ПРОФИЛЬ ===== -->
@@ -1598,7 +1595,7 @@
             </div>
           </div>
         </div>
-        <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+        <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
       </div>
     </div>
 
@@ -1607,7 +1604,7 @@
       <h1 class="page-title"><i class="fas fa-trophy"></i> Топ игроков</h1>
       <p class="sub-title">Лучшие игроки по количеству игр на сервере</p>
       <div class="top-players" id="topPlayersList"></div>
-      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== ТОП АДМИНОВ ===== -->
@@ -1615,7 +1612,7 @@
       <h1 class="page-title"><i class="fas fa-crown"></i> Топ админов</h1>
       <p class="sub-title">Лучшие администраторы по количеству созданных DM</p>
       <div class="top-players" id="topAdminsList"></div>
-      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== КАТАЛОГ ===== -->
@@ -1625,7 +1622,7 @@
       <div class="shop-grid">
         <div class="shop-card"><div class="icon">👑</div><h3>Хостер</h3><div class="price">150₽ <span class="old-price">200₽</span></div><div class="desc">При покупке роли «Хостер» вы сможете проводить deathmatch!</div><button class="btn-buy" onclick="showToast('info','Покупка','Функция в разработке')">Купить</button></div>
       </div>
-      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== АДМИНИСТРИРОВАНИЕ ===== -->
@@ -1651,7 +1648,7 @@
         </div>
         <div class="admin-list" id="adminList"></div>
       </div>
-      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
@@ -1665,7 +1662,7 @@
         <div class="setting-row"><span class="label">Тема</span><select id="themeSelect" onchange="changeTheme(this.value)"><option value="default">🔵 Синяя</option><option value="red">🔴 Красная</option><option value="green">🟢 Зелёная</option><option value="black">⚫ Чёрная</option></select></div>
         <button class="btn-save" id="saveSettingsBtn"><i class="fas fa-save"></i> Сохранить</button>
       </div>
-      <div class="back-btn"><button onclick="window.navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== ФУТЕР ===== -->
@@ -1680,32 +1677,32 @@
 
 <!-- ===== НИЖНЯЯ НАВИГАЦИЯ ===== -->
 <nav class="bottom-nav" id="bottomNav">
-  <button class="nav-item active" data-page="mainContent" onclick="window.navigateTo('mainContent')">
+  <button class="nav-item active" data-page="mainContent">
     <span class="nav-glow"></span>
     <i class="fas fa-home nav-icon"></i>
     <span class="nav-label">Главная</span>
   </button>
-  <button class="nav-item" data-page="serversPage" onclick="window.navigateTo('serversPage')">
+  <button class="nav-item" data-page="serversPage">
     <span class="nav-glow"></span>
     <i class="fas fa-server nav-icon"></i>
     <span class="nav-label">Сервера</span>
   </button>
-  <button class="nav-item" data-page="profilePage" onclick="window.navigateTo('profilePage')">
+  <button class="nav-item" data-page="profilePage">
     <span class="nav-glow"></span>
     <i class="fas fa-user nav-icon"></i>
     <span class="nav-label">Профиль</span>
   </button>
-  <button class="nav-item" data-page="topPlayersPage" onclick="window.navigateTo('topPlayersPage')">
+  <button class="nav-item" data-page="topPlayersPage">
     <span class="nav-glow"></span>
     <i class="fas fa-trophy nav-icon"></i>
     <span class="nav-label">Топ</span>
   </button>
-  <button class="nav-item" data-page="shopPage" onclick="window.navigateTo('shopPage')">
+  <button class="nav-item" data-page="shopPage">
     <span class="nav-glow"></span>
     <i class="fas fa-store nav-icon"></i>
     <span class="nav-label">Каталог</span>
   </button>
-  <button class="nav-item logout-item" onclick="window.handleLogout()">
+  <button class="nav-item logout-item" data-page="logout">
     <span class="nav-glow"></span>
     <i class="fas fa-sign-out-alt nav-icon"></i>
     <span class="nav-label">Выйти</span>
@@ -1714,10 +1711,17 @@
 
 <script>
   // ============================================================
-  // ГЛОБАЛЬНАЯ ФУНКЦИЯ НАВИГАЦИИ (РАБОТАЕТ СРАЗУ)
+  // ГЛОБАЛЬНЫЕ ФУНКЦИИ (ДОСТУПНЫ СРАЗУ)
   // ============================================================
-  window.navigateTo = function(pageId) {
+  
+  // Навигация
+  function navigateTo(pageId) {
     console.log('🔀 Переход на страницу:', pageId);
+    
+    if (pageId === 'logout') {
+      handleLogout();
+      return;
+    }
     
     // Скрываем все страницы
     document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
@@ -1744,20 +1748,30 @@
     });
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }
 
-  // Алиас для showPage
-  window.showPage = window.navigateTo;
-
-  // ============================================================
-  // ГЛОБАЛЬНЫЙ ВЫХОД
-  // ============================================================
-  window.handleLogout = function() {
+  // Выход
+  function handleLogout() {
     localStorage.removeItem('startup_user');
     localStorage.removeItem('startup_token');
     showToast('info', 'Выход выполнен', 'Вы вышли из аккаунта');
     setTimeout(() => location.reload(), 500);
-  };
+  }
+
+  // ============================================================
+  // ИНИЦИАЛИЗАЦИЯ НАВИГАЦИИ
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    // Навешиваем обработчики на кнопки навигации
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        const pageId = this.dataset.page;
+        if (pageId) {
+          navigateTo(pageId);
+        }
+      });
+    });
+  });
 
   // ============================================================
   // ЗАГРУЗЧИК
@@ -1929,7 +1943,7 @@
   }
 
   // ============================================================
-  // ОСТАЛЬНЫЕ ФУНКЦИИ
+  // ОСТАЛЬНЫЕ ФУНКЦИИ (сокращённые)
   // ============================================================
   let currentUser = null;
   let kdChartInstance = null;
@@ -1947,7 +1961,7 @@
       await apiRequest(`/users?id=eq.${userId}`, { method: 'PATCH', body: JSON.stringify({ isBanned: true }) });
       showToast('success', 'Пользователь забанен', '');
       const cur = getCurrentUser();
-      if (cur && cur.id === userId) window.handleLogout();
+      if (cur && cur.id === userId) handleLogout();
       if (viewingUserId === userId) fetchUserData(userId);
     } catch (e) { showToast('error', 'Ошибка', e.message); }
   }
@@ -2520,7 +2534,7 @@
     if (!userId) return;
     viewingUserId = userId;
     await fetchUserData(userId);
-    window.navigateTo('profilePage');
+    navigateTo('profilePage');
   }
   async function fetchUserData(userId = null) {
     const targetId = userId || getCurrentUser()?.id;
@@ -2535,7 +2549,7 @@
           const cur = getCurrentUser();
           if (cur && cur.id === user.id) {
             showToast('error','Вы забанены','Ваш аккаунт забанен');
-            window.handleLogout();
+            handleLogout();
             return null;
           }
         }
@@ -2699,7 +2713,7 @@
       document.getElementById('header').classList.add('visible');
       document.getElementById('bottomNav').classList.add('visible');
       const fresh = await fetchUserData(user.id);
-      if (fresh && fresh.isBanned) { window.handleLogout(); return false; }
+      if (fresh && fresh.isBanned) { handleLogout(); return false; }
       loadSettings();
       if (isSuperAdmin()) console.log('👑 Супер-админ авторизован:', user.username);
       await fetchServers();

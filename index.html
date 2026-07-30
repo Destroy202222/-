@@ -1500,7 +1500,7 @@
     <!-- ===== ХЕДЕР ===== -->
     <header class="header visible" id="header">
       <div class="header-inner">
-        <div class="logo-center" onclick="navigateTo('mainContent')" title="На главную">
+        <div class="logo-center" id="logoHome">
           <h1>⚡ <span class="highlight">GRINDROOM</span> <span class="badge">DM</span><span class="sub">✦ DEATHMATCH STANDOFF 2 ✦</span></h1>
         </div>
       </div>
@@ -1546,7 +1546,7 @@
       <h1 class="page-title"><i class="fas fa-server"></i> DM Сервера</h1>
       <p class="sub-title">Выбери сервер и присоединяйся к битве!</p>
       <div class="servers-grid" id="serversGrid"></div>
-      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button class="nav-back-btn" data-page="mainContent"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== ПРОФИЛЬ ===== -->
@@ -1595,7 +1595,7 @@
             </div>
           </div>
         </div>
-        <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+        <div class="back-btn"><button class="nav-back-btn" data-page="mainContent"><i class="fas fa-arrow-left"></i> На главную</button></div>
       </div>
     </div>
 
@@ -1604,7 +1604,7 @@
       <h1 class="page-title"><i class="fas fa-trophy"></i> Топ игроков</h1>
       <p class="sub-title">Лучшие игроки по количеству игр на сервере</p>
       <div class="top-players" id="topPlayersList"></div>
-      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button class="nav-back-btn" data-page="mainContent"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== ТОП АДМИНОВ ===== -->
@@ -1612,7 +1612,7 @@
       <h1 class="page-title"><i class="fas fa-crown"></i> Топ админов</h1>
       <p class="sub-title">Лучшие администраторы по количеству созданных DM</p>
       <div class="top-players" id="topAdminsList"></div>
-      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button class="nav-back-btn" data-page="mainContent"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== КАТАЛОГ ===== -->
@@ -1622,7 +1622,7 @@
       <div class="shop-grid">
         <div class="shop-card"><div class="icon">👑</div><h3>Хостер</h3><div class="price">150₽ <span class="old-price">200₽</span></div><div class="desc">При покупке роли «Хостер» вы сможете проводить deathmatch!</div><button class="btn-buy" onclick="showToast('info','Покупка','Функция в разработке')">Купить</button></div>
       </div>
-      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button class="nav-back-btn" data-page="mainContent"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== АДМИНИСТРИРОВАНИЕ ===== -->
@@ -1648,7 +1648,7 @@
         </div>
         <div class="admin-list" id="adminList"></div>
       </div>
-      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button class="nav-back-btn" data-page="mainContent"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
@@ -1662,7 +1662,7 @@
         <div class="setting-row"><span class="label">Тема</span><select id="themeSelect" onchange="changeTheme(this.value)"><option value="default">🔵 Синяя</option><option value="red">🔴 Красная</option><option value="green">🟢 Зелёная</option><option value="black">⚫ Чёрная</option></select></div>
         <button class="btn-save" id="saveSettingsBtn"><i class="fas fa-save"></i> Сохранить</button>
       </div>
-      <div class="back-btn"><button onclick="navigateTo('mainContent')"><i class="fas fa-arrow-left"></i> На главную</button></div>
+      <div class="back-btn"><button class="nav-back-btn" data-page="mainContent"><i class="fas fa-arrow-left"></i> На главную</button></div>
     </div>
 
     <!-- ===== ФУТЕР ===== -->
@@ -1711,10 +1711,8 @@
 
 <script>
   // ============================================================
-  // ГЛОБАЛЬНЫЕ ФУНКЦИИ (ДОСТУПНЫ СРАЗУ)
+  // ГЛОБАЛЬНАЯ ФУНКЦИЯ НАВИГАЦИИ
   // ============================================================
-  
-  // Навигация
   function navigateTo(pageId) {
     console.log('🔀 Переход на страницу:', pageId);
     
@@ -1750,7 +1748,9 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Выход
+  // ============================================================
+  // ВЫХОД
+  // ============================================================
   function handleLogout() {
     localStorage.removeItem('startup_user');
     localStorage.removeItem('startup_token');
@@ -1762,7 +1762,9 @@
   // ИНИЦИАЛИЗАЦИЯ НАВИГАЦИИ
   // ============================================================
   document.addEventListener('DOMContentLoaded', function() {
-    // Навешиваем обработчики на кнопки навигации
+    console.log('🚀 Инициализация навигации');
+    
+    // Навешиваем обработчики на кнопки нижней навигации
     document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
       item.addEventListener('click', function(e) {
         const pageId = this.dataset.page;
@@ -1770,6 +1772,21 @@
           navigateTo(pageId);
         }
       });
+    });
+    
+    // Навешиваем обработчики на кнопки "На главную"
+    document.querySelectorAll('.nav-back-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const pageId = this.dataset.page;
+        if (pageId) {
+          navigateTo(pageId);
+        }
+      });
+    });
+    
+    // Логотип в хедере
+    document.getElementById('logoHome').addEventListener('click', function() {
+      navigateTo('mainContent');
     });
   });
 

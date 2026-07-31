@@ -76,7 +76,7 @@
     }
 
     /* ==========================================================
-       🚀 ПРЕЛОАДЕР
+       🚀 ПРЕЛОАДЕР — РОВНО 3 СЕКУНДЫ
     ========================================================== */
     .preloader {
       position: fixed;
@@ -94,6 +94,7 @@
       visibility: hidden;
       pointer-events: none;
     }
+
     .preloader-icon {
       width: 80px;
       height: 80px;
@@ -127,6 +128,7 @@
     }
     @keyframes preloaderSpin { to { transform: rotate(360deg); } }
     @keyframes preloaderPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
     .preloader-logo {
       font-size: 1.6rem;
       font-weight: 900;
@@ -159,7 +161,7 @@
       background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end), var(--gradient-start));
       background-size: 200% 100%;
       border-radius: 20px;
-      transition: width 0.25s cubic-bezier(0.65, 0, 0.35, 1);
+      transition: width 0.15s linear;
       animation: shimmer 2s infinite linear;
       box-shadow: 0 0 20px var(--primary-glow);
     }
@@ -300,7 +302,9 @@
       opacity: 0;
       transition: opacity 1s ease;
     }
-    .main-wrapper.visible { opacity: 1; }
+    .main-wrapper.visible {
+      opacity: 1;
+    }
 
     /* ===== НАВИГАЦИЯ ===== */
     .header {
@@ -1237,7 +1241,7 @@
 </head>
 <body data-theme="default">
 
-<!-- ===== ПРЕЛОАДЕР ===== -->
+<!-- ===== ПРЕЛОАДЕР — 3 СЕКУНДЫ ===== -->
 <div class="preloader" id="preloader">
   <div class="preloader-particles">
     <span></span><span></span><span></span><span></span><span></span><span></span>
@@ -1658,28 +1662,40 @@
 
 <script>
   // ============================================================
-  // 🚀 ПРЕЛОАДЕР
+  // 🚀 ПРЕЛОАДЕР — РОВНО 3 СЕКУНДЫ (0% → 100%)
   // ============================================================
   (function runPreloader() {
     const preloader = document.getElementById('preloader');
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
     const mainWrapper = document.getElementById('mainWrapper');
+
+    const TOTAL_DURATION = 3000; // 3 секунды
+    const UPDATE_INTERVAL = 50; // обновление каждые 50мс
+    const STEPS = TOTAL_DURATION / UPDATE_INTERVAL; // 60 шагов
     let progress = 0;
+    let step = 0;
+
     const interval = setInterval(() => {
-      const step = 1 + Math.floor(Math.random() * 4);
-      progress = Math.min(progress + step, 100);
+      step++;
+      // Плавный рост от 0 до 100% за 3 секунды
+      progress = Math.min((step / STEPS) * 100, 100);
+      
       progressFill.style.width = progress + '%';
-      progressText.textContent = progress + '%';
+      progressText.textContent = Math.round(progress) + '%';
+
       if (progress >= 100) {
         clearInterval(interval);
+        // Маленькая задержка для красивого завершения
         setTimeout(() => {
           preloader.classList.add('hidden');
           mainWrapper.classList.add('visible');
-          setTimeout(() => { preloader.style.display = 'none'; }, 800);
-        }, 400);
+          setTimeout(() => {
+            preloader.style.display = 'none';
+          }, 800);
+        }, 300);
       }
-    }, 55);
+    }, UPDATE_INTERVAL);
   })();
 
   // ============================================================
@@ -2812,12 +2828,10 @@
     if (!user) return showToast('error', 'Ошибка', 'Вы не авторизованы');
     if (isSearching) return;
 
-    // Проверяем, не в очереди ли уже
     if (searchQueue.some(p => p.id === user.id)) {
       return showToast('info', 'Уже в поиске', 'Вы уже в очереди поиска');
     }
 
-    // Добавляем в очередь
     searchQueue.push({ id: user.id, username: user.username });
     isSearching = true;
     renderSearchSlots();
@@ -2825,21 +2839,16 @@
     document.getElementById('cancelSearchBtn').style.display = 'inline-block';
     showToast('info', 'Поиск начат', 'Ожидаем игроков...');
 
-    // Имитация добавления ботов или других игроков
-    // В реальном проекте здесь был бы WebSocket или запрос к серверу
-    // Для демонстрации добавляем ботов через 1-3 секунды
     searchInterval = setTimeout(() => {
       if (searchQueue.length < 4 && isSearching) {
-        // Добавляем бота
         const botNames = ['ProGamer', 'SniperKing', 'FastShot', 'AceMaster', 'NoobKiller', 'HeadHunter'];
         const usedNames = searchQueue.map(p => p.username);
-        const available = botNames.filter(n => !usedNames.includes(n) && !n.includes('Bot'));
+        const available = botNames.filter(n => !usedNames.includes(n) && !n.includes('Бот'));
         if (available.length > 0) {
           const botName = available[Math.floor(Math.random() * available.length)];
-          searchQueue.push({ id: 'bot_' + Date.now(), username: botName + ' (бот)' });
+          searchQueue.push({ id: 'bot_' + Date.now(), username: botName + ' (Бот)' });
           renderSearchSlots();
         }
-        // Повторяем, пока не наберем 4 игроков
         if (searchQueue.length < 4) {
           setTimeout(() => {
             if (isSearching) startSearch();
@@ -2871,12 +2880,10 @@
     document.getElementById('searchBtn').style.display = 'none';
     document.getElementById('cancelSearchBtn').style.display = 'none';
 
-    // Разбиваем на команды
     const shuffled = [...searchQueue].sort(() => Math.random() - 0.5);
     const terrorist = shuffled.slice(0, 2);
     const counter = shuffled.slice(2, 4);
 
-    // Отображаем матч
     const matchSection = document.getElementById('matchSection');
     matchSection.classList.add('active');
 
@@ -2899,7 +2906,6 @@
     document.getElementById('searchStatus').textContent = '⚔️ Матч начался!';
     showToast('success', 'Матч найден!', 'Команды сформированы. Удачи!');
 
-    // Очищаем очередь
     searchQueue = [];
     renderSearchSlots();
   }
@@ -2911,7 +2917,6 @@
     document.getElementById('searchBtn').textContent = '🎯 Начать поиск';
     document.getElementById('searchStatus').textContent = 'Ожидание игроков';
     showToast('info', 'Матч завершён', 'Спасибо за игру!');
-    // Можно добавить начисление статистики победившей команде
   }
 
   // ============================================================
@@ -2932,7 +2937,6 @@
     mineGameOver = false;
     mineBombsCount = 5;
 
-    // Создаём пустую сетку
     for (let r = 0; r < mineRows; r++) {
       mineGrid[r] = [];
       mineRevealed[r] = [];
@@ -2944,7 +2948,6 @@
       }
     }
 
-    // Размещаем бомбы
     let placed = 0;
     while (placed < mineBombsCount) {
       const r = Math.floor(Math.random() * mineRows);
@@ -2955,7 +2958,6 @@
       }
     }
 
-    // Вычисляем числа вокруг бомб
     for (let r = 0; r < mineRows; r++) {
       for (let c = 0; c < mineCols; c++) {
         if (mineGrid[r][c] === -1) continue;
@@ -2999,7 +3001,6 @@
           cell.innerHTML = '<span class="flag">🚩</span>';
         }
 
-        // События
         cell.addEventListener('click', () => revealCell(r, c));
         cell.addEventListener('contextmenu', (e) => {
           e.preventDefault();
@@ -3021,12 +3022,10 @@
     if (mineFlags[r][c]) return;
 
     if (mineGrid[r][c] === -1) {
-      // Взрыв!
       mineGameOver = true;
       mineRevealed[r][c] = true;
       renderMinesweeper();
       showToast('error', '💥 БАБАХ!', 'Вы наступили на мину! Игра окончена.');
-      // Показываем все бомбы
       for (let i = 0; i < mineRows; i++) {
         for (let j = 0; j < mineCols; j++) {
           if (mineGrid[i][j] === -1 && !mineRevealed[i][j]) {
@@ -3038,12 +3037,10 @@
       return;
     }
 
-    // Открываем клетку
     mineRevealed[r][c] = true;
     renderMinesweeper();
     updateMineStatus();
 
-    // Проверка победы
     let revealedCount = 0;
     for (let i = 0; i < mineRows; i++) {
       for (let j = 0; j < mineCols; j++) {
@@ -3053,11 +3050,10 @@
     if (revealedCount === mineRows * mineCols - mineBombsCount) {
       mineGameOver = true;
       showToast('success', '🎉 ПОБЕДА!', 'Вы обезвредили все мины! Бомба обезврежена!');
-      // Начисляем рубли
       const user = getCurrentUser();
       if (user) {
         const newBalance = (user.balance || 0) + 10;
-        await apiRequest(`/users?id=eq.${user.id}`, { method: 'PATCH', body: JSON.stringify({ balance: newBalance }) });
+        apiRequest(`/users?id=eq.${user.id}`, { method: 'PATCH', body: JSON.stringify({ balance: newBalance }) });
         user.balance = newBalance;
         setCurrentUser(user);
         updateProfileData(user);
@@ -3065,7 +3061,6 @@
       }
     }
 
-    // Если клетка пустая — открываем соседние
     if (mineGrid[r][c] === 0) {
       for (let dr = -1; dr <= 1; dr++) {
         for (let dc = -1; dc <= 1; dc++) {
@@ -3109,23 +3104,19 @@
 
       const promo = promos[0];
       
-      // Проверяем срок действия
       if (promo.expires_at && new Date(promo.expires_at) < new Date()) {
         return showToast('error', 'Ошибка', 'Промокод истёк');
       }
 
-      // Проверяем лимит активаций
       if (promo.uses >= promo.max_uses) {
         return showToast('error', 'Ошибка', 'Промокод уже использован максимальное количество раз');
       }
 
-      // Проверяем, не активировал ли уже этот пользователь
       const used = await apiRequest(`/promo_uses?promo_id=eq.${promo.id}&user_id=eq.${user.id}`);
       if (used && used.length > 0) {
         return showToast('error', 'Ошибка', 'Вы уже активировали этот промокод');
       }
 
-      // Активируем
       await apiRequest(`/promocodes?id=eq.${promo.id}`, {
         method: 'PATCH',
         body: JSON.stringify({ uses: (promo.uses || 0) + 1 })
@@ -3136,7 +3127,6 @@
         body: JSON.stringify([{ promo_id: promo.id, user_id: user.id, used_at: new Date().toISOString() }])
       });
 
-      // Начисляем рубли
       const newBalance = (user.balance || 0) + promo.amount;
       await apiRequest(`/users?id=eq.${user.id}`, {
         method: 'PATCH',
@@ -3194,7 +3184,6 @@
     if (amount < 1) return showToast('error', 'Ошибка', 'Сумма должна быть больше 0');
     if (maxUses < 1) return showToast('error', 'Ошибка', 'Количество активаций должно быть больше 0');
 
-    // Генерируем код, если не указан
     if (!code) {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       code = 'GRIND' + Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
@@ -3330,7 +3319,6 @@
       }
     });
 
-    // Инициализируем сапёр
     initMinesweeper();
 
     checkAuth();

@@ -23,7 +23,6 @@
             overflow-x: hidden;
         }
 
-        /* 3D ФОН */
         #bg-3d {
             position: fixed;
             top: 0;
@@ -70,7 +69,6 @@
             }
         }
 
-        /* ОСНОВНОЙ КОНТЕЙНЕР */
         .app-container {
             position: relative;
             z-index: 1;
@@ -81,7 +79,7 @@
             min-height: 100vh;
         }
 
-        /* ХЕДЕР - ТОЧНО КАК НА СКРИНШОТЕ */
+        /* ХЕДЕР */
         .header {
             display: flex;
             justify-content: space-between;
@@ -218,7 +216,7 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* МЕНЮ - ТОЧНО КАК НА СКРИНШОТЕ (только то что есть) */
+        /* МЕНЮ */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -247,4 +245,884 @@
         .menu-item .icon {
             font-size: 22px;
             display: block;
-            margin-bottom
+            margin-bottom: 4px;
+        }
+
+        /* ИГРЫ */
+        .games-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 18px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .game-card:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .game-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .game-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .game-sub {
+            font-size: 10px;
+            color: #6f8f9f;
+            margin-top: 2px;
+        }
+
+        /* НИЖНЯЯ НАВИГАЦИЯ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            background: transparent;
+            border: none;
+            color: #6f8f9f;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 4px 20px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.active {
+            color: #f7e05e;
+        }
+
+        .nav-btn .nav-icon {
+            font-size: 22px;
+        }
+
+        /* СТРАНИЦЫ */
+        .page {
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* МОДАЛЬНОЕ ОКНО */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #141b33;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 340px;
+            width: 100%;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .modal-game-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .modal-input:focus {
+            border-color: #f7e05e;
+        }
+
+        .modal-balance {
+            color: #8a9bb5;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #f7d875, #e8b42b);
+            color: #0a0e1a;
+        }
+
+        .modal-btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #d6e0ff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* РЕЗУЛЬТАТ */
+        .result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 300;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .result-overlay.active {
+            display: flex;
+        }
+
+        .result-content {
+            text-align: center;
+            animation: modalIn 0.4s ease;
+        }
+
+        .result-icon {
+            font-size: 72px;
+            margin-bottom: 16px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .result-title.win {
+            color: #4ade80;
+        }
+
+        .result-title.lose {
+            color: #ff6b6b;
+        }
+
+        .result-amount {
+            font-size: 18px;
+            color: #f7e05e;
+            margin-bottom: 20px;
+        }
+
+        .result-btn {
+            padding: 12px 40px;
+            border-radius: 30px;
+            border: none;
+            background: linear-gradient(135deg, #f7d875, #e8b42b);
+            color: #0a0e1a;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .result-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ПРОФИЛЬ */
+        .profile-section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .profile-header-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .profile-avatar-big {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f7e05e, #ff8a2a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #0a0e1a;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .profile-avatar-big img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name-block {
+            flex: 1;
+        }
+
+        .profile-name-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .profile-sub-text {
+            font-size: 13px;
+            color: #8a9bb5;
+            margin-top: 2px;
+        }
+
+        .profile-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #8a9bb5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        .stat-value.gold {
+            color: #f7e05e;
+        }
+        .stat-value.green {
+            color: #4ade80;
+        }
+        .stat-value.red {
+            color: #ff6b6b;
+        }
+
+        .chart-section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .chart-date {
+            font-size: 12px;
+            color: #8a9bb5;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 100px;
+            padding: 4px 0;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #f7e05e, #ff8a2a);
+            border-radius: 3px 3px 0 0;
+            min-height: 8px;
+            opacity: 0.7;
+        }
+
+        .chart-bar:nth-child(1) {
+            height: 35px;
+        }
+        .chart-bar:nth-child(2) {
+            height: 65px;
+        }
+        .chart-bar:nth-child(3) {
+            height: 45px;
+        }
+        .chart-bar:nth-child(4) {
+            height: 85px;
+        }
+        .chart-bar:nth-child(5) {
+            height: 25px;
+        }
+        .chart-bar:nth-child(6) {
+            height: 55px;
+        }
+        .chart-bar:nth-child(7) {
+            height: 70px;
+        }
+        .chart-bar:nth-child(8) {
+            height: 40px;
+        }
+
+        @media (max-width: 420px) {
+            .app-container {
+                padding: 10px 10px 75px;
+            }
+            .balance-amount {
+                font-size: 22px;
+            }
+            .menu-item {
+                font-size: 10px;
+                padding: 10px 2px;
+            }
+            .menu-item .icon {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D ФОН -->
+    <div id="bg-3d">
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- ХЕДЕР -->
+        <div class="header">
+            <div class="header-left">
+                <span class="user-name" id="userName">hamster</span>
+                <span class="online-status">
+                    <span class="online-dot"></span>
+                    online • 51
+                </span>
+                <span class="wins-count">0 W</span>
+            </div>
+            <div class="header-right">
+                <div class="user-avatar" id="userAvatar">🐹</div>
+            </div>
+        </div>
+
+        <!-- БАЛАНС -->
+        <div class="balance-card">
+            <div class="balance-left">
+                <div class="balance-label">BetCoin</div>
+                <div class="balance-amount" id="balanceDisplay">0</div>
+            </div>
+            <div class="balance-actions">
+                <button class="btn-gold" id="getCoinsBtn">+ Получить</button>
+                <button class="btn-outline" id="buyCoinsBtn">Купить</button>
+            </div>
+        </div>
+
+        <!-- ГЛАВНАЯ -->
+        <div class="page active" id="pageHome">
+            <!-- МЕНЮ -->
+            <div class="menu-grid">
+                <div class="menu-item" onclick="alert('Управление')">
+                    <span class="icon">⚡</span>
+                    Управление
+                </div>
+                <div class="menu-item" onclick="navigateTo('pageProfile')">
+                    <span class="icon">👤</span>
+                    Профиль
+                </div>
+                <div class="menu-item" onclick="alert('Клан')">
+                    <span class="icon">🏰</span>
+                    Клан
+                </div>
+                <div class="menu-item" onclick="alert('Инвентарь')">
+                    <span class="icon">📦</span>
+                    Инвентарь
+                </div>
+                <div class="menu-item" onclick="alert('Промо')">
+                    <span class="icon">🎁</span>
+                    Промо
+                </div>
+                <div class="menu-item" onclick="alert('Сервис')">
+                    <span class="icon">⚙️</span>
+                    Сервис
+                </div>
+            </div>
+
+            <!-- ИГРЫ -->
+            <div class="games-grid">
+                <div class="game-card" onclick="openGame('Crazy Time', '🌀')">
+                    <div class="game-icon">🌀</div>
+                    <div class="game-name">Crazy Time</div>
+                    <div class="game-sub">x5000</div>
+                </div>
+                <div class="game-card" onclick="openGame('Mega Wheel', '🎡')">
+                    <div class="game-icon">🎡</div>
+                    <div class="game-name">Mega Wheel</div>
+                    <div class="game-sub">x1000</div>
+                </div>
+                <div class="game-card" onclick="openGame('Slots', '🎰')">
+                    <div class="game-icon">🎰</div>
+                    <div class="game-name">Slots</div>
+                    <div class="game-sub">x500</div>
+                </div>
+                <div class="game-card" onclick="openGame('Dice', '🎲')">
+                    <div class="game-icon">🎲</div>
+                    <div class="game-name">Dice</div>
+                    <div class="game-sub">x100</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ПРОФИЛЬ -->
+        <div class="page" id="pageProfile">
+            <div class="profile-section">
+                <div class="profile-header-card">
+                    <div class="profile-avatar-big" id="profileAvatar">🐹</div>
+                    <div class="profile-name-block">
+                        <div class="profile-name-text" id="profileName">hamster</div>
+                        <div class="profile-sub-text" id="profileDate">Играет с 31.08.22</div>
+                    </div>
+                </div>
+                <div class="profile-stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Выиграно сегодня</div>
+                        <div class="stat-value gold">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Проиграно сегодня</div>
+                        <div class="stat-value red">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Всего наиграно</div>
+                        <div class="stat-value gold">2.8B</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Макс. выигрыш</div>
+                        <div class="stat-value green">124.5M</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div class="chart-title">📊 График</div>
+                    <div class="chart-date">март 2026</div>
+                </div>
+                <div class="chart-bars">
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <div class="profile-stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Макс. коэффициент</div>
+                        <div class="stat-value gold">x5 000.00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Наибольший баланс</div>
+                        <div class="stat-value green">187.6M</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- МОДАЛЬНОЕ ОКНО -->
+        <div class="modal-overlay" id="gameModal">
+            <div class="modal-content">
+                <div class="modal-game-icon" id="modalGameIcon">🎰</div>
+                <div class="modal-title" id="modalGameTitle">Crazy Time</div>
+                <input class="modal-input" id="betInput" type="number" placeholder="Введите сумму ставки" min="1" />
+                <div class="modal-balance">Ваш баланс: <span id="modalBalance">0</span> BetCoin</div>
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-secondary" onclick="closeModal()">Отмена</button>
+                    <button class="modal-btn modal-btn-primary" onclick="placeBet()">Сделать ставку</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- РЕЗУЛЬТАТ -->
+        <div class="result-overlay" id="resultOverlay">
+            <div class="result-content">
+                <div class="result-icon" id="resultIcon">🎉</div>
+                <div class="result-title" id="resultTitle">Вы выиграли!</div>
+                <div class="result-amount" id="resultAmount">+0 BetCoin</div>
+                <button class="result-btn" onclick="closeResult()">Продолжить</button>
+            </div>
+        </div>
+
+        <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="navigateTo('pageHome')" data-page="pageHome">
+                <span class="nav-icon">🏠</span>
+                <span>Главная</span>
+            </button>
+            <button class="nav-btn" onclick="navigateTo('pageProfile')" data-page="pageProfile">
+                <span class="nav-icon">👤</span>
+                <span>Профиль</span>
+            </button>
+            <button class="nav-btn" onclick="alert('Игры')" data-page="pageGames">
+                <span class="nav-icon">🎮</span>
+                <span>Игры</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ===== SUPABASE =====
+        const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // ===== TELEGRAM =====
+        let tgUser = null;
+        let balance = 0;
+        let currentGame = '';
+
+        try {
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                tgUser = tg.initDataUnsafe.user;
+                console.log('✅ Telegram user:', tgUser);
+            }
+        } catch (e) {
+            tgUser = {
+                id: 'demo_' + Date.now(),
+                first_name: 'hamster',
+                username: 'hamster',
+                photo_url: null
+            };
+        }
+
+        // ===== DOM =====
+        const balanceDisplay = document.getElementById('balanceDisplay');
+        const modalBalance = document.getElementById('modalBalance');
+        const userName = document.getElementById('userName');
+        const userAvatar = document.getElementById('userAvatar');
+        const profileName = document.getElementById('profileName');
+        const profileAvatar = document.getElementById('profileAvatar');
+
+        // ===== ФУНКЦИИ =====
+        function updateUI() {
+            balanceDisplay.textContent = balance.toLocaleString();
+            if (modalBalance) modalBalance.textContent = balance.toLocaleString();
+
+            if (tgUser) {
+                const name = tgUser.first_name || 'hamster';
+                userName.textContent = name;
+                profileName.textContent = name;
+                const avatar = name.charAt(0) || '🐹';
+                userAvatar.textContent = avatar;
+                profileAvatar.textContent = avatar;
+            }
+        }
+
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.nav-btn[data-page="${pageId}"]`)?.classList.add('active');
+        }
+
+        // Загрузка из Supabase
+        async function loadUserData() {
+            try {
+                const userId = tgUser.id.toString();
+                let { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+
+                if (error && error.code === 'PGRST116') {
+                    const newUser = {
+                        id: userId,
+                        name: tgUser.first_name || 'hamster',
+                        balance: 5000,
+                        created_at: new Date().toISOString()
+                    };
+                    const { data: inserted, error: insertError } = await supabase
+                        .from('users')
+                        .insert([newUser])
+                        .select()
+                        .single();
+                    if (insertError) throw insertError;
+                    data = inserted;
+                } else if (error) {
+                    throw error;
+                }
+
+                balance = data.balance || 0;
+                updateUI();
+                console.log('✅ Данные загружены');
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+                balance = 5000;
+                updateUI();
+            }
+        }
+
+        // Обновление баланса
+        async function updateBalance(newBalance) {
+            try {
+                const userId = tgUser.id.toString();
+                const { error } = await supabase
+                    .from('users')
+                    .update({ balance: newBalance })
+                    .eq('id', userId);
+                if (error) throw error;
+                balance = newBalance;
+                updateUI();
+                console.log('✅ Баланс обновлен:', newBalance);
+            } catch (error) {
+                console.error('❌ Ошибка обновления баланса:', error);
+            }
+        }
+
+        // Сохранение ставки
+        async function saveBet(game, amount, win, winAmount, multiplier) {
+            try {
+                const userId = tgUser.id.toString();
+                await supabase.from('bets').insert([{
+                    user_id: userId,
+                    user_name: tgUser.first_name || 'hamster',
+                    amount: amount,
+                    game: game,
+                    result: win ? 'win' : 'lose',
+                    win_amount: winAmount,
+                    coefficient: multiplier
+                }]);
+                console.log('✅ Ставка сохранена');
+            } catch (error) {
+                console.error('❌ Ошибка сохранения ставки:', error);
+            }
+        }
+
+        // ===== ИГРЫ =====
+        function openGame(gameName, icon) {
+            currentGame = gameName;
+            document.getElementById('modalGameTitle').textContent = gameName;
+            document.getElementById('modalGameIcon').textContent = icon;
+            document.getElementById('betInput').value = '';
+            document.getElementById('modalBalance').textContent = balance.toLocaleString();
+            document.getElementById('gameModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('gameModal').classList.remove('active');
+        }
+
+        function placeBet() {
+            const input = document.getElementById('betInput');
+            const betAmount = parseInt(input.value);
+
+            if (isNaN(betAmount) || betAmount <= 0) {
+                alert('❌ Введите корректную сумму!');
+                return;
+            }
+
+            if (betAmount > balance) {
+                alert('❌ Недостаточно средств!');
+                return;
+            }
+
+            closeModal();
+
+            const win = Math.random() > 0.45;
+            const multiplier = win ? (Math.random() * 5 + 1) : 0;
+            const winAmount = win ? Math.floor(betAmount * multiplier) : 0;
+
+            const newBalance = win ? balance - betAmount + winAmount : balance - betAmount;
+            updateBalance(newBalance);
+            saveBet(currentGame, betAmount, win, winAmount, multiplier);
+
+            showResult(win, winAmount, multiplier);
+        }
+
+        function showResult(win, winAmount, multiplier) {
+            const overlay = document.getElementById('resultOverlay');
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const amount = document.getElementById('resultAmount');
+
+            if (win) {
+                icon.textContent = '🎉';
+                title.textContent = 'Вы выиграли!';
+                title.className = 'result-title win';
+                amount.textContent = `+${winAmount} BetCoin (x${multiplier.toFixed(2)})`;
+            } else {
+                icon.textContent = '😔';
+                title.textContent = 'Вы проиграли!';
+                title.className = 'result-title lose';
+                amount.textContent = 'Попробуйте снова!';
+            }
+
+            overlay.classList.add('active');
+        }
+
+        function closeResult() {
+            document.getElementById('resultOverlay').classList.remove('active');
+        }
+
+        // ===== КНОПКИ =====
+        document.getElementById('getCoinsBtn').addEventListener('click', async function(e) {
+            e.preventDefault();
+            const newBalance = balance + 500;
+            await updateBalance(newBalance);
+            alert('✅ +500 BetCoin!');
+        });
+
+        document.getElementById('buyCoinsBtn').addEventListener('click', async function(e) {
+            e.preventDefault();
+            const amount = prompt('Сколько BetCoin купить?', '1000');
+            if (!amount) return;
+            const coins = parseInt(amount);
+            if (isNaN(coins) || coins <= 0) {
+                alert('❌ Введите корректную сумму!');
+                return;
+            }
+            await updateBalance(balance + coins);
+            alert(`✅ +${coins} BetCoin!`);
+        });
+
+        // ===== ЗАПУСК =====
+        loadUserData();
+
+        // Глобальные функции
+        window.navigateTo = navigateTo;
+        window.openGame = openGame;
+        window.closeModal = closeModal;
+        window.placeBet = placeBet;
+        window.closeResult = closeResult;
+
+        console.log('🚀 BetGame запущен!');
+        console.log('👤 Пользователь:', tgUser);
+    </script>
+</body>
+</html>

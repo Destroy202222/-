@@ -431,6 +431,13 @@
                         }
                     }
                 }
+                
+                // Очищаем ставки после обработки
+                await fetch(`${SB_URL}/rest/v1/bets?game=eq.Dice`, {
+                    method: 'DELETE',
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+                });
+                
             } catch(e) { console.error(e); }
         }
 
@@ -479,10 +486,21 @@
                 }
                 container.innerHTML = bets.map(b => {
                     let status = '', cls = '';
-                    if (b.result === 'win') { status = '+' + b.win_amount + ' (x' + b.coefficient + ')'; cls = 'win'; }
-                    else if (b.result === 'lose') { status = '-' + b.amount; cls = 'lose'; }
-                    else { status = '⏳ Ожидание'; cls = 'pending'; }
-                    const detail = b.detail === 'under' ? '⟨7' : b.detail === 'over' ? '7⟩' : b.detail === 'seven' ? '=7' : '';
+                    if (b.result === 'win') { 
+                        status = '+' + b.win_amount + ' (x' + b.coefficient + ')'; 
+                        cls = 'win'; 
+                    } else if (b.result === 'lose') { 
+                        status = '-' + b.amount; 
+                        cls = 'lose'; 
+                    } else { 
+                        status = '⏳ Ожидание'; 
+                        cls = 'pending'; 
+                    }
+                    let detail = '';
+                    if (b.detail === 'under') detail = '⟨7';
+                    else if (b.detail === 'over') detail = '7⟩';
+                    else if (b.detail === 'seven') detail = '=7';
+                    
                     return `<div class="dice-bet-item">
                         <span>${b.user_name || 'Игрок'} • ${b.amount} ${detail}</span>
                         <span class="${cls}">${status}</span>

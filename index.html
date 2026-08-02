@@ -434,7 +434,7 @@
         let userId = '';
         let balance = 0;
 
-        // Получаем пользователя из Telegram
+        // Инициализация Telegram WebApp
         try {
             const tg = window.Telegram.WebApp;
             tg.expand();
@@ -443,7 +443,6 @@
                 tgUser = tg.initDataUnsafe.user;
                 console.log('✅ Telegram user:', tgUser);
             } else if (tg.initData) {
-                // Пробуем распарсить initData
                 const params = new URLSearchParams(tg.initData);
                 const userParam = params.get('user');
                 if (userParam) {
@@ -459,7 +458,7 @@
             console.log('ℹ️ Telegram не доступен');
         }
 
-        // Если пользователь не найден - создаем тестового
+        // Демо-пользователь если Telegram не дал данные
         if (!tgUser) {
             tgUser = {
                 id: 'demo_' + Date.now(),
@@ -549,16 +548,17 @@
                 console.log('✅ Баланс обновлен:', newBalance);
                 return true;
             } catch (error) {
-                console.error('❌ Ошибка обновления:', error);
+                console.error('❌ Ошибка обновления баланса:', error);
                 return false;
             }
         }
 
         // ============================================
-        // BUTTONS
+        // КНОПКИ
         // ============================================
         document.getElementById('getCoinsBtn').addEventListener('click', async function(e) {
             e.preventDefault();
+            console.log('Кнопка "Получить" нажата');
             const newBalance = balance + 500;
             await updateBalance(newBalance);
             alert('✅ +500 BetCoin!');
@@ -566,6 +566,7 @@
 
         document.getElementById('buyCoinsBtn').addEventListener('click', async function(e) {
             e.preventDefault();
+            console.log('Кнопка "Купить" нажата');
             const amount = prompt('💰 Сколько BetCoin купить?', '1000');
             if (!amount) return;
             const coins = parseInt(amount);
@@ -579,9 +580,10 @@
         });
 
         // ============================================
-        // PROMOCODE
+        // ПРОМОКОД
         // ============================================
         function openPromo() {
+            console.log('Открытие промокода');
             document.getElementById('promoModal').classList.add('active');
             document.getElementById('promoInput').value = '';
             setTimeout(() => {
@@ -594,6 +596,7 @@
         }
 
         async function applyPromo() {
+            console.log('Применение промокода');
             const input = document.getElementById('promoInput');
             const code = input.value.trim().toUpperCase();
 
@@ -635,7 +638,7 @@
         });
 
         // ============================================
-        // INIT
+        // ЗАПУСК
         // ============================================
         // Сразу показываем имя пользователя
         const name = tgUser.first_name || tgUser.username || 'Пользователь';
@@ -649,6 +652,7 @@
             userAvatar.style.fontSize = '20px';
         }
 
+        // Загружаем данные
         loadUserData();
 
         // Глобальные функции для HTML
@@ -658,6 +662,7 @@
 
         console.log('🚀 BetGame запущен!');
         console.log('👤 Пользователь:', tgUser);
+        console.log('🆔 User ID:', userId);
     </script>
 
 </body>

@@ -44,9 +44,9 @@
         .sidebar-overlay.active{display:block}
         
         .sidebar{
-            position:fixed;top:0;left:-280px;width:280px;height:100%;background:rgba(10,14,30,.98);backdrop-filter:blur(20px);z-index:51;padding:25px 20px;transition:left .3s cubic-bezier(.4,0,.2,1);border-right:1px solid rgba(255,255,255,.05)
+            position:fixed;top:0;right:-280px;width:280px;height:100%;background:rgba(10,14,30,.98);backdrop-filter:blur(20px);z-index:51;padding:25px 20px;transition:right .3s cubic-bezier(.4,0,.2,1);border-left:1px solid rgba(255,255,255,.05)
         }
-        .sidebar.open{left:0}
+        .sidebar.open{right:0}
         .sidebar-close{color:#8a9bb5;font-size:24px;cursor:pointer;margin-bottom:30px;display:inline-block}
         .sidebar-close:hover{color:#fff}
         .sidebar-title{color:#fff;font-size:20px;font-weight:700;margin-bottom:25px}
@@ -69,9 +69,12 @@
             background:transparent;border:none;color:#6f8f9f;font-size:11px;
             cursor:pointer;padding:4px 12px;transition:color .2s;position:relative
         }
-        .nav-item .icon{font-size:22px;transition:all .2s}
+        .nav-item .icon{
+            font-size:22px;transition:all .2s;
+            filter:brightness(.7) invert(.9);opacity:.6
+        }
         .nav-item.active{color:#f7e05e}
-        .nav-item.active .icon{transform:scale(1.05)}
+        .nav-item.active .icon{filter:none;opacity:1;transform:scale(1.05)}
         
         .nav-center{
             width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#4a8af4,#2a5a9a);
@@ -122,7 +125,7 @@
         </div>
     </div>
     
-    <!-- Выезжающее меню -->
+    <!-- Выезжающее меню (справа) -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-close" onclick="closeSidebar()">✕</div>
@@ -137,22 +140,22 @@
     
     <!-- Нижняя навигация -->
     <div class="bottom-nav">
-        <button class="nav-item" id="navMenu" onclick="toggleSidebar()">
-            <span class="icon">☰</span>
-            <span>Раздел</span>
-        </button>
         <button class="nav-item" onclick="alert('Профиль')">
             <span class="icon">👤</span>
             <span>Профиль</span>
         </button>
-        <div class="nav-center" onclick="alert('GAME')">🎮</div>
         <button class="nav-item" onclick="alert('Уведомления')">
             <span class="icon">🔔</span>
             <span>Уведомл.</span>
         </button>
+        <div class="nav-center" onclick="alert('GAME')">🎮</div>
         <button class="nav-item" onclick="alert('Настройки')">
             <span class="icon">⚙️</span>
             <span>Настройки</span>
+        </button>
+        <button class="nav-item" id="navMenu" onclick="toggleSidebar()">
+            <span class="icon">☰</span>
+            <span>Раздел</span>
         </button>
     </div>
     

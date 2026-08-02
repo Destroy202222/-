@@ -85,33 +85,6 @@
             }
         }
 
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: floatParticle 15s linear infinite;
-        }
-
-        @keyframes floatParticle {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-10vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        /* ОСНОВНОЙ КОНТЕЙНЕР */
         .app {
             position: relative;
             z-index: 1;
@@ -133,30 +106,7 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4a8af4, #1a3a7a);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 4px 20px rgba(74, 138, 244, 0.3);
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            gap: 10px;
         }
 
         .username {
@@ -184,6 +134,27 @@
         .wins {
             color: #6f8f9f;
             font-size: 12px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f7e05e, #ff8a2a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0a0e1a;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* БАЛАНС */
@@ -219,41 +190,39 @@
             gap: 8px;
         }
 
-        .btn {
-            padding: 8px 16px;
+        .btn-gold {
+            background: linear-gradient(135deg, #f7d875, #e8b42b);
             border: none;
+            padding: 8px 16px;
             border-radius: 30px;
             font-weight: 700;
             font-size: 13px;
+            color: #0a0e1a;
             cursor: pointer;
             transition: transform 0.15s;
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
-        .btn:active {
+        .btn-gold:active {
             transform: scale(0.95);
-        }
-
-        .btn-gold {
-            background: linear-gradient(135deg, #f7d875, #e8b42b);
-            color: #0a0e1a;
         }
 
         .btn-outline {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
             color: #d6e0ff;
+            cursor: pointer;
+            transition: transform 0.15s;
         }
 
-        /* ЭМОДЗИ ТЕМНО-БЕЛОГО ЦВЕТА */
-        .btn .emoji {
-            filter: brightness(0.7) invert(0.9);
-            opacity: 0.8;
+        .btn-outline:active {
+            transform: scale(0.95);
         }
 
-        /* ЗАГОЛОВОК "УПРАВЛЕНИЕ" */
+        /* УПРАВЛЕНИЕ */
         .menu-title {
             color: #aec0ff;
             font-size: 14px;
@@ -262,7 +231,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* СЕТКА МЕНЮ */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -289,16 +257,11 @@
         }
 
         .menu-item .icon {
-            font-size: 22px;
+            font-size: 20px;
             display: block;
             margin-bottom: 4px;
             filter: brightness(0.7) invert(0.9);
             opacity: 0.6;
-        }
-
-        .menu-item .icon.white {
-            filter: brightness(0) invert(1);
-            opacity: 0.7;
         }
 
         /* НИЖНИЕ БЛОКИ */
@@ -454,7 +417,7 @@
                 padding: 10px 2px;
             }
             .menu-item .icon {
-                font-size: 18px;
+                font-size: 16px;
             }
             .bottom-item {
                 font-size: 11px;
@@ -463,7 +426,8 @@
             .bottom-item .icon {
                 font-size: 20px;
             }
-            .btn {
+            .btn-gold,
+            .btn-outline {
                 font-size: 11px;
                 padding: 6px 12px;
             }
@@ -483,14 +447,14 @@
         <!-- ХЕДЕР -->
         <div class="header">
             <div class="header-left">
-                <div class="avatar" id="userAvatar">🐹</div>
-                <span class="username" id="userName">Гость</span>
+                <span class="username" id="userName">hamster</span>
                 <span class="online-status">
                     <span class="online-dot"></span>
                     online • 51
                 </span>
                 <span class="wins">0 W</span>
             </div>
+            <div class="avatar" id="userAvatar">🐹</div>
         </div>
 
         <!-- БАЛАНС -->
@@ -500,12 +464,8 @@
                 <div class="balance-amount" id="balanceDisplay">0</div>
             </div>
             <div class="balance-actions">
-                <button class="btn btn-gold" id="getCoinsBtn">
-                    <span class="emoji">💎</span> Получить
-                </button>
-                <button class="btn btn-outline" id="buyCoinsBtn">
-                    <span class="emoji">💰</span> Купить
-                </button>
+                <button class="btn-gold" id="getCoinsBtn">+ Получить</button>
+                <button class="btn-outline" id="buyCoinsBtn">Купить</button>
             </div>
         </div>
 
@@ -579,9 +539,8 @@
             console.log('ℹ️ Telegram не доступен');
         }
 
-        // Демо-пользователь
         if (!tgUser) {
-            tgUser = { id: 'demo_' + Date.now(), first_name: 'Гость' };
+            tgUser = { id: 'demo_' + Date.now(), first_name: 'hamster' };
         }
 
         userId = tgUser.id.toString();
@@ -599,7 +558,7 @@
         function updateUI() {
             balanceDisplay.textContent = balance.toLocaleString();
 
-            const name = tgUser.first_name || tgUser.username || 'Гость';
+            const name = tgUser.first_name || tgUser.username || 'hamster';
             userName.textContent = name;
 
             if (tgUser.photo_url) {
@@ -623,7 +582,7 @@
                 if (error && error.code === 'PGRST116') {
                     const newUser = {
                         id: userId,
-                        name: tgUser.first_name || 'Гость',
+                        name: tgUser.first_name || 'hamster',
                         balance: 5000,
                         created_at: new Date().toISOString()
                     };
@@ -676,7 +635,7 @@
         });
 
         document.getElementById('buyCoinsBtn').addEventListener('click', async function() {
-            const amount = prompt('💰 Сколько BetCoin купить?', '1000');
+            const amount = prompt('Сколько BetCoin купить?', '1000');
             if (!amount) return;
             const coins = parseInt(amount);
             if (isNaN(coins) || coins <= 0) {
@@ -710,7 +669,6 @@
                 return;
             }
 
-            // Промокоды
             const promoCodes = {
                 'BETCOIN': 10000,
                 'WELCOME': 500,
@@ -735,12 +693,10 @@
             }
         }
 
-        // Закрытие по клику вне модалки
         document.getElementById('promoModal').addEventListener('click', function(e) {
             if (e.target === this) closePromo();
         });
 
-        // Enter в поле промокода
         document.getElementById('promoInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') applyPromo();
         });
@@ -750,7 +706,6 @@
         // ============================================
         loadUserData();
 
-        // Глобальные функции для HTML
         window.openPromo = openPromo;
         window.closePromo = closePromo;
         window.applyPromo = applyPromo;

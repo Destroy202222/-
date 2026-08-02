@@ -20,8 +20,6 @@
         .header{display:flex;justify-content:space-between;align-items:center;padding:6px 0 10px;border-bottom:1px solid rgba(255,255,255,.05);margin-bottom:12px}
         .header-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
         .username{color:#fff;font-size:15px;font-weight:600}
-        .online-status{display:flex;align-items:center;gap:4px;color:#6f8f9f;font-size:11px}
-        .online-dot{width:5px;height:5px;background:#4ade80;border-radius:50%;display:inline-block}
         .wins{color:#6f8f9f;font-size:11px}
         .avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#f7e05e,#ff8a2a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#0a0e1a;overflow:hidden;flex-shrink:0}
         .avatar img{width:100%;height:100%;object-fit:cover}
@@ -108,11 +106,10 @@
     <div id="bg-3d"><div class="sphere"></div><div class="sphere"></div><div class="sphere"></div></div>
     
     <div class="app">
-        <!-- HEADER -->
+        <!-- HEADER - БЕЗ ONLINE -->
         <div class="header">
             <div class="header-left">
                 <span class="username" id="userName">hamster</span>
-                <span class="online-status"><span class="online-dot"></span>online • 51</span>
                 <span class="wins">0 W</span>
             </div>
             <div class="avatar" id="userAvatar">🐹</div>

@@ -13,7 +13,6 @@
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-
         body {
             min-height: 100vh;
             display: flex;
@@ -21,9 +20,7 @@
             align-items: flex-start;
             background: #0a0e1a;
             padding: 20px;
-            overflow-x: hidden;
         }
-
         #bg-3d {
             position: fixed;
             top: 0;
@@ -35,7 +32,6 @@
             overflow: hidden;
             pointer-events: none;
         }
-
         .sphere {
             position: absolute;
             border-radius: 50%;
@@ -43,7 +39,6 @@
             opacity: 0.25;
             animation: floatSphere 20s ease-in-out infinite alternate;
         }
-
         .sphere:nth-child(1) {
             width: 500px;
             height: 500px;
@@ -52,7 +47,6 @@
             background: radial-gradient(circle, #4a8af4, #1a3a7a);
             animation-duration: 25s;
         }
-
         .sphere:nth-child(2) {
             width: 400px;
             height: 400px;
@@ -62,7 +56,6 @@
             animation-duration: 20s;
             animation-delay: -5s;
         }
-
         .sphere:nth-child(3) {
             width: 300px;
             height: 300px;
@@ -74,7 +67,6 @@
             animation-delay: -10s;
             opacity: 0.15;
         }
-
         @keyframes floatSphere {
             0% {
                 transform: translate(0, 0) scale(1);
@@ -83,7 +75,6 @@
                 transform: translate(60px, -40px) scale(1.2);
             }
         }
-
         .app {
             position: relative;
             z-index: 1;
@@ -91,7 +82,6 @@
             width: 100%;
             padding: 10px 0;
         }
-
         .header {
             width: 100%;
             display: flex;
@@ -100,7 +90,6 @@
             margin-bottom: 30px;
             padding: 0 4px;
         }
-
         .avatar {
             width: 44px;
             height: 44px;
@@ -117,20 +106,17 @@
             flex-shrink: 0;
             box-shadow: 0 4px 20px rgba(74, 138, 244, 0.3);
         }
-
         .avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
         .username {
             color: #fff;
             font-size: 18px;
             font-weight: 600;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
-
         .balance-block {
             width: 100%;
             background: rgba(255, 255, 255, 0.06);
@@ -142,7 +128,6 @@
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
             margin-bottom: 25px;
         }
-
         .balance-label {
             color: rgba(255, 255, 255, 0.5);
             font-size: 13px;
@@ -151,7 +136,6 @@
             letter-spacing: 2px;
             margin-bottom: 4px;
         }
-
         .balance-amount {
             color: #fff;
             font-size: 44px;
@@ -160,13 +144,11 @@
             text-shadow: 0 0 40px rgba(74, 138, 244, 0.2);
             margin-bottom: 20px;
         }
-
         .buttons {
             display: flex;
             gap: 12px;
             width: 100%;
         }
-
         .btn {
             flex: 1;
             padding: 13px 10px;
@@ -177,23 +159,19 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-
         .btn:active {
             transform: scale(0.96);
         }
-
         .btn-primary {
             background: linear-gradient(135deg, #4a8af4, #2a5a9a);
             color: #fff;
             box-shadow: 0 4px 20px rgba(74, 138, 244, 0.3);
         }
-
         .btn-secondary {
             background: rgba(255, 255, 255, 0.08);
             color: #c8d6ff;
             border: 1px solid rgba(255, 255, 255, 0.12);
         }
-
         .menu-title {
             width: 100%;
             color: #aec0ff;
@@ -203,14 +181,12 @@
             letter-spacing: 0.5px;
             text-align: left;
         }
-
         .menu-grid {
             width: 100%;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
-
         .menu-item {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -223,12 +199,10 @@
             cursor: pointer;
             transition: all 0.15s;
         }
-
         .menu-item:active {
             transform: scale(0.95);
             background: rgba(255, 255, 255, 0.08);
         }
-
         .menu-item .icon {
             font-size: 28px;
             display: block;
@@ -236,7 +210,6 @@
             filter: brightness(0.7) invert(0.9);
             opacity: 0.5;
         }
-
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -251,11 +224,9 @@
             align-items: center;
             padding: 20px;
         }
-
         .modal-overlay.active {
             display: flex;
         }
-
         .modal {
             background: rgba(20, 30, 60, 0.95);
             backdrop-filter: blur(20px);
@@ -266,7 +237,6 @@
             width: 100%;
             animation: modalIn 0.3s ease;
         }
-
         @keyframes modalIn {
             from {
                 transform: scale(0.9);
@@ -277,7 +247,6 @@
                 opacity: 1;
             }
         }
-
         .modal-title {
             color: #fff;
             font-size: 20px;
@@ -285,7 +254,6 @@
             text-align: center;
             margin-bottom: 16px;
         }
-
         .modal-input {
             width: 100%;
             padding: 14px 16px;
@@ -300,23 +268,19 @@
             letter-spacing: 2px;
             text-transform: uppercase;
         }
-
         .modal-input:focus {
             border-color: #4a8af4;
         }
-
         .modal-input::placeholder {
             color: rgba(255, 255, 255, 0.3);
             letter-spacing: 0;
             text-transform: none;
         }
-
         .modal-buttons {
             display: flex;
             gap: 10px;
             margin-top: 16px;
         }
-
         .modal-btn {
             flex: 1;
             padding: 12px;
@@ -327,22 +291,18 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .modal-btn:active {
             transform: scale(0.95);
         }
-
         .modal-btn-primary {
             background: linear-gradient(135deg, #4a8af4, #2a5a9a);
             color: #fff;
         }
-
         .modal-btn-secondary {
             background: rgba(255, 255, 255, 0.06);
             color: #c8d6ff;
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-
         @media (max-width: 400px) {
             body {
                 padding: 12px;
@@ -368,19 +328,16 @@
     </style>
 </head>
 <body>
-
     <div id="bg-3d">
         <div class="sphere"></div>
         <div class="sphere"></div>
         <div class="sphere"></div>
     </div>
-
     <div class="app">
         <div class="header">
             <div class="avatar" id="userAvatar">🐹</div>
-            <div class="username" id="userName">Гость</div>
+            <div class="username" id="userName">Загрузка...</div>
         </div>
-
         <div class="balance-block">
             <div class="balance-label">BETCOIN</div>
             <div class="balance-amount" id="balanceDisplay">0</div>
@@ -389,25 +346,14 @@
                 <button class="btn btn-secondary" id="buyCoinsBtn">💰 Купить</button>
             </div>
         </div>
-
         <div class="menu-title">Управление</div>
-
         <div class="menu-grid">
-            <div class="menu-item" onclick="alert('Профиль')">
-                <span class="icon">👤</span>Профиль
-            </div>
-            <div class="menu-item" onclick="alert('Инвентарь')">
-                <span class="icon">📦</span>Инвентарь
-            </div>
-            <div class="menu-item" onclick="alert('Сервис')">
-                <span class="icon">⚙️</span>Сервис
-            </div>
-            <div class="menu-item" onclick="openPromo()">
-                <span class="icon">🎁</span>Промо
-            </div>
+            <div class="menu-item" onclick="alert('Профиль')"><span class="icon">👤</span>Профиль</div>
+            <div class="menu-item" onclick="alert('Инвентарь')"><span class="icon">📦</span>Инвентарь</div>
+            <div class="menu-item" onclick="alert('Сервис')"><span class="icon">⚙️</span>Сервис</div>
+            <div class="menu-item" onclick="openPromo()"><span class="icon">🎁</span>Промо</div>
         </div>
     </div>
-
     <div class="modal-overlay" id="promoModal">
         <div class="modal">
             <div class="modal-title">🎁 Введите промокод</div>
@@ -418,119 +364,58 @@
             </div>
         </div>
     </div>
-
     <script>
-        // ============================================
-        // SUPABASE
-        // ============================================
+        // ===== TELEGRAM =====
+        let tgUser = null;
+        try {
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                tgUser = tg.initDataUnsafe.user;
+            }
+        } catch (e) {}
+
+        if (!tgUser) {
+            tgUser = { id: 'demo', first_name: 'Тест', photo_url: null };
+        }
+
+        // ===== SUPABASE =====
         const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // ============================================
-        // TELEGRAM AUTH
-        // ============================================
-        let tgUser = null;
-        let userId = '';
         let balance = 0;
+        const userId = tgUser.id.toString();
 
-        // Инициализация Telegram WebApp
-        try {
-            const tg = window.Telegram.WebApp;
-            tg.expand();
-
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                tgUser = tg.initDataUnsafe.user;
-                console.log('✅ Telegram user:', tgUser);
-            } else if (tg.initData) {
-                const params = new URLSearchParams(tg.initData);
-                const userParam = params.get('user');
-                if (userParam) {
-                    try {
-                        tgUser = JSON.parse(decodeURIComponent(userParam));
-                        console.log('✅ Telegram user from initData:', tgUser);
-                    } catch (e) {
-                        console.log('❌ Ошибка парсинга user:', e);
-                    }
-                }
-            }
-        } catch (e) {
-            console.log('ℹ️ Telegram не доступен');
-        }
-
-        // Демо-пользователь если Telegram не дал данные
-        if (!tgUser) {
-            tgUser = {
-                id: 'demo_' + Date.now(),
-                first_name: 'Тест',
-                username: 'test_user',
-                photo_url: null
-            };
-            console.log('ℹ️ Демо-пользователь:', tgUser);
-        }
-
-        userId = tgUser.id.toString();
-
-        // ============================================
-        // DOM REFS
-        // ============================================
+        // ===== DOM =====
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const balanceDisplay = document.getElementById('balanceDisplay');
 
-        // ============================================
-        // UPDATE UI
-        // ============================================
         function updateUI() {
             balanceDisplay.textContent = balance.toLocaleString();
-
-            const name = tgUser.first_name || tgUser.username || 'Пользователь';
+            const name = tgUser.first_name || 'Пользователь';
             userName.textContent = name;
-
             if (tgUser.photo_url) {
-                userAvatar.innerHTML = `<img src="${tgUser.photo_url}" alt="avatar" />`;
+                userAvatar.innerHTML = '<img src="' + tgUser.photo_url + '" />';
             } else {
-                const letter = name.charAt(0).toUpperCase();
-                userAvatar.textContent = letter;
+                userAvatar.textContent = name.charAt(0).toUpperCase();
                 userAvatar.style.fontSize = '20px';
             }
         }
 
-        // ============================================
-        // SUPABASE FUNCTIONS
-        // ============================================
+        // ===== SUPABASE =====
         async function loadUserData() {
             try {
-                let { data, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
-
+                const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
                 if (error && error.code === 'PGRST116') {
-                    const newUser = {
-                        id: userId,
-                        name: tgUser.first_name || tgUser.username || 'Пользователь',
-                        balance: 5000,
-                        created_at: new Date().toISOString()
-                    };
-                    const { data: inserted, error: insertError } = await supabase
-                        .from('users')
-                        .insert([newUser])
-                        .select()
-                        .single();
-                    if (insertError) throw insertError;
-                    data = inserted;
-                } else if (error) {
-                    throw error;
+                    await supabase.from('users').insert([{ id: userId, name: tgUser.first_name || 'Пользователь', balance: 5000 }]);
+                    balance = 5000;
+                } else if (data) {
+                    balance = data.balance || 0;
                 }
-
-                balance = data.balance || 0;
                 updateUI();
-                console.log('✅ Баланс загружен:', balance);
-
-            } catch (error) {
-                console.error('❌ Ошибка загрузки:', error);
+            } catch (e) {
                 balance = 5000;
                 updateUI();
             }
@@ -538,132 +423,60 @@
 
         async function updateBalance(newBalance) {
             try {
-                const { error } = await supabase
-                    .from('users')
-                    .update({ balance: newBalance })
-                    .eq('id', userId);
-                if (error) throw error;
+                await supabase.from('users').update({ balance: newBalance }).eq('id', userId);
                 balance = newBalance;
                 updateUI();
-                console.log('✅ Баланс обновлен:', newBalance);
-                return true;
-            } catch (error) {
-                console.error('❌ Ошибка обновления баланса:', error);
-                return false;
-            }
+            } catch (e) {}
         }
 
-        // ============================================
-        // КНОПКИ
-        // ============================================
-        document.getElementById('getCoinsBtn').addEventListener('click', async function(e) {
-            e.preventDefault();
-            console.log('Кнопка "Получить" нажата');
-            const newBalance = balance + 500;
-            await updateBalance(newBalance);
+        // ===== КНОПКИ =====
+        document.getElementById('getCoinsBtn').onclick = function() {
+            updateBalance(balance + 500);
             alert('✅ +500 BetCoin!');
-        });
+        };
 
-        document.getElementById('buyCoinsBtn').addEventListener('click', async function(e) {
-            e.preventDefault();
-            console.log('Кнопка "Купить" нажата');
+        document.getElementById('buyCoinsBtn').onclick = function() {
             const amount = prompt('💰 Сколько BetCoin купить?', '1000');
-            if (!amount) return;
-            const coins = parseInt(amount);
-            if (isNaN(coins) || coins <= 0) {
-                alert('❌ Введите сумму!');
-                return;
+            if (amount) {
+                const coins = parseInt(amount);
+                if (coins > 0) {
+                    updateBalance(balance + coins);
+                    alert('✅ +' + coins + ' BetCoin!');
+                }
             }
-            const newBalance = balance + coins;
-            await updateBalance(newBalance);
-            alert(`✅ +${coins} BetCoin!`);
-        });
+        };
 
-        // ============================================
-        // ПРОМОКОД
-        // ============================================
+        // ===== ПРОМОКОД =====
         function openPromo() {
-            console.log('Открытие промокода');
             document.getElementById('promoModal').classList.add('active');
             document.getElementById('promoInput').value = '';
-            setTimeout(() => {
-                document.getElementById('promoInput').focus();
-            }, 100);
         }
 
         function closePromo() {
             document.getElementById('promoModal').classList.remove('active');
         }
 
-        async function applyPromo() {
-            console.log('Применение промокода');
-            const input = document.getElementById('promoInput');
-            const code = input.value.trim().toUpperCase();
-
-            if (!code) {
-                alert('❌ Введите промокод!');
-                return;
-            }
-
-            const promoCodes = {
-                'BETCOIN': 10000,
-                'WELCOME': 500,
-                'BONUS': 1000,
-                'GOLD': 2500,
-                'VIP': 5000,
-                'FREE': 100,
-                'LUCKY': 750,
-                'MEGA': 10000
-            };
-
+        function applyPromo() {
+            const code = document.getElementById('promoInput').value.trim().toUpperCase();
+            if (!code) { alert('❌ Введите промокод!'); return; }
+            const promoCodes = { 'BETCOIN': 10000, 'WELCOME': 500, 'BONUS': 1000, 'GOLD': 2500, 'VIP': 5000 };
             if (promoCodes[code]) {
-                const bonus = promoCodes[code];
-                const newBalance = balance + bonus;
-                await updateBalance(newBalance);
-                alert(`🎉 Промокод активирован! +${bonus} BetCoin`);
+                updateBalance(balance + promoCodes[code]);
+                alert('🎉 Промокод активирован! +' + promoCodes[code] + ' BetCoin');
                 closePromo();
             } else {
                 alert('❌ Неверный промокод!');
-                input.value = '';
-                input.focus();
             }
         }
 
-        document.getElementById('promoModal').addEventListener('click', function(e) {
-            if (e.target === this) closePromo();
-        });
+        document.getElementById('promoModal').onclick = function(e) { if (e.target === this) closePromo(); };
+        document.getElementById('promoInput').onkeydown = function(e) { if (e.key === 'Enter') applyPromo(); };
 
-        document.getElementById('promoInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') applyPromo();
-        });
-
-        // ============================================
-        // ЗАПУСК
-        // ============================================
-        // Сразу показываем имя пользователя
-        const name = tgUser.first_name || tgUser.username || 'Пользователь';
-        userName.textContent = name;
-
-        if (tgUser.photo_url) {
-            userAvatar.innerHTML = `<img src="${tgUser.photo_url}" alt="avatar" />`;
-        } else {
-            const letter = name.charAt(0).toUpperCase();
-            userAvatar.textContent = letter;
-            userAvatar.style.fontSize = '20px';
-        }
-
-        // Загружаем данные
+        // ===== ЗАПУСК =====
         loadUserData();
-
-        // Глобальные функции для HTML
         window.openPromo = openPromo;
         window.closePromo = closePromo;
         window.applyPromo = applyPromo;
-
-        console.log('🚀 BetGame запущен!');
-        console.log('👤 Пользователь:', tgUser);
-        console.log('🆔 User ID:', userId);
     </script>
-
 </body>
 </html>

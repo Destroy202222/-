@@ -21,9 +21,9 @@
             align-items: flex-start;
             background: #0a0e1a;
             padding: 20px;
+            overflow-x: hidden;
         }
 
-        /* 3D ФОН */
         #bg-3d {
             position: fixed;
             top: 0;
@@ -92,7 +92,6 @@
             padding: 10px 0;
         }
 
-        /* ВЕРХНИЙ БЛОК - НИКНЕЙМ И АВАТАРКА */
         .header {
             width: 100%;
             display: flex;
@@ -132,7 +131,6 @@
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
-        /* БАЛАНС */
         .balance-block {
             width: 100%;
             background: rgba(255, 255, 255, 0.06);
@@ -196,7 +194,6 @@
             border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
-        /* ЗАГОЛОВОК "УПРАВЛЕНИЕ" */
         .menu-title {
             width: 100%;
             color: #aec0ff;
@@ -207,7 +204,6 @@
             text-align: left;
         }
 
-        /* БЛОКИ */
         .menu-grid {
             width: 100%;
             display: grid;
@@ -241,7 +237,6 @@
             opacity: 0.5;
         }
 
-        /* МОДАЛКА ПРОМОКОДА */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -374,7 +369,6 @@
 </head>
 <body>
 
-    <!-- 3D ФОН -->
     <div id="bg-3d">
         <div class="sphere"></div>
         <div class="sphere"></div>
@@ -382,13 +376,11 @@
     </div>
 
     <div class="app">
-        <!-- ВЕРХНИЙ БЛОК -->
         <div class="header">
             <div class="avatar" id="userAvatar">🐹</div>
-            <div class="username" id="userName">Гость</div>
+            <div class="username" id="userName">Загрузка...</div>
         </div>
 
-        <!-- БАЛАНС -->
         <div class="balance-block">
             <div class="balance-label">BETCOIN</div>
             <div class="balance-amount" id="balanceDisplay">0</div>
@@ -398,7 +390,6 @@
             </div>
         </div>
 
-        <!-- УПРАВЛЕНИЕ -->
         <div class="menu-title">Управление</div>
 
         <div class="menu-grid">
@@ -417,7 +408,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА ПРОМОКОДА -->
     <div class="modal-overlay" id="promoModal">
         <div class="modal">
             <div class="modal-title">🎁 Введите промокод</div>
@@ -444,19 +434,42 @@
         let userId = '';
         let balance = 0;
 
+        // Инициализация Telegram
         try {
             const tg = window.Telegram.WebApp;
             tg.expand();
+
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tgUser = tg.initDataUnsafe.user;
                 console.log('✅ Telegram user:', tgUser);
+            } else {
+                // Если Telegram не дал пользователя, но сам WebApp доступен
+                console.log('ℹ️ Telegram WebApp доступен, но пользователь не авторизован');
+                // Пробуем получить user через tg.initData
+                if (tg.initData) {
+                    const params = new URLSearchParams(tg.initData);
+                    const userParam = params.get('user');
+                    if (userParam) {
+                        try {
+                            tgUser = JSON.parse(decodeURIComponent(userParam));
+                            console.log('✅ Telegram user from initData:', tgUser);
+                        } catch (e) {}
+                    }
+                }
             }
         } catch (e) {
             console.log('ℹ️ Telegram не доступен');
         }
 
+        // Если все еще нет пользователя - создаем тестового (для разработки)
         if (!tgUser) {
-            tgUser = { id: 'demo_' + Date.now(), first_name: 'Гость' };
+            tgUser = {
+                id: 'demo_' + Date.now(),
+                first_name: 'Тест',
+                username: 'test_user',
+                photo_url: null
+            };
+            console.log('ℹ️ Демо-пользователь:', tgUser);
         }
 
         userId = tgUser.id.toString();
@@ -474,13 +487,15 @@
         function updateUI() {
             balanceDisplay.textContent = balance.toLocaleString();
 
-            const name = tgUser.first_name || tgUser.username || 'Гость';
+            const name = tgUser.first_name || tgUser.username || 'Пользователь';
             userName.textContent = name;
 
             if (tgUser.photo_url) {
                 userAvatar.innerHTML = `<img src="${tgUser.photo_url}" alt="avatar" />`;
             } else {
-                userAvatar.textContent = name.charAt(0).toUpperCase() || '🐹';
+                const letter = name.charAt(0).toUpperCase();
+                userAvatar.textContent = letter;
+                userAvatar.style.fontSize = '20px';
             }
         }
 
@@ -498,7 +513,7 @@
                 if (error && error.code === 'PGRST116') {
                     const newUser = {
                         id: userId,
-                        name: tgUser.first_name || 'Гость',
+                        name: tgUser.first_name || tgUser.username || 'Пользователь',
                         balance: 5000,
                         created_at: new Date().toISOString()
                     };
@@ -544,13 +559,15 @@
         // ============================================
         // BUTTONS
         // ============================================
-        document.getElementById('getCoinsBtn').addEventListener('click', async function() {
+        document.getElementById('getCoinsBtn').addEventListener('click', async function(e) {
+            e.preventDefault();
             const newBalance = balance + 500;
             await updateBalance(newBalance);
             alert('✅ +500 BetCoin!');
         });
 
-        document.getElementById('buyCoinsBtn').addEventListener('click', async function() {
+        document.getElementById('buyCoinsBtn').addEventListener('click', async function(e) {
+            e.preventDefault();
             const amount = prompt('💰 Сколько BetCoin купить?', '1000');
             if (!amount) return;
             const coins = parseInt(amount);
@@ -569,7 +586,9 @@
         function openPromo() {
             document.getElementById('promoModal').classList.add('active');
             document.getElementById('promoInput').value = '';
-            document.getElementById('promoInput').focus();
+            setTimeout(() => {
+                document.getElementById('promoInput').focus();
+            }, 100);
         }
 
         function closePromo() {
@@ -622,6 +641,7 @@
         // ============================================
         loadUserData();
 
+        // Глобальные функции для HTML
         window.openPromo = openPromo;
         window.closePromo = closePromo;
         window.applyPromo = applyPromo;

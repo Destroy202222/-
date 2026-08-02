@@ -370,23 +370,11 @@
             await processBets(result);
             await loadBets();
             
-            // Очищаем ставки после раунда
-            await clearBets();
-            
             setTimeout(() => {
                 isRolling = false;
                 document.querySelector('.dice-timer').innerHTML = '⏳ Раунд: <span id="timerDisplay">12</span>s';
                 startTimer();
             }, 1000);
-        }
-
-        async function clearBets() {
-            try {
-                await fetch(`${SB_URL}/rest/v1/bets?game=eq.Dice`, {
-                    method: 'DELETE',
-                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-                });
-            } catch(e) { console.error('Ошибка очистки ставок:', e); }
         }
 
         async function processBets(result) {

@@ -1,345 +1,1892 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>BetGame</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-        body{background:#0a0e1a;display:flex;justify-content:center;padding:10px;min-height:100vh}
-        .app{max-width:400px;width:100%;background:rgba(20,25,50,0.9);border-radius:20px;padding:20px 15px 80px;position:relative}
-        .header{display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;border-bottom:1px solid rgba(255,255,255,0.05)}
-        .user{color:#fff;font-size:18px;font-weight:600}
-        .status{color:#6f8f9f;font-size:12px;display:flex;align-items:center;gap:5px}
-        .dot{width:8px;height:8px;background:#4ade80;border-radius:50%;display:inline-block}
-        .wins{color:#6f8f9f;font-size:12px}
-        .avatar{width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,#f7e05e,#ff8a2a);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#0a0e1a}
-        .balance{background:rgba(255,255,255,0.05);border-radius:16px;padding:15px 18px;margin:15px 0;display:flex;justify-content:space-between;align-items:center}
-        .balance-label{color:#8a9bb5;font-size:13px}
-        .balance-amount{color:#fff;font-size:30px;font-weight:800}
-        .btn{background:linear-gradient(135deg,#f7d875,#e8b42b);border:none;padding:8px 18px;border-radius:30px;font-weight:700;font-size:13px;color:#0a0e1a;cursor:pointer}
-        .btn:active{transform:scale(0.95)}
-        .btn-out{background:transparent;border:1px solid rgba(255,255,255,0.15);padding:8px 16px;border-radius:30px;font-weight:600;font-size:13px;color:#d6e0ff;cursor:pointer}
-        .menu{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:15px 0}
-        .menu-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:15px 5px;text-align:center;color:#aec0ff;font-size:12px;cursor:pointer}
-        .menu-item:active{transform:scale(0.95)}
-        .menu-item .icon{font-size:24px;display:block;margin-bottom:5px}
-        .games{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
-        .game{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:20px 10px;text-align:center;cursor:pointer}
-        .game:active{transform:scale(0.95)}
-        .game-icon{font-size:32px;margin-bottom:8px}
-        .game-name{color:#fff;font-size:14px;font-weight:600}
-        .game-sub{color:#6f8f9f;font-size:11px;margin-top:3px}
-        .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:400px;background:rgba(10,14,26,0.95);backdrop-filter:blur(20px);display:flex;justify-content:space-around;padding:10px 0 18px;border-top:1px solid rgba(255,255,255,0.05);z-index:100}
-        .nav-btn{background:transparent;border:none;color:#6f8f9f;font-size:11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 20px}
-        .nav-btn.active{color:#f7e05e}
-        .nav-icon{font-size:24px}
-        .page{display:none}
-        .page.active{display:block}
-        .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:200;display:none;justify-content:center;align-items:center;padding:20px}
-        .modal.active{display:flex}
-        .modal-box{background:#1a1f3a;border-radius:24px;padding:30px;max-width:340px;width:100%}
-        .modal-title{color:#fff;font-size:24px;font-weight:700;text-align:center;margin-bottom:15px}
-        .modal-icon{font-size:50px;text-align:center;margin-bottom:10px}
-        .modal-input{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;font-size:16px;margin-bottom:12px;outline:none}
-        .modal-input:focus{border-color:#f7e05e}
-        .modal-balance{color:#8a9bb5;font-size:13px;text-align:center;margin-bottom:15px}
-        .modal-btns{display:flex;gap:10px}
-        .modal-btn{flex:1;padding:12px;border-radius:12px;border:none;font-weight:700;font-size:14px;cursor:pointer}
-        .modal-btn:active{transform:scale(0.95)}
-        .modal-btn-primary{background:linear-gradient(135deg,#f7d875,#e8b42b);color:#0a0e1a}
-        .modal-btn-secondary{background:rgba(255,255,255,0.05);color:#d6e0ff;border:1px solid rgba(255,255,255,0.1)}
-        .result{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:300;display:none;justify-content:center;align-items:center;padding:20px}
-        .result.active{display:flex}
-        .result-box{text-align:center}
-        .result-icon{font-size:80px;margin-bottom:15px}
-        .result-title{font-size:30px;font-weight:700;color:#fff;margin-bottom:8px}
-        .result-title.win{color:#4ade80}
-        .result-title.lose{color:#ff6b6b}
-        .result-amount{font-size:20px;color:#f7e05e;margin-bottom:20px}
-        .result-btn{padding:12px 40px;border-radius:30px;border:none;background:linear-gradient(135deg,#f7d875,#e8b42b);color:#0a0e1a;font-weight:700;font-size:16px;cursor:pointer}
-        .profile-section{background:rgba(255,255,255,0.02);border-radius:16px;padding:20px;margin-bottom:15px;border:1px solid rgba(255,255,255,0.05)}
-        .profile-header{display:flex;align-items:center;gap:15px;margin-bottom:15px}
-        .profile-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#f7e05e,#ff8a2a);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#0a0e1a}
-        .profile-name{color:#fff;font-size:18px;font-weight:700}
-        .profile-sub{color:#8a9bb5;font-size:13px}
-        .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        .stat{background:rgba(0,0,0,0.2);border-radius:12px;padding:12px;text-align:center}
-        .stat-label{color:#8a9bb5;font-size:11px;text-transform:uppercase}
-        .stat-value{color:#fff;font-size:16px;font-weight:700;margin-top:4px}
-        .stat-value.gold{color:#f7e05e}
-        .stat-value.green{color:#4ade80}
-        .stat-value.red{color:#ff6b6b}
-        .chart{background:rgba(255,255,255,0.02);border-radius:16px;padding:20px;margin-bottom:15px;border:1px solid rgba(255,255,255,0.05)}
-        .chart-header{display:flex;justify-content:space-between;margin-bottom:12px}
-        .chart-title{color:#fff;font-size:14px;font-weight:600}
-        .chart-date{color:#8a9bb5;font-size:12px}
-        .chart-bars{display:flex;align-items:flex-end;gap:4px;height:100px;padding:5px 0}
-        .chart-bar{flex:1;background:linear-gradient(180deg,#f7e05e,#ff8a2a);border-radius:3px 3px 0 0;min-height:10px;opacity:0.7}
-        .chart-bar:nth-child(1){height:35px}
-        .chart-bar:nth-child(2){height:65px}
-        .chart-bar:nth-child(3){height:45px}
-        .chart-bar:nth-child(4){height:85px}
-        .chart-bar:nth-child(5){height:25px}
-        .chart-bar:nth-child(6){height:55px}
-        .chart-bar:nth-child(7){height:70px}
-        .chart-bar:nth-child(8){height:40px}
-        @media(max-width:420px){.app{padding:15px 10px 75px}.balance-amount{font-size:24px}.menu-item{font-size:10px;padding:12px 3px}.menu-item .icon{font-size:18px}}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background: #0a0e1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        #bg-3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at 30% 40%, #1a2244 0%, #070a12 100%);
+            pointer-events: none;
+        }
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.08;
+            animation: floatOrb 15s infinite alternate;
+        }
+        .orb:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            top: -150px;
+            right: -150px;
+            background: #ff6b35;
+        }
+        .orb:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            bottom: -100px;
+            left: -100px;
+            background: #4a6cf7;
+            animation-duration: 20s;
+        }
+        @keyframes floatOrb {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(80px, -60px) scale(1.3);
+            }
+        }
+
+        .app {
+            position: relative;
+            z-index: 1;
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 12px 12px 80px;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 16px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .user-name {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .online-status {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #6f8f9f;
+            font-size: 12px;
+        }
+        .online-dot {
+            width: 6px;
+            height: 6px;
+            background: #4ade80;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .wins-count {
+            color: #6f8f9f;
+            font-size: 12px;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f7e05e, #ff8a2a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0a0e1a;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* BALANCE */
+        .balance-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .balance-label {
+            color: #8a9bb5;
+            font-size: 13px;
+        }
+        .balance-amount {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 800;
+        }
+        .balance-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #f7d875, #e8b42b);
+            border: none;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 13px;
+            color: #0a0e1a;
+            cursor: pointer;
+        }
+        .btn-gold:active {
+            transform: scale(0.95);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #d6e0ff;
+            cursor: pointer;
+        }
+        .btn-outline:active {
+            transform: scale(0.95);
+        }
+
+        /* MENU */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .menu-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 16px 4px;
+            text-align: center;
+            color: #c8d6ff;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .menu-item:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .menu-item .icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 4px;
+            filter: brightness(0) invert(1);
+            opacity: 0.7;
+        }
+
+        /* GAMES GRID */
+        .games-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .game-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 20px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .game-card:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .game-card .icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+        .game-card .name {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .game-card .sub {
+            color: #6f8f9f;
+            font-size: 10px;
+        }
+
+        /* NAV */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 100;
+        }
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            background: transparent;
+            border: none;
+            color: #6f8f9f;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 4px 20px;
+            transition: color 0.2s;
+        }
+        .nav-btn.active {
+            color: #f7e05e;
+        }
+        .nav-btn .nav-icon {
+            font-size: 22px;
+            filter: brightness(0) invert(1);
+            opacity: 0.6;
+        }
+        .nav-btn.active .nav-icon {
+            opacity: 1;
+            filter: none;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* PROFILE */
+        .profile-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f7e05e, #ff8a2a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #0a0e1a;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-name {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .profile-sub {
+            color: #8a9bb5;
+            font-size: 13px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-label {
+            color: #8a9bb5;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .stat-value {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        .stat-value.gold {
+            color: #f7e05e;
+        }
+        .stat-value.green {
+            color: #4ade80;
+        }
+        .stat-value.red {
+            color: #ff6b6b;
+        }
+
+        .chart-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .chart-title {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .chart-date {
+            color: #8a9bb5;
+            font-size: 12px;
+        }
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 100px;
+            padding: 4px 0;
+        }
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #f7e05e, #ff8a2a);
+            border-radius: 3px 3px 0 0;
+            min-height: 8px;
+            opacity: 0.7;
+        }
+        .chart-bar:nth-child(1) {
+            height: 35px;
+        }
+        .chart-bar:nth-child(2) {
+            height: 65px;
+        }
+        .chart-bar:nth-child(3) {
+            height: 45px;
+        }
+        .chart-bar:nth-child(4) {
+            height: 85px;
+        }
+        .chart-bar:nth-child(5) {
+            height: 25px;
+        }
+        .chart-bar:nth-child(6) {
+            height: 55px;
+        }
+        .chart-bar:nth-child(7) {
+            height: 70px;
+        }
+        .chart-bar:nth-child(8) {
+            height: 40px;
+        }
+
+        /* GAME OVERLAY */
+        .game-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0e1a;
+            z-index: 200;
+            display: none;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .game-overlay.active {
+            display: block;
+        }
+        .game-back {
+            color: #8a9bb5;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 0;
+            display: inline-block;
+        }
+        .game-back:hover {
+            color: #fff;
+        }
+
+        /* DICE GAME */
+        .dice-game {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .dice-title {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .dice-numbers {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .dice-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .dice-number.highlight {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: #f7e05e;
+            color: #f7e05e;
+        }
+        .dice-result {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .dice-result .number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #f7e05e;
+        }
+        .dice-bet-area {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 16px 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .dice-bet-options {
+            display: flex;
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .dice-bet-option {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: transparent;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dice-bet-option.active {
+            border-color: #f7e05e;
+            background: rgba(255, 215, 0, 0.1);
+            color: #f7e05e;
+        }
+        .dice-bet-option:active {
+            transform: scale(0.95);
+        }
+        .dice-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 12px 0;
+        }
+        .dice-input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+        }
+        .dice-input:focus {
+            border-color: #f7e05e;
+        }
+        .dice-quick-btn {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .dice-quick-btn:active {
+            transform: scale(0.95);
+        }
+        .dice-place-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #f7d875, #e8b42b);
+            color: #0a0e1a;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        .dice-place-btn:active {
+            transform: scale(0.95);
+        }
+        .dice-bets-list {
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .dice-bet-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: #aec0ff;
+            font-size: 13px;
+        }
+        .dice-bet-item .win {
+            color: #4ade80;
+        }
+        .dice-bet-item .lose {
+            color: #ff6b6b;
+        }
+
+        /* WHEEL */
+        .wheel-game {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .wheel-title {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .wheel-display {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 4px solid #f7e05e;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.5s;
+        }
+        .wheel-segments {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        .wheel-segment {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* SLOTS */
+        .slots-game {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .slots-title {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .slots-reels {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .slot-reel {
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            transition: all 0.3s;
+        }
+        .slot-reel.spinning {
+            animation: spin 0.3s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media(max-width:420px) {
+            .app {
+                padding: 10px 10px 75px;
+            }
+            .balance-amount {
+                font-size: 22px;
+            }
+            .menu-item {
+                font-size: 10px;
+                padding: 12px 3px;
+            }
+            .dice-number {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="app">
-    <!-- HEADER -->
-    <div class="header">
-        <div>
-            <div class="user" id="userName">hamster</div>
-            <div style="display:flex;gap:10px;margin-top:3px">
-                <span class="status"><span class="dot"></span>online • 51</span>
-                <span class="wins">0 W</span>
+    <div id="bg-3d">
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <div class="app">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <span class="user-name" id="userName">Загрузка...</span>
+                <span class="online-status">
+                    <span class="online-dot"></span>
+                    online • 51
+                </span>
+                <span class="wins-count">0 W</span>
+            </div>
+            <div class="user-avatar" id="userAvatar">
+                <span id="avatarText">🐹</span>
             </div>
         </div>
-        <div class="avatar" id="userAvatar">🐹</div>
-    </div>
 
-    <!-- BALANCE -->
-    <div class="balance">
-        <div>
-            <div class="balance-label">BetCoin</div>
-            <div class="balance-amount" id="balanceDisplay">0</div>
-        </div>
-        <div style="display:flex;gap:8px">
-            <button class="btn" id="getCoins">+ Получить</button>
-            <button class="btn-out" id="buyCoins">Купить</button>
-        </div>
-    </div>
-
-    <!-- HOME -->
-    <div class="page active" id="pageHome">
-        <div class="menu">
-            <div class="menu-item" onclick="alert('Управление')"><span class="icon">⚡</span>Управление</div>
-            <div class="menu-item" onclick="navigate('pageProfile')"><span class="icon">👤</span>Профиль</div>
-            <div class="menu-item" onclick="alert('Клан')"><span class="icon">🏰</span>Клан</div>
-            <div class="menu-item" onclick="alert('Инвентарь')"><span class="icon">📦</span>Инвентарь</div>
-            <div class="menu-item" onclick="alert('Промо')"><span class="icon">🎁</span>Промо</div>
-            <div class="menu-item" onclick="alert('Сервис')"><span class="icon">⚙️</span>Сервис</div>
-            <div class="menu-item" onclick="navigate('pageGames')"><span class="icon">🎮</span>Игры</div>
-            <div class="menu-item" onclick="alert('Рейтинг')"><span class="icon">🏆</span>Рейтинг</div>
+        <!-- BALANCE -->
+        <div class="balance-card">
+            <div>
+                <div class="balance-label">BetCoin</div>
+                <div class="balance-amount" id="balanceDisplay">0</div>
+            </div>
+            <div class="balance-actions">
+                <button class="btn-gold" id="getCoins">+ Получить</button>
+                <button class="btn-outline" id="buyCoins">Купить</button>
+            </div>
         </div>
 
-        <div class="games">
-            <div class="game" onclick="openGame('Crazy Time','🌀')"><div class="game-icon">🌀</div><div class="game-name">Crazy Time</div><div class="game-sub">x5000</div></div>
-            <div class="game" onclick="openGame('Mega Wheel','🎡')"><div class="game-icon">🎡</div><div class="game-name">Mega Wheel</div><div class="game-sub">x1000</div></div>
-            <div class="game" onclick="openGame('Slots','🎰')"><div class="game-icon">🎰</div><div class="game-name">Slots</div><div class="game-sub">x500</div></div>
-            <div class="game" onclick="openGame('Dice','🎲')"><div class="game-icon">🎲</div><div class="game-name">Dice</div><div class="game-sub">x100</div></div>
-        </div>
-    </div>
-
-    <!-- PROFILE -->
-    <div class="page" id="pageProfile">
-        <div class="profile-section">
-            <div class="profile-header">
-                <div class="profile-avatar" id="profileAvatar">🐹</div>
-                <div>
-                    <div class="profile-name" id="profileName">hamster</div>
-                    <div class="profile-sub" id="profileDate">Играет с 31.08.22</div>
+        <!-- HOME PAGE -->
+        <div class="page active" id="pageHome">
+            <div class="menu-grid">
+                <div class="menu-item" onclick="alert('Управление')">
+                    <span class="icon">⚡</span>Управление
+                </div>
+                <div class="menu-item" onclick="navigate('pageProfile')">
+                    <span class="icon">👤</span>Профиль
+                </div>
+                <div class="menu-item" onclick="alert('Клан')">
+                    <span class="icon">🏰</span>Клан
+                </div>
+                <div class="menu-item" onclick="alert('Инвентарь')">
+                    <span class="icon">📦</span>Инвентарь
+                </div>
+                <div class="menu-item" onclick="alert('Промо')">
+                    <span class="icon">🎁</span>Промо
+                </div>
+                <div class="menu-item" onclick="alert('Сервис')">
+                    <span class="icon">⚙️</span>Сервис
+                </div>
+                <div class="menu-item" onclick="navigate('pageGames')">
+                    <span class="icon">🎮</span>Игры
+                </div>
+                <div class="menu-item" onclick="alert('Рейтинг')">
+                    <span class="icon">🏆</span>Рейтинг
                 </div>
             </div>
-            <div class="stats">
-                <div class="stat"><div class="stat-label">Выиграно сегодня</div><div class="stat-value gold">0</div></div>
-                <div class="stat"><div class="stat-label">Проиграно сегодня</div><div class="stat-value red">0</div></div>
-                <div class="stat"><div class="stat-label">Всего наиграно</div><div class="stat-value gold">2.8B</div></div>
-                <div class="stat"><div class="stat-label">Макс. выигрыш</div><div class="stat-value green">124.5M</div></div>
+        </div>
+
+        <!-- GAMES PAGE -->
+        <div class="page" id="pageGames">
+            <div style="color:#fff;font-size:18px;font-weight:700;margin-bottom:16px;">🎮 Все игры</div>
+            <div class="games-grid">
+                <div class="game-card" onclick="openGame('dice')">
+                    <div class="icon">🎲</div>
+                    <div class="name">Dice</div>
+                    <div class="sub">x100</div>
+                </div>
+                <div class="game-card" onclick="openGame('crazy')">
+                    <div class="icon">🌀</div>
+                    <div class="name">Crazy Time</div>
+                    <div class="sub">x5000</div>
+                </div>
+                <div class="game-card" onclick="openGame('wheel')">
+                    <div class="icon">🎡</div>
+                    <div class="name">Mega Wheel</div>
+                    <div class="sub">x1000</div>
+                </div>
+                <div class="game-card" onclick="openGame('slots')">
+                    <div class="icon">🎰</div>
+                    <div class="name">Slots</div>
+                    <div class="sub">x500</div>
+                </div>
+                <div class="game-card" onclick="openGame('wheelplus')">
+                    <div class="icon">🎯</div>
+                    <div class="name">Wheel Plus</div>
+                    <div class="sub">x200</div>
+                </div>
+                <div class="game-card" onclick="openGame('double')">
+                    <div class="icon">🔴</div>
+                    <div class="name">Double</div>
+                    <div class="sub">x2</div>
+                </div>
+                <div class="game-card" onclick="openGame('dream')">
+                    <div class="icon">🌙</div>
+                    <div class="name">Dream</div>
+                    <div class="sub">x50</div>
+                </div>
+                <div class="game-card" onclick="openGame('two')">
+                    <div class="icon">2️⃣</div>
+                    <div class="name">2</div>
+                    <div class="sub">x2</div>
+                </div>
             </div>
         </div>
 
-        <div class="chart">
-            <div class="chart-header"><div class="chart-title">📊 График</div><div class="chart-date">март 2026</div></div>
-            <div class="chart-bars">
-                <div class="chart-bar"></div><div class="chart-bar"></div><div class="chart-bar"></div>
-                <div class="chart-bar"></div><div class="chart-bar"></div><div class="chart-bar"></div>
-                <div class="chart-bar"></div><div class="chart-bar"></div>
+        <!-- PROFILE PAGE -->
+        <div class="page" id="pageProfile">
+            <div class="profile-section">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <span id="profileAvatarText">🐹</span>
+                    </div>
+                    <div>
+                        <div class="profile-name" id="profileName">Загрузка...</div>
+                        <div class="profile-sub" id="profileDate">Играет с 31.08.22</div>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Выиграно сегодня</div>
+                        <div class="stat-value gold">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Проиграно сегодня</div>
+                        <div class="stat-value red">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Всего наиграно</div>
+                        <div class="stat-value gold">2.8B</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Макс. выигрыш</div>
+                        <div class="stat-value green">124.5M</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div class="chart-title">📊 График</div>
+                    <div class="chart-date">март 2026</div>
+                </div>
+                <div class="chart-bars">
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                    <div class="chart-bar"></div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Макс. коэффициент</div>
+                        <div class="stat-value gold">x5 000.00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Наибольший баланс</div>
+                        <div class="stat-value green">187.6M</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="profile-section">
-            <div class="stats">
-                <div class="stat"><div class="stat-label">Макс. коэффициент</div><div class="stat-value gold">x5 000.00</div></div>
-                <div class="stat"><div class="stat-label">Наибольший баланс</div><div class="stat-value green">187.6M</div></div>
-            </div>
+        <!-- NAV -->
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="navigate('pageHome')" data-page="pageHome">
+                <span class="nav-icon">🏠</span>Главная
+            </button>
+            <button class="nav-btn" onclick="navigate('pageProfile')" data-page="pageProfile">
+                <span class="nav-icon">👤</span>Профиль
+            </button>
+            <button class="nav-btn" onclick="navigate('pageGames')" data-page="pageGames">
+                <span class="nav-icon">🎮</span>Игры
+            </button>
         </div>
     </div>
 
-    <!-- GAMES -->
-    <div class="page" id="pageGames">
-        <div style="color:#fff;font-size:18px;font-weight:700;margin-bottom:15px">🎮 Все игры</div>
-        <div class="games">
-            <div class="game" onclick="openGame('Crazy Time','🌀')"><div class="game-icon">🌀</div><div class="game-name">Crazy Time</div><div class="game-sub">x5000</div></div>
-            <div class="game" onclick="openGame('Mega Wheel','🎡')"><div class="game-icon">🎡</div><div class="game-name">Mega Wheel</div><div class="game-sub">x1000</div></div>
-            <div class="game" onclick="openGame('Slots','🎰')"><div class="game-icon">🎰</div><div class="game-name">Slots</div><div class="game-sub">x500</div></div>
-            <div class="game" onclick="openGame('Wheel Plus','🎯')"><div class="game-icon">🎯</div><div class="game-name">Wheel Plus</div><div class="game-sub">x200</div></div>
-            <div class="game" onclick="openGame('Dice','🎲')"><div class="game-icon">🎲</div><div class="game-name">Dice</div><div class="game-sub">x100</div></div>
-            <div class="game" onclick="openGame('Double','🔴')"><div class="game-icon">🔴</div><div class="game-name">Double</div><div class="game-sub">x2</div></div>
-            <div class="game" onclick="openGame('Dream','🌙')"><div class="game-icon">🌙</div><div class="game-name">Dream</div><div class="game-sub">x50</div></div>
-            <div class="game" onclick="openGame('2','2️⃣')"><div class="game-icon">2️⃣</div><div class="game-name">2</div><div class="game-sub">x2</div></div>
-        </div>
+    <!-- GAME OVERLAY -->
+    <div class="game-overlay" id="gameOverlay">
+        <span class="game-back" onclick="closeGame()">← Назад</span>
+        <div id="gameContent"></div>
     </div>
 
-    <!-- MODAL -->
-    <div class="modal" id="gameModal">
-        <div class="modal-box">
-            <div class="modal-icon" id="modalIcon">🎰</div>
-            <div class="modal-title" id="modalTitle">Crazy Time</div>
-            <input class="modal-input" id="betInput" type="number" placeholder="Сумма ставки" min="1">
-            <div class="modal-balance">Баланс: <span id="modalBalance">0</span> BetCoin</div>
-            <div class="modal-btns">
-                <button class="modal-btn modal-btn-secondary" onclick="closeModal()">Отмена</button>
-                <button class="modal-btn modal-btn-primary" onclick="placeBet()">Ставка</button>
-            </div>
-        </div>
-    </div>
+    <script>
+        // ===== SUPABASE =====
+        const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    <!-- RESULT -->
-    <div class="result" id="resultModal">
-        <div class="result-box">
-            <div class="result-icon" id="resultIcon">🎉</div>
-            <div class="result-title" id="resultTitle">Вы выиграли!</div>
-            <div class="result-amount" id="resultAmount">+0 BetCoin</div>
-            <button class="result-btn" onclick="closeResult()">Продолжить</button>
-        </div>
-    </div>
+        // ===== STATE =====
+        let tgUser = null;
+        let balance = 0;
+        let userId = '';
+        let currentGame = '';
+        let diceBet = 'over'; // 'over' or 'under'
 
-    <!-- NAV -->
-    <div class="nav">
-        <button class="nav-btn active" onclick="navigate('pageHome')" data-page="pageHome"><span class="nav-icon">🏠</span>Главная</button>
-        <button class="nav-btn" onclick="navigate('pageProfile')" data-page="pageProfile"><span class="nav-icon">👤</span>Профиль</button>
-        <button class="nav-btn" onclick="navigate('pageGames')" data-page="pageGames"><span class="nav-icon">🎮</span>Игры</button>
-    </div>
-</div>
+        // ===== DOM =====
+        const balanceDisplay = document.getElementById('balanceDisplay');
+        const userName = document.getElementById('userName');
+        const userAvatar = document.getElementById('userAvatar');
+        const avatarText = document.getElementById('avatarText');
+        const profileName = document.getElementById('profileName');
+        const profileAvatar = document.getElementById('profileAvatar');
+        const profileAvatarText = document.getElementById('profileAvatarText');
 
-<script>
-// ===== DATA =====
-let balance = 5000;
-let currentGame = '';
-let tgUser = { first_name: 'hamster' };
+        // ===== TELEGRAM AUTO AUTH =====
+        function initTelegram() {
+            try {
+                const tg = window.Telegram.WebApp;
+                tg.expand();
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    tgUser = tg.initDataUnsafe.user;
+                    console.log('✅ Telegram авторизован:', tgUser);
+                    return true;
+                }
+            } catch (e) {
+                console.log('ℹ️ Telegram не доступен, демо-режим');
+            }
+            return false;
+        }
 
-// ===== DOM =====
-const balanceDisplay = document.getElementById('balanceDisplay');
-const modalBalance = document.getElementById('modalBalance');
-const userName = document.getElementById('userName');
-const userAvatar = document.getElementById('userAvatar');
-const profileName = document.getElementById('profileName');
-const profileAvatar = document.getElementById('profileAvatar');
+        // ===== UPDATE UI WITH TG USER =====
+        function updateUserUI() {
+            if (!tgUser) return;
 
-// ===== FUNCTIONS =====
-function updateUI() {
-    balanceDisplay.textContent = balance.toLocaleString();
-    if(modalBalance) modalBalance.textContent = balance.toLocaleString();
-    const name = tgUser.first_name || 'hamster';
-    userName.textContent = name;
-    profileName.textContent = name;
-    const avatar = name.charAt(0).toUpperCase() || '🐹';
-    userAvatar.textContent = avatar;
-    profileAvatar.textContent = avatar;
-}
+            const name = tgUser.first_name || tgUser.username || 'hamster';
+            const photoUrl = tgUser.photo_url;
 
-function navigate(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector(`.nav-btn[data-page="${pageId}"]`)?.classList.add('active');
-}
+            userName.textContent = name;
+            profileName.textContent = name;
 
-function openGame(name, icon) {
-    currentGame = name;
-    document.getElementById('modalTitle').textContent = name;
-    document.getElementById('modalIcon').textContent = icon;
-    document.getElementById('betInput').value = '';
-    document.getElementById('modalBalance').textContent = balance.toLocaleString();
-    document.getElementById('gameModal').classList.add('active');
-}
+            // Аватарка в хедере
+            if (photoUrl) {
+                userAvatar.innerHTML = `<img src="${photoUrl}" alt="avatar" />`;
+                profileAvatar.innerHTML = `<img src="${photoUrl}" alt="avatar" />`;
+            } else {
+                const letter = name.charAt(0).toUpperCase();
+                avatarText.textContent = letter;
+                profileAvatarText.textContent = letter;
+                userAvatar.innerHTML = `<span id="avatarText">${letter}</span>`;
+                profileAvatar.innerHTML = `<span id="profileAvatarText">${letter}</span>`;
+            }
+        }
 
-function closeModal() {
-    document.getElementById('gameModal').classList.remove('active');
-}
+        // ===== SUPABASE FUNCTIONS =====
+        async function loadUserData() {
+            try {
+                if (!tgUser) {
+                    // Демо-режим
+                    tgUser = { id: 'demo_' + Date.now(), first_name: 'hamster' };
+                    userId = tgUser.id;
+                    updateUserUI();
+                    balance = 5000;
+                    updateUI();
+                    return;
+                }
 
-function placeBet() {
-    const input = document.getElementById('betInput');
-    const bet = parseInt(input.value);
-    if(isNaN(bet) || bet <= 0) { alert('❌ Введите сумму!'); return; }
-    if(bet > balance) { alert('❌ Недостаточно средств!'); return; }
-    closeModal();
-    
-    const win = Math.random() > 0.45;
-    const mult = win ? (Math.random() * 5 + 1) : 0;
-    const winAmount = win ? Math.floor(bet * mult) : 0;
-    balance = win ? balance - bet + winAmount : balance - bet;
-    updateUI();
-    showResult(win, winAmount, mult);
-}
+                userId = tgUser.id.toString();
 
-function showResult(win, amount, mult) {
-    const modal = document.getElementById('resultModal');
-    const icon = document.getElementById('resultIcon');
-    const title = document.getElementById('resultTitle');
-    const amt = document.getElementById('resultAmount');
-    if(win) {
-        icon.textContent = '🎉';
-        title.textContent = 'Вы выиграли!';
-        title.className = 'result-title win';
-        amt.textContent = `+${amount} BetCoin (x${mult.toFixed(2)})`;
-    } else {
-        icon.textContent = '😔';
-        title.textContent = 'Вы проиграли!';
-        title.className = 'result-title lose';
-        amt.textContent = 'Попробуйте снова!';
-    }
-    modal.classList.add('active');
-}
+                let { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
 
-function closeResult() {
-    document.getElementById('resultModal').classList.remove('active');
-}
+                if (error && error.code === 'PGRST116') {
+                    const newUser = {
+                        id: userId,
+                        name: tgUser.first_name || tgUser.username || 'hamster',
+                        balance: 5000,
+                        created_at: new Date().toISOString()
+                    };
+                    const { data: inserted, error: insertError } = await supabase
+                        .from('users')
+                        .insert([newUser])
+                        .select()
+                        .single();
+                    if (insertError) throw insertError;
+                    data = inserted;
+                } else if (error) {
+                    throw error;
+                }
 
-// ===== BUTTONS =====
-document.getElementById('getCoins').addEventListener('click', function() {
-    balance += 500;
-    updateUI();
-    alert('✅ +500 BetCoin!');
-});
+                balance = data.balance || 0;
+                updateUserUI();
+                updateUI();
+                console.log('✅ Данные загружены');
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+                balance = 5000;
+                updateUI();
+            }
+        }
 
-document.getElementById('buyCoins').addEventListener('click', function() {
-    const amount = prompt('Сколько BetCoin купить?', '1000');
-    if(!amount) return;
-    const coins = parseInt(amount);
-    if(isNaN(coins) || coins <= 0) { alert('❌ Введите сумму!'); return; }
-    balance += coins;
-    updateUI();
-    alert(`✅ +${coins} BetCoin!`);
-});
+        async function updateBalance(newBalance) {
+            try {
+                const { error } = await supabase
+                    .from('users')
+                    .update({ balance: newBalance })
+                    .eq('id', userId);
+                if (error) throw error;
+                balance = newBalance;
+                updateUI();
+                console.log('✅ Баланс:', newBalance);
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+            }
+        }
 
-// ===== TELEGRAM =====
-try {
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    if(tg.initDataUnsafe?.user) {
-        tgUser = tg.initDataUnsafe.user;
-        console.log('✅ Telegram:', tgUser);
-    }
-} catch(e) {
-    console.log('ℹ️ Telegram WebApp не доступен');
-}
+        async function saveBet(game, amount, win, winAmount, multiplier, detail = '') {
+            try {
+                await supabase.from('bets').insert([{
+                    user_id: userId,
+                    user_name: tgUser?.first_name || 'hamster',
+                    amount: amount,
+                    game: game,
+                    result: win ? 'win' : 'lose',
+                    win_amount: winAmount,
+                    coefficient: multiplier,
+                    detail: detail
+                }]);
+                console.log('✅ Ставка сохранена');
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+            }
+        }
 
-// ===== START =====
-updateUI();
-console.log('🚀 BetGame запущен!');
+        async function getBets(game) {
+            try {
+                const { data, error } = await supabase
+                    .from('bets')
+                    .select('*')
+                    .eq('game', game)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+                return [];
+            }
+        }
 
-// Глобальные функции для onclick
-window.navigate = navigate;
-window.openGame = openGame;
-window.closeModal = closeModal;
-window.placeBet = placeBet;
-window.closeResult = closeResult;
-</script>
+        // ===== UI =====
+        function updateUI() {
+            balanceDisplay.textContent = balance.toLocaleString();
+        }
+
+        function navigate(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.nav-btn[data-page="${pageId}"]`)?.classList.add('active');
+        }
+
+        // ===== GAMES =====
+        function openGame(game) {
+            currentGame = game;
+            document.getElementById('gameOverlay').classList.add('active');
+            renderGame(game);
+        }
+
+        function closeGame() {
+            document.getElementById('gameOverlay').classList.remove('active');
+        }
+
+        function renderGame(game) {
+            const content = document.getElementById('gameContent');
+            switch (game) {
+                case 'dice':
+                    renderDice(content);
+                    break;
+                case 'crazy':
+                    renderCrazyTime(content);
+                    break;
+                case 'wheel':
+                    renderWheel(content);
+                    break;
+                case 'slots':
+                    renderSlots(content);
+                    break;
+                case 'wheelplus':
+                    renderWheelPlus(content);
+                    break;
+                case 'double':
+                    renderDouble(content);
+                    break;
+                case 'dream':
+                    renderDream(content);
+                    break;
+                case 'two':
+                    renderTwo(content);
+                    break;
+                default:
+                    content.innerHTML = '<div style="color:#fff;text-align:center;padding:40px;">Игра в разработке</div>';
+            }
+        }
+
+        // ===== DICE =====
+        function renderDice(container) {
+            const numbers = [5, 5, 9, 10, 6, 6, 6];
+            let betType = 'under'; // 'under' or 'over'
+            let betAmount = 100;
+
+            container.innerHTML = `
+                <div class="dice-game">
+                    <div class="dice-title">🎲 Dice</div>
+                    <div class="dice-numbers">
+                        ${numbers.map(n => `<div class="dice-number">${n}</div>`).join('')}
+                    </div>
+                    <div class="dice-result">
+                        Результат: <span class="number" id="diceResult">?</span>
+                    </div>
+                    <div class="dice-bet-area">
+                        <div style="color:#8a9bb5;font-size:13px;margin-bottom:8px;">Ваши ставки</div>
+                        <div class="dice-bet-options">
+                            <button class="dice-bet-option active" data-bet="under" onclick="setDiceBet('under')">⟨ 7</button>
+                            <button class="dice-bet-option" data-bet="over" onclick="setDiceBet('over')">7 ⟩</button>
+                        </div>
+                        <div class="dice-input-group">
+                            <input class="dice-input" id="diceInput" type="number" value="100" min="1" />
+                            <button class="dice-quick-btn" onclick="document.getElementById('diceInput').value = Math.floor(balance/2)">1/2</button>
+                            <button class="dice-quick-btn" onclick="document.getElementById('diceInput').value = balance">Max</button>
+                        </div>
+                        <button class="dice-place-btn" onclick="placeDiceBet()">Сделать ставку</button>
+                    </div>
+                    <div style="color:#8a9bb5;font-size:13px;margin-top:12px;">Ставки игроков</div>
+                    <div class="dice-bets-list" id="diceBetsList">
+                        <div class="dice-bet-item"><span>Загрузка ставок...</span><span></span></div>
+                    </div>
+                </div>
+            `;
+
+            // Загружаем ставки
+            loadDiceBets();
+
+            // Обновляем активную кнопку
+            window.setDiceBet = function(type) {
+                betType = type;
+                document.querySelectorAll('.dice-bet-option').forEach(b => b.classList.remove('active'));
+                document.querySelector(`.dice-bet-option[data-bet="${type}"]`).classList.add('active');
+            };
+
+            // Сохраняем функцию для использования
+            window.placeDiceBet = function() {
+                const input = document.getElementById('diceInput');
+                const amount = parseInt(input.value);
+
+                if (isNaN(amount) || amount <= 0) {
+                    alert('❌ Введите корректную сумму!');
+                    return;
+                }
+                if (amount > balance) {
+                    alert('❌ Недостаточно средств!');
+                    return;
+                }
+
+                // Генерируем результат (сумма двух кубиков 2-12)
+                const die1 = Math.floor(Math.random() * 6) + 1;
+                const die2 = Math.floor(Math.random() * 6) + 1;
+                const result = die1 + die2;
+
+                const win = betType === 'under' ? result < 7 : result > 7;
+                const multiplier = win ? 2 : 0;
+                const winAmount = win ? amount * 2 : 0;
+
+                // Обновляем баланс
+                const newBalance = win ? balance - amount + winAmount : balance - amount;
+                updateBalance(newBalance);
+                saveBet('Dice', amount, win, winAmount, multiplier, `${die1}+${die2}=${result}`);
+
+                // Показываем результат
+                document.getElementById('diceResult').textContent = `${result} (${die1} + ${die2})`;
+                document.getElementById('diceResult').style.color = win ? '#4ade80' : '#ff6b6b';
+
+                // Обновляем числа
+                const nums = document.querySelectorAll('.dice-number');
+                const resultNums = [die1, die2, ...Array(5).fill('')];
+                nums.forEach((el, i) => {
+                    if (i < 2) {
+                        el.textContent = resultNums[i];
+                        el.classList.add('highlight');
+                    }
+                });
+
+                // Загружаем обновленные ставки
+                setTimeout(loadDiceBets, 500);
+
+                alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin` : `😔 Вы проиграли! -${amount} BetCoin`);
+            };
+        }
+
+        async function loadDiceBets() {
+            try {
+                const bets = await getBets('Dice');
+                const list = document.getElementById('diceBetsList');
+                if (!list) return;
+
+                if (bets.length === 0) {
+                    list.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+                    return;
+                }
+
+                list.innerHTML = bets.map(b => `
+                    <div class="dice-bet-item">
+                        <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin</span>
+                        <span class="${b.result === 'win' ? 'win' : 'lose'}">${b.result === 'win' ? '+' + b.win_amount : '-' + b.amount}</span>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('Ошибка загрузки ставок:', e);
+            }
+        }
+
+        // ===== CRAZY TIME =====
+        function renderCrazyTime(container) {
+            const segments = ['x1', 'x2', 'x5', 'x10', 'x20', 'x50', 'x100', 'x500', 'x1000', 'x5000'];
+            let spinning = false;
+
+            container.innerHTML = `
+                <div class="wheel-game">
+                    <div class="wheel-title">🌀 Crazy Time</div>
+                    <div class="wheel-display" id="crazyDisplay">🎰</div>
+                    <div class="wheel-segments">
+                        ${segments.map(s => `<span class="wheel-segment">${s}</span>`).join('')}
+                    </div>
+                    <div class="dice-bet-area">
+                        <div style="color:#8a9bb5;font-size:13px;margin-bottom:8px;">Ваша ставка</div>
+                        <div class="dice-input-group">
+                            <input class="dice-input" id="crazyInput" type="number" value="100" min="1" />
+                            <button class="dice-quick-btn" onclick="document.getElementById('crazyInput').value = Math.floor(balance/2)">1/2</button>
+                            <button class="dice-quick-btn" onclick="document.getElementById('crazyInput').value = balance">Max</button>
+                        </div>
+                        <button class="dice-place-btn" onclick="playCrazyTime()">Крутить!</button>
+                    </div>
+                    <div style="color:#8a9bb5;font-size:13px;margin-top:12px;">Ставки игроков</div>
+                    <div class="dice-bets-list" id="crazyBetsList">
+                        <div class="dice-bet-item"><span>Загрузка...</span><span></span></div>
+                    </div>
+                </div>
+            `;
+
+            loadCrazyBets();
+
+            window.playCrazyTime = function() {
+                if (spinning) return;
+                const input = document.getElementById('crazyInput');
+                const amount = parseInt(input.value);
+
+                if (isNaN(amount) || amount <= 0) {
+                    alert('❌ Введите сумму!');
+                    return;
+                }
+                if (amount > balance) {
+                    alert('❌ Недостаточно средств!');
+                    return;
+                }
+
+                spinning = true;
+                const display = document.getElementById('crazyDisplay');
+                display.textContent = '🌀';
+                display.style.transform = 'rotate(0deg)';
+
+                // Анимация вращения
+                let rotations = 0;
+                const interval = setInterval(() => {
+                    rotations += 15;
+                    display.style.transform = `rotate(${rotations}deg)`;
+                }, 50);
+
+                setTimeout(() => {
+                    clearInterval(interval);
+                    const index = Math.floor(Math.random() * segments.length);
+                    const result = segments[index];
+                    const multiplier = parseInt(result.replace('x', ''));
+                    const win = Math.random() > 0.3;
+                    const winAmount = win ? amount * multiplier : 0;
+
+                    display.textContent = win ? `🎉 ${result}` : '😔';
+                    display.style.transform = `rotate(${rotations + 360}deg)`;
+
+                    const newBalance = win ? balance - amount + winAmount : balance - amount;
+                    updateBalance(newBalance);
+                    saveBet('Crazy Time', amount, win, winAmount, multiplier);
+
+                    setTimeout(loadCrazyBets, 500);
+                    spinning = false;
+
+                    alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin (x${multiplier})` : `😔 Вы проиграли! -${amount} BetCoin`);
+                }, 3000);
+            };
+        }
+
+        async function loadCrazyBets() {
+            try {
+                const bets = await getBets('Crazy Time');
+                const list = document.getElementById('crazyBetsList');
+                if (!list) return;
+                if (bets.length === 0) {
+                    list.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+                    return;
+                }
+                list.innerHTML = bets.map(b => `
+                    <div class="dice-bet-item">
+                        <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin</span>
+                        <span class="${b.result === 'win' ? 'win' : 'lose'}">${b.result === 'win' ? '+' + b.win_amount : '-' + b.amount}</span>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // ===== WHEEL =====
+        function renderWheel(container) {
+            const segments = ['x1', 'x2', 'x5', 'x10', 'x20', 'x50', 'x100', 'x200', 'x500', 'x1000'];
+            let spinning = false;
+
+            container.innerHTML = `
+                <div class="wheel-game">
+                    <div class="wheel-title">🎡 Mega Wheel</div>
+                    <div class="wheel-display" id="wheelDisplay">🎡</div>
+                    <div class="wheel-segments">
+                        ${segments.map(s => `<span class="wheel-segment">${s}</span>`).join('')}
+                    </div>
+                    <div class="dice-bet-area">
+                        <div style="color:#8a9bb5;font-size:13px;margin-bottom:8px;">Ваша ставка</div>
+                        <div class="dice-input-group">
+                            <input class="dice-input" id="wheelInput" type="number" value="100" min="1" />
+                            <button class="dice-quick-btn" onclick="document.getElementById('wheelInput').value = Math.floor(balance/2)">1/2</button>
+                            <button class="dice-quick-btn" onclick="document.getElementById('wheelInput').value = balance">Max</button>
+                        </div>
+                        <button class="dice-place-btn" onclick="playWheel()">Крутить!</button>
+                    </div>
+                    <div style="color:#8a9bb5;font-size:13px;margin-top:12px;">Ставки игроков</div>
+                    <div class="dice-bets-list" id="wheelBetsList">
+                        <div class="dice-bet-item"><span>Загрузка...</span><span></span></div>
+                    </div>
+                </div>
+            `;
+
+            loadWheelBets();
+
+            window.playWheel = function() {
+                if (spinning) return;
+                const input = document.getElementById('wheelInput');
+                const amount = parseInt(input.value);
+
+                if (isNaN(amount) || amount <= 0) {
+                    alert('❌ Введите сумму!');
+                    return;
+                }
+                if (amount > balance) {
+                    alert('❌ Недостаточно средств!');
+                    return;
+                }
+
+                spinning = true;
+                const display = document.getElementById('wheelDisplay');
+
+                let rotations = 0;
+                const interval = setInterval(() => {
+                    rotations += 20;
+                    display.style.transform = `rotate(${rotations}deg)`;
+                }, 30);
+
+                setTimeout(() => {
+                    clearInterval(interval);
+                    const index = Math.floor(Math.random() * segments.length);
+                    const result = segments[index];
+                    const multiplier = parseInt(result.replace('x', ''));
+                    const win = Math.random() > 0.35;
+                    const winAmount = win ? amount * multiplier : 0;
+
+                    display.textContent = win ? `🎉 ${result}` : '😔';
+                    display.style.transform = `rotate(${rotations + 360}deg)`;
+
+                    const newBalance = win ? balance - amount + winAmount : balance - amount;
+                    updateBalance(newBalance);
+                    saveBet('Mega Wheel', amount, win, winAmount, multiplier);
+
+                    setTimeout(loadWheelBets, 500);
+                    spinning = false;
+
+                    alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin (x${multiplier})` : `😔 Вы проиграли! -${amount} BetCoin`);
+                }, 2500);
+            };
+        }
+
+        async function loadWheelBets() {
+            try {
+                const bets = await getBets('Mega Wheel');
+                const list = document.getElementById('wheelBetsList');
+                if (!list) return;
+                if (bets.length === 0) {
+                    list.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+                    return;
+                }
+                list.innerHTML = bets.map(b => `
+                    <div class="dice-bet-item">
+                        <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin</span>
+                        <span class="${b.result === 'win' ? 'win' : 'lose'}">${b.result === 'win' ? '+' + b.win_amount : '-' + b.amount}</span>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // ===== SLOTS =====
+        function renderSlots(container) {
+            const symbols = ['🍒', '🍋', '🍊', '🍇', '💎', '7️⃣', '🎰'];
+            let spinning = false;
+
+            container.innerHTML = `
+                <div class="slots-game">
+                    <div class="slots-title">🎰 Slots</div>
+                    <div class="slots-reels">
+                        <div class="slot-reel" id="slot1">🍒</div>
+                        <div class="slot-reel" id="slot2">🍋</div>
+                        <div class="slot-reel" id="slot3">🍊</div>
+                    </div>
+                    <div class="dice-bet-area">
+                        <div style="color:#8a9bb5;font-size:13px;margin-bottom:8px;">Ваша ставка</div>
+                        <div class="dice-input-group">
+                            <input class="dice-input" id="slotsInput" type="number" value="100" min="1" />
+                            <button class="dice-quick-btn" onclick="document.getElementById('slotsInput').value = Math.floor(balance/2)">1/2</button>
+                            <button class="dice-quick-btn" onclick="document.getElementById('slotsInput').value = balance">Max</button>
+                        </div>
+                        <button class="dice-place-btn" onclick="playSlots()">Крутить!</button>
+                    </div>
+                    <div style="color:#8a9bb5;font-size:13px;margin-top:12px;">Ставки игроков</div>
+                    <div class="dice-bets-list" id="slotsBetsList">
+                        <div class="dice-bet-item"><span>Загрузка...</span><span></span></div>
+                    </div>
+                </div>
+            `;
+
+            loadSlotsBets();
+
+            window.playSlots = function() {
+                if (spinning) return;
+                const input = document.getElementById('slotsInput');
+                const amount = parseInt(input.value);
+
+                if (isNaN(amount) || amount <= 0) {
+                    alert('❌ Введите сумму!');
+                    return;
+                }
+                if (amount > balance) {
+                    alert('❌ Недостаточно средств!');
+                    return;
+                }
+
+                spinning = true;
+                const reels = [
+                    document.getElementById('slot1'),
+                    document.getElementById('slot2'),
+                    document.getElementById('slot3')
+                ];
+
+                // Анимация прокрутки
+                reels.forEach(r => r.classList.add('spinning'));
+
+                setTimeout(() => {
+                    reels.forEach(r => r.classList.remove('spinning'));
+
+                    const results = reels.map(() => symbols[Math.floor(Math.random() * symbols.length)]);
+                    reels.forEach((r, i) => r.textContent = results[i]);
+
+                    const win = results[0] === results[1] && results[1] === results[2];
+                    const multiplier = win ? (results[0] === '💎' ? 10 : results[0] === '7️⃣' ? 5 : 3) : 0;
+                    const winAmount = win ? amount * multiplier : 0;
+
+                    const newBalance = win ? balance - amount + winAmount : balance - amount;
+                    updateBalance(newBalance);
+                    saveBet('Slots', amount, win, winAmount, multiplier);
+
+                    setTimeout(loadSlotsBets, 500);
+                    spinning = false;
+
+                    alert(win ? `🎉 Джекпот! +${winAmount} BetCoin (x${multiplier})` : `😔 Вы проиграли! -${amount} BetCoin`);
+                }, 1500);
+            };
+        }
+
+        async function loadSlotsBets() {
+            try {
+                const bets = await getBets('Slots');
+                const list = document.getElementById('slotsBetsList');
+                if (!list) return;
+                if (bets.length === 0) {
+                    list.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+                    return;
+                }
+                list.innerHTML = bets.map(b => `
+                    <div class="dice-bet-item">
+                        <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin</span>
+                        <span class="${b.result === 'win' ? 'win' : 'lose'}">${b.result === 'win' ? '+' + b.win_amount : '-' + b.amount}</span>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // ===== WHEEL PLUS =====
+        function renderWheelPlus(container) {
+            const segments = ['x1', 'x2', 'x3', 'x5', 'x10', 'x20', 'x50'];
+            let spinning = false;
+
+            container.innerHTML = `
+                <div class="wheel-game">
+                    <div class="wheel-title">🎯 Wheel Plus</div>
+                    <div class="wheel-display" id="wpDisplay">🎯</div>
+                    <div class="wheel-segments">
+                        ${segments.map(s => `<span class="wheel-segment">${s}</span>`).join('')}
+                    </div>
+                    <div class="dice-bet-area">
+                        <div style="color:#8a9bb5;font-size:13px;margin-bottom:8px;">Ваша ставка</div>
+                        <div class="dice-input-group">
+                            <input class="dice-input" id="wpInput" type="number" value="100" min="1" />
+                            <button class="dice-quick-btn" onclick="document.getElementById('wpInput').value = Math.floor(balance/2)">1/2</button>
+                            <button class="dice-quick-btn" onclick="document.getElementById('wpInput').value = balance">Max</button>
+                        </div>
+                        <button class="dice-place-btn" onclick="playWheelPlus()">Крутить!</button>
+                    </div>
+                    <div style="color:#8a9bb5;font-size:13px;margin-top:12px;">Ставки игроков</div>
+                    <div class="dice-bets-list" id="wpBetsList">
+                        <div class="dice-bet-item"><span>Загрузка...</span><span></span></div>
+                    </div>
+                </div>
+            `;
+
+            loadWPBets();
+
+            window.playWheelPlus = function() {
+                if (spinning) return;
+                const input = document.getElementById('wpInput');
+                const amount = parseInt(input.value);
+
+                if (isNaN(amount) || amount <= 0) {
+                    alert('❌ Введите сумму!');
+                    return;
+                }
+                if (amount > balance) {
+                    alert('❌ Недостаточно средств!');
+                    return;
+                }
+
+                spinning = true;
+                const display = document.getElementById('wpDisplay');
+
+                let rotations = 0;
+                const interval = setInterval(() => {
+                    rotations += 25;
+                    display.style.transform = `rotate(${rotations}deg)`;
+                }, 30);
+
+                setTimeout(() => {
+                    clearInterval(interval);
+                    const index = Math.floor(Math.random() * segments.length);
+                    const result = segments[index];
+                    const multiplier = parseInt(result.replace('x', ''));
+                    const win = Math.random() > 0.4;
+                    const winAmount = win ? amount * multiplier : 0;
+
+                    display.textContent = win ? `🎉 ${result}` : '😔';
+                    display.style.transform = `rotate(${rotations + 360}deg)`;
+
+                    const newBalance = win ? balance - amount + winAmount : balance - amount;
+                    updateBalance(newBalance);
+                    saveBet('Wheel Plus', amount, win, winAmount, multiplier);
+
+                    setTimeout(loadWPBets, 500);
+                    spinning = false;
+
+                    alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin (x${multiplier})` : `😔 Вы проиграли! -${amount} BetCoin`);
+                }, 2000);
+            };
+        }
+
+        async function loadWPBets() {
+            try {
+                const bets = await getBets('Wheel Plus');
+                const list = document.getElementById('wpBetsList');
+                if (!list) return;
+                if (bets.length === 0) {
+                    list.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+                    return;
+                }
+                list.innerHTML = bets.map(b => `
+                    <div class="dice-bet-item">
+                        <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin</span>
+                        <span class="${b.result === 'win' ? 'win' : 'lose'}">${b.result === 'win' ? '+' + b.win_amount : '-' + b.amount}</span>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // ===== DOUBLE =====
+        function renderDouble(container) {
+            container.innerHTML = `
+                <div class="dice-game">
+                    <div class="dice-title">🔴 Double</div>
+                    <div class="dice-result">
+                        Результат: <span class="number" id="doubleResult">?</span>
+                    </div>
+                    <div class="dice-bet-area">
+                        <div style="color:#8a9bb5;font-size:13px;margin-bottom:8px;">Ваша ставка</div>
+                        <div class="dice-input-group">
+                            <input class="dice-input" id="doubleInput" type="number" value="100" min="1" />
+                            <button class="dice-quick-btn" onclick="document.getElementById('doubleInput').value = Math.floor(balance/2)">1/2</button>
+                            <button class="dice-quick-btn" onclick="document.getElementById('doubleInput').value = balance">Max</button>
+                        </div>
+                        <button class="dice-place-btn" onclick="playDouble()">Играть!</button>
+                    </div>
+                    <div style="color:#8a9bb5;font-size:13px;margin-top:12px;">Ставки игроков</div>
+                    <div class="dice-bets-list" id="doubleBetsList">
+                        <div class="dice-bet-item"><span>Загрузка...</span><span></span></div>
+                    </div>
+                </div>
+            `;
+
+            loadDoubleBets();
+
+            window.playDouble = function() {
+                const input = document.getElementById('doubleInput');
+                const amount = parseInt(input.value);
+
+                if (isNaN(amount) || amount <= 0) {
+                    alert('❌ Введите сумму!');
+                    return;
+                }
+                if (amount > balance) {
+                    alert('❌ Недостаточно средств!');
+                    return;
+                }
+
+                const win = Math.random() > 0.5;
+                const winAmount = win ? amount * 2 : 0;
+                const result = document.getElementById('doubleResult');
+
+                result.textContent = win ? '✅ ВЫИГРЫШ!' : '❌ ПРОИГРЫШ!';
+                result.style.color = win ? '#4ade80' : '#ff6b6b';
+
+                const newBalance = win ? balance - amount + winAmount : balance - amount;
+                updateBalance(newBalance);
+                saveBet('Double', amount, win, winAmount, 2);
+
+                setTimeout(loadDoubleBets, 500);
+                alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin` : `😔 Вы проиграли! -${amount} BetCoin`);
+            };
+        }
+
+        async function loadDoubleBets() {
+            try {
+                const bets = await getBets('Double');
+                const list = document.getElementById('doubleBetsList');
+                if (!list) return;
+                if (bets.length === 0) {
+                    list.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+                    return;
+                }
+                list.innerHTML = bets.map(b => `
+                    <div class="dice-bet-item">
+                        <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin</span>
+                        <span class="${b.result === 'win' ? 'win' : 'lose'}">${b.result === 'win' ? '+' + b.win_amount : '-' + b.amount}</span>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // ===== DREAM =====
+        function renderDream(container) {
+            container.innerHTML = `
+                <div class="dice-game">
+                    <div class="dice-title">🌙 Dream</div>
+                    <div class="dice-result">
+                        Множитель: <span class="number" id="dreamResult">?</span>
+                    </div>
+                    <div class="dice-bet-area">
+                        <div style="color:#8a9bb5;font-size:13px;margin-bottom:8px;">Ваша ставка</div>
+                        <div class="dice-input-group">
+                            <input class="dice-input" id="dreamInput" type="number" value="100" min="1" />
+                            <button class="dice-quick-btn" onclick="document.getElementById('dreamInput').value = Math.floor(balance/2)">1/2</button>
+                            <button class="dice-quick-btn" onclick="document.getElementById('dreamInput').value = balance">Max</button>
+                        </div>
+                        <button class="dice-place-btn" onclick="playDream()">Испытать удачу!</button>
+                    </div>
+                    <div style="color:#8a9bb5;font-size:13px;margin-top:12px;">Ставки игроков</div>
+                    <div class="dice-bets-list" id="dreamBetsList">
+                        <div class="dice-bet-item"><span>Загрузка...</span><span></span></div>
+                    </div>
+                </div>
+            `;
+
+            loadDreamBets();
+
+            window.playDream = function() {
+                const input = document.getElementById('dreamInput');
+                const amount = parseInt(input.value);
+
+                if (isNaN(amount) || amount <= 0) {
+                    alert('❌ Введите сумму!');
+                    return;
+                }
+                if (amount > balance) {
+                    alert('❌ Недостаточно средств!');
+                    return;
+                }
+
+                const multipliers = [0, 0, 0, 1, 1, 2, 2, 3, 5, 10, 20, 50];
+                const multiplier = multipliers[Math.floor(Math.random() * multipliers.length)];
+                const win = multiplier > 0;
+                const winAmount = win ? amount * multiplier : 0;
+                const result = document.getElementById('dreamResult');
+
+                result.textContent = win ? `x${multiplier}` : '0';
+                result.style.color = win ? '#4ade80' : '#ff6b6b';
+
+                const newBalance = win ? balance - amount + winAmount : balance - amount;
+                updateBalance(newBalance);
+                saveBet('Dream', amount, win, winAmount, multiplier);
+
+                setTimeout(loadDreamBets, 500);
+                alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin (x${multiplier})` : `😔 Вы проиграли! -${amount} BetCoin`);
+            };
+        }
+
+        async function loadDreamBets() {
+            try {
+                const bets = await getBets('Dream');
+                const list = document.getElementById('dreamBetsList');
+                if (!list) return;
+                if (bets.length === 0) {
+                    list.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+                    return;
+                }
+                list.innerHTML = bets.map(b => `
+                    <div class="dice-bet-item">
+                        <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin</span>
+                        <span class="${b.result === 'win' ? 'win' : 'lose'}">${b.result === 'win' ? '+' + b.win_amount : '-' + b.amount}</span>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // ===== TWO =====
+        function renderTwo(container) {
+            container.innerHTML = `
+                <div class="dice-game">
+                    <div class="dice-title">2️⃣ 2</div>
+                    <div class="dice-result">
+                        Результат: <span class="number" id="twoResult">?</span>
+                    </div>
+                    <div class="dice-bet-area">
+                        <div style="color:#8a9bb5;font-size:13px;margin-bottom:8px;">Ваша ставка</div>
+                        <div class="dice-input-group">
+                            <input class="dice-input" id="twoInput" type="number" value="100" min="1" />
+                            <button class="dice-quick-btn" onclick="document.getElementById('twoInput').value = Math.floor(balance/2)">1/2</button>
+                            <button class="dice-quick-btn" onclick="document.getElementById('twoInput').value = balance">Max</button>
+                        </div>
+                        <button class="dice-place-btn" onclick="playTwo()">Играть!</button>
+                    </div>
+                    <div style="color:#8a9bb5;font-size:13px;margin-top:12px;">Ставки игроков</div>
+                    <div class="dice-bets-list" id="twoBetsList">
+                        <div class="dice-bet-item"><span>Загрузка...</span><span></span></div>
+                    </div>
+                </div>
+            `;
+
+            loadTwoBets();
+
+            window.playTwo = function() {
+                const input = document.getElementById('twoInput');
+                const amount = parseInt(input.value);
+
+                if (isNaN(amount) || amount <= 0) {
+                    alert('❌ Введите сумму!');
+                    return;
+                }
+                if (amount > balance) {
+                    alert('❌ Недостаточно средств!');
+                    return;
+                }
+
+                const roll = Math.floor(Math.random() * 2) + 1;
+                const win = roll === 2;
+                const winAmount = win ? amount * 2 : 0;
+                const result = document.getElementById('twoResult');
+
+                result.textContent = win ? '✅ 2!' : '❌ 1';
+                result.style.color = win ? '#4ade80' : '#ff6b6b';
+
+                const newBalance = win ? balance - amount + winAmount : balance - amount;
+                updateBalance(newBalance);
+                saveBet('2', amount, win, winAmount, 2);
+
+                setTimeout(loadTwoBets, 500);
+                alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin` : `😔 Вы проиграли! -${amount} BetCoin`);
+            };
+        }
+
+        async function loadTwoBets() {
+            try {
+                const bets = await getBets('2');
+                const list = document.getElementById('twoBetsList');
+                if (!list) return;
+                if (bets.length === 0) {
+                    list.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+                    return;
+                }
+                list.innerHTML = bets.map(b => `
+                    <div class="dice-bet-item">
+                        <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin</span>
+                        <span class="${b.result === 'win' ? 'win' : 'lose'}">${b.result === 'win' ? '+' + b.win_amount : '-' + b.amount}</span>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // ===== BUTTONS =====
+        document.getElementById('getCoins').addEventListener('click', function() {
+            const newBalance = balance + 500;
+            updateBalance(newBalance);
+            alert('✅ +500 BetCoin!');
+        });
+
+        document.getElementById('buyCoins').addEventListener('click', function() {
+            const amount = prompt('Сколько BetCoin купить?', '1000');
+            if (!amount) return;
+            const coins = parseInt(amount);
+            if (isNaN(coins) || coins <= 0) {
+                alert('❌ Введите сумму!');
+                return;
+            }
+            const newBalance = balance + coins;
+            updateBalance(newBalance);
+            alert(`✅ +${coins} BetCoin!`);
+        });
+
+        // ===== INIT =====
+        const tgAvailable = initTelegram();
+        loadUserData();
+
+        // Глобальные функции
+        window.navigate = navigate;
+        window.openGame = openGame;
+        window.closeGame = closeGame;
+        window.loadDiceBets = loadDiceBets;
+        window.loadCrazyBets = loadCrazyBets;
+        window.loadWheelBets = loadWheelBets;
+        window.loadSlotsBets = loadSlotsBets;
+        window.loadWPBets = loadWPBets;
+        window.loadDoubleBets = loadDoubleBets;
+        window.loadDreamBets = loadDreamBets;
+        window.loadTwoBets = loadTwoBets;
+
+        console.log('🚀 BetGame запущен!');
+        console.log('👤 Пользователь:', tgUser);
+    </script>
 </body>
 </html>

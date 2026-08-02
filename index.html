@@ -378,7 +378,7 @@
     <div class="app">
         <div class="header">
             <div class="avatar" id="userAvatar">🐹</div>
-            <div class="username" id="userName">Загрузка...</div>
+            <div class="username" id="userName">Гость</div>
         </div>
 
         <div class="balance-block">
@@ -434,7 +434,7 @@
         let userId = '';
         let balance = 0;
 
-        // Инициализация Telegram
+        // Получаем пользователя из Telegram
         try {
             const tg = window.Telegram.WebApp;
             tg.expand();
@@ -442,18 +442,16 @@
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tgUser = tg.initDataUnsafe.user;
                 console.log('✅ Telegram user:', tgUser);
-            } else {
-                // Если Telegram не дал пользователя, но сам WebApp доступен
-                console.log('ℹ️ Telegram WebApp доступен, но пользователь не авторизован');
-                // Пробуем получить user через tg.initData
-                if (tg.initData) {
-                    const params = new URLSearchParams(tg.initData);
-                    const userParam = params.get('user');
-                    if (userParam) {
-                        try {
-                            tgUser = JSON.parse(decodeURIComponent(userParam));
-                            console.log('✅ Telegram user from initData:', tgUser);
-                        } catch (e) {}
+            } else if (tg.initData) {
+                // Пробуем распарсить initData
+                const params = new URLSearchParams(tg.initData);
+                const userParam = params.get('user');
+                if (userParam) {
+                    try {
+                        tgUser = JSON.parse(decodeURIComponent(userParam));
+                        console.log('✅ Telegram user from initData:', tgUser);
+                    } catch (e) {
+                        console.log('❌ Ошибка парсинга user:', e);
                     }
                 }
             }
@@ -461,7 +459,7 @@
             console.log('ℹ️ Telegram не доступен');
         }
 
-        // Если все еще нет пользователя - создаем тестового (для разработки)
+        // Если пользователь не найден - создаем тестового
         if (!tgUser) {
             tgUser = {
                 id: 'demo_' + Date.now(),
@@ -639,6 +637,18 @@
         // ============================================
         // INIT
         // ============================================
+        // Сразу показываем имя пользователя
+        const name = tgUser.first_name || tgUser.username || 'Пользователь';
+        userName.textContent = name;
+
+        if (tgUser.photo_url) {
+            userAvatar.innerHTML = `<img src="${tgUser.photo_url}" alt="avatar" />`;
+        } else {
+            const letter = name.charAt(0).toUpperCase();
+            userAvatar.textContent = letter;
+            userAvatar.style.fontSize = '20px';
+        }
+
         loadUserData();
 
         // Глобальные функции для HTML

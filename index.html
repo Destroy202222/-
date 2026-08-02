@@ -46,8 +46,8 @@
         .modal-btn-secondary{background:rgba(255,255,255,.06);color:#c8d6ff;border:1px solid rgba(255,255,255,.08)}
         #status{
             position:fixed;bottom:70px;left:50%;transform:translateX(-50%);
-            background:rgba(0,0,0,.9);color:#fff;padding:12px 20px;border-radius:12px;
-            font-size:13px;z-index:999;border:1px solid rgba(255,255,255,.1);
+            background:rgba(0,0,0,.9);color:#fff;padding:10px 18px;border-radius:12px;
+            font-size:12px;z-index:999;border:1px solid rgba(255,255,255,.1);
             display:block;max-width:90%;text-align:center;font-weight:500
         }
         #status.success{background:rgba(0,180,0,.9);border-color:#0f0}
@@ -96,6 +96,9 @@
         function setStatus(text, type) {
             statusEl.textContent = text;
             statusEl.className = type || '';
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => { statusEl.className = ''; }, 4000);
+            }
         }
 
         // ===== TELEGRAM =====
@@ -132,63 +135,34 @@
             }
         }
 
-        // ===== РАБОТА С SUPABASE ЧЕРЕЗ FETCH =====
+        // ===== SUPABASE =====
         const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
 
-        async function supabaseRequest(method, table, data = null) {
-            const url = `${supabaseUrl}/rest/v1/${table}`;
-            const headers = {
-                'apikey': supabaseKey,
-                'Authorization': `Bearer ${supabaseKey}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-            };
-
-            const options = { method, headers };
-
-            if (data) {
-                options.body = JSON.stringify(data);
-            }
-
-            const response = await fetch(url, options);
-            return await response.json();
-        }
-
-        // ===== ЗАГРУЗКА =====
         async function loadData() {
             try {
                 setStatus('⏳ Загрузка...', 'loading');
-
-                // Ищем пользователя
-                const url = `${supabaseUrl}/rest/v1/users?id=eq.${userId}&select=*`;
-                const headers = {
-                    'apikey': supabaseKey,
-                    'Authorization': `Bearer ${supabaseKey}`
-                };
-                const response = await fetch(url, { headers });
+                const response = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${userId}&select=*`, {
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`
+                    }
+                });
                 const data = await response.json();
 
                 if (data.length === 0) {
-                    // Создаем пользователя
                     setStatus('📝 Создание...', 'loading');
-                    const newUser = {
-                        id: userId,
-                        name: tgUser.first_name || 'Пользователь',
-                        balance: 5000
-                    };
-                    const createResponse = await fetch(`${supabaseUrl}/rest/v1/users`, {
+                    const newUser = { id: userId, name: tgUser.first_name || 'Пользователь', balance: 5000 };
+                    await fetch(`${supabaseUrl}/rest/v1/users`, {
                         method: 'POST',
                         headers: {
                             'apikey': supabaseKey,
                             'Authorization': `Bearer ${supabaseKey}`,
-                            'Content-Type': 'application/json',
-                            'Prefer': 'return=representation'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(newUser)
                     });
-                    const created = await createResponse.json();
-                    balance = created[0]?.balance || 5000;
+                    balance = 5000;
                     setStatus('✅ Пользователь создан!', 'success');
                 } else {
                     balance = data[0].balance || 0;
@@ -204,8 +178,7 @@
 
         async function saveBalance(newBalance) {
             try {
-                const url = `${supabaseUrl}/rest/v1/users?id=eq.${userId}`;
-                const response = await fetch(url, {
+                await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${userId}`, {
                     method: 'PATCH',
                     headers: {
                         'apikey': supabaseKey,
@@ -214,7 +187,6 @@
                     },
                     body: JSON.stringify({ balance: newBalance })
                 });
-                if (!response.ok) throw new Error('Ошибка сохранения');
                 balance = newBalance;
                 updateUI();
                 setStatus('✅ Сохранено: ' + balance, 'success');

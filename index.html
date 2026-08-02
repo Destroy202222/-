@@ -18,8 +18,7 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            padding: 0;
-            overflow-x: hidden;
+            padding: 10px;
         }
         #bg-3d {
             position: fixed;
@@ -67,7 +66,6 @@
             z-index: 1;
             max-width: 420px;
             width: 100%;
-            margin: 0 auto;
             padding: 12px 12px 80px;
             min-height: 100vh;
         }
@@ -163,6 +161,7 @@
             font-size: 13px;
             color: #0a0e1a;
             cursor: pointer;
+            transition: transform 0.15s;
         }
         .btn-gold:active {
             transform: scale(0.95);
@@ -176,6 +175,7 @@
             font-size: 13px;
             color: #d6e0ff;
             cursor: pointer;
+            transition: transform 0.15s;
         }
         .btn-outline:active {
             transform: scale(0.95);
@@ -198,7 +198,7 @@
             font-size: 12px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
         }
         .menu-item:active {
             transform: scale(0.95);
@@ -226,7 +226,7 @@
             padding: 20px 12px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
         }
         .game-card:active {
             transform: scale(0.95);
@@ -453,7 +453,7 @@
             z-index: 200;
             display: none;
             overflow-y: auto;
-            padding: 16px;
+            padding: 16px 16px 30px;
         }
         .game-overlay.active {
             display: block;
@@ -590,6 +590,7 @@
             font-weight: 700;
             cursor: pointer;
             margin-top: 12px;
+            transition: transform 0.15s;
         }
         .dice-place-btn:active {
             transform: scale(0.95);
@@ -738,9 +739,7 @@
                 </span>
                 <span class="wins-count">0 W</span>
             </div>
-            <div class="user-avatar" id="userAvatar">
-                <span id="avatarText">🐹</span>
-            </div>
+            <div class="user-avatar" id="userAvatar">🐹</div>
         </div>
 
         <!-- BALANCE -->
@@ -750,8 +749,8 @@
                 <div class="balance-amount" id="balanceDisplay">0</div>
             </div>
             <div class="balance-actions">
-                <button class="btn-gold" id="getCoins">+ Получить</button>
-                <button class="btn-outline" id="buyCoins">Купить</button>
+                <button class="btn-gold" id="getCoinsBtn">+ Получить</button>
+                <button class="btn-outline" id="buyCoinsBtn">Купить</button>
             </div>
         </div>
 
@@ -761,7 +760,7 @@
                 <div class="menu-item" onclick="alert('Управление')">
                     <span class="icon">⚡</span>Управление
                 </div>
-                <div class="menu-item" onclick="navigate('pageProfile')">
+                <div class="menu-item" onclick="navigateTo('pageProfile')">
                     <span class="icon">👤</span>Профиль
                 </div>
                 <div class="menu-item" onclick="alert('Клан')">
@@ -776,7 +775,7 @@
                 <div class="menu-item" onclick="alert('Сервис')">
                     <span class="icon">⚙️</span>Сервис
                 </div>
-                <div class="menu-item" onclick="navigate('pageGames')">
+                <div class="menu-item" onclick="navigateTo('pageGames')">
                     <span class="icon">🎮</span>Игры
                 </div>
                 <div class="menu-item" onclick="alert('Рейтинг')">
@@ -836,9 +835,7 @@
         <div class="page" id="pageProfile">
             <div class="profile-section">
                 <div class="profile-header">
-                    <div class="profile-avatar" id="profileAvatar">
-                        <span id="profileAvatarText">🐹</span>
-                    </div>
+                    <div class="profile-avatar" id="profileAvatar">🐹</div>
                     <div>
                         <div class="profile-name" id="profileName">Загрузка...</div>
                         <div class="profile-sub" id="profileDate">Играет с 31.08.22</div>
@@ -897,13 +894,13 @@
 
         <!-- NAV -->
         <div class="bottom-nav">
-            <button class="nav-btn active" onclick="navigate('pageHome')" data-page="pageHome">
+            <button class="nav-btn active" onclick="navigateTo('pageHome')" data-page="pageHome">
                 <span class="nav-icon">🏠</span>Главная
             </button>
-            <button class="nav-btn" onclick="navigate('pageProfile')" data-page="pageProfile">
+            <button class="nav-btn" onclick="navigateTo('pageProfile')" data-page="pageProfile">
                 <span class="nav-icon">👤</span>Профиль
             </button>
-            <button class="nav-btn" onclick="navigate('pageGames')" data-page="pageGames">
+            <button class="nav-btn" onclick="navigateTo('pageGames')" data-page="pageGames">
                 <span class="nav-icon">🎮</span>Игры
             </button>
         </div>
@@ -916,28 +913,27 @@
     </div>
 
     <script>
-        // ===== SUPABASE =====
+        // ============================================
+        // SUPABASE CONFIG
+        // ============================================
         const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // ===== STATE =====
+        console.log('🔗 Supabase connected:', supabase);
+
+        // ============================================
+        // STATE
+        // ============================================
         let tgUser = null;
         let balance = 0;
         let userId = '';
         let currentGame = '';
-        let diceBet = 'over'; // 'over' or 'under'
+        let diceBet = 'under';
 
-        // ===== DOM =====
-        const balanceDisplay = document.getElementById('balanceDisplay');
-        const userName = document.getElementById('userName');
-        const userAvatar = document.getElementById('userAvatar');
-        const avatarText = document.getElementById('avatarText');
-        const profileName = document.getElementById('profileName');
-        const profileAvatar = document.getElementById('profileAvatar');
-        const profileAvatarText = document.getElementById('profileAvatarText');
-
-        // ===== TELEGRAM AUTO AUTH =====
+        // ============================================
+        // TELEGRAM AUTO AUTH
+        // ============================================
         function initTelegram() {
             try {
                 const tg = window.Telegram.WebApp;
@@ -953,37 +949,64 @@
             return false;
         }
 
-        // ===== UPDATE UI WITH TG USER =====
-        function updateUserUI() {
-            if (!tgUser) return;
+        // ============================================
+        // DOM REFS
+        // ============================================
+        const balanceDisplay = document.getElementById('balanceDisplay');
+        const userName = document.getElementById('userName');
+        const userAvatar = document.getElementById('userAvatar');
+        const profileName = document.getElementById('profileName');
+        const profileAvatar = document.getElementById('profileAvatar');
 
-            const name = tgUser.first_name || tgUser.username || 'hamster';
-            const photoUrl = tgUser.photo_url;
+        // ============================================
+        // UI FUNCTIONS
+        // ============================================
+        function updateUI() {
+            balanceDisplay.textContent = balance.toLocaleString();
+            if (tgUser) {
+                const name = tgUser.first_name || tgUser.username || 'hamster';
+                userName.textContent = name;
+                profileName.textContent = name;
 
-            userName.textContent = name;
-            profileName.textContent = name;
-
-            // Аватарка в хедере
-            if (photoUrl) {
-                userAvatar.innerHTML = `<img src="${photoUrl}" alt="avatar" />`;
-                profileAvatar.innerHTML = `<img src="${photoUrl}" alt="avatar" />`;
-            } else {
-                const letter = name.charAt(0).toUpperCase();
-                avatarText.textContent = letter;
-                profileAvatarText.textContent = letter;
-                userAvatar.innerHTML = `<span id="avatarText">${letter}</span>`;
-                profileAvatar.innerHTML = `<span id="profileAvatarText">${letter}</span>`;
+                if (tgUser.photo_url) {
+                    userAvatar.innerHTML = `<img src="${tgUser.photo_url}" alt="avatar" />`;
+                    profileAvatar.innerHTML = `<img src="${tgUser.photo_url}" alt="avatar" />`;
+                } else {
+                    const letter = name.charAt(0).toUpperCase();
+                    userAvatar.innerHTML = `<span>${letter}</span>`;
+                    profileAvatar.innerHTML = `<span>${letter}</span>`;
+                }
             }
         }
 
-        // ===== SUPABASE FUNCTIONS =====
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector(`.nav-btn[data-page="${pageId}"]`);
+            if (btn) btn.classList.add('active');
+        }
+
+        function openGame(game) {
+            currentGame = game;
+            document.getElementById('gameOverlay').classList.add('active');
+            renderGame(game);
+        }
+
+        function closeGame() {
+            document.getElementById('gameOverlay').classList.remove('active');
+        }
+
+        // ============================================
+        // SUPABASE FUNCTIONS
+        // ============================================
         async function loadUserData() {
             try {
                 if (!tgUser) {
-                    // Демо-режим
                     tgUser = { id: 'demo_' + Date.now(), first_name: 'hamster' };
                     userId = tgUser.id;
-                    updateUserUI();
+                    updateUI();
                     balance = 5000;
                     updateUI();
                     return;
@@ -1016,11 +1039,11 @@
                 }
 
                 balance = data.balance || 0;
-                updateUserUI();
                 updateUI();
-                console.log('✅ Данные загружены');
+                console.log('✅ Данные загружены, баланс:', balance);
+
             } catch (error) {
-                console.error('❌ Ошибка:', error);
+                console.error('❌ Ошибка загрузки данных:', error);
                 balance = 5000;
                 updateUI();
             }
@@ -1035,27 +1058,31 @@
                 if (error) throw error;
                 balance = newBalance;
                 updateUI();
-                console.log('✅ Баланс:', newBalance);
+                console.log('✅ Баланс обновлен:', newBalance);
+                return true;
             } catch (error) {
-                console.error('❌ Ошибка:', error);
+                console.error('❌ Ошибка обновления баланса:', error);
+                return false;
             }
         }
 
-        async function saveBet(game, amount, win, winAmount, multiplier, detail = '') {
+        async function saveBet(game, amount, win, winAmount, multiplier) {
             try {
-                await supabase.from('bets').insert([{
-                    user_id: userId,
-                    user_name: tgUser?.first_name || 'hamster',
-                    amount: amount,
-                    game: game,
-                    result: win ? 'win' : 'lose',
-                    win_amount: winAmount,
-                    coefficient: multiplier,
-                    detail: detail
-                }]);
+                const { error } = await supabase
+                    .from('bets')
+                    .insert([{
+                        user_id: userId,
+                        user_name: tgUser?.first_name || 'hamster',
+                        amount: amount,
+                        game: game,
+                        result: win ? 'win' : 'lose',
+                        win_amount: winAmount,
+                        coefficient: multiplier
+                    }]);
+                if (error) throw error;
                 console.log('✅ Ставка сохранена');
             } catch (error) {
-                console.error('❌ Ошибка:', error);
+                console.error('❌ Ошибка сохранения ставки:', error);
             }
         }
 
@@ -1070,34 +1097,14 @@
                 if (error) throw error;
                 return data || [];
             } catch (error) {
-                console.error('❌ Ошибка:', error);
+                console.error('❌ Ошибка загрузки ставок:', error);
                 return [];
             }
         }
 
-        // ===== UI =====
-        function updateUI() {
-            balanceDisplay.textContent = balance.toLocaleString();
-        }
-
-        function navigate(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.nav-btn[data-page="${pageId}"]`)?.classList.add('active');
-        }
-
-        // ===== GAMES =====
-        function openGame(game) {
-            currentGame = game;
-            document.getElementById('gameOverlay').classList.add('active');
-            renderGame(game);
-        }
-
-        function closeGame() {
-            document.getElementById('gameOverlay').classList.remove('active');
-        }
-
+        // ============================================
+        // RENDER GAMES
+        // ============================================
         function renderGame(game) {
             const content = document.getElementById('gameContent');
             switch (game) {
@@ -1130,11 +1137,12 @@
             }
         }
 
-        // ===== DICE =====
+        // ============================================
+        // DICE GAME
+        // ============================================
         function renderDice(container) {
             const numbers = [5, 5, 9, 10, 6, 6, 6];
-            let betType = 'under'; // 'under' or 'over'
-            let betAmount = 100;
+            let betType = 'under';
 
             container.innerHTML = `
                 <div class="dice-game">
@@ -1165,17 +1173,12 @@
                 </div>
             `;
 
-            // Загружаем ставки
-            loadDiceBets();
-
-            // Обновляем активную кнопку
             window.setDiceBet = function(type) {
                 betType = type;
                 document.querySelectorAll('.dice-bet-option').forEach(b => b.classList.remove('active'));
                 document.querySelector(`.dice-bet-option[data-bet="${type}"]`).classList.add('active');
             };
 
-            // Сохраняем функцию для использования
             window.placeDiceBet = function() {
                 const input = document.getElementById('diceInput');
                 const amount = parseInt(input.value);
@@ -1185,29 +1188,24 @@
                     return;
                 }
                 if (amount > balance) {
-                    alert('❌ Недостаточно средств!');
+                    alert('❌ Недостаточно средств! Баланс: ' + balance);
                     return;
                 }
 
-                // Генерируем результат (сумма двух кубиков 2-12)
                 const die1 = Math.floor(Math.random() * 6) + 1;
                 const die2 = Math.floor(Math.random() * 6) + 1;
                 const result = die1 + die2;
 
                 const win = betType === 'under' ? result < 7 : result > 7;
-                const multiplier = win ? 2 : 0;
                 const winAmount = win ? amount * 2 : 0;
 
-                // Обновляем баланс
                 const newBalance = win ? balance - amount + winAmount : balance - amount;
                 updateBalance(newBalance);
-                saveBet('Dice', amount, win, winAmount, multiplier, `${die1}+${die2}=${result}`);
+                saveBet('Dice', amount, win, winAmount, 2);
 
-                // Показываем результат
-                document.getElementById('diceResult').textContent = `${result} (${die1} + ${die2})`;
+                document.getElementById('diceResult').textContent = `${result} (${die1}+${die2})`;
                 document.getElementById('diceResult').style.color = win ? '#4ade80' : '#ff6b6b';
 
-                // Обновляем числа
                 const nums = document.querySelectorAll('.dice-number');
                 const resultNums = [die1, die2, ...Array(5).fill('')];
                 nums.forEach((el, i) => {
@@ -1217,11 +1215,12 @@
                     }
                 });
 
-                // Загружаем обновленные ставки
                 setTimeout(loadDiceBets, 500);
 
                 alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin` : `😔 Вы проиграли! -${amount} BetCoin`);
             };
+
+            loadDiceBets();
         }
 
         async function loadDiceBets() {
@@ -1229,12 +1228,10 @@
                 const bets = await getBets('Dice');
                 const list = document.getElementById('diceBetsList');
                 if (!list) return;
-
                 if (bets.length === 0) {
                     list.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
                     return;
                 }
-
                 list.innerHTML = bets.map(b => `
                     <div class="dice-bet-item">
                         <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin</span>
@@ -1242,11 +1239,13 @@
                     </div>
                 `).join('');
             } catch (e) {
-                console.error('Ошибка загрузки ставок:', e);
+                console.error('Ошибка загрузки ставок Dice:', e);
             }
         }
 
-        // ===== CRAZY TIME =====
+        // ============================================
+        // CRAZY TIME
+        // ============================================
         function renderCrazyTime(container) {
             const segments = ['x1', 'x2', 'x5', 'x10', 'x20', 'x50', 'x100', 'x500', 'x1000', 'x5000'];
             let spinning = false;
@@ -1274,8 +1273,6 @@
                 </div>
             `;
 
-            loadCrazyBets();
-
             window.playCrazyTime = function() {
                 if (spinning) return;
                 const input = document.getElementById('crazyInput');
@@ -1292,10 +1289,7 @@
 
                 spinning = true;
                 const display = document.getElementById('crazyDisplay');
-                display.textContent = '🌀';
-                display.style.transform = 'rotate(0deg)';
 
-                // Анимация вращения
                 let rotations = 0;
                 const interval = setInterval(() => {
                     rotations += 15;
@@ -1323,6 +1317,8 @@
                     alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin (x${multiplier})` : `😔 Вы проиграли! -${amount} BetCoin`);
                 }, 3000);
             };
+
+            loadCrazyBets();
         }
 
         async function loadCrazyBets() {
@@ -1343,7 +1339,9 @@
             } catch (e) {}
         }
 
-        // ===== WHEEL =====
+        // ============================================
+        // WHEEL (Mega Wheel)
+        // ============================================
         function renderWheel(container) {
             const segments = ['x1', 'x2', 'x5', 'x10', 'x20', 'x50', 'x100', 'x200', 'x500', 'x1000'];
             let spinning = false;
@@ -1370,8 +1368,6 @@
                     </div>
                 </div>
             `;
-
-            loadWheelBets();
 
             window.playWheel = function() {
                 if (spinning) return;
@@ -1417,6 +1413,8 @@
                     alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin (x${multiplier})` : `😔 Вы проиграли! -${amount} BetCoin`);
                 }, 2500);
             };
+
+            loadWheelBets();
         }
 
         async function loadWheelBets() {
@@ -1437,7 +1435,9 @@
             } catch (e) {}
         }
 
-        // ===== SLOTS =====
+        // ============================================
+        // SLOTS
+        // ============================================
         function renderSlots(container) {
             const symbols = ['🍒', '🍋', '🍊', '🍇', '💎', '7️⃣', '🎰'];
             let spinning = false;
@@ -1466,8 +1466,6 @@
                 </div>
             `;
 
-            loadSlotsBets();
-
             window.playSlots = function() {
                 if (spinning) return;
                 const input = document.getElementById('slotsInput');
@@ -1489,7 +1487,6 @@
                     document.getElementById('slot3')
                 ];
 
-                // Анимация прокрутки
                 reels.forEach(r => r.classList.add('spinning'));
 
                 setTimeout(() => {
@@ -1512,6 +1509,8 @@
                     alert(win ? `🎉 Джекпот! +${winAmount} BetCoin (x${multiplier})` : `😔 Вы проиграли! -${amount} BetCoin`);
                 }, 1500);
             };
+
+            loadSlotsBets();
         }
 
         async function loadSlotsBets() {
@@ -1532,7 +1531,9 @@
             } catch (e) {}
         }
 
-        // ===== WHEEL PLUS =====
+        // ============================================
+        // WHEEL PLUS
+        // ============================================
         function renderWheelPlus(container) {
             const segments = ['x1', 'x2', 'x3', 'x5', 'x10', 'x20', 'x50'];
             let spinning = false;
@@ -1559,8 +1560,6 @@
                     </div>
                 </div>
             `;
-
-            loadWPBets();
 
             window.playWheelPlus = function() {
                 if (spinning) return;
@@ -1606,6 +1605,8 @@
                     alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin (x${multiplier})` : `😔 Вы проиграли! -${amount} BetCoin`);
                 }, 2000);
             };
+
+            loadWPBets();
         }
 
         async function loadWPBets() {
@@ -1626,7 +1627,9 @@
             } catch (e) {}
         }
 
-        // ===== DOUBLE =====
+        // ============================================
+        // DOUBLE
+        // ============================================
         function renderDouble(container) {
             container.innerHTML = `
                 <div class="dice-game">
@@ -1649,8 +1652,6 @@
                     </div>
                 </div>
             `;
-
-            loadDoubleBets();
 
             window.playDouble = function() {
                 const input = document.getElementById('doubleInput');
@@ -1679,6 +1680,8 @@
                 setTimeout(loadDoubleBets, 500);
                 alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin` : `😔 Вы проиграли! -${amount} BetCoin`);
             };
+
+            loadDoubleBets();
         }
 
         async function loadDoubleBets() {
@@ -1699,7 +1702,9 @@
             } catch (e) {}
         }
 
-        // ===== DREAM =====
+        // ============================================
+        // DREAM
+        // ============================================
         function renderDream(container) {
             container.innerHTML = `
                 <div class="dice-game">
@@ -1722,8 +1727,6 @@
                     </div>
                 </div>
             `;
-
-            loadDreamBets();
 
             window.playDream = function() {
                 const input = document.getElementById('dreamInput');
@@ -1754,6 +1757,8 @@
                 setTimeout(loadDreamBets, 500);
                 alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin (x${multiplier})` : `😔 Вы проиграли! -${amount} BetCoin`);
             };
+
+            loadDreamBets();
         }
 
         async function loadDreamBets() {
@@ -1774,7 +1779,9 @@
             } catch (e) {}
         }
 
-        // ===== TWO =====
+        // ============================================
+        // TWO
+        // ============================================
         function renderTwo(container) {
             container.innerHTML = `
                 <div class="dice-game">
@@ -1797,8 +1804,6 @@
                     </div>
                 </div>
             `;
-
-            loadTwoBets();
 
             window.playTwo = function() {
                 const input = document.getElementById('twoInput');
@@ -1828,6 +1833,8 @@
                 setTimeout(loadTwoBets, 500);
                 alert(win ? `🎉 Вы выиграли! +${winAmount} BetCoin` : `😔 Вы проиграли! -${amount} BetCoin`);
             };
+
+            loadTwoBets();
         }
 
         async function loadTwoBets() {
@@ -1848,14 +1855,16 @@
             } catch (e) {}
         }
 
-        // ===== BUTTONS =====
-        document.getElementById('getCoins').addEventListener('click', function() {
+        // ============================================
+        // BUTTONS
+        // ============================================
+        document.getElementById('getCoinsBtn').addEventListener('click', function() {
             const newBalance = balance + 500;
             updateBalance(newBalance);
             alert('✅ +500 BetCoin!');
         });
 
-        document.getElementById('buyCoins').addEventListener('click', function() {
+        document.getElementById('buyCoinsBtn').addEventListener('click', function() {
             const amount = prompt('Сколько BetCoin купить?', '1000');
             if (!amount) return;
             const coins = parseInt(amount);
@@ -1868,22 +1877,16 @@
             alert(`✅ +${coins} BetCoin!`);
         });
 
-        // ===== INIT =====
-        const tgAvailable = initTelegram();
+        // ============================================
+        // INIT
+        // ============================================
+        initTelegram();
         loadUserData();
 
-        // Глобальные функции
-        window.navigate = navigate;
+        // Глобальные функции для HTML onclick
+        window.navigateTo = navigateTo;
         window.openGame = openGame;
         window.closeGame = closeGame;
-        window.loadDiceBets = loadDiceBets;
-        window.loadCrazyBets = loadCrazyBets;
-        window.loadWheelBets = loadWheelBets;
-        window.loadSlotsBets = loadSlotsBets;
-        window.loadWPBets = loadWPBets;
-        window.loadDoubleBets = loadDoubleBets;
-        window.loadDreamBets = loadDreamBets;
-        window.loadTwoBets = loadTwoBets;
 
         console.log('🚀 BetGame запущен!');
         console.log('👤 Пользователь:', tgUser);

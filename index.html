@@ -31,7 +31,6 @@
         .btn-primary{background:linear-gradient(135deg,#4a8af4,#2a5a9a);color:#fff}
         .btn-secondary{background:rgba(255,255,255,.08);color:#c8d6ff;border:1px solid rgba(255,255,255,.12)}
         
-        /* ===== СТРАНИЦЫ ===== */
         .page{display:none;flex-direction:column;flex:1}
         .page.active{display:flex}
         
@@ -41,7 +40,6 @@
         .menu-item:active{transform:scale(.95);background:rgba(255,255,255,.08)}
         .menu-item .icon{font-size:22px;display:block;margin-bottom:3px;filter:brightness(.7) invert(.9);opacity:.5}
         
-        /* ===== DICE ===== */
         .dice-page{display:none;flex-direction:column;gap:10px;padding:5px 0}
         .dice-page.active{display:flex}
         .dice-back{color:#4a8af4;font-size:13px;cursor:pointer;margin-bottom:2px}
@@ -86,7 +84,6 @@
         .dice-place-btn:active{transform:scale(.96)}
         .dice-place-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
         
-        /* ===== САЙДБАР ===== */
         .sidebar-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:50;display:none}
         .sidebar-overlay.active{display:block}
         .sidebar{position:fixed;top:0;right:-280px;width:280px;height:100%;background:rgba(10,14,30,.98);backdrop-filter:blur(20px);z-index:51;padding:25px 20px;transition:right .3s cubic-bezier(.4,0,.2,1);border-left:1px solid rgba(255,255,255,.05)}
@@ -98,7 +95,6 @@
         .sidebar-item .icon{font-size:20px;filter:brightness(.7) invert(.9);opacity:.6;width:28px}
         .sidebar-item.active{background:rgba(74,138,244,.12);color:#4a8af4}
         
-        /* ===== НАВИГАЦИЯ ===== */
         .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:420px;width:100%;background:rgba(10,14,26,.95);backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;padding:6px 20px 16px;z-index:40;border-top:1px solid rgba(255,255,255,.04)}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:1px;background:transparent;border:none;color:#6f8f9f;font-size:10px;cursor:pointer;padding:4px 10px;transition:color .2s}
         .nav-item .icon{font-size:20px;filter:brightness(.7) invert(.9);opacity:.6;transition:all .2s}
@@ -108,7 +104,6 @@
         .nav-center:active{transform:scale(.92)}
         .nav-center.active{background:linear-gradient(135deg,#f7e05e,#e8b42b);box-shadow:0 4px 20px rgba(247,224,94,.3)}
         
-        /* ===== МОДАЛКИ ===== */
         .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);z-index:100;display:none;justify-content:center;align-items:center;padding:20px}
         .modal-overlay.active{display:flex}
         .modal{background:rgba(20,30,60,.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px 22px;max-width:340px;width:100%}
@@ -136,13 +131,11 @@
     <div id="bg-3d"><div class="sphere"></div><div class="sphere"></div><div class="sphere"></div></div>
     
     <div class="app">
-        <!-- HEADER -->
         <div class="header">
             <div class="avatar" id="userAvatar">🐹</div>
             <div class="username" id="userName">Загрузка...</div>
         </div>
         
-        <!-- BALANCE -->
         <div class="balance-block">
             <div class="balance-label">BETCOIN</div>
             <div class="balance-amount" id="balanceDisplay">0</div>
@@ -152,7 +145,6 @@
             </div>
         </div>
         
-        <!-- HOME -->
         <div class="page active" id="pageHome">
             <div class="menu-title">Управление</div>
             <div class="menu-grid">
@@ -163,7 +155,6 @@
             </div>
         </div>
         
-        <!-- DICE PAGE -->
         <div class="dice-page" id="dicePage">
             <div class="dice-back" onclick="closeDiceGame()">← Назад</div>
             <div class="dice-title">🎲 Dice</div>
@@ -200,7 +191,6 @@
         </div>
     </div>
     
-    <!-- SIDEBAR -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-close" onclick="closeSidebar()">✕</div>
@@ -212,7 +202,6 @@
         <div class="sidebar-item" onclick="alert('Настройки')"><span class="icon">⚙️</span>Настройки</div>
     </div>
     
-    <!-- NAV -->
     <div class="bottom-nav">
         <button class="nav-item active" onclick="navigateTo('pageHome')" data-page="pageHome">
             <span class="icon">🏠</span><span>Главная</span>
@@ -223,7 +212,6 @@
         </button>
     </div>
     
-    <!-- PROMO -->
     <div class="modal-overlay" id="promoModal">
         <div class="modal">
             <div class="modal-title">🎁 Введите промокод</div>
@@ -235,7 +223,6 @@
         </div>
     </div>
     
-    <!-- RESULT -->
     <div class="result-modal" id="resultModal">
         <div class="result-box">
             <div class="result-icon" id="resultIcon">🎉</div>
@@ -266,9 +253,7 @@
         let timerInterval = null;
         let roundSeconds = 12;
         let isRolling = false;
-        let currentRoundBets = [];
 
-        // ===== DOM =====
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const balanceDisplay = document.getElementById('balanceDisplay');
@@ -403,12 +388,10 @@
             diceTimer.className = 'dice-timer rolling';
             diceTimer.innerHTML = '🎲 Бросок!';
             
-            // Бросаем кубики
             const die1 = Math.floor(Math.random() * 6) + 1;
             const die2 = Math.floor(Math.random() * 6) + 1;
             const result = die1 + die2;
             
-            // Анимация кубиков
             const dots = ['⚀','⚁','⚂','⚃','⚄','⚅'];
             const dice1 = document.getElementById('dice1');
             const dice2 = document.getElementById('dice2');
@@ -424,10 +407,7 @@
             
             diceResult.textContent = `Результат: ${result} (${die1}+${die2})`;
             
-            // Обрабатываем ставки этого раунда
             await processBets(result);
-            
-            // Загружаем обновленные ставки
             await loadDiceBets();
             
             setTimeout(() => {
@@ -438,7 +418,6 @@
 
         async function processBets(result) {
             try {
-                // Получаем все необработанные ставки этого раунда
                 const response = await fetch(`${supabaseUrl}/rest/v1/bets?game=eq.Dice&result=eq.pending&order=created_at.asc&limit=50`, {
                     headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
                 });
@@ -448,7 +427,6 @@
                     const win = (bet.detail === 'under') ? result < 7 : result > 7;
                     const winAmount = win ? bet.amount * 2 : 0;
                     
-                    // Обновляем ставку
                     await fetch(`${supabaseUrl}/rest/v1/bets?id=eq.${bet.id}`, {
                         method: 'PATCH',
                         headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}`, 'Content-Type': 'application/json' },
@@ -456,11 +434,10 @@
                             result: win ? 'win' : 'lose',
                             win_amount: winAmount,
                             coefficient: 2,
-                            detail: `${result}`
+                            detail: `${result} (${win ? 'Выигрыш' : 'Проигрыш'})`
                         })
                     });
                     
-                    // Обновляем баланс пользователя
                     if (win) {
                         const userResponse = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${bet.user_id}&select=balance`, {
                             headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
@@ -473,25 +450,11 @@
                                 headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}`, 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ balance: newBalance })
                             });
-                            // Если это текущий пользователь - обновляем баланс на экране
                             if (bet.user_id === userId) {
                                 balance = newBalance;
                                 updateUI();
                             }
                         }
-                    } else {
-                        // Проигрыш - просто списываем ставку (уже списано при ставке)
-                        // Обновляем ставку
-                        await fetch(`${supabaseUrl}/rest/v1/bets?id=eq.${bet.id}`, {
-                            method: 'PATCH',
-                            headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                result: 'lose',
-                                win_amount: 0,
-                                coefficient: 0,
-                                detail: `${result}`
-                            })
-                        });
                     }
                 }
             } catch (e) {
@@ -507,11 +470,9 @@
             if (isNaN(amount) || amount <= 0) { alert('❌ Введите сумму!'); return; }
             if (amount > balance) { alert('❌ Недостаточно средств!'); return; }
 
-            // Списываем баланс сразу
             const newBalance = balance - amount;
             await saveBalance(newBalance);
 
-            // Сохраняем ставку с pending статусом
             try {
                 await fetch(`${supabaseUrl}/rest/v1/bets`, {
                     method: 'POST',
@@ -527,10 +488,8 @@
                         detail: diceBet
                     })
                 });
-                alert('✅ Ставка принята! Ожидайте результата.');
                 loadDiceBets();
             } catch (e) {
-                // Если ошибка - возвращаем баланс
                 await saveBalance(balance + amount);
                 alert('❌ Ошибка при ставке. Попробуйте снова.');
             }
@@ -554,35 +513,11 @@
                     else if (b.result === 'lose') { status = '-' + b.amount; cls = 'lose'; }
                     else { status = '⏳ Ожидание...'; cls = 'pending'; }
                     return `<div class="dice-bet-item">
-                        <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin ${b.detail && b.detail !== 'under' && b.detail !== 'over' ? '— ' + b.detail : ''}</span>
+                        <span>${b.user_name || 'Игрок'} • ${b.amount} BetCoin ${b.detail && b.detail !== 'under' && b.detail !== 'over' && !b.detail.includes('Выигрыш') ? '— ' + b.detail : ''}</span>
                         <span class="${cls}">${status}</span>
                     </div>`;
                 }).join('');
             } catch (e) {}
-        }
-
-        // ===== RESULT =====
-        function showResult(win, winAmount, multiplier, detail) {
-            const modal = document.getElementById('resultModal');
-            const icon = document.getElementById('resultIcon');
-            const title = document.getElementById('resultTitle');
-            const amount = document.getElementById('resultAmount');
-            if (win) {
-                icon.textContent = '🎉';
-                title.textContent = 'Вы выиграли!';
-                title.className = 'result-title win';
-                amount.textContent = `+${winAmount} BetCoin (x${multiplier}) ${detail ? '— ' + detail : ''}`;
-            } else {
-                icon.textContent = '😔';
-                title.textContent = 'Вы проиграли!';
-                title.className = 'result-title lose';
-                amount.textContent = `Попробуйте снова! ${detail ? '— ' + detail : ''}`;
-            }
-            modal.classList.add('active');
-        }
-
-        function closeResult() {
-            document.getElementById('resultModal').classList.remove('active');
         }
 
         // ===== SIDEBAR =====
@@ -637,6 +572,11 @@
         window.openPromo = openPromo;
         window.closePromo = closePromo;
         window.applyPromo = applyPromo;
+        
+        // ===== RESULT =====
+        function closeResult() {
+            document.getElementById('resultModal').classList.remove('active');
+        }
     </script>
 </body>
 </html>

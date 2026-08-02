@@ -23,7 +23,7 @@
             overflow: hidden;
         }
 
-        /* 3D ФОН - бело-темно-синий */
+        /* 3D ФОН */
         #bg-3d {
             position: fixed;
             top: 0;
@@ -33,6 +33,7 @@
             z-index: 0;
             background: radial-gradient(ellipse at 30% 40%, #1a3a6a 0%, #0a0e1a 70%);
             overflow: hidden;
+            pointer-events: none;
         }
 
         .sphere {
@@ -83,12 +84,11 @@
             }
         }
 
-        /* Частицы */
         .particle {
             position: absolute;
             width: 2px;
             height: 2px;
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             animation: floatParticle 15s linear infinite;
         }
@@ -110,25 +110,24 @@
             }
         }
 
-        /* ОСНОВНОЙ КОНТЕЙНЕР */
         .app {
             position: relative;
             z-index: 1;
+            max-width: 420px;
             width: 100%;
-            max-width: 380px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* ВЕРХНИЙ БЛОК - НИКНЕЙМ И АВАТАРКА */
+        /* ХЕДЕР */
         .header {
             width: 100%;
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
 
         .avatar {
@@ -158,21 +157,20 @@
             color: #fff;
             font-size: 18px;
             font-weight: 600;
-            letter-spacing: 0.3px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
-        /* БЛОК С БАЛАНСОМ */
+        /* БАЛАНС */
         .balance-block {
             width: 100%;
             background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 24px;
-            padding: 30px 20px 25px;
+            border-radius: 20px;
+            padding: 25px 20px 22px;
             text-align: center;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+            margin-bottom: 25px;
         }
 
         .balance-label {
@@ -181,19 +179,18 @@
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .balance-amount {
             color: #fff;
-            font-size: 48px;
+            font-size: 44px;
             font-weight: 800;
             letter-spacing: -1px;
             text-shadow: 0 0 40px rgba(74, 138, 244, 0.2);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
-        /* КНОПКИ */
         .buttons {
             display: flex;
             gap: 12px;
@@ -202,14 +199,13 @@
 
         .btn {
             flex: 1;
-            padding: 14px 10px;
+            padding: 13px 10px;
             border: none;
-            border-radius: 16px;
+            border-radius: 14px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
-            letter-spacing: 0.3px;
         }
 
         .btn:active {
@@ -222,124 +218,55 @@
             box-shadow: 0 4px 20px rgba(74, 138, 244, 0.3);
         }
 
-        .btn-primary:active {
-            box-shadow: 0 2px 10px rgba(74, 138, 244, 0.2);
-        }
-
         .btn-secondary {
             background: rgba(255, 255, 255, 0.08);
             color: #c8d6ff;
             border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(10px);
         }
 
-        .btn-secondary:active {
-            background: rgba(255, 255, 255, 0.12);
-        }
-
-        /* МОДАЛКА ДЛЯ ПРОМОКОДА */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* ЗАГОЛОВОК "УПРАВЛЕНИЕ" */
+        .menu-title {
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            z-index: 100;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: rgba(20, 30, 60, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 30px 25px;
-            max-width: 340px;
-            width: 100%;
-            animation: modalIn 0.3s ease;
-        }
-
-        @keyframes modalIn {
-            from {
-                transform: scale(0.9);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .modal-title {
-            color: #fff;
-            font-size: 20px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        .modal-input {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.2s;
-            text-align: center;
-            letter-spacing: 2px;
-        }
-
-        .modal-input:focus {
-            border-color: #4a8af4;
-        }
-
-        .modal-input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-            letter-spacing: 0;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 14px;
-            border: none;
+            color: #aec0ff;
             font-size: 15px;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-align: left;
         }
 
-        .modal-btn:active {
-            transform: scale(0.95);
+        /* СЕТКА МЕНЮ */
+        .menu-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
         }
 
-        .modal-btn-primary {
-            background: linear-gradient(135deg, #4a8af4, #2a5a9a);
-            color: #fff;
-        }
-
-        .modal-btn-secondary {
-            background: rgba(255, 255, 255, 0.06);
-            color: #c8d6ff;
+        .menu-item {
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 18px 6px;
+            text-align: center;
+            color: #c8d6ff;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .menu-item:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-item .icon {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 6px;
+            filter: brightness(0) invert(1);
+            opacity: 0.5;
         }
 
         @media (max-width: 400px) {
@@ -347,14 +274,18 @@
                 padding: 15px;
             }
             .balance-amount {
-                font-size: 38px;
+                font-size: 34px;
             }
             .btn {
                 font-size: 13px;
-                padding: 12px 8px;
+                padding: 11px 8px;
             }
-            .header {
-                margin-bottom: 30px;
+            .menu-item {
+                font-size: 11px;
+                padding: 14px 4px;
+            }
+            .menu-item .icon {
+                font-size: 22px;
             }
         }
     </style>
@@ -368,33 +299,38 @@
         <div class="sphere"></div>
     </div>
 
-    <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
     <div class="app">
-        <!-- ВЕРХНИЙ БЛОК -->
+        <!-- ХЕДЕР -->
         <div class="header">
             <div class="avatar" id="userAvatar">🐹</div>
             <div class="username" id="userName">Гость</div>
         </div>
 
-        <!-- БЛОК С БАЛАНСОМ -->
+        <!-- БАЛАНС -->
         <div class="balance-block">
             <div class="balance-label">BETCOIN</div>
             <div class="balance-amount" id="balanceDisplay">0</div>
             <div class="buttons">
-                <button class="btn btn-primary" id="depositBtn">💎 Пополнить</button>
-                <button class="btn btn-secondary" id="promoBtn">🎁 Промокод</button>
+                <button class="btn btn-primary" id="getCoinsBtn">💎 Получить</button>
+                <button class="btn btn-secondary" id="buyCoinsBtn">💰 Купить</button>
             </div>
         </div>
-    </div>
 
-    <!-- МОДАЛКА ПРОМОКОДА -->
-    <div class="modal-overlay" id="promoModal">
-        <div class="modal">
-            <div class="modal-title">🎁 Введите промокод</div>
-            <input class="modal-input" id="promoInput" type="text" placeholder="ВВЕДИТЕ КОД" maxlength="20" />
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-secondary" onclick="closePromo()">Отмена</button>
-                <button class="modal-btn modal-btn-primary" onclick="applyPromo()">Активировать</button>
+        <!-- УПРАВЛЕНИЕ -->
+        <div class="menu-title">Управление</div>
+
+        <div class="menu-grid">
+            <div class="menu-item" onclick="alert('Профиль')">
+                <span class="icon">👤</span>Профиль
+            </div>
+            <div class="menu-item" onclick="alert('Инвентарь')">
+                <span class="icon">📦</span>Инвентарь
+            </div>
+            <div class="menu-item" onclick="alert('Сервис')">
+                <span class="icon">⚙️</span>Сервис
+            </div>
+            <div class="menu-item" onclick="alert('Промо')">
+                <span class="icon">🎁</span>Промо
             </div>
         </div>
     </div>
@@ -423,10 +359,8 @@
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const balanceDisplay = document.getElementById('balanceDisplay');
-        const depositBtn = document.getElementById('depositBtn');
-        const promoBtn = document.getElementById('promoBtn');
-        const promoModal = document.getElementById('promoModal');
-        const promoInput = document.getElementById('promoInput');
+        const getCoinsBtn = document.getElementById('getCoinsBtn');
+        const buyCoinsBtn = document.getElementById('buyCoinsBtn');
 
         // ============================================
         // UPDATE UI
@@ -447,74 +381,25 @@
         }
 
         // ============================================
-        // DEPOSIT
+        // BUTTONS
         // ============================================
-        depositBtn.addEventListener('click', function() {
-            const amount = prompt('💎 Сумма пополнения:', '1000');
-            if (!amount) return;
+        getCoinsBtn.addEventListener('click', function() {
+            balance += 500;
+            updateUI();
+            alert('✅ +500 BetCoin!');
+        });
 
+        buyCoinsBtn.addEventListener('click', function() {
+            const amount = prompt('💰 Сколько BetCoin купить?', '1000');
+            if (!amount) return;
             const coins = parseInt(amount);
             if (isNaN(coins) || coins <= 0) {
-                alert('❌ Введите корректную сумму!');
+                alert('❌ Введите сумму!');
                 return;
             }
-
             balance += coins;
             updateUI();
-            alert(`✅ Баланс пополнен на ${coins} BetCoin!`);
-        });
-
-        // ============================================
-        // PROMOCODE
-        // ============================================
-        promoBtn.addEventListener('click', function() {
-            promoModal.classList.add('active');
-            promoInput.value = '';
-            promoInput.focus();
-        });
-
-        function closePromo() {
-            promoModal.classList.remove('active');
-        }
-
-        function applyPromo() {
-            const code = promoInput.value.trim().toUpperCase();
-
-            if (!code) {
-                alert('❌ Введите промокод!');
-                return;
-            }
-
-            const promoCodes = {
-                'WELCOME': 500,
-                'BONUS': 1000,
-                'GOLD': 2500,
-                'VIP': 5000,
-                'BETGAME': 2000,
-                'FREE': 100,
-                'LUCKY': 750,
-                'MEGA': 10000
-            };
-
-            if (promoCodes[code]) {
-                const bonus = promoCodes[code];
-                balance += bonus;
-                updateUI();
-                alert(`🎉 Промокод активирован! +${bonus} BetCoin`);
-                closePromo();
-            } else {
-                alert('❌ Неверный промокод!');
-                promoInput.value = '';
-                promoInput.focus();
-            }
-        }
-
-        promoModal.addEventListener('click', function(e) {
-            if (e.target === this) closePromo();
-        });
-
-        promoInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') applyPromo();
+            alert(`✅ +${coins} BetCoin!`);
         });
 
         // ============================================
@@ -522,10 +407,7 @@
         // ============================================
         updateUI();
 
-        window.closePromo = closePromo;
-        window.applyPromo = applyPromo;
-
-        console.log('🚀 BetGame запущен! Баланс:', balance);
+        console.log('🚀 BetGame запущен!');
         console.log('👤 Пользователь:', tgUser);
     </script>
 

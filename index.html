@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>BetGame</title>
+    <title>BetGame - Dice</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
@@ -150,7 +150,7 @@
             <div class="dice-back" onclick="closeDice()">← Назад</div>
             <div class="dice-title">🎲 Dice</div>
             
-            <div class="dice-timer">⏳ Раунд: <span id="timerDisplay">12</span>s</div>
+            <div class="dice-timer" id="timerDisplay">⏳ Раунд: <span id="timerCount">12</span>s</div>
             
             <div class="dice-box">
                 <div class="dice" id="dice1">⚀</div>
@@ -229,9 +229,10 @@
                 tgUser = tg.initDataUnsafe.user;
             }
         } catch(e) {}
-        if (!tgUser) tgUser = { id: 'demo', first_name: 'Тест' };
+        if (!tgUser) tgUser = { id: 'demo', first_name: 'Игрок' };
 
         const userId = tgUser.id.toString();
+        const username = tgUser.first_name || tgUser.username || 'Игрок';
         let balance = 0;
         let betType = 'under';
         let timerInterval = null;
@@ -244,15 +245,15 @@
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const balanceDisplay = document.getElementById('balanceDisplay');
+        const timerDisplay = document.getElementById('timerDisplay');
 
         function updateUI() {
             balanceDisplay.textContent = balance.toLocaleString();
-            const name = tgUser.first_name || 'Игрок';
-            userName.textContent = name;
+            userName.textContent = username;
             if (tgUser.photo_url) {
                 userAvatar.innerHTML = '<img src="' + tgUser.photo_url + '" />';
             } else {
-                userAvatar.textContent = name.charAt(0).toUpperCase();
+                userAvatar.textContent = username.charAt(0).toUpperCase();
             }
         }
 
@@ -266,7 +267,7 @@
                     await fetch(`${SB_URL}/rest/v1/users`, {
                         method: 'POST',
                         headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: userId, name: tgUser.first_name || 'Игрок', balance: 5000 })
+                        body: JSON.stringify({ id: userId, name: username, balance: 5000 })
                     });
                     balance = 5000;
                 } else {
@@ -329,11 +330,11 @@
             seconds = 12;
             isRolling = false;
             document.getElementById('placeBtn').disabled = false;
-            document.getElementById('timerDisplay').textContent = seconds;
+            document.getElementById('timerCount').textContent = seconds;
             
             timerInterval = setInterval(() => {
                 seconds--;
-                document.getElementById('timerDisplay').textContent = seconds;
+                document.getElementById('timerCount').textContent = seconds;
                 if (seconds <= 0) {
                     clearInterval(timerInterval);
                     timerInterval = null;
@@ -346,7 +347,7 @@
             if (isRolling) return;
             isRolling = true;
             document.getElementById('placeBtn').disabled = true;
-            document.querySelector('.dice-timer').innerHTML = '🎲 Бросок...';
+            timerDisplay.innerHTML = '🎲 Бросок...';
             
             const d1 = Math.floor(Math.random() * 6) + 1;
             const d2 = Math.floor(Math.random() * 6) + 1;
@@ -370,9 +371,15 @@
             await processBets(result);
             await loadBets();
             
+            // Очищаем ставки после раунда
+            await fetch(`${SB_URL}/rest/v1/bets?game=eq.Dice`, {
+                method: 'DELETE',
+                headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+            });
+            
             setTimeout(() => {
                 isRolling = false;
-                document.querySelector('.dice-timer').innerHTML = '⏳ Раунд: <span id="timerDisplay">12</span>s';
+                timerDisplay.innerHTML = '⏳ Раунд: <span id="timerCount">12</span>s';
                 startTimer();
             }, 1000);
         }
@@ -431,13 +438,6 @@
                         }
                     }
                 }
-                
-                // Очищаем ставки после обработки
-                await fetch(`${SB_URL}/rest/v1/bets?game=eq.Dice`, {
-                    method: 'DELETE',
-                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-                });
-                
             } catch(e) { console.error(e); }
         }
 
@@ -457,7 +457,7 @@
                     headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         user_id: userId,
-                        user_name: tgUser.first_name || 'Игрок',
+                        user_name: username,
                         amount: amount,
                         game: 'Dice',
                         result: 'pending',

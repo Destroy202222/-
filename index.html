@@ -365,6 +365,11 @@
         </div>
     </div>
     <script>
+        // ===== КОНФИГ SUPABASE =====
+        const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         // ===== TELEGRAM =====
         let tgUser = null;
         try {
@@ -372,20 +377,24 @@
             tg.expand();
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tgUser = tg.initDataUnsafe.user;
+                console.log('✅ Telegram user:', tgUser);
             }
-        } catch (e) {}
-
-        if (!tgUser) {
-            tgUser = { id: 'demo', first_name: 'Тест', photo_url: null };
+        } catch (e) {
+            console.log('❌ Telegram error:', e);
         }
 
-        // ===== SUPABASE =====
-        const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // Демо пользователь если Telegram не работает
+        if (!tgUser) {
+            tgUser = {
+                id: 'demo_' + Date.now(),
+                first_name: 'Демо',
+                photo_url: null
+            };
+            console.log('ℹ️ Демо режим');
+        }
 
-        let balance = 0;
         const userId = tgUser.id.toString();
+        let balance = 0;
 
         // ===== DOM =====
         const userName = document.getElementById('userName');
@@ -404,18 +413,41 @@
             }
         }
 
-        // ===== SUPABASE =====
+        // ===== РАБОТА С SUPABASE =====
         async function loadUserData() {
             try {
-                const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
+                console.log('🔄 Загрузка данных для:', userId);
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+
                 if (error && error.code === 'PGRST116') {
-                    await supabase.from('users').insert([{ id: userId, name: tgUser.first_name || 'Пользователь', balance: 5000 }]);
+                    console.log('📝 Создание нового пользователя');
+                    const { error: insertError } = await supabase
+                        .from('users')
+                        .insert([{
+                            id: userId,
+                            name: tgUser.first_name || 'Пользователь',
+                            balance: 5000
+                        }]);
+                    if (insertError) {
+                        console.error('❌ Ошибка создания:', insertError);
+                        balance = 5000;
+                    } else {
+                        balance = 5000;
+                    }
+                } else if (error) {
+                    console.error('❌ Ошибка загрузки:', error);
                     balance = 5000;
                 } else if (data) {
                     balance = data.balance || 0;
+                    console.log('✅ Баланс загружен:', balance);
                 }
                 updateUI();
             } catch (e) {
+                console.error('❌ Критическая ошибка:', e);
                 balance = 5000;
                 updateUI();
             }
@@ -423,33 +455,48 @@
 
         async function updateBalance(newBalance) {
             try {
-                await supabase.from('users').update({ balance: newBalance }).eq('id', userId);
+                const { error } = await supabase
+                    .from('users')
+                    .update({ balance: newBalance })
+                    .eq('id', userId);
+                if (error) {
+                    console.error('❌ Ошибка обновления:', error);
+                    return false;
+                }
                 balance = newBalance;
                 updateUI();
-            } catch (e) {}
+                console.log('✅ Баланс обновлен:', newBalance);
+                return true;
+            } catch (e) {
+                console.error('❌ Ошибка:', e);
+                return false;
+            }
         }
 
         // ===== КНОПКИ =====
-        document.getElementById('getCoinsBtn').onclick = function() {
+        document.getElementById('getCoinsBtn').addEventListener('click', function() {
             updateBalance(balance + 500);
             alert('✅ +500 BetCoin!');
-        };
+        });
 
-        document.getElementById('buyCoinsBtn').onclick = function() {
+        document.getElementById('buyCoinsBtn').addEventListener('click', function() {
             const amount = prompt('💰 Сколько BetCoin купить?', '1000');
             if (amount) {
                 const coins = parseInt(amount);
                 if (coins > 0) {
                     updateBalance(balance + coins);
                     alert('✅ +' + coins + ' BetCoin!');
+                } else {
+                    alert('❌ Введите корректную сумму!');
                 }
             }
-        };
+        });
 
         // ===== ПРОМОКОД =====
         function openPromo() {
             document.getElementById('promoModal').classList.add('active');
             document.getElementById('promoInput').value = '';
+            setTimeout(() => document.getElementById('promoInput').focus(), 100);
         }
 
         function closePromo() {
@@ -457,23 +504,46 @@
         }
 
         function applyPromo() {
-            const code = document.getElementById('promoInput').value.trim().toUpperCase();
-            if (!code) { alert('❌ Введите промокод!'); return; }
-            const promoCodes = { 'BETCOIN': 10000, 'WELCOME': 500, 'BONUS': 1000, 'GOLD': 2500, 'VIP': 5000 };
+            const input = document.getElementById('promoInput');
+            const code = input.value.trim().toUpperCase();
+            if (!code) {
+                alert('❌ Введите промокод!');
+                return;
+            }
+            const promoCodes = {
+                'BETCOIN': 10000,
+                'WELCOME': 500,
+                'BONUS': 1000,
+                'GOLD': 2500,
+                'VIP': 5000,
+                'FREE': 100,
+                'LUCKY': 750,
+                'MEGA': 10000
+            };
             if (promoCodes[code]) {
                 updateBalance(balance + promoCodes[code]);
                 alert('🎉 Промокод активирован! +' + promoCodes[code] + ' BetCoin');
                 closePromo();
             } else {
                 alert('❌ Неверный промокод!');
+                input.value = '';
+                input.focus();
             }
         }
 
-        document.getElementById('promoModal').onclick = function(e) { if (e.target === this) closePromo(); };
-        document.getElementById('promoInput').onkeydown = function(e) { if (e.key === 'Enter') applyPromo(); };
+        document.getElementById('promoModal').addEventListener('click', function(e) {
+            if (e.target === this) closePromo();
+        });
+
+        document.getElementById('promoInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') applyPromo();
+        });
 
         // ===== ЗАПУСК =====
+        console.log('🚀 Запуск BetGame');
         loadUserData();
+
+        // Глобальные функции
         window.openPromo = openPromo;
         window.closePromo = closePromo;
         window.applyPromo = applyPromo;

@@ -26,7 +26,7 @@
         .buttons{display:flex;gap:12px;width:100%}
         .btn{flex:1;padding:13px 10px;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s ease}
         .btn:active{transform:scale(.96)}
-        .btn-primary{background:linear-gradient(135deg,#4a8af4,#2a5a9a);color:#fff}
+        .btn-primary{background:linear-gradient(135deg,#4a8af4,#2a5a9a);color:#fff;box-shadow:0 4px 20px rgba(74,138,244,.3)}
         .btn-secondary{background:rgba(255,255,255,.08);color:#c8d6ff;border:1px solid rgba(255,255,255,.12)}
         .menu-title{width:100%;color:#aec0ff;font-size:15px;font-weight:600;margin-bottom:12px;text-align:left}
         .menu-grid{width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -45,10 +45,16 @@
         .modal-btn:active{transform:scale(.95)}
         .modal-btn-primary{background:linear-gradient(135deg,#4a8af4,#2a5a9a);color:#fff}
         .modal-btn-secondary{background:rgba(255,255,255,.06);color:#c8d6ff;border:1px solid rgba(255,255,255,.08)}
-        #debug{position:fixed;bottom:0;left:0;right:0;background:#000;color:#0f0;font-size:11px;padding:8px;max-height:150px;overflow-y:auto;z-index:999;font-family:monospace;border-top:2px solid #0f0}
-        #debug .error{color:#f00}
-        #debug .success{color:#0f0}
-        #debug .info{color:#ff0}
+        #status{
+            position:fixed;bottom:70px;left:50%;transform:translateX(-50%);
+            background:rgba(0,0,0,.8);color:#fff;padding:8px 16px;border-radius:20px;
+            font-size:12px;z-index:999;border:1px solid rgba(255,255,255,.1);
+            display:none;max-width:90%;text-align:center
+        }
+        #status.show{display:block}
+        #status.success{background:rgba(0,100,0,.9);border-color:#0f0}
+        #status.error{background:rgba(100,0,0,.9);border-color:#f00}
+        #status.loading{background:rgba(0,0,100,.9);border-color:#00f}
     </style>
 </head>
 <body>
@@ -84,24 +90,21 @@
             </div>
         </div>
     </div>
-    <div id="debug"></div>
+    <div id="status"></div>
 
     <script>
-        const debug = document.getElementById('debug');
-        function log(msg, type = 'info') {
-            console.log(msg);
-            const colors = { info: '#ff0', success: '#0f0', error: '#f00' };
-            debug.innerHTML += `<div style="color:${colors[type] || '#fff'}">${new Date().toLocaleTimeString()} | ${msg}</div>`;
-            debug.scrollTop = debug.scrollHeight;
+        // ===== STATUS =====
+        const statusEl = document.getElementById('status');
+        function setStatus(text, type = 'loading') {
+            statusEl.textContent = text;
+            statusEl.className = 'show ' + type;
+            setTimeout(() => { statusEl.className = ''; }, 3000);
         }
-
-        log('🚀 ЗАПУСК СКРИПТА', 'success');
 
         // ===== SUPABASE =====
         const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        log('✅ Supabase создан', 'success');
 
         // ===== TELEGRAM =====
         let tgUser = null;
@@ -110,22 +113,14 @@
             tg.expand();
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tgUser = tg.initDataUnsafe.user;
-                log('✅ Telegram: ' + tgUser.first_name, 'success');
-            } else {
-                log('❌ Telegram user НЕ найден', 'error');
             }
-        } catch (e) {
-            log('❌ Ошибка Telegram: ' + e.message, 'error');
-        }
+        } catch (e) {}
 
         if (!tgUser) {
             tgUser = { id: 'demo_' + Date.now(), first_name: 'Тест', photo_url: null };
-            log('ℹ️ Демо-режим: ' + tgUser.first_name, 'info');
         }
 
         const userId = tgUser.id.toString();
-        log('🆔 ID: ' + userId, 'info');
-
         let balance = 0;
 
         // ===== DOM =====
@@ -147,7 +142,7 @@
 
         // ===== SUPABASE =====
         async function loadData() {
-            log('🔄 Загрузка...', 'info');
+            setStatus('⏳ Подключение к Supabase...', 'loading');
             try {
                 const { data, error } = await supabase
                     .from('users')
@@ -155,64 +150,62 @@
                     .eq('id', userId)
                     .single();
 
-                if (error) {
-                    log('❌ Ошибка: ' + error.message, 'error');
-                    if (error.code === 'PGRST116') {
-                        log('📝 Создаем пользователя...', 'info');
-                        const { error: insertError } = await supabase
-                            .from('users')
-                            .insert([{ id: userId, name: tgUser.first_name || 'Пользователь', balance: 5000 }]);
-                        if (insertError) {
-                            log('❌ Ошибка создания: ' + insertError.message, 'error');
-                            balance = 5000;
-                        } else {
-                            log('✅ Пользователь создан', 'success');
-                            balance = 5000;
-                        }
+                if (error && error.code === 'PGRST116') {
+                    setStatus('📝 Создание пользователя...', 'loading');
+                    const { error: insertError } = await supabase
+                        .from('users')
+                        .insert([{
+                            id: userId,
+                            name: tgUser.first_name || 'Пользователь',
+                            balance: 5000
+                        }]);
+                    if (insertError) {
+                        setStatus('❌ Ошибка: ' + insertError.message, 'error');
+                        balance = 5000;
                     } else {
-                        log('❌ Другая ошибка: ' + JSON.stringify(error), 'error');
+                        setStatus('✅ Пользователь создан!', 'success');
                         balance = 5000;
                     }
+                } else if (error) {
+                    setStatus('❌ Ошибка: ' + error.message, 'error');
+                    balance = 5000;
                 } else if (data) {
                     balance = data.balance || 0;
-                    log('✅ Баланс: ' + balance, 'success');
+                    setStatus('✅ Баланс загружен: ' + balance, 'success');
                 }
                 updateUI();
             } catch (e) {
-                log('❌ Критическая ошибка: ' + e.message, 'error');
+                setStatus('❌ Ошибка: ' + e.message, 'error');
                 balance = 5000;
                 updateUI();
             }
         }
 
         async function saveBalance(newBalance) {
-            log('💾 Сохранение: ' + newBalance, 'info');
             try {
                 const { error } = await supabase
                     .from('users')
                     .update({ balance: newBalance })
                     .eq('id', userId);
                 if (error) {
-                    log('❌ Ошибка: ' + error.message, 'error');
+                    setStatus('❌ Ошибка сохранения: ' + error.message, 'error');
                     return;
                 }
                 balance = newBalance;
                 updateUI();
-                log('✅ Сохранено: ' + newBalance, 'success');
+                setStatus('✅ Баланс сохранен: ' + balance, 'success');
             } catch (e) {
-                log('❌ Ошибка: ' + e.message, 'error');
+                setStatus('❌ Ошибка: ' + e.message, 'error');
             }
         }
 
         // ===== КНОПКИ =====
         document.getElementById('getBtn').onclick = function() {
-            log('🔘 Получить', 'info');
             saveBalance(balance + 500);
             alert('✅ +500 BetCoin!');
         };
 
         document.getElementById('buyBtn').onclick = function() {
-            log('🔘 Купить', 'info');
             const amount = prompt('💰 Сколько BetCoin купить?', '1000');
             if (amount) {
                 const coins = parseInt(amount);
@@ -240,7 +233,7 @@
             const codes = { 'BETCOIN': 10000, 'WELCOME': 500, 'BONUS': 1000, 'GOLD': 2500, 'VIP': 5000 };
             if (codes[code]) {
                 saveBalance(balance + codes[code]);
-                alert('🎉 Промокод активирован! +' + codes[code] + ' BetCoin');
+                alert('🎉 +' + codes[code] + ' BetCoin!');
                 closePromo();
             } else {
                 alert('❌ Неверный промокод!');
@@ -256,8 +249,6 @@
         window.openPromo = openPromo;
         window.closePromo = closePromo;
         window.applyPromo = applyPromo;
-
-        log('✅ Сайт готов', 'success');
     </script>
 </body>
 </html>

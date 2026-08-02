@@ -1,264 +1,39 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>BetGame</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta charset="UTF-8">
+    <title>Тест Supabase</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-        body{min-height:100vh;display:flex;justify-content:center;align-items:flex-start;background:#0a0e1a;padding:20px}
-        #bg-3d{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(ellipse at 30% 40%,#1a3a6a 0%,#0a0e1a 70%);overflow:hidden;pointer-events:none}
-        .sphere{position:absolute;border-radius:50%;filter:blur(60px);opacity:.25;animation:floatSphere 20s ease-in-out infinite alternate}
-        .sphere:nth-child(1){width:500px;height:500px;top:-100px;right:-100px;background:radial-gradient(circle,#4a8af4,#1a3a7a);animation-duration:25s}
-        .sphere:nth-child(2){width:400px;height:400px;bottom:-100px;left:-100px;background:radial-gradient(circle,#6aafff,#2a5a9a);animation-duration:20s;animation-delay:-5s}
-        .sphere:nth-child(3){width:300px;height:300px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#8ac4ff,#3a6aaa);animation-duration:30s;animation-delay:-10s;opacity:.15}
-        @keyframes floatSphere{0%{transform:translate(0,0) scale(1)}100%{transform:translate(60px,-40px) scale(1.2)}}
-        .app{position:relative;z-index:1;max-width:420px;width:100%;padding:10px 0}
-        .header{width:100%;display:flex;align-items:center;gap:12px;margin-bottom:30px}
-        .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4a8af4,#1a3a7a);border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
-        .avatar img{width:100%;height:100%;object-fit:cover}
-        .username{color:#fff;font-size:18px;font-weight:600}
-        .balance-block{width:100%;background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:25px 20px 22px;text-align:center;margin-bottom:25px}
-        .balance-label{color:rgba(255,255,255,.5);font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px}
-        .balance-amount{color:#fff;font-size:44px;font-weight:800;margin-bottom:20px}
-        .buttons{display:flex;gap:12px;width:100%}
-        .btn{flex:1;padding:13px 10px;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s ease}
-        .btn:active{transform:scale(.96)}
-        .btn-primary{background:linear-gradient(135deg,#4a8af4,#2a5a9a);color:#fff}
-        .btn-secondary{background:rgba(255,255,255,.08);color:#c8d6ff;border:1px solid rgba(255,255,255,.12)}
-        .menu-title{width:100%;color:#aec0ff;font-size:15px;font-weight:600;margin-bottom:12px;text-align:left}
-        .menu-grid{width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-        .menu-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 6px;text-align:center;color:#c8d6ff;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
-        .menu-item:active{transform:scale(.95);background:rgba(255,255,255,.08)}
-        .menu-item .icon{font-size:28px;display:block;margin-bottom:6px;filter:brightness(.7) invert(.9);opacity:.5}
-        .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);z-index:100;display:none;justify-content:center;align-items:center;padding:20px}
-        .modal-overlay.active{display:flex}
-        .modal{background:rgba(20,30,60,.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:30px 25px;max-width:340px;width:100%}
-        .modal-title{color:#fff;font-size:20px;font-weight:700;text-align:center;margin-bottom:16px}
-        .modal-input{width:100%;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:16px;outline:none;text-align:center;text-transform:uppercase}
-        .modal-input:focus{border-color:#4a8af4}
-        .modal-input::placeholder{color:rgba(255,255,255,.3);text-transform:none}
-        .modal-buttons{display:flex;gap:10px;margin-top:16px}
-        .modal-btn{flex:1;padding:12px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
-        .modal-btn:active{transform:scale(.95)}
-        .modal-btn-primary{background:linear-gradient(135deg,#4a8af4,#2a5a9a);color:#fff}
-        .modal-btn-secondary{background:rgba(255,255,255,.06);color:#c8d6ff;border:1px solid rgba(255,255,255,.08)}
-        #status{
-            position:fixed;bottom:70px;left:50%;transform:translateX(-50%);
-            background:rgba(0,0,0,.9);color:#fff;padding:12px 20px;border-radius:12px;
-            font-size:13px;z-index:999;border:1px solid rgba(255,255,255,.1);
-            display:none;max-width:90%;text-align:center;font-weight:500
-        }
-        #status.show{display:block}
-        #status.success{background:rgba(0,180,0,.9);border-color:#0f0}
-        #status.error{background:rgba(180,0,0,.9);border-color:#f00}
-        #status.loading{background:rgba(0,100,200,.9);border-color:#00f}
-    </style>
 </head>
 <body>
-    <div id="bg-3d"><div class="sphere"></div><div class="sphere"></div><div class="sphere"></div></div>
-    <div class="app">
-        <div class="header">
-            <div class="avatar" id="userAvatar">🐹</div>
-            <div class="username" id="userName">Загрузка...</div>
-        </div>
-        <div class="balance-block">
-            <div class="balance-label">BETCOIN</div>
-            <div class="balance-amount" id="balanceDisplay">0</div>
-            <div class="buttons">
-                <button class="btn btn-primary" id="getBtn">💎 Получить</button>
-                <button class="btn btn-secondary" id="buyBtn">💰 Купить</button>
-            </div>
-        </div>
-        <div class="menu-title">Управление</div>
-        <div class="menu-grid">
-            <div class="menu-item" onclick="alert('Профиль')"><span class="icon">👤</span>Профиль</div>
-            <div class="menu-item" onclick="alert('Инвентарь')"><span class="icon">📦</span>Инвентарь</div>
-            <div class="menu-item" onclick="alert('Сервис')"><span class="icon">⚙️</span>Сервис</div>
-            <div class="menu-item" onclick="openPromo()"><span class="icon">🎁</span>Промо</div>
-        </div>
-    </div>
-    <div class="modal-overlay" id="promoModal">
-        <div class="modal">
-            <div class="modal-title">🎁 Введите промокод</div>
-            <input class="modal-input" id="promoInput" type="text" placeholder="ВВЕДИТЕ КОД" maxlength="20" />
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-secondary" onclick="closePromo()">Отмена</button>
-                <button class="modal-btn modal-btn-primary" onclick="applyPromo()">Активировать</button>
-            </div>
-        </div>
-    </div>
-    <div id="status"></div>
+    <h2>Тест Supabase</h2>
+    <div id="result">Загрузка...</div>
 
     <script>
-        // ===== STATUS =====
-        const statusEl = document.getElementById('status');
-        function setStatus(text, type = 'loading') {
-            statusEl.textContent = text;
-            statusEl.className = 'show ' + type;
-            setTimeout(() => { 
-                if (type !== 'error') statusEl.className = ''; 
-            }, 4000);
-        }
-
-        setStatus('⏳ Подключение...', 'loading');
-
-        // ===== SUPABASE =====
         const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // ===== TELEGRAM =====
-        let tgUser = null;
-        try {
-            const tg = window.Telegram.WebApp;
-            tg.expand();
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                tgUser = tg.initDataUnsafe.user;
-            }
-        } catch (e) {}
+        document.getElementById('result').textContent = '⏳ Проверка...';
 
-        if (!tgUser) {
-            tgUser = { id: 'demo_' + Date.now(), first_name: 'Тест', photo_url: null };
-        }
-
-        const userId = tgUser.id.toString();
-        let balance = 0;
-
-        // ===== DOM =====
-        const userName = document.getElementById('userName');
-        const userAvatar = document.getElementById('userAvatar');
-        const balanceDisplay = document.getElementById('balanceDisplay');
-
-        function updateUI() {
-            balanceDisplay.textContent = balance.toLocaleString();
-            const name = tgUser.first_name || 'Пользователь';
-            userName.textContent = name;
-            if (tgUser.photo_url) {
-                userAvatar.innerHTML = '<img src="' + tgUser.photo_url + '" />';
-            } else {
-                userAvatar.textContent = name.charAt(0).toUpperCase();
-                userAvatar.style.fontSize = '20px';
-            }
-        }
-
-        // ===== SUPABASE FUNCTIONS =====
-        async function loadData() {
+        async function test() {
             try {
-                setStatus('⏳ Загрузка данных...', 'loading');
-                
-                // Пробуем получить пользователя
                 const { data, error } = await supabase
                     .from('users')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
-
-                if (error && error.code === 'PGRST116') {
-                    // Пользователь не найден - создаем
-                    setStatus('📝 Создание пользователя...', 'loading');
-                    const { error: insertError } = await supabase
-                        .from('users')
-                        .insert([{
-                            id: userId,
-                            name: tgUser.first_name || 'Пользователь',
-                            balance: 5000
-                        }]);
-                    if (insertError) {
-                        setStatus('❌ Ошибка: ' + insertError.message, 'error');
-                        balance = 5000;
-                    } else {
-                        setStatus('✅ Пользователь создан!', 'success');
-                        balance = 5000;
-                    }
-                } else if (error) {
-                    setStatus('❌ Ошибка: ' + error.message, 'error');
-                    balance = 5000;
-                } else if (data) {
-                    balance = data.balance || 0;
-                    setStatus('✅ Баланс: ' + balance, 'success');
-                }
-                updateUI();
-            } catch (e) {
-                setStatus('❌ Ошибка: ' + e.message, 'error');
-                balance = 5000;
-                updateUI();
-            }
-        }
-
-        async function saveBalance(newBalance) {
-            try {
-                const { error } = await supabase
-                    .from('users')
-                    .update({ balance: newBalance })
-                    .eq('id', userId);
+                    .select('count')
+                    .limit(1);
+                
                 if (error) {
-                    setStatus('❌ Ошибка: ' + error.message, 'error');
-                    return;
+                    document.getElementById('result').innerHTML = '❌ Ошибка: ' + error.message + '<br>Код: ' + error.code;
+                } else {
+                    document.getElementById('result').innerHTML = '✅ Подключение работает!<br>Ответ: ' + JSON.stringify(data);
                 }
-                balance = newBalance;
-                updateUI();
-                setStatus('✅ Сохранено: ' + balance, 'success');
-            } catch (e) {
-                setStatus('❌ Ошибка: ' + e.message, 'error');
+            } catch(e) {
+                document.getElementById('result').innerHTML = '❌ Ошибка: ' + e.message;
             }
         }
 
-        // ===== КНОПКИ =====
-        document.getElementById('getBtn').onclick = function() {
-            saveBalance(balance + 500);
-            alert('✅ +500 BetCoin!');
-        };
-
-        document.getElementById('buyBtn').onclick = function() {
-            const amount = prompt('💰 Сколько BetCoin купить?', '1000');
-            if (amount) {
-                const coins = parseInt(amount);
-                if (coins > 0) {
-                    saveBalance(balance + coins);
-                    alert('✅ +' + coins + ' BetCoin!');
-                }
-            }
-        };
-
-        // ===== ПРОМОКОД =====
-        function openPromo() {
-            document.getElementById('promoModal').classList.add('active');
-            document.getElementById('promoInput').value = '';
-            setTimeout(() => document.getElementById('promoInput').focus(), 100);
-        }
-
-        function closePromo() {
-            document.getElementById('promoModal').classList.remove('active');
-        }
-
-        function applyPromo() {
-            const code = document.getElementById('promoInput').value.trim().toUpperCase();
-            if (!code) { alert('❌ Введите промокод!'); return; }
-            const codes = { 'BETCOIN': 10000, 'WELCOME': 500, 'BONUS': 1000, 'GOLD': 2500, 'VIP': 5000 };
-            if (codes[code]) {
-                saveBalance(balance + codes[code]);
-                alert('🎉 +' + codes[code] + ' BetCoin!');
-                closePromo();
-            } else {
-                alert('❌ Неверный промокод!');
-            }
-        }
-
-        document.getElementById('promoModal').onclick = function(e) { if (e.target === this) closePromo(); };
-        document.getElementById('promoInput').onkeydown = function(e) { if (e.key === 'Enter') applyPromo(); };
-
-        // ===== ЗАПУСК =====
-        // Ждем загрузки Supabase
-        setTimeout(() => {
-            loadData();
-        }, 500);
-
-        window.openPromo = openPromo;
-        window.closePromo = closePromo;
-        window.applyPromo = applyPromo;
+        test();
     </script>
 </body>
 </html>

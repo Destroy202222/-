@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>BetGame - Dice</title>
+    <title>BetGame</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -66,7 +66,7 @@
         .dice-input-group button:disabled{opacity:.4;cursor:not-allowed}
         .dice-place-btn{width:100%;padding:10px;border-radius:10px;border:none;background:gold;color:#000;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
         .dice-place-btn:disabled{opacity:.4;cursor:not-allowed}
-        .dice-bets{background:rgba(255,255,255,.02);border-radius:8px;padding:8px;max-height:150px;overflow-y:auto;margin-top:6px}
+        .dice-bets{background:rgba(255,255,255,.02);border-radius:8px;padding:8px;max-height:120px;overflow-y:auto;margin-top:6px}
         .dice-bet-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.02);color:#aec0ff;font-size:11px}
         .dice-bet-item .win{color:#4ade80}
         .dice-bet-item .lose{color:#ff6b6b}
@@ -174,7 +174,9 @@
             <button class="dice-place-btn" id="placeBtn" onclick="placeBet()">🎲 Сделать ставку</button>
             
             <div style="color:#8a9bb5;font-size:11px;margin-top:6px">Ставки игроков</div>
-            <div class="dice-bets" id="betsList"></div>
+            <div class="dice-bets" id="betsList">
+                <div class="dice-bet-item"><span>Нет ставок</span><span></span></div>
+            </div>
         </div>
         
         <div class="bottom-nav">
@@ -240,17 +242,17 @@
         const username = tgUser.first_name || tgUser.username || 'Игрок';
         let balance = 0;
         let betType = 'under';
+        let timerInterval = null;
+        let seconds = 12;
+        let isRolling = false;
+        let isProcessing = false;
 
         // ===== DOM =====
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const balanceDisplay = document.getElementById('balanceDisplay');
         const timerCount = document.getElementById('timerCount');
-        const dice1 = document.getElementById('dice1');
-        const dice2 = document.getElementById('dice2');
-        const diceResult = document.getElementById('diceResult');
-        const placeBtn = document.getElementById('placeBtn');
-        const betsList = document.getElementById('betsList');
+        const timerDisplay = document.getElementById('timerDisplay');
 
         function updateUI() {
             balanceDisplay.textContent = balance.toLocaleString();
@@ -289,14 +291,37 @@
             } catch(e) {}
         }
 
-        // ===== REALTIME ПОДПИСКА =====
-        let isRolling = false;
-        let timerInterval = null;
-        let gameSeconds = 12;
+        // ===== СОСТОЯНИЕ ИГРЫ =====
+        let gameState = { seconds: 12, is_rolling: false, result: null, d1: null, d2: null };
 
+        async function getGameState() {
+            try {
+                const { data, error } = await supabase
+                    .from('game_state')
+                    .select('*')
+                    .eq('id', 'dice')
+                    .single();
+
+                if (error && error.code === 'PGRST116') {
+                    await supabase.from('game_state').insert([{ id: 'dice', seconds: 12, is_rolling: false }]);
+                    return { seconds: 12, is_rolling: false, result: null, d1: null, d2: null };
+                }
+                return data || { seconds: 12, is_rolling: false, result: null, d1: null, d2: null };
+            } catch(e) {
+                return { seconds: 12, is_rolling: false, result: null, d1: null, d2: null };
+            }
+        }
+
+        async function updateGameState(updates) {
+            try {
+                await supabase.from('game_state').update(updates).eq('id', 'dice');
+            } catch(e) {}
+        }
+
+        // ===== REALTIME ПОДПИСКА =====
         function subscribeGameState() {
             supabase
-                .channel('game_state')
+                .channel('game_state_channel')
                 .on('postgres_changes', { 
                     event: 'UPDATE', 
                     schema: 'public', 
@@ -304,28 +329,28 @@
                     filter: 'id=eq.dice'
                 }, (payload) => {
                     const newState = payload.new;
-                    gameSeconds = newState.seconds || 12;
+                    gameState = newState;
+                    seconds = newState.seconds || 12;
                     isRolling = newState.is_rolling || false;
                     
-                    timerCount.textContent = gameSeconds;
+                    timerCount.textContent = seconds;
                     
                     if (isRolling) {
-                        placeBtn.disabled = true;
+                        document.getElementById('placeBtn').disabled = true;
                         const dots = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-                        dice1.textContent = dots[(newState.d1 || 1) - 1];
-                        dice2.textContent = dots[(newState.d2 || 1) - 1];
-                        dice1.classList.add('rolling');
-                        dice2.classList.add('rolling');
+                        document.getElementById('dice1').textContent = dots[(newState.d1 || 1) - 1];
+                        document.getElementById('dice2').textContent = dots[(newState.d2 || 1) - 1];
+                        document.getElementById('dice1').classList.add('rolling');
+                        document.getElementById('dice2').classList.add('rolling');
                         setTimeout(() => {
-                            dice1.classList.remove('rolling');
-                            dice2.classList.remove('rolling');
+                            document.getElementById('dice1').classList.remove('rolling');
+                            document.getElementById('dice2').classList.remove('rolling');
                         }, 800);
-                        diceResult.textContent = `Результат: ${newState.result} (${newState.d1}+${newState.d2})`;
-                        document.getElementById('timerDisplay').innerHTML = '🎲 Бросок!';
+                        document.getElementById('diceResult').textContent = `Результат: ${newState.result} (${newState.d1}+${newState.d2})`;
+                        timerDisplay.innerHTML = '🎲 Бросок!';
                     } else {
-                        placeBtn.disabled = false;
-                        if (gameSeconds <= 0) {
-                            // Автоматический бросок
+                        document.getElementById('placeBtn').disabled = false;
+                        if (seconds <= 0) {
                             executeRoll();
                         }
                     }
@@ -335,19 +360,19 @@
 
         function subscribeBets() {
             supabase
-                .channel('bets')
+                .channel('bets_channel')
                 .on('postgres_changes', { 
                     event: 'INSERT', 
                     schema: 'public', 
                     table: 'bets'
-                }, (payload) => {
+                }, () => {
                     loadBets();
                 })
                 .on('postgres_changes', { 
                     event: 'UPDATE', 
                     schema: 'public', 
                     table: 'bets'
-                }, (payload) => {
+                }, () => {
                     loadBets();
                 })
                 .subscribe();
@@ -363,12 +388,13 @@
                     .order('created_at', { ascending: false })
                     .limit(20);
 
+                const container = document.getElementById('betsList');
                 if (error || !data || data.length === 0) {
-                    betsList.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+                    container.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
                     return;
                 }
 
-                betsList.innerHTML = data.map(b => {
+                container.innerHTML = data.map(b => {
                     let status = '', cls = '';
                     if (b.result === 'win') { 
                         status = '✅ +' + b.win_amount; 
@@ -395,22 +421,20 @@
 
         // ===== ВЫПОЛНЕНИЕ БРОСКА =====
         async function executeRoll() {
-            if (isRolling) return;
+            if (isRolling || isProcessing) return;
+            isProcessing = true;
             
             const d1 = Math.floor(Math.random() * 6) + 1;
             const d2 = Math.floor(Math.random() * 6) + 1;
             const result = d1 + d2;
             
-            await supabase
-                .from('game_state')
-                .update({ 
-                    is_rolling: true, 
-                    d1: d1, 
-                    d2: d2, 
-                    result: result,
-                    seconds: 0
-                })
-                .eq('id', 'dice');
+            await updateGameState({ 
+                is_rolling: true, 
+                d1: d1, 
+                d2: d2, 
+                result: result,
+                seconds: 0
+            });
             
             // Обрабатываем ставки
             await processBets(result);
@@ -418,24 +442,22 @@
             
             // Через 5 секунд сбрасываем
             setTimeout(async () => {
-                await supabase
-                    .from('game_state')
-                    .update({ 
-                        is_rolling: false, 
-                        seconds: 12, 
-                        result: null, 
-                        d1: null, 
-                        d2: null 
-                    })
-                    .eq('id', 'dice');
+                await updateGameState({ 
+                    is_rolling: false, 
+                    seconds: 12, 
+                    result: null, 
+                    d1: null, 
+                    d2: null 
+                });
                 
                 // Очищаем ставки
                 await supabase.from('bets').delete().eq('game', 'Dice');
                 
-                diceResult.textContent = 'Результат: ?';
-                document.getElementById('timerDisplay').innerHTML = '⏳ Раунд: <span id="timerCount">12</span>s';
-                placeBtn.disabled = false;
+                document.getElementById('diceResult').textContent = 'Результат: ?';
+                timerDisplay.innerHTML = '⏳ Раунд: <span id="timerCount">12</span>s';
+                document.getElementById('placeBtn').disabled = false;
                 loadBets();
+                isProcessing = false;
             }, 5000);
         }
 
@@ -500,10 +522,51 @@
             } catch(e) { console.error(e); }
         }
 
+        // ===== ТАЙМЕР =====
+        async function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            const state = await getGameState();
+            gameState = state;
+            seconds = state.seconds || 12;
+            isRolling = state.is_rolling || false;
+            
+            timerCount.textContent = seconds;
+            if (isRolling) {
+                document.getElementById('placeBtn').disabled = true;
+                timerDisplay.innerHTML = '🎲 Бросок!';
+                const dots = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+                document.getElementById('dice1').textContent = dots[(state.d1 || 1) - 1];
+                document.getElementById('dice2').textContent = dots[(state.d2 || 1) - 1];
+                document.getElementById('diceResult').textContent = `Результат: ${state.result} (${state.d1}+${state.d2})`;
+                setTimeout(() => {
+                    document.getElementById('dice1').classList.remove('rolling');
+                    document.getElementById('dice2').classList.remove('rolling');
+                }, 800);
+                return;
+            }
+            
+            if (seconds <= 0) {
+                executeRoll();
+                return;
+            }
+            
+            timerInterval = setInterval(async () => {
+                seconds--;
+                timerCount.textContent = seconds;
+                await updateGameState({ seconds: seconds });
+                if (seconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    executeRoll();
+                }
+            }, 1000);
+        }
+
         // ===== СТАВКА =====
         async function placeBet() {
             if (isRolling) { alert('⏳ Раунд идет!'); return; }
-            if (gameSeconds < 3) { alert('⏳ Раунд скоро закончится!'); return; }
+            if (seconds < 3) { alert('⏳ Раунд скоро закончится!'); return; }
             
             const amount = parseInt(document.getElementById('betInput').value);
             if (!amount || amount <= 0) { alert('❌ Введите сумму!'); return; }
@@ -522,6 +585,7 @@
                     coefficient: 0,
                     detail: betType
                 }]);
+                loadBets();
             } catch(e) {
                 await saveBalance(balance + amount);
                 alert('❌ Ошибка!');
@@ -553,9 +617,16 @@
             document.getElementById('gameBtn').classList.add('active');
             document.querySelector('.nav-item.active')?.classList.remove('active');
             loadBets();
+            startTimer();
+            subscribeGameState();
+            subscribeBets();
         }
 
-        function closeDice() { goHome(); }
+        function closeDice() { 
+            if (timerInterval) clearInterval(timerInterval);
+            goHome(); 
+        }
+
         function setBet(type) {
             betType = type;
             document.querySelectorAll('.dice-bet-option').forEach(b => b.classList.remove('active'));
@@ -586,8 +657,6 @@
 
         // ===== INIT =====
         loadUser();
-        subscribeGameState();
-        subscribeBets();
 
         window.goHome = goHome;
         window.openDice = openDice;

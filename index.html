@@ -17,13 +17,13 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             background: #0a0e1a;
-            padding: 12px;
-            overflow-x: hidden;
+            padding: 20px;
+            overflow: hidden;
         }
 
-        /* 3D ФОН */
+        /* 3D ФОН - бело-темно-синий */
         #bg-3d {
             position: fixed;
             top: 0;
@@ -33,14 +33,13 @@
             z-index: 0;
             background: radial-gradient(ellipse at 30% 40%, #1a3a6a 0%, #0a0e1a 70%);
             overflow: hidden;
-            pointer-events: none;
         }
 
         .sphere {
             position: absolute;
             border-radius: 50%;
             filter: blur(60px);
-            opacity: 0.25;
+            opacity: 0.3;
             animation: floatSphere 20s ease-in-out infinite alternate;
         }
 
@@ -84,71 +83,69 @@
             }
         }
 
-        /* ПРИЛОЖЕНИЕ */
+        /* Частицы */
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+            animation: floatParticle 15s linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ОСНОВНОЙ КОНТЕЙНЕР */
         .app {
             position: relative;
             z-index: 1;
-            max-width: 420px;
             width: 100%;
-            padding: 12px 12px 30px;
+            max-width: 380px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* ===== ХЕДЕР ===== */
+        /* ВЕРХНИЙ БЛОК - НИКНЕЙМ И АВАТАРКА */
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            margin-bottom: 16px;
-        }
-
-        .header-left {
+            width: 100%;
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .username {
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .online-status {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: #6f8f9f;
-            font-size: 12px;
-        }
-
-        .online-dot {
-            width: 6px;
-            height: 6px;
-            background: #4ade80;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .wins {
-            color: #6f8f9f;
-            font-size: 12px;
+            gap: 12px;
+            margin-bottom: 40px;
         }
 
         .avatar {
-            width: 32px;
-            height: 32px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #f7e05e, #ff8a2a);
+            background: linear-gradient(135deg, #4a8af4, #1a3a7a);
+            border: 2px solid rgba(255, 255, 255, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 18px;
             font-weight: 700;
-            color: #0a0e1a;
+            color: #fff;
             overflow: hidden;
             flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(74, 138, 244, 0.3);
         }
 
         .avatar img {
@@ -157,174 +154,207 @@
             object-fit: cover;
         }
 
-        /* ===== БАЛАНС ===== */
-        .balance-block {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 14px 18px;
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .username {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
-        .balance-left {
-            display: flex;
-            flex-direction: column;
+        /* БЛОК С БАЛАНСОМ */
+        .balance-block {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            padding: 30px 20px 25px;
+            text-align: center;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .balance-label {
-            color: #8a9bb5;
+            color: rgba(255, 255, 255, 0.5);
             font-size: 13px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
         }
 
         .balance-amount {
             color: #fff;
-            font-size: 24px;
+            font-size: 48px;
             font-weight: 800;
+            letter-spacing: -1px;
+            text-shadow: 0 0 40px rgba(74, 138, 244, 0.2);
+            margin-bottom: 25px;
         }
 
-        .balance-actions {
+        /* КНОПКИ */
+        .buttons {
             display: flex;
-            gap: 8px;
+            gap: 12px;
+            width: 100%;
         }
 
-        .btn-gold {
-            background: linear-gradient(135deg, #f7d875, #e8b42b);
+        .btn {
+            flex: 1;
+            padding: 14px 10px;
             border: none;
-            padding: 8px 16px;
-            border-radius: 30px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a8af4, #2a5a9a);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(74, 138, 244, 0.3);
+        }
+
+        .btn-primary:active {
+            box-shadow: 0 2px 10px rgba(74, 138, 244, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #c8d6ff;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:active {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* МОДАЛКА ДЛЯ ПРОМОКОДА */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: rgba(20, 30, 60, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px 25px;
+            max-width: 340px;
+            width: 100%;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-title {
+            color: #fff;
+            font-size: 20px;
             font-weight: 700;
-            font-size: 13px;
-            color: #0a0e1a;
-            cursor: pointer;
-            transition: transform 0.15s;
-        }
-
-        .btn-gold:active {
-            transform: scale(0.95);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 8px 14px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 13px;
-            color: #d6e0ff;
-            cursor: pointer;
-            transition: transform 0.15s;
-        }
-
-        .btn-outline:active {
-            transform: scale(0.95);
-        }
-
-        /* ===== ЗАГОЛОВОК "УПРАВЛЕНИЕ" ===== */
-        .menu-title {
-            color: #aec0ff;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-        }
-
-        /* ===== СЕТКА МЕНЮ ===== */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
+            text-align: center;
             margin-bottom: 16px;
         }
 
-        .menu-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 14px 4px;
-            text-align: center;
-            color: #aec0ff;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .menu-item:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .menu-item .icon {
-            font-size: 20px;
-            display: block;
-            margin-bottom: 4px;
-            filter: brightness(0) invert(1);
-            opacity: 0.6;
-        }
-
-        /* ===== НИЖНИЕ БЛОКИ ===== */
-        .bottom-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .bottom-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+        .modal-input {
+            width: 100%;
+            padding: 14px 16px;
             border-radius: 14px;
-            padding: 18px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
             text-align: center;
-            color: #aec0ff;
-            font-size: 13px;
-            font-weight: 500;
+            letter-spacing: 2px;
+        }
+
+        .modal-input:focus {
+            border-color: #4a8af4;
+        }
+
+        .modal-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 0;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 14px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.2s;
         }
 
-        .bottom-item:active {
+        .modal-btn:active {
             transform: scale(0.95);
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #4a8af4, #2a5a9a);
+            color: #fff;
+        }
+
+        .modal-btn-secondary {
             background: rgba(255, 255, 255, 0.06);
+            color: #c8d6ff;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .bottom-item .icon {
-            font-size: 26px;
-            display: block;
-            margin-bottom: 6px;
-            filter: brightness(0) invert(1);
-            opacity: 0.6;
-        }
-
-        /* АДАПТИВ */
-        @media (max-width: 420px) {
+        @media (max-width: 400px) {
             .app {
-                padding: 8px 8px 20px;
+                padding: 15px;
             }
             .balance-amount {
-                font-size: 20px;
+                font-size: 38px;
             }
-            .menu-item {
-                font-size: 10px;
-                padding: 10px 2px;
+            .btn {
+                font-size: 13px;
+                padding: 12px 8px;
             }
-            .menu-item .icon {
-                font-size: 16px;
-            }
-            .bottom-item {
-                font-size: 11px;
-                padding: 14px 4px;
-            }
-            .bottom-item .icon {
-                font-size: 20px;
-            }
-            .btn-gold,
-            .btn-outline {
-                font-size: 11px;
-                padding: 6px 12px;
+            .header {
+                margin-bottom: 30px;
             }
         }
     </style>
@@ -338,67 +368,33 @@
         <div class="sphere"></div>
     </div>
 
+    <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
     <div class="app">
-        <!-- ===== ХЕДЕР ===== -->
+        <!-- ВЕРХНИЙ БЛОК -->
         <div class="header">
-            <div class="header-left">
-                <span class="username" id="userName">hamster</span>
-                <span class="online-status">
-                    <span class="online-dot"></span>
-                    online • 51
-                </span>
-                <span class="wins">0 W</span>
-            </div>
             <div class="avatar" id="userAvatar">🐹</div>
+            <div class="username" id="userName">Гость</div>
         </div>
 
-        <!-- ===== БАЛАНС ===== -->
+        <!-- БЛОК С БАЛАНСОМ -->
         <div class="balance-block">
-            <div class="balance-left">
-                <div class="balance-label">BetCoin</div>
-                <div class="balance-amount" id="balanceDisplay">0</div>
-            </div>
-            <div class="balance-actions">
-                <button class="btn-gold" id="getCoinsBtn">+ Получить</button>
-                <button class="btn-outline" id="buyCoinsBtn">Купить</button>
+            <div class="balance-label">BETCOIN</div>
+            <div class="balance-amount" id="balanceDisplay">0</div>
+            <div class="buttons">
+                <button class="btn btn-primary" id="depositBtn">💎 Пополнить</button>
+                <button class="btn btn-secondary" id="promoBtn">🎁 Промокод</button>
             </div>
         </div>
+    </div>
 
-        <!-- ===== ЗАГОЛОВОК "УПРАВЛЕНИЕ" ===== -->
-        <div class="menu-title">Управление</div>
-
-        <!-- ===== СЕТКА МЕНЮ ===== -->
-        <div class="menu-grid">
-            <div class="menu-item" onclick="alert('Управление')">
-                <span class="icon">⚡</span>Управление
-            </div>
-            <div class="menu-item" onclick="alert('Профиль')">
-                <span class="icon">👤</span>Профиль
-            </div>
-            <div class="menu-item" onclick="alert('Клан')">
-                <span class="icon">🏰</span>Клан
-            </div>
-            <div class="menu-item" onclick="alert('Инвентарь')">
-                <span class="icon">📦</span>Инвентарь
-            </div>
-            <div class="menu-item" onclick="alert('Промо')">
-                <span class="icon">🎁</span>Промо
-            </div>
-            <div class="menu-item" onclick="alert('Сервис')">
-                <span class="icon">⚙️</span>Сервис
-            </div>
-        </div>
-
-        <!-- ===== НИЖНИЕ БЛОКИ ===== -->
-        <div class="bottom-grid">
-            <div class="bottom-item" onclick="alert('Профиль')">
-                <span class="icon">👤</span>Профиль
-            </div>
-            <div class="bottom-item" onclick="alert('Инвентарь')">
-                <span class="icon">📦</span>Инвентарь
-            </div>
-            <div class="bottom-item" onclick="alert('Сервис')">
-                <span class="icon">⚙️</span>Сервис
+    <!-- МОДАЛКА ПРОМОКОДА -->
+    <div class="modal-overlay" id="promoModal">
+        <div class="modal">
+            <div class="modal-title">🎁 Введите промокод</div>
+            <input class="modal-input" id="promoInput" type="text" placeholder="ВВЕДИТЕ КОД" maxlength="20" />
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" onclick="closePromo()">Отмена</button>
+                <button class="modal-btn modal-btn-primary" onclick="applyPromo()">Активировать</button>
             </div>
         </div>
     </div>
@@ -427,6 +423,10 @@
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const balanceDisplay = document.getElementById('balanceDisplay');
+        const depositBtn = document.getElementById('depositBtn');
+        const promoBtn = document.getElementById('promoBtn');
+        const promoModal = document.getElementById('promoModal');
+        const promoInput = document.getElementById('promoInput');
 
         // ============================================
         // UPDATE UI
@@ -435,7 +435,7 @@
             balanceDisplay.textContent = balance.toLocaleString();
 
             if (tgUser) {
-                const name = tgUser.first_name || tgUser.username || 'hamster';
+                const name = tgUser.first_name || tgUser.username || 'Гость';
                 userName.textContent = name;
 
                 if (tgUser.photo_url) {
@@ -447,25 +447,74 @@
         }
 
         // ============================================
-        // BUTTONS
+        // DEPOSIT
         // ============================================
-        document.getElementById('getCoinsBtn').addEventListener('click', function() {
-            balance += 500;
-            updateUI();
-            alert('✅ +500 BetCoin!');
-        });
-
-        document.getElementById('buyCoinsBtn').addEventListener('click', function() {
-            const amount = prompt('Сколько BetCoin купить?', '1000');
+        depositBtn.addEventListener('click', function() {
+            const amount = prompt('💎 Сумма пополнения:', '1000');
             if (!amount) return;
+
             const coins = parseInt(amount);
             if (isNaN(coins) || coins <= 0) {
-                alert('❌ Введите сумму!');
+                alert('❌ Введите корректную сумму!');
                 return;
             }
+
             balance += coins;
             updateUI();
-            alert(`✅ +${coins} BetCoin!`);
+            alert(`✅ Баланс пополнен на ${coins} BetCoin!`);
+        });
+
+        // ============================================
+        // PROMOCODE
+        // ============================================
+        promoBtn.addEventListener('click', function() {
+            promoModal.classList.add('active');
+            promoInput.value = '';
+            promoInput.focus();
+        });
+
+        function closePromo() {
+            promoModal.classList.remove('active');
+        }
+
+        function applyPromo() {
+            const code = promoInput.value.trim().toUpperCase();
+
+            if (!code) {
+                alert('❌ Введите промокод!');
+                return;
+            }
+
+            const promoCodes = {
+                'WELCOME': 500,
+                'BONUS': 1000,
+                'GOLD': 2500,
+                'VIP': 5000,
+                'BETGAME': 2000,
+                'FREE': 100,
+                'LUCKY': 750,
+                'MEGA': 10000
+            };
+
+            if (promoCodes[code]) {
+                const bonus = promoCodes[code];
+                balance += bonus;
+                updateUI();
+                alert(`🎉 Промокод активирован! +${bonus} BetCoin`);
+                closePromo();
+            } else {
+                alert('❌ Неверный промокод!');
+                promoInput.value = '';
+                promoInput.focus();
+            }
+        }
+
+        promoModal.addEventListener('click', function(e) {
+            if (e.target === this) closePromo();
+        });
+
+        promoInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') applyPromo();
         });
 
         // ============================================
@@ -473,7 +522,10 @@
         // ============================================
         updateUI();
 
-        console.log('🚀 BetGame запущен!');
+        window.closePromo = closePromo;
+        window.applyPromo = applyPromo;
+
+        console.log('🚀 BetGame запущен! Баланс:', balance);
         console.log('👤 Пользователь:', tgUser);
     </script>
 

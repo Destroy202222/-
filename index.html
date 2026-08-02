@@ -15,7 +15,7 @@
         .sphere:nth-child(3){width:300px;height:300px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#8ac4ff,#3a6aaa);animation-duration:30s;animation-delay:-10s;opacity:.15}
         @keyframes floatSphere{0%{transform:translate(0,0) scale(1)}100%{transform:translate(60px,-40px) scale(1.2)}}
         
-        .app{position:relative;z-index:1;max-width:420px;width:100%;height:100vh;padding:15px 15px 80px;display:flex;flex-direction:column}
+        .app{position:relative;z-index:1;max-width:420px;width:100%;height:100vh;padding:15px 15px 80px;display:flex;flex-direction:column;overflow-y:auto}
         
         .header{display:flex;align-items:center;gap:12px;margin-bottom:25px;flex-shrink:0}
         .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4a8af4,#1a3a7a);border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
@@ -36,6 +36,16 @@
         .menu-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 6px;text-align:center;color:#c8d6ff;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
         .menu-item:active{transform:scale(.95);background:rgba(255,255,255,.08)}
         .menu-item .icon{font-size:28px;display:block;margin-bottom:6px;filter:brightness(.7) invert(.9);opacity:.5}
+        
+        /* ===== ИГРЫ (появляются при нажатии GAME) ===== */
+        .games-section{display:none;flex-direction:column;gap:10px;margin-top:10px;flex-shrink:0}
+        .games-section.active{display:flex}
+        .games-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .game-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 10px;text-align:center;cursor:pointer;transition:all .15s}
+        .game-card:active{transform:scale(.95);background:rgba(255,255,255,.08)}
+        .game-card .icon{font-size:28px;display:block;margin-bottom:4px;filter:brightness(.7) invert(.9);opacity:.7}
+        .game-card .name{color:#fff;font-size:13px;font-weight:600}
+        .game-card .sub{color:#6f8f9f;font-size:10px}
         
         /* ===== ВЫЕЗЖАЮЩЕЕ МЕНЮ ===== */
         .sidebar-overlay{
@@ -83,7 +93,9 @@
             border:3px solid rgba(255,255,255,.1);cursor:pointer;transition:all .2s
         }
         .nav-center:active{transform:scale(.92)}
+        .nav-center.active{background:linear-gradient(135deg,#f7e05e,#e8b42b);box-shadow:0 4px 25px rgba(247,224,94,.4)}
         
+        /* ===== МОДАЛКА ===== */
         .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);z-index:100;display:none;justify-content:center;align-items:center;padding:20px}
         .modal-overlay.active{display:flex}
         .modal{background:rgba(20,30,60,.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:30px 25px;max-width:340px;width:100%}
@@ -96,6 +108,19 @@
         .modal-btn:active{transform:scale(.95)}
         .modal-btn-primary{background:linear-gradient(135deg,#4a8af4,#2a5a9a);color:#fff}
         .modal-btn-secondary{background:rgba(255,255,255,.06);color:#c8d6ff;border:1px solid rgba(255,255,255,.08)}
+        .result-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);backdrop-filter:blur(10px);z-index:200;display:none;justify-content:center;align-items:center;padding:20px}
+        .result-modal.active{display:flex}
+        .result-box{text-align:center;animation:fadeIn .3s ease}
+        .result-icon{font-size:72px;margin-bottom:16px}
+        .result-title{font-size:28px;font-weight:700;color:#fff;margin-bottom:8px}
+        .result-title.win{color:#4ade80}
+        .result-title.lose{color:#ff6b6b}
+        .result-amount{font-size:18px;color:#f7e05e;margin-bottom:20px}
+        .result-btn{padding:12px 40px;border-radius:30px;border:none;background:linear-gradient(135deg,#f7e05e,#e8b42b);color:#0a0e1a;font-weight:700;font-size:16px;cursor:pointer}
+        @keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+        
+        .games-toggle{color:#4a8af4;font-size:13px;cursor:pointer;text-align:center;padding:4px 0;margin-bottom:6px;font-weight:500}
+        .games-toggle:hover{color:#6aafff}
     </style>
 </head>
 <body>
@@ -123,34 +148,74 @@
             <div class="menu-item" onclick="alert('Сервис')"><span class="icon">⚙️</span>Сервис</div>
             <div class="menu-item" onclick="openPromo()"><span class="icon">🎁</span>Промо</div>
         </div>
+        
+        <!-- ИГРЫ -->
+        <div class="games-section" id="gamesSection">
+            <div class="games-toggle" onclick="toggleGames()">▲ Скрыть игры</div>
+            <div class="games-grid">
+                <div class="game-card" onclick="openGame('Crazy Time','🌀')"><span class="icon">🌀</span><div class="name">Crazy Time</div><div class="sub">x5000</div></div>
+                <div class="game-card" onclick="openGame('Mega Wheel','🎡')"><span class="icon">🎡</span><div class="name">Mega Wheel</div><div class="sub">x1000</div></div>
+                <div class="game-card" onclick="openGame('Slots','🎰')"><span class="icon">🎰</span><div class="name">Slots</div><div class="sub">x500</div></div>
+                <div class="game-card" onclick="openGame('Dice','🎲')"><span class="icon">🎲</span><div class="name">Dice</div><div class="sub">x100</div></div>
+                <div class="game-card" onclick="openGame('Wheel Plus','🎯')"><span class="icon">🎯</span><div class="name">Wheel Plus</div><div class="sub">x200</div></div>
+                <div class="game-card" onclick="openGame('Double','🔴')"><span class="icon">🔴</span><div class="name">Double</div><div class="sub">x2</div></div>
+                <div class="game-card" onclick="openGame('Dream','🌙')"><span class="icon">🌙</span><div class="name">Dream</div><div class="sub">x50</div></div>
+                <div class="game-card" onclick="openGame('2','2️⃣')"><span class="icon">2️⃣</span><div class="name">2</div><div class="sub">x2</div></div>
+            </div>
+        </div>
     </div>
     
-    <!-- Выезжающее меню (справа) -->
+    <!-- САЙДБАР -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-close" onclick="closeSidebar()">✕</div>
         <div class="sidebar-title">📋 Разделы</div>
         <div class="sidebar-item active"><span class="icon">🏠</span>Главная</div>
-        <div class="sidebar-item" onclick="alert('Игры')"><span class="icon">🎮</span>Игры</div>
+        <div class="sidebar-item" onclick="toggleGames();closeSidebar()"><span class="icon">🎮</span>Игры</div>
         <div class="sidebar-item" onclick="alert('Рейтинг')"><span class="icon">🏆</span>Рейтинг</div>
         <div class="sidebar-item" onclick="alert('Настройки')"><span class="icon">⚙️</span>Настройки</div>
         <div class="sidebar-item" onclick="alert('Поддержка')"><span class="icon">💬</span>Поддержка</div>
         <div class="sidebar-item" onclick="alert('Выйти')"><span class="icon">🚪</span>Выйти</div>
     </div>
     
-    <!-- Нижняя навигация -->
+    <!-- НАВИГАЦИЯ -->
     <div class="bottom-nav">
         <button class="nav-item" onclick="alert('Профиль')">
             <span class="icon">👤</span>
             <span>Профиль</span>
         </button>
-        <div class="nav-center" onclick="alert('GAME')">🎮</div>
+        <div class="nav-center" id="gameBtn" onclick="toggleGames()">🎮</div>
         <button class="nav-item" id="navMenu" onclick="toggleSidebar()">
             <span class="icon">⚙️</span>
             <span>Настройки</span>
         </button>
     </div>
     
+    <!-- МОДАЛКА СТАВКИ -->
+    <div class="modal-overlay" id="gameModal">
+        <div class="modal">
+            <div class="modal-title" id="modalTitle">🎮 Игра</div>
+            <div style="text-align:center;font-size:48px;margin-bottom:10px" id="modalIcon">🎰</div>
+            <input class="modal-input" id="betInput" type="number" placeholder="Сумма ставки" min="1" />
+            <div style="color:#8a9bb5;text-align:center;font-size:13px;margin-bottom:16px">Баланс: <span id="modalBalance">0</span> BetCoin</div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal()">Отмена</button>
+                <button class="modal-btn modal-btn-primary" onclick="placeBet()">Сделать ставку</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- РЕЗУЛЬТАТ -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-box">
+            <div class="result-icon" id="resultIcon">🎉</div>
+            <div class="result-title" id="resultTitle">Вы выиграли!</div>
+            <div class="result-amount" id="resultAmount">+0 BetCoin</div>
+            <button class="result-btn" onclick="closeResult()">Продолжить</button>
+        </div>
+    </div>
+    
+    <!-- ПРОМОКОД -->
     <div class="modal-overlay" id="promoModal">
         <div class="modal">
             <div class="modal-title">🎁 Введите промокод</div>
@@ -179,6 +244,7 @@
 
         const userId = tgUser.id.toString();
         let balance = 0;
+        let currentGame = '';
 
         // ===== DOM =====
         const userName = document.getElementById('userName');
@@ -263,6 +329,139 @@
             }
         };
 
+        // ===== ИГРЫ =====
+        let gamesVisible = false;
+
+        function toggleGames() {
+            gamesVisible = !gamesVisible;
+            const section = document.getElementById('gamesSection');
+            const btn = document.getElementById('gameBtn');
+            if (gamesVisible) {
+                section.classList.add('active');
+                btn.classList.add('active');
+                btn.textContent = '✕';
+            } else {
+                section.classList.remove('active');
+                btn.classList.remove('active');
+                btn.textContent = '🎮';
+            }
+        }
+
+        function openGame(name, icon) {
+            currentGame = name;
+            document.getElementById('modalTitle').textContent = '🎮 ' + name;
+            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('betInput').value = '';
+            document.getElementById('modalBalance').textContent = balance.toLocaleString();
+            document.getElementById('gameModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('gameModal').classList.remove('active');
+        }
+
+        function placeBet() {
+            const input = document.getElementById('betInput');
+            const amount = parseInt(input.value);
+
+            if (isNaN(amount) || amount <= 0) {
+                alert('❌ Введите сумму!');
+                return;
+            }
+            if (amount > balance) {
+                alert('❌ Недостаточно средств!');
+                return;
+            }
+
+            closeModal();
+
+            let win = false;
+            let winAmount = 0;
+            let multiplier = 0;
+            let resultText = '';
+
+            if (currentGame === 'Dice') {
+                const die1 = Math.floor(Math.random() * 6) + 1;
+                const die2 = Math.floor(Math.random() * 6) + 1;
+                const result = die1 + die2;
+                const betType = Math.random() > 0.5 ? 'under' : 'over';
+                win = betType === 'under' ? result < 7 : result > 7;
+                multiplier = 2;
+                winAmount = win ? amount * 2 : 0;
+                resultText = `${result} (${die1}+${die2})`;
+            } else if (currentGame === 'Crazy Time' || currentGame === 'Mega Wheel' || currentGame === 'Wheel Plus') {
+                const mults = currentGame === 'Crazy Time' ? [1,2,5,10,20,50,100,500,1000,5000] :
+                              currentGame === 'Mega Wheel' ? [1,2,5,10,20,50,100,200,500,1000] :
+                              [1,2,3,5,10,20,50];
+                const idx = Math.floor(Math.random() * mults.length);
+                multiplier = mults[idx];
+                win = Math.random() > 0.35;
+                winAmount = win ? amount * multiplier : 0;
+                resultText = `x${multiplier}`;
+            } else if (currentGame === 'Slots') {
+                const symbols = ['🍒','🍋','🍊','🍇','💎','7️⃣','🎰'];
+                const results = [
+                    symbols[Math.floor(Math.random()*symbols.length)],
+                    symbols[Math.floor(Math.random()*symbols.length)],
+                    symbols[Math.floor(Math.random()*symbols.length)]
+                ];
+                win = results[0] === results[1] && results[1] === results[2];
+                multiplier = win ? (results[0] === '💎' ? 10 : results[0] === '7️⃣' ? 5 : 3) : 0;
+                winAmount = win ? amount * multiplier : 0;
+                resultText = results.join(' ');
+            } else if (currentGame === 'Double') {
+                win = Math.random() > 0.5;
+                multiplier = 2;
+                winAmount = win ? amount * 2 : 0;
+                resultText = win ? '✅ Выигрыш!' : '❌ Проигрыш!';
+            } else if (currentGame === 'Dream') {
+                const mults = [0,0,0,1,1,2,2,3,5,10,20,50];
+                multiplier = mults[Math.floor(Math.random() * mults.length)];
+                win = multiplier > 0;
+                winAmount = win ? amount * multiplier : 0;
+                resultText = win ? `x${multiplier}` : '0';
+            } else if (currentGame === '2') {
+                const roll = Math.floor(Math.random() * 2) + 1;
+                win = roll === 2;
+                multiplier = 2;
+                winAmount = win ? amount * 2 : 0;
+                resultText = win ? '✅ 2!' : '❌ 1';
+            } else {
+                win = Math.random() > 0.5;
+                multiplier = 2;
+                winAmount = win ? amount * 2 : 0;
+                resultText = win ? 'Победа!' : 'Поражение!';
+            }
+
+            const newBalance = win ? balance - amount + winAmount : balance - amount;
+            saveBalance(newBalance);
+            showResult(win, winAmount, multiplier, resultText);
+        }
+
+        function showResult(win, winAmount, multiplier, detail) {
+            const modal = document.getElementById('resultModal');
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const amount = document.getElementById('resultAmount');
+
+            if (win) {
+                icon.textContent = '🎉';
+                title.textContent = 'Вы выиграли!';
+                title.className = 'result-title win';
+                amount.textContent = `+${winAmount} BetCoin (x${multiplier}) ${detail ? '— ' + detail : ''}`;
+            } else {
+                icon.textContent = '😔';
+                title.textContent = 'Вы проиграли!';
+                title.className = 'result-title lose';
+                amount.textContent = `Попробуйте снова! ${detail ? '— ' + detail : ''}`;
+            }
+            modal.classList.add('active');
+        }
+
+        function closeResult() {
+            document.getElementById('resultModal').classList.remove('active');
+        }
+
         // ===== САЙДБАР =====
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
@@ -304,8 +503,13 @@
         // ===== ЗАПУСК =====
         loadData();
 
+        window.toggleGames = toggleGames;
         window.toggleSidebar = toggleSidebar;
         window.closeSidebar = closeSidebar;
+        window.openGame = openGame;
+        window.closeModal = closeModal;
+        window.placeBet = placeBet;
+        window.closeResult = closeResult;
         window.openPromo = openPromo;
         window.closePromo = closePromo;
         window.applyPromo = applyPromo;

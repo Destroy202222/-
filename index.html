@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>BetGame</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
         body{min-height:100vh;display:flex;justify-content:center;align-items:flex-start;background:#0a0e1a;padding:12px}
@@ -151,7 +150,7 @@
             <div class="dice-back" onclick="closeDice()">← Назад</div>
             <div class="dice-title">🎲 Dice</div>
             
-            <div class="dice-timer" id="timerDisplay">⏳ Раунд: <span id="timerCount">12</span>s</div>
+            <div class="dice-timer">⏳ Раунд: <span id="timerDisplay">12</span>s</div>
             
             <div class="dice-box">
                 <div class="dice" id="dice1">⚀</div>
@@ -222,12 +221,6 @@
     </div>
 
     <script>
-        // ===== SUPABASE =====
-        const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        // ===== TELEGRAM =====
         let tgUser = null;
         try {
             const tg = window.Telegram.WebApp;
@@ -245,14 +238,13 @@
         let timerInterval = null;
         let seconds = 12;
         let isRolling = false;
-        let isProcessing = false;
 
-        // ===== DOM =====
+        const SB_URL = 'https://dlprylagddsmtzpmzxqy.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
+
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const balanceDisplay = document.getElementById('balanceDisplay');
-        const timerCount = document.getElementById('timerCount');
-        const timerDisplay = document.getElementById('timerDisplay');
 
         function updateUI() {
             balanceDisplay.textContent = balance.toLocaleString();
@@ -264,20 +256,21 @@
             }
         }
 
-        // ===== ЗАГРУЗКА ПОЛЬЗОВАТЕЛЯ =====
         async function loadUser() {
             try {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
-
-                if (error && error.code === 'PGRST116') {
-                    await supabase.from('users').insert([{ id: userId, name: username, balance: 5000 }]);
+                const res = await fetch(`${SB_URL}/rest/v1/users?id=eq.${userId}&select=*`, {
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+                });
+                const data = await res.json();
+                if (data.length === 0) {
+                    await fetch(`${SB_URL}/rest/v1/users`, {
+                        method: 'POST',
+                        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: userId, name: username, balance: 5000 })
+                    });
                     balance = 5000;
-                } else if (data) {
-                    balance = data.balance || 0;
+                } else {
+                    balance = data[0].balance || 0;
                 }
                 updateUI();
             } catch(e) { balance = 5000; updateUI(); }
@@ -285,119 +278,209 @@
 
         async function saveBalance(val) {
             try {
-                await supabase.from('users').update({ balance: val }).eq('id', userId);
+                await fetch(`${SB_URL}/rest/v1/users?id=eq.${userId}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ balance: val })
+                });
                 balance = val;
                 updateUI();
             } catch(e) {}
         }
 
-        // ===== СОСТОЯНИЕ ИГРЫ =====
-        let gameState = { seconds: 12, is_rolling: false, result: null, d1: null, d2: null };
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
 
-        async function getGameState() {
-            try {
-                const { data, error } = await supabase
-                    .from('game_state')
-                    .select('*')
-                    .eq('id', 'dice')
-                    .single();
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        }
 
-                if (error && error.code === 'PGRST116') {
-                    await supabase.from('game_state').insert([{ id: 'dice', seconds: 12, is_rolling: false }]);
-                    return { seconds: 12, is_rolling: false, result: null, d1: null, d2: null };
+        function goHome() {
+            document.getElementById('dicePage').classList.remove('active');
+            document.getElementById('pageHome').classList.add('active');
+            document.getElementById('gameBtn').classList.remove('active');
+            document.querySelector('.nav-item.active')?.classList.remove('active');
+            document.querySelector('.nav-item:first-child')?.classList.add('active');
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        }
+
+        function openDice() {
+            document.getElementById('pageHome').classList.remove('active');
+            document.getElementById('dicePage').classList.add('active');
+            document.getElementById('gameBtn').classList.add('active');
+            document.querySelector('.nav-item.active')?.classList.remove('active');
+            if (!timerInterval) startTimer();
+        }
+
+        function closeDice() { goHome(); }
+
+        function setBet(type) {
+            betType = type;
+            document.querySelectorAll('.dice-bet-option').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.dice-bet-option[data-bet="${type}"]`).classList.add('active');
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            seconds = 12;
+            isRolling = false;
+            document.getElementById('placeBtn').disabled = false;
+            document.getElementById('timerDisplay').textContent = seconds;
+            
+            timerInterval = setInterval(() => {
+                seconds--;
+                document.getElementById('timerDisplay').textContent = seconds;
+                if (seconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    rollDice();
                 }
-                return data || { seconds: 12, is_rolling: false, result: null, d1: null, d2: null };
+            }, 1000);
+        }
+
+        async function rollDice() {
+            if (isRolling) return;
+            isRolling = true;
+            document.getElementById('placeBtn').disabled = true;
+            document.querySelector('.dice-timer').innerHTML = '🎲 Бросок...';
+            
+            const d1 = Math.floor(Math.random() * 6) + 1;
+            const d2 = Math.floor(Math.random() * 6) + 1;
+            const result = d1 + d2;
+            const dots = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+            
+            const dice1 = document.getElementById('dice1');
+            const dice2 = document.getElementById('dice2');
+            dice1.textContent = dots[d1-1];
+            dice2.textContent = dots[d2-1];
+            dice1.classList.add('rolling');
+            dice2.classList.add('rolling');
+            
+            setTimeout(() => {
+                dice1.classList.remove('rolling');
+                dice2.classList.remove('rolling');
+            }, 800);
+            
+            document.getElementById('diceResult').textContent = `Результат: ${result} (${d1}+${d2})`;
+            
+            await processBets(result);
+            
+            setTimeout(() => {
+                isRolling = false;
+                document.querySelector('.dice-timer').innerHTML = '⏳ Раунд: <span id="timerDisplay">12</span>s';
+                startTimer();
+                document.getElementById('diceResult').textContent = 'Результат: ?';
+                document.getElementById('betsList').innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+            }, 5000);
+        }
+
+        async function processBets(result) {
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/bets?game=eq.Dice&result=eq.pending&order=created_at.asc&limit=50`, {
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+                });
+                const bets = await res.json();
+                
+                for (const bet of bets) {
+                    let win = false;
+                    let winAmount = 0;
+                    let coeff = 0;
+                    
+                    if (bet.detail === 'under') {
+                        win = result < 7;
+                        coeff = 2;
+                    } else if (bet.detail === 'over') {
+                        win = result > 7;
+                        coeff = 2;
+                    } else if (bet.detail === 'seven') {
+                        win = result === 7;
+                        coeff = 5;
+                    }
+                    
+                    winAmount = win ? bet.amount * coeff : 0;
+                    
+                    await fetch(`${SB_URL}/rest/v1/bets?id=eq.${bet.id}`, {
+                        method: 'PATCH',
+                        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            result: win ? 'win' : 'lose',
+                            win_amount: winAmount,
+                            coefficient: coeff
+                        })
+                    });
+                    
+                    if (win) {
+                        const uRes = await fetch(`${SB_URL}/rest/v1/users?id=eq.${bet.user_id}&select=balance`, {
+                            headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+                        });
+                        const uData = await uRes.json();
+                        if (uData.length > 0) {
+                            const newBal = uData[0].balance - bet.amount + winAmount;
+                            await fetch(`${SB_URL}/rest/v1/users?id=eq.${bet.user_id}`, {
+                                method: 'PATCH',
+                                headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ balance: newBal })
+                            });
+                            if (bet.user_id === userId) {
+                                balance = newBal;
+                                updateUI();
+                            }
+                        }
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function placeBet() {
+            if (isRolling) { alert('⏳ Раунд идет!'); return; }
+            if (seconds < 3) { alert('⏳ Раунд скоро закончится!'); return; }
+            
+            const amount = parseInt(document.getElementById('betInput').value);
+            if (!amount || amount <= 0) { alert('❌ Введите сумму!'); return; }
+            if (amount > balance) { alert('❌ Недостаточно средств!'); return; }
+            
+            await saveBalance(balance - amount);
+            
+            try {
+                await fetch(`${SB_URL}/rest/v1/bets`, {
+                    method: 'POST',
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        user_name: username,
+                        amount: amount,
+                        game: 'Dice',
+                        result: 'pending',
+                        win_amount: 0,
+                        coefficient: 0,
+                        detail: betType
+                    })
+                });
+                loadBets();
             } catch(e) {
-                return { seconds: 12, is_rolling: false, result: null, d1: null, d2: null };
+                await saveBalance(balance + amount);
+                alert('❌ Ошибка!');
             }
         }
 
-        async function updateGameState(updates) {
-            try {
-                await supabase.from('game_state').update(updates).eq('id', 'dice');
-            } catch(e) {}
-        }
-
-        // ===== REALTIME ПОДПИСКА =====
-        function subscribeGameState() {
-            supabase
-                .channel('game_state_channel')
-                .on('postgres_changes', { 
-                    event: 'UPDATE', 
-                    schema: 'public', 
-                    table: 'game_state',
-                    filter: 'id=eq.dice'
-                }, (payload) => {
-                    const newState = payload.new;
-                    gameState = newState;
-                    seconds = newState.seconds || 12;
-                    isRolling = newState.is_rolling || false;
-                    
-                    timerCount.textContent = seconds;
-                    
-                    if (isRolling) {
-                        document.getElementById('placeBtn').disabled = true;
-                        const dots = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-                        document.getElementById('dice1').textContent = dots[(newState.d1 || 1) - 1];
-                        document.getElementById('dice2').textContent = dots[(newState.d2 || 1) - 1];
-                        document.getElementById('dice1').classList.add('rolling');
-                        document.getElementById('dice2').classList.add('rolling');
-                        setTimeout(() => {
-                            document.getElementById('dice1').classList.remove('rolling');
-                            document.getElementById('dice2').classList.remove('rolling');
-                        }, 800);
-                        document.getElementById('diceResult').textContent = `Результат: ${newState.result} (${newState.d1}+${newState.d2})`;
-                        timerDisplay.innerHTML = '🎲 Бросок!';
-                    } else {
-                        document.getElementById('placeBtn').disabled = false;
-                        if (seconds <= 0) {
-                            executeRoll();
-                        }
-                    }
-                })
-                .subscribe();
-        }
-
-        function subscribeBets() {
-            supabase
-                .channel('bets_channel')
-                .on('postgres_changes', { 
-                    event: 'INSERT', 
-                    schema: 'public', 
-                    table: 'bets'
-                }, () => {
-                    loadBets();
-                })
-                .on('postgres_changes', { 
-                    event: 'UPDATE', 
-                    schema: 'public', 
-                    table: 'bets'
-                }, () => {
-                    loadBets();
-                })
-                .subscribe();
-        }
-
-        // ===== ЗАГРУЗКА СТАВОК =====
         async function loadBets() {
             try {
-                const { data, error } = await supabase
-                    .from('bets')
-                    .select('*')
-                    .eq('game', 'Dice')
-                    .order('created_at', { ascending: false })
-                    .limit(20);
-
+                const res = await fetch(`${SB_URL}/rest/v1/bets?game=eq.Dice&order=created_at.desc&limit=15`, {
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+                });
+                const bets = await res.json();
                 const container = document.getElementById('betsList');
-                if (error || !data || data.length === 0) {
+                if (!bets || bets.length === 0) {
                     container.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
                     return;
                 }
-
-                container.innerHTML = data.map(b => {
+                container.innerHTML = bets.map(b => {
                     let status = '', cls = '';
                     if (b.result === 'win') { 
-                        status = '✅ +' + b.win_amount; 
+                        status = '✅ +' + b.win_amount + ' (x' + b.coefficient + ')'; 
                         cls = 'win'; 
                     } else if (b.result === 'lose') { 
                         status = '❌ -' + b.amount; 
@@ -416,224 +499,9 @@
                         <span class="${cls}">${status}</span>
                     </div>`;
                 }).join('');
-            } catch(e) {}
-        }
-
-        // ===== ВЫПОЛНЕНИЕ БРОСКА =====
-        async function executeRoll() {
-            if (isRolling || isProcessing) return;
-            isProcessing = true;
-            
-            const d1 = Math.floor(Math.random() * 6) + 1;
-            const d2 = Math.floor(Math.random() * 6) + 1;
-            const result = d1 + d2;
-            
-            await updateGameState({ 
-                is_rolling: true, 
-                d1: d1, 
-                d2: d2, 
-                result: result,
-                seconds: 0
-            });
-            
-            // Обрабатываем ставки
-            await processBets(result);
-            await loadBets();
-            
-            // Через 5 секунд сбрасываем
-            setTimeout(async () => {
-                await updateGameState({ 
-                    is_rolling: false, 
-                    seconds: 12, 
-                    result: null, 
-                    d1: null, 
-                    d2: null 
-                });
-                
-                // Очищаем ставки
-                await supabase.from('bets').delete().eq('game', 'Dice');
-                
-                document.getElementById('diceResult').textContent = 'Результат: ?';
-                timerDisplay.innerHTML = '⏳ Раунд: <span id="timerCount">12</span>s';
-                document.getElementById('placeBtn').disabled = false;
-                loadBets();
-                isProcessing = false;
-            }, 5000);
-        }
-
-        async function processBets(result) {
-            try {
-                const { data, error } = await supabase
-                    .from('bets')
-                    .select('*')
-                    .eq('game', 'Dice')
-                    .eq('result', 'pending');
-
-                if (error || !data) return;
-
-                for (const bet of data) {
-                    let win = false;
-                    let winAmount = 0;
-                    let coeff = 0;
-                    
-                    if (bet.detail === 'under') {
-                        win = result < 7;
-                        coeff = 2;
-                    } else if (bet.detail === 'over') {
-                        win = result > 7;
-                        coeff = 2;
-                    } else if (bet.detail === 'seven') {
-                        win = result === 7;
-                        coeff = 5;
-                    }
-                    
-                    winAmount = win ? bet.amount * coeff : 0;
-                    
-                    await supabase
-                        .from('bets')
-                        .update({ 
-                            result: win ? 'win' : 'lose', 
-                            win_amount: winAmount, 
-                            coefficient: coeff 
-                        })
-                        .eq('id', bet.id);
-                    
-                    if (win) {
-                        const { data: userData } = await supabase
-                            .from('users')
-                            .select('balance')
-                            .eq('id', bet.user_id)
-                            .single();
-                        
-                        if (userData) {
-                            const newBal = userData.balance - bet.amount + winAmount;
-                            await supabase
-                                .from('users')
-                                .update({ balance: newBal })
-                                .eq('id', bet.user_id);
-                            
-                            if (bet.user_id === userId) {
-                                balance = newBal;
-                                updateUI();
-                            }
-                        }
-                    }
-                }
             } catch(e) { console.error(e); }
         }
 
-        // ===== ТАЙМЕР =====
-        async function startTimer() {
-            if (timerInterval) clearInterval(timerInterval);
-            
-            const state = await getGameState();
-            gameState = state;
-            seconds = state.seconds || 12;
-            isRolling = state.is_rolling || false;
-            
-            timerCount.textContent = seconds;
-            if (isRolling) {
-                document.getElementById('placeBtn').disabled = true;
-                timerDisplay.innerHTML = '🎲 Бросок!';
-                const dots = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-                document.getElementById('dice1').textContent = dots[(state.d1 || 1) - 1];
-                document.getElementById('dice2').textContent = dots[(state.d2 || 1) - 1];
-                document.getElementById('diceResult').textContent = `Результат: ${state.result} (${state.d1}+${state.d2})`;
-                setTimeout(() => {
-                    document.getElementById('dice1').classList.remove('rolling');
-                    document.getElementById('dice2').classList.remove('rolling');
-                }, 800);
-                return;
-            }
-            
-            if (seconds <= 0) {
-                executeRoll();
-                return;
-            }
-            
-            timerInterval = setInterval(async () => {
-                seconds--;
-                timerCount.textContent = seconds;
-                await updateGameState({ seconds: seconds });
-                if (seconds <= 0) {
-                    clearInterval(timerInterval);
-                    timerInterval = null;
-                    executeRoll();
-                }
-            }, 1000);
-        }
-
-        // ===== СТАВКА =====
-        async function placeBet() {
-            if (isRolling) { alert('⏳ Раунд идет!'); return; }
-            if (seconds < 3) { alert('⏳ Раунд скоро закончится!'); return; }
-            
-            const amount = parseInt(document.getElementById('betInput').value);
-            if (!amount || amount <= 0) { alert('❌ Введите сумму!'); return; }
-            if (amount > balance) { alert('❌ Недостаточно средств!'); return; }
-            
-            await saveBalance(balance - amount);
-            
-            try {
-                await supabase.from('bets').insert([{
-                    user_id: userId,
-                    user_name: username,
-                    amount: amount,
-                    game: 'Dice',
-                    result: 'pending',
-                    win_amount: 0,
-                    coefficient: 0,
-                    detail: betType
-                }]);
-                loadBets();
-            } catch(e) {
-                await saveBalance(balance + amount);
-                alert('❌ Ошибка!');
-            }
-        }
-
-        // ===== NAV =====
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
-        }
-
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('active');
-        }
-
-        function goHome() {
-            document.getElementById('dicePage').classList.remove('active');
-            document.getElementById('pageHome').classList.add('active');
-            document.getElementById('gameBtn').classList.remove('active');
-            document.querySelector('.nav-item.active')?.classList.remove('active');
-            document.querySelector('.nav-item:first-child')?.classList.add('active');
-        }
-
-        function openDice() {
-            document.getElementById('pageHome').classList.remove('active');
-            document.getElementById('dicePage').classList.add('active');
-            document.getElementById('gameBtn').classList.add('active');
-            document.querySelector('.nav-item.active')?.classList.remove('active');
-            loadBets();
-            startTimer();
-            subscribeGameState();
-            subscribeBets();
-        }
-
-        function closeDice() { 
-            if (timerInterval) clearInterval(timerInterval);
-            goHome(); 
-        }
-
-        function setBet(type) {
-            betType = type;
-            document.querySelectorAll('.dice-bet-option').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.dice-bet-option[data-bet="${type}"]`).classList.add('active');
-        }
-
-        // ===== BUTTONS =====
         document.getElementById('getBtn').onclick = function() { saveBalance(balance + 500); alert('✅ +500 BetCoin!'); };
         document.getElementById('buyBtn').onclick = function() {
             const amount = prompt('💰 Сумма:', '1000');
@@ -655,7 +523,6 @@
 
         function closeResult() { document.getElementById('resultModal').classList.remove('active'); }
 
-        // ===== INIT =====
         loadUser();
 
         window.goHome = goHome;

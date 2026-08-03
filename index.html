@@ -465,23 +465,7 @@
             
             document.getElementById('diceResult').textContent = `Результат: ${result} (${d1}+${d2})`;
             
-            // Обрабатываем ставки
-            const betAmount = parseInt(document.getElementById('betInput').value) || 0;
-            let win = false;
-            let coeff = 0;
-            if (betType === 'under') { win = result < 7; coeff = 2; }
-            else if (betType === 'over') { win = result > 7; coeff = 2; }
-            else if (betType === 'seven') { win = result === 7; coeff = 5; }
-            
-            if (betAmount > 0 && win) {
-                const winAmount = betAmount * coeff;
-                const newBalance = balance + winAmount;
-                await saveBalance(newBalance);
-                document.getElementById('diceResult').textContent += ` 🎉 Выигрыш +${winAmount}!`;
-            } else if (betAmount > 0) {
-                document.getElementById('diceResult').textContent += ` ❌ Проигрыш -${betAmount}`;
-            }
-            
+            await processBets(result);
             await loadBets();
             
             setTimeout(() => {
@@ -490,6 +474,56 @@
                 document.getElementById('diceResult').textContent = 'Результат: ?';
                 startTimer();
             }, 5000);
+        }
+        
+        async function processBets(result) {
+            try {
+                const { data } = await supabase
+                    .from('bets')
+                    .select('*')
+                    .eq('game', 'Dice')
+                    .eq('result', 'pending')
+                    .eq('user_id', userId);
+                    
+                if (!data) return;
+                
+                for (const bet of data) {
+                    let win = false;
+                    let winAmount = 0;
+                    let coeff = 0;
+                    
+                    if (bet.detail === 'under') {
+                        win = result < 7;
+                        coeff = 2;
+                    } else if (bet.detail === 'over') {
+                        win = result > 7;
+                        coeff = 2;
+                    } else if (bet.detail === 'seven') {
+                        win = result === 7;
+                        coeff = 5;
+                    }
+                    
+                    winAmount = win ? bet.amount * coeff : 0;
+                    
+                    await supabase
+                        .from('bets')
+                        .update({ 
+                            result: win ? 'win' : 'lose', 
+                            win_amount: winAmount, 
+                            coefficient: coeff 
+                        })
+                        .eq('id', bet.id);
+                    
+                    if (win) {
+                        balance += winAmount;
+                        await supabase
+                            .from('users')
+                            .update({ balance: balance })
+                            .eq('id', userId);
+                        updateUI();
+                    }
+                }
+            } catch(e) {}
         }
         
         async function placeBet() {
@@ -501,8 +535,23 @@
             if (amount > balance) { alert('❌ Недостаточно средств!'); return; }
             
             await saveBalance(balance - amount);
-            await loadBets();
-            alert('✅ Ставка принята!');
+            
+            try {
+                await supabase.from('bets').insert([{
+                    user_id: userId,
+                    user_name: username,
+                    amount: amount,
+                    game: 'Dice',
+                    result: 'pending',
+                    win_amount: 0,
+                    coefficient: 0,
+                    detail: betType
+                }]);
+                loadBets();
+            } catch(e) {
+                await saveBalance(balance + amount);
+                alert('❌ Ошибка!');
+            }
         }
         
         async function loadBets() {

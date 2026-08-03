@@ -41,13 +41,9 @@
         .menu-item:active{transform:scale(.95);background:rgba(255,255,255,.06)}
         .menu-item .icon{font-size:18px;display:block;margin-bottom:3px;filter:brightness(0) invert(1);opacity:.6}
         
-        .page{display:none}
-        .page.active{display:block}
-        
-        /* DICE */
-        .dice-container{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer;transition:all .2s}
-        .dice-container:active{transform:scale(.98)}
-        .dice-header{display:flex;justify-content:space-between;align-items:center;color:#fff}
+        /* DICE CONTAINER */
+        .dice-container{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:10px}
+        .dice-header{display:flex;justify-content:space-between;align-items:center;color:#fff;cursor:pointer}
         .dice-header span{font-size:16px;font-weight:600}
         .dice-header .arrow{transition:transform .3s}
         .dice-header .arrow.open{transform:rotate(180deg)}
@@ -77,20 +73,21 @@
         .dice-bet-item .lose{color:#ff6b6b}
         .dice-bet-item .pending{color:#f7e05e}
         
-        /* BRAWL STARS LOBBY */
-        .lobby-container{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:10px}
-        .lobby-title{color:#fff;font-size:16px;font-weight:600;margin-bottom:8px}
+        /* LOBBY PAGE */
+        .lobby-page{display:none;flex-direction:column}
+        .lobby-page.active{display:flex}
+        .lobby-title{color:#fff;font-size:18px;font-weight:700;margin-bottom:12px}
         .lobby-create{display:flex;gap:8px;margin-bottom:10px}
         .lobby-create input{flex:1;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:13px;outline:none}
         .lobby-create input:focus{border-color:#4a8af4}
         .lobby-create button{padding:8px 16px;border-radius:8px;border:none;background:linear-gradient(135deg,#4a8af4,#2a5a9a);color:#fff;font-weight:600;cursor:pointer}
-        .lobby-list{max-height:300px;overflow-y:auto}
+        .lobby-list{max-height:400px;overflow-y:auto}
         .lobby-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px;margin-bottom:6px}
         .lobby-item .top{display:flex;justify-content:space-between;align-items:center}
         .lobby-item .name{color:#fff;font-size:14px;font-weight:600}
         .lobby-item .bet{color:#f7e05e;font-size:13px}
         .lobby-item .players{color:#8a9bb5;font-size:12px}
-        .lobby-item .actions{display:flex;gap:6px;margin-top:6px}
+        .lobby-item .actions{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
         .lobby-item .actions button{padding:4px 12px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer}
         .lobby-item .actions .join{background:#4a8af4;color:#fff}
         .lobby-item .actions .delete{background:#ff6b6b;color:#fff}
@@ -109,10 +106,8 @@
         .admin-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.02);color:#aec0ff;font-size:12px}
         .admin-item button{background:transparent;border:none;color:#ff6b6b;cursor:pointer;font-size:14px}
         
-        /* BANS */
-        .ban-list{max-height:100px;overflow-y:auto}
-        .ban-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.02);color:#ff6b6b;font-size:12px}
-        .ban-item button{background:transparent;border:none;color:#4ade80;cursor:pointer;font-size:14px}
+        .page{display:none}
+        .page.active{display:block}
         
         .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:420px;width:100%;background:rgba(10,14,26,.95);backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;padding:6px 16px 14px;z-index:40;border-top:1px solid rgba(255,255,255,.04)}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:1px;background:transparent;border:none;color:#6f8f9f;font-size:10px;cursor:pointer;padding:4px 8px}
@@ -122,6 +117,17 @@
         .nav-center{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#4a8af4,#2a5a9a);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;margin-top:-20px;box-shadow:0 4px 20px rgba(74,138,244,.3);border:3px solid rgba(255,255,255,.08);cursor:pointer}
         .nav-center:active{transform:scale(.92)}
         .nav-center.active{background:linear-gradient(135deg,#f7e05e,#e8b42b);box-shadow:0 4px 20px rgba(247,224,94,.3)}
+        
+        .sidebar-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:50;display:none}
+        .sidebar-overlay.active{display:block}
+        .sidebar{position:fixed;top:0;right:-280px;width:280px;height:100%;background:rgba(10,14,30,.98);backdrop-filter:blur(20px);z-index:51;padding:25px 20px;transition:right .3s cubic-bezier(.4,0,.2,1);border-left:1px solid rgba(255,255,255,.05)}
+        .sidebar.open{right:0}
+        .sidebar-close{color:#8a9bb5;font-size:24px;cursor:pointer;margin-bottom:25px;display:inline-block}
+        .sidebar-title{color:#fff;font-size:20px;font-weight:700;margin-bottom:20px}
+        .sidebar-item{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:10px;color:#c8d6ff;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;margin-bottom:3px}
+        .sidebar-item:active{transform:scale(.96);background:rgba(255,255,255,.04)}
+        .sidebar-item .icon{font-size:20px;filter:brightness(.7) invert(.9);opacity:.6;width:28px}
+        .sidebar-item.active{background:rgba(74,138,244,.12);color:#4a8af4}
         
         .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);z-index:100;display:none;justify-content:center;align-items:center;padding:20px}
         .modal-overlay.active{display:flex}
@@ -144,14 +150,13 @@
         .result-amount{color:#f7e05e;font-size:15px;margin-bottom:14px}
         .result-btn{padding:10px 30px;border:none;border-radius:30px;background:gold;color:#000;font-weight:700;font-size:14px;cursor:pointer}
         .hidden{display:none}
-        .tab-btn{background:transparent;border:none;color:#6f8f9f;padding:6px 12px;cursor:pointer;font-size:13px;border-bottom:2px solid transparent;transition:all .2s}
-        .tab-btn.active{color:#f7e05e;border-bottom-color:#f7e05e}
     </style>
 </head>
 <body>
     <div id="bg-3d"><div class="sphere"></div><div class="sphere"></div><div class="sphere"></div></div>
     
     <div class="app">
+        <!-- HEADER -->
         <div class="header">
             <div class="header-left">
                 <span class="username" id="userName">hamster</span>
@@ -160,6 +165,7 @@
             <div class="avatar" id="userAvatar">🐹</div>
         </div>
         
+        <!-- BALANCE -->
         <div class="balance-block">
             <div class="balance-left">
                 <div class="balance-label">BetCoin</div>
@@ -171,6 +177,7 @@
             </div>
         </div>
         
+        <!-- PAGE: HOME -->
         <div class="page active" id="pageHome">
             <div class="menu-title">Управление</div>
             <div class="menu-grid">
@@ -180,8 +187,8 @@
                 <div class="menu-item" onclick="openPromo()"><span class="icon">🎁</span>Промо</div>
             </div>
             
-            <!-- DICE на главной -->
-            <div class="dice-container" id="diceContainer">
+            <!-- DICE -->
+            <div class="dice-container">
                 <div class="dice-header" onclick="toggleDice()">
                     <span>🎲 Dice</span>
                     <span class="arrow" id="diceArrow">▼</span>
@@ -210,16 +217,16 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- BRAWL STARS LOBBIES -->
-            <div class="lobby-container">
-                <div class="lobby-title">🎮 Brawl Stars Лобби</div>
-                <div class="lobby-create">
-                    <input id="lobbyBetInput" type="number" placeholder="Ставка BETCOIN" value="100" min="1" />
-                    <button onclick="createLobby()">Создать</button>
-                </div>
-                <div id="lobbyList" class="lobby-list"></div>
+        </div>
+        
+        <!-- PAGE: LOBBY -->
+        <div class="page" id="pageLobby">
+            <div style="color:#fff;font-size:18px;font-weight:700;margin-bottom:12px">🎮 Brawl Stars Лобби</div>
+            <div class="lobby-create">
+                <input id="lobbyBetInput" type="number" placeholder="Ставка BETCOIN" value="100" min="1" />
+                <button onclick="createLobby()">Создать</button>
             </div>
+            <div id="lobbyList" class="lobby-list"></div>
             
             <!-- ADMIN PANEL -->
             <div id="adminPanel" class="admin-panel hidden">
@@ -230,39 +237,33 @@
                     <button class="admin-btn-remove" onclick="removeAdmin()">-</button>
                 </div>
                 <div class="admin-list" id="adminList"></div>
-                <div style="margin-top:8px">
-                    <div style="color:#aec0ff;font-size:12px;margin-bottom:4px">🚫 Баны</div>
-                    <div class="ban-list" id="banList"></div>
-                </div>
             </div>
         </div>
         
-        <div class="page" id="pageLobby">
-            <div style="color:#fff;font-size:18px;font-weight:700;margin-bottom:12px">🏟️ Brawl Stars Лобби</div>
-            <div id="lobbyDetail"></div>
-        </div>
-        
+        <!-- NAV -->
         <div class="bottom-nav">
-            <button class="nav-item active" onclick="goHome()" data-page="pageHome">
+            <button class="nav-item active" onclick="navigateTo('pageHome')" data-page="pageHome">
                 <span class="icon">🏠</span><span>Главная</span>
             </button>
-            <div class="nav-center" onclick="openLobby()" id="gameBtn">🎮</div>
+            <div class="nav-center" onclick="navigateTo('pageLobby')" id="gameBtn">🎮</div>
             <button class="nav-item" onclick="toggleSidebar()">
                 <span class="icon">⚙️</span><span>Настройки</span>
             </button>
         </div>
     </div>
     
+    <!-- SIDEBAR -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-close" onclick="closeSidebar()">✕</div>
         <div class="sidebar-title">📋 Разделы</div>
-        <div class="sidebar-item active" onclick="goHome();closeSidebar()"><span class="icon">🏠</span>Главная</div>
-        <div class="sidebar-item" onclick="openLobby();closeSidebar()"><span class="icon">🎮</span>Лобби</div>
+        <div class="sidebar-item active" onclick="navigateTo('pageHome');closeSidebar()"><span class="icon">🏠</span>Главная</div>
+        <div class="sidebar-item" onclick="navigateTo('pageLobby');closeSidebar()"><span class="icon">🎮</span>Лобби</div>
         <div class="sidebar-item" onclick="alert('Скоро')"><span class="icon">🏆</span>Рейтинг</div>
         <div class="sidebar-item" onclick="alert('Настройки')"><span class="icon">⚙️</span>Настройки</div>
     </div>
     
+    <!-- PROMO -->
     <div class="modal-overlay" id="promoModal">
         <div class="modal">
             <div class="modal-title">🎁 Введите промокод</div>
@@ -274,6 +275,7 @@
         </div>
     </div>
     
+    <!-- RESULT -->
     <div class="result-modal" id="resultModal">
         <div class="result-box">
             <div class="result-icon" id="resIcon">🎉</div>
@@ -283,6 +285,7 @@
         </div>
     </div>
     
+    <!-- SCREENSHOT -->
     <div class="modal-overlay" id="screenshotModal">
         <div class="modal">
             <div class="modal-title">📸 Прикрепить скриншот</div>
@@ -307,9 +310,12 @@
             tg.expand();
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tgUser = tg.initDataUnsafe.user;
+                console.log('✅ Telegram user:', tgUser);
             }
-        } catch(e) {}
-        if (!tgUser) tgUser = { id: 'demo', first_name: 'Игрок', username: 'player' };
+        } catch(e) {
+            console.log('❌ Telegram error:', e);
+        }
+        if (!tgUser) tgUser = { id: 'demo_' + Date.now(), first_name: 'Тест', username: 'test' };
         
         const userId = tgUser.id.toString();
         const username = tgUser.first_name || tgUser.username || 'Игрок';
@@ -347,14 +353,24 @@
                     .single();
                     
                 if (error && error.code === 'PGRST116') {
-                    await supabase.from('users').insert([{ id: userId, name: username, tg_username: tgUsername, balance: 5000 }]);
+                    await supabase.from('users').insert([{ 
+                        id: userId, 
+                        name: username, 
+                        tg_username: tgUsername, 
+                        balance: 5000 
+                    }]);
                     balance = 5000;
                 } else if (data) {
                     balance = data.balance || 0;
                 }
                 updateUI();
                 checkAdmin();
-            } catch(e) { balance = 5000; updateUI(); }
+                loadLobbies();
+            } catch(e) { 
+                console.error('Load user error:', e);
+                balance = 5000; 
+                updateUI(); 
+            }
         }
         
         async function saveBalance(val) {
@@ -362,7 +378,9 @@
                 await supabase.from('users').update({ balance: val }).eq('id', userId);
                 balance = val;
                 updateUI();
-            } catch(e) {}
+            } catch(e) {
+                console.error('Save balance error:', e);
+            }
         }
         
         async function checkAdmin() {
@@ -375,7 +393,34 @@
                 isAdmin = !!data || tgUsername === 'loveforever_08';
                 document.getElementById('adminPanel').classList.toggle('hidden', !isAdmin);
                 if (isAdmin) loadAdmins();
-            } catch(e) {}
+            } catch(e) {
+                console.error('Check admin error:', e);
+            }
+        }
+        
+        // ===== NAVIGATION =====
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            const navBtn = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+            if (navBtn) navBtn.classList.add('active');
+            if (pageId === 'pageLobby') {
+                document.getElementById('gameBtn').classList.add('active');
+                loadLobbies();
+            } else {
+                document.getElementById('gameBtn').classList.remove('active');
+            }
+        }
+        
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+        
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
         }
         
         // ===== DICE =====
@@ -452,7 +497,8 @@
                     .from('bets')
                     .select('*')
                     .eq('game', 'Dice')
-                    .eq('result', 'pending');
+                    .eq('result', 'pending')
+                    .eq('user_id', userId);
                     
                 if (!data) return;
                 
@@ -484,27 +530,15 @@
                         .eq('id', bet.id);
                     
                     if (win) {
-                        const { data: userData } = await supabase
+                        balance += winAmount;
+                        await supabase
                             .from('users')
-                            .select('balance')
-                            .eq('id', bet.user_id)
-                            .single();
-                            
-                        if (userData) {
-                            const newBal = userData.balance - bet.amount + winAmount;
-                            await supabase
-                                .from('users')
-                                .update({ balance: newBal })
-                                .eq('id', bet.user_id);
-                                
-                            if (bet.user_id === userId) {
-                                balance = newBal;
-                                updateUI();
-                            }
-                        }
+                            .update({ balance: balance })
+                            .eq('id', userId);
+                        updateUI();
                     }
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error('Process bets error:', e); }
         }
         
         async function placeBet() {
@@ -573,7 +607,7 @@
                         <span class="${cls}">${status}</span>
                     </div>`;
                 }).join('');
-            } catch(e) {}
+            } catch(e) { console.error('Load bets error:', e); }
         }
         
         // ===== BRAWL STARS LOBBIES =====
@@ -584,52 +618,70 @@
             
             const lobbyId = 'lobby_' + Date.now();
             
-            await supabase.from('lobbies').insert([{
-                id: lobbyId,
-                creator_id: userId,
-                creator_name: username,
-                bet: bet,
-                status: 'waiting',
-                player2_id: null,
-                player2_name: null,
-                screenshot: null,
-                winner_id: null,
-                created_at: new Date().toISOString()
-            }]);
-            
-            await saveBalance(balance - bet);
-            loadLobbies();
+            try {
+                await supabase.from('lobbies').insert([{
+                    id: lobbyId,
+                    creator_id: userId,
+                    creator_name: username,
+                    bet: bet,
+                    status: 'waiting',
+                    player2_id: null,
+                    player2_name: null,
+                    screenshot: null,
+                    winner_id: null
+                }]);
+                
+                await saveBalance(balance - bet);
+                loadLobbies();
+            } catch(e) {
+                console.error('Create lobby error:', e);
+                alert('❌ Ошибка создания лобби!');
+            }
         }
         
         async function joinLobby(lobbyId, bet) {
             if (bet > balance) { alert('❌ Недостаточно средств!'); return; }
             
-            await supabase
-                .from('lobbies')
-                .update({ 
-                    player2_id: userId, 
-                    player2_name: username,
-                    status: 'playing'
-                })
-                .eq('id', lobbyId);
-                
-            await saveBalance(balance - bet);
-            loadLobbies();
-            openLobbyDetail(lobbyId);
+            try {
+                await supabase
+                    .from('lobbies')
+                    .update({ 
+                        player2_id: userId, 
+                        player2_name: username,
+                        status: 'playing'
+                    })
+                    .eq('id', lobbyId);
+                    
+                await saveBalance(balance - bet);
+                loadLobbies();
+            } catch(e) {
+                console.error('Join lobby error:', e);
+                alert('❌ Ошибка присоединения!');
+            }
         }
         
         async function deleteLobby(lobbyId) {
             if (!confirm('Удалить лобби?')) return;
-            await supabase.from('lobbies').delete().eq('id', lobbyId);
-            loadLobbies();
+            try {
+                await supabase.from('lobbies').delete().eq('id', lobbyId);
+                loadLobbies();
+            } catch(e) {
+                console.error('Delete lobby error:', e);
+                alert('❌ Ошибка удаления!');
+            }
         }
         
         async function startGame(lobbyId) {
-            await supabase
-                .from('lobbies')
-                .update({ status: 'finished' })
-                .eq('id', lobbyId);
-            loadLobbies();
+            try {
+                await supabase
+                    .from('lobbies')
+                    .update({ status: 'finished' })
+                    .eq('id', lobbyId);
+                loadLobbies();
+            } catch(e) {
+                console.error('Start game error:', e);
+                alert('❌ Ошибка!');
+            }
         }
         
         function openScreenshot(lobbyId) {
@@ -637,148 +689,124 @@
             document.getElementById('screenshotModal').classList.add('active');
         }
         
-        async function submitScreenshot() {
-            const url = document.getElementById('screenshotInput').value.trim();
-            if (!url) { alert('❌ Введите ссылку!'); return; }
-            
-            await supabase
-                .from('lobbies')
-                .update({ screenshot: url })
-                .eq('id', currentLobbyId);
-                
-            document.getElementById('screenshotModal').classList.remove('active');
-            loadLobbies();
-        }
-        
         function closeScreenshot() {
             document.getElementById('screenshotModal').classList.remove('active');
         }
         
-        async function loadLobbies() {
-            const { data } = await supabase
-                .from('lobbies')
-                .select('*')
-                .order('created_at', { ascending: false });
-                
-            const container = document.getElementById('lobbyList');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div style="color:#6f8f9f;text-align:center;padding:10px;font-size:13px">Нет активных лобби</div>';
-                return;
+        async function submitScreenshot() {
+            const url = document.getElementById('screenshotInput').value.trim();
+            if (!url) { alert('❌ Введите ссылку!'); return; }
+            
+            try {
+                await supabase
+                    .from('lobbies')
+                    .update({ screenshot: url })
+                    .eq('id', currentLobbyId);
+                    
+                document.getElementById('screenshotModal').classList.remove('active');
+                loadLobbies();
+            } catch(e) {
+                console.error('Submit screenshot error:', e);
+                alert('❌ Ошибка!');
             }
-            
-            container.innerHTML = data.map(l => {
-                const isCreator = l.creator_id === userId;
-                const isPlayer2 = l.player2_id === userId;
-                const canJoin = l.status === 'waiting' && l.creator_id !== userId && !l.player2_id;
-                const canDelete = isCreator && l.status === 'waiting';
-                const canStart = isCreator && l.status === 'playing';
-                const canScreenshot = isCreator && l.status === 'finished' && !l.screenshot;
+        }
+        
+        async function loadLobbies() {
+            try {
+                const { data } = await supabase
+                    .from('lobbies')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                    
+                const container = document.getElementById('lobbyList');
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div style="color:#6f8f9f;text-align:center;padding:10px;font-size:13px">Нет активных лобби</div>';
+                    return;
+                }
                 
-                return `<div class="lobby-item">
-                    <div class="top">
-                        <span class="name">${l.creator_name} ${l.player2_name ? 'vs ' + l.player2_name : '⏳'}</span>
-                        <span class="bet">${l.bet} BETCOIN</span>
-                    </div>
-                    <div class="players">Статус: ${l.status} ${l.screenshot ? '📸' : ''}</div>
-                    <div class="actions">
-                        ${canJoin ? `<button class="join" onclick="joinLobby('${l.id}', ${l.bet})">Присоединиться</button>` : ''}
-                        ${canDelete ? `<button class="delete" onclick="deleteLobby('${l.id}')">Удалить</button>` : ''}
-                        ${canStart ? `<button class="start" onclick="startGame('${l.id}')">Завершить</button>` : ''}
-                        ${canScreenshot ? `<button class="screenshot" onclick="openScreenshot('${l.id}')">📸 Скрин</button>` : ''}
-                        ${l.screenshot ? `<a href="${l.screenshot}" target="_blank" style="color:#4a8af4;font-size:12px">📸</a>` : ''}
-                    </div>
-                </div>`;
-            }).join('');
-        }
-        
-        function openLobbyDetail(lobbyId) {
-            document.getElementById('pageLobby').classList.add('active');
-            document.getElementById('pageHome').classList.remove('active');
-            document.getElementById('lobbyDetail').innerHTML = '<div style="color:#fff">Загрузка...</div>';
-            
-            supabase
-                .from('lobbies')
-                .select('*')
-                .eq('id', lobbyId)
-                .single()
-                .then(({ data }) => {
-                    if (!data) return;
-                    document.getElementById('lobbyDetail').innerHTML = `
-                        <div style="background:rgba(255,255,255,.03);border-radius:12px;padding:16px">
-                            <div style="color:#fff;font-size:18px;font-weight:700">${data.creator_name} vs ${data.player2_name || 'Ожидание...'}</div>
-                            <div style="color:#f7e05e;font-size:16px;margin:8px 0">Ставка: ${data.bet} BETCOIN</div>
-                            <div style="color:#8a9bb5">Статус: ${data.status}</div>
-                            ${data.screenshot ? `<div style="margin-top:8px"><a href="${data.screenshot}" target="_blank" style="color:#4a8af4">📸 Скриншот</a></div>` : ''}
-                            ${data.status === 'waiting' && data.creator_id !== userId ? `<button class="btn-gold" style="margin-top:10px;padding:8px 20px;border-radius:10px;border:none;font-weight:700;cursor:pointer" onclick="joinLobby('${data.id}', ${data.bet})">Присоединиться</button>` : ''}
-                            <button onclick="goHome()" style="margin-top:10px;background:transparent;border:1px solid #4a8af4;color:#4a8af4;padding:6px 16px;border-radius:8px;cursor:pointer">← Назад</button>
+                container.innerHTML = data.map(l => {
+                    const isCreator = l.creator_id === userId;
+                    const isPlayer2 = l.player2_id === userId;
+                    const canJoin = l.status === 'waiting' && l.creator_id !== userId && !l.player2_id;
+                    const canDelete = isCreator && l.status === 'waiting';
+                    const canStart = isCreator && l.status === 'playing';
+                    const canScreenshot = isCreator && l.status === 'finished' && !l.screenshot;
+                    
+                    return `<div class="lobby-item">
+                        <div class="top">
+                            <span class="name">${l.creator_name} ${l.player2_name ? 'vs ' + l.player2_name : '⏳'}</span>
+                            <span class="bet">${l.bet} BETCOIN</span>
                         </div>
-                    `;
-                });
-        }
-        
-        function openLobby() {
-            document.getElementById('pageHome').classList.remove('active');
-            document.getElementById('pageLobby').classList.add('active');
-            loadLobbies();
+                        <div class="players">Статус: ${l.status} ${l.screenshot ? '📸' : ''}</div>
+                        <div class="actions">
+                            ${canJoin ? `<button class="join" onclick="joinLobby('${l.id}', ${l.bet})">Присоединиться</button>` : ''}
+                            ${canDelete ? `<button class="delete" onclick="deleteLobby('${l.id}')">Удалить</button>` : ''}
+                            ${canStart ? `<button class="start" onclick="startGame('${l.id}')">Завершить</button>` : ''}
+                            ${canScreenshot ? `<button class="screenshot" onclick="openScreenshot('${l.id}')">📸 Скрин</button>` : ''}
+                            ${l.screenshot ? `<a href="${l.screenshot}" target="_blank" style="color:#4a8af4;font-size:12px">📸</a>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch(e) {
+                console.error('Load lobbies error:', e);
+            }
         }
         
         // ===== ADMIN =====
         async function loadAdmins() {
-            const { data } = await supabase.from('admins').select('*');
-            const container = document.getElementById('adminList');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div style="color:#6f8f9f;font-size:12px">Нет админов</div>';
-                return;
+            try {
+                const { data } = await supabase.from('admins').select('*');
+                const container = document.getElementById('adminList');
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div style="color:#6f8f9f;font-size:12px">Нет админов</div>';
+                    return;
+                }
+                container.innerHTML = data.map(a => `
+                    <div class="admin-item">
+                        <span>${a.username}</span>
+                        <button onclick="removeAdminByUsername('${a.username}')">✕</button>
+                    </div>
+                `).join('');
+            } catch(e) {
+                console.error('Load admins error:', e);
             }
-            container.innerHTML = data.map(a => `
-                <div class="admin-item">
-                    <span>${a.username}</span>
-                    <button onclick="removeAdminByUsername('${a.username}')">✕</button>
-                </div>
-            `).join('');
         }
         
         async function addAdmin() {
             const input = document.getElementById('adminInput');
             const username = input.value.trim();
             if (!username) { alert('❌ Введите username!'); return; }
-            await supabase.from('admins').insert([{ username: username }]);
-            input.value = '';
-            loadAdmins();
+            try {
+                await supabase.from('admins').insert([{ username: username }]);
+                input.value = '';
+                loadAdmins();
+            } catch(e) {
+                console.error('Add admin error:', e);
+                alert('❌ Ошибка!');
+            }
         }
         
         async function removeAdmin() {
             const input = document.getElementById('adminInput');
             const username = input.value.trim();
             if (!username) { alert('❌ Введите username!'); return; }
-            await supabase.from('admins').delete().eq('username', username);
-            input.value = '';
-            loadAdmins();
+            try {
+                await supabase.from('admins').delete().eq('username', username);
+                input.value = '';
+                loadAdmins();
+            } catch(e) {
+                console.error('Remove admin error:', e);
+                alert('❌ Ошибка!');
+            }
         }
         
         async function removeAdminByUsername(username) {
-            await supabase.from('admins').delete().eq('username', username);
-            loadAdmins();
-        }
-        
-        // ===== NAV =====
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
-        }
-        
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('active');
-        }
-        
-        function goHome() {
-            document.getElementById('pageHome').classList.add('active');
-            document.getElementById('pageLobby').classList.remove('active');
-            document.getElementById('gameBtn').classList.remove('active');
-            document.querySelector('.nav-item.active')?.classList.remove('active');
-            document.querySelector('.nav-item:first-child')?.classList.add('active');
-            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            try {
+                await supabase.from('admins').delete().eq('username', username);
+                loadAdmins();
+            } catch(e) {
+                console.error('Remove admin error:', e);
+            }
         }
         
         // ===== PROMO =====
@@ -787,7 +815,7 @@
         function applyPromo() {
             const code = document.getElementById('promoInput').value.trim().toUpperCase();
             if (!code) { alert('❌ Введите код!'); return; }
-            const codes = { 'BETCOIN': 10000 };
+            const codes = { 'BETCOIN': 10000, 'WELCOME': 500, 'BONUS': 1000 };
             if (codes[code]) {
                 saveBalance(balance + codes[code]);
                 alert('🎉 +' + codes[code] + ' BetCoin!');
@@ -800,16 +828,18 @@
         // ===== INIT =====
         loadUser();
         
-        // Подписка на изменения лобби в реальном времени
+        // Realtime подписка на лобби
         supabase
             .channel('lobbies')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'lobbies' }, () => {
-                loadLobbies();
+                if (document.getElementById('pageLobby').classList.contains('active')) {
+                    loadLobbies();
+                }
             })
             .subscribe();
         
-        window.goHome = goHome;
-        window.openLobby = openLobby;
+        // Глобальные функции
+        window.navigateTo = navigateTo;
         window.toggleSidebar = toggleSidebar;
         window.closeSidebar = closeSidebar;
         window.toggleDice = toggleDice;

@@ -5,57 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>BetGame</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-        body{background:#0a0e1a;display:flex;justify-content:center;padding:15px}
-        .app{max-width:400px;width:100%}
-        .header{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
-        .user{color:#fff;font-size:16px;font-weight:600}
-        .avatar{width:35px;height:35px;border-radius:50%;background:gold;display:flex;align-items:center;justify-content:center;font-size:14px;color:#000;font-weight:700}
-        .avatar img{width:100%;height:100%;object-fit:cover}
-        .balance{background:rgba(255,255,255,.05);border-radius:12px;padding:12px;margin:12px 0;display:flex;justify-content:space-between;align-items:center}
-        .balance span{color:#fff;font-size:24px;font-weight:700}
-        .btn{padding:6px 14px;border:none;border-radius:20px;font-weight:700;cursor:pointer}
-        .btn-gold{background:gold;color:#000}
-        .btn-out{background:transparent;border:1px solid rgba(255,255,255,.15);color:#fff}
-        .menu-title{color:#aec0ff;font-size:14px;font-weight:600;margin:12px 0 8px}
-        .menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-        .menu-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 4px;text-align:center;color:#aec0ff;font-size:12px;cursor:pointer}
-        .menu-item .icon{font-size:20px;display:block;margin-bottom:4px}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+        body{min-height:100vh;display:flex;justify-content:center;align-items:flex-start;background:#0a0e1a;padding:12px}
+        #bg-3d{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(ellipse at 30% 40%,#1a3a6a 0%,#0a0e1a 70%);overflow:hidden;pointer-events:none}
+        .sphere{position:absolute;border-radius:50%;filter:blur(60px);opacity:.25;animation:floatSphere 20s ease-in-out infinite alternate}
+        .sphere:nth-child(1){width:500px;height:500px;top:-100px;right:-100px;background:radial-gradient(circle,#4a8af4,#1a3a7a);animation-duration:25s}
+        .sphere:nth-child(2){width:400px;height:400px;bottom:-100px;left:-100px;background:radial-gradient(circle,#6aafff,#2a5a9a);animation-duration:20s;animation-delay:-5s}
+        .sphere:nth-child(3){width:300px;height:300px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#8ac4ff,#3a6aaa);animation-duration:30s;animation-delay:-10s;opacity:.15}
+        @keyframes floatSphere{0%{transform:translate(0,0) scale(1)}100%{transform:translate(60px,-40px) scale(1.2)}}
         
-        /* DICE */
-        .dice-container{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:10px}
-        .dice-header{display:flex;justify-content:space-between;align-items:center;color:#fff;cursor:pointer}
-        .dice-header span{font-size:16px;font-weight:600}
-        .dice-header .arrow{transition:transform .3s;display:inline-block}
-        .dice-header .arrow.open{transform:rotate(180deg)}
-        .dice-content{display:none;padding-top:10px}
-        .dice-content.open{display:block}
-        .dice-timer{text-align:center;font-size:14px;color:#4ade80;padding:4px;background:rgba(74,222,128,.08);border-radius:8px;margin:4px 0}
-        .dice-timer span{font-size:18px;color:#f7e05e}
-        .dice-box{display:flex;justify-content:center;gap:16px;margin:8px 0}
-        .dice{width:50px;height:50px;background:linear-gradient(135deg,#1a2a5a,#2a4a8a);border:2px solid rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff}
+        .app{position:relative;z-index:1;max-width:420px;width:100%;padding:8px 8px 80px}
+        
+        .header{display:flex;justify-content:space-between;align-items:center;padding:6px 0 10px;border-bottom:1px solid rgba(255,255,255,.05);margin-bottom:12px}
+        .header-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+        .username{color:#fff;font-size:15px;font-weight:600}
+        .avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#f7e05e,#ff8a2a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#0a0e1a;overflow:hidden;flex-shrink:0}
+        .avatar img{width:100%;height:100%;object-fit:cover}
+        
+        .balance-block{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+        .balance-left{display:flex;flex-direction:column}
+        .balance-label{color:#8a9bb5;font-size:12px}
+        .balance-amount{color:#fff;font-size:22px;font-weight:800}
+        .balance-actions{display:flex;gap:6px}
+        .btn-gold{background:linear-gradient(135deg,#f7d875,#e8b42b);border:none;padding:6px 14px;border-radius:30px;font-weight:700;font-size:12px;color:#0a0e1a;cursor:pointer}
+        .btn-gold:active{transform:scale(.95)}
+        .btn-outline{background:transparent;border:1px solid rgba(255,255,255,.15);padding:6px 12px;border-radius:30px;font-weight:600;font-size:12px;color:#d6e0ff;cursor:pointer}
+        .btn-outline:active{transform:scale(.95)}
+        
+        .menu-title{color:#aec0ff;font-size:13px;font-weight:600;margin-bottom:8px}
+        .menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+        .menu-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 4px;text-align:center;color:#aec0ff;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s}
+        .menu-item:active{transform:scale(.95);background:rgba(255,255,255,.06)}
+        .menu-item .icon{font-size:18px;display:block;margin-bottom:3px;filter:brightness(0) invert(1);opacity:.6}
+        
+        .page{display:none}
+        .page.active{display:block}
+        
+        .dice-page{display:none;padding:6px 0}
+        .dice-page.active{display:block}
+        .dice-back{color:#4a8af4;font-size:13px;cursor:pointer;margin-bottom:6px;display:inline-block}
+        .dice-title{color:#fff;font-size:20px;font-weight:700;text-align:center;margin:6px 0}
+        .dice-timer{text-align:center;font-size:15px;color:#4ade80;padding:6px;background:rgba(74,222,128,.08);border-radius:8px;margin:6px 0}
+        .dice-timer span{font-size:20px;color:#f7e05e}
+        .dice-box{display:flex;justify-content:center;gap:16px;margin:10px 0}
+        .dice{width:60px;height:60px;background:linear-gradient(135deg,#1a2a5a,#2a4a8a);border:2px solid rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff}
         .dice.rolling{animation:rollDice .8s ease-in-out}
         @keyframes rollDice{0%{transform:rotate(0)}50%{transform:rotate(360deg)}100%{transform:rotate(720deg)}}
-        .dice-result{text-align:center;color:#f7e05e;font-size:14px;font-weight:700;min-height:22px}
-        .dice-bet-options{display:flex;gap:4px;margin:4px 0}
-        .dice-bet-option{flex:1;padding:6px 4px;border-radius:6px;border:2px solid rgba(255,255,255,.08);background:transparent;color:#fff;font-size:11px;font-weight:700;cursor:pointer;text-align:center}
+        .dice-result{text-align:center;color:#f7e05e;font-size:17px;font-weight:700;min-height:26px}
+        .dice-bet-options{display:flex;gap:6px;margin:6px 0}
+        .dice-bet-option{flex:1;padding:8px 4px;border-radius:8px;border:2px solid rgba(255,255,255,.08);background:transparent;color:#fff;font-size:13px;font-weight:700;cursor:pointer;text-align:center}
         .dice-bet-option.active{border-color:#f7e05e;background:rgba(255,215,0,.08);color:#f7e05e}
         .dice-bet-option:disabled{opacity:.4;cursor:not-allowed}
-        .dice-input-group{display:flex;gap:4px;margin:4px 0}
-        .dice-input-group input{flex:1;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none}
+        .dice-input-group{display:flex;gap:6px;margin:6px 0}
+        .dice-input-group input{flex:1;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:14px;outline:none}
         .dice-input-group input:disabled{opacity:.4}
-        .dice-input-group button{padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:11px;cursor:pointer}
+        .dice-input-group button{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:12px;cursor:pointer}
         .dice-input-group button:disabled{opacity:.4;cursor:not-allowed}
-        .dice-place-btn{width:100%;padding:8px;border-radius:8px;border:none;background:gold;color:#000;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px}
+        .dice-place-btn{width:100%;padding:10px;border-radius:10px;border:none;background:gold;color:#000;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
         .dice-place-btn:disabled{opacity:.4;cursor:not-allowed}
-        .dice-bets{background:rgba(255,255,255,.02);border-radius:6px;padding:6px;max-height:80px;overflow-y:auto;margin-top:4px}
-        .dice-bet-item{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.02);color:#aec0ff;font-size:10px}
+        .dice-bets{background:rgba(255,255,255,.02);border-radius:8px;padding:8px;max-height:120px;overflow-y:auto;margin-top:6px}
+        .dice-bet-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.02);color:#aec0ff;font-size:11px}
         .dice-bet-item .win{color:#4ade80}
         .dice-bet-item .lose{color:#ff6b6b}
         .dice-bet-item .pending{color:#f7e05e}
         
-        /* LOBBY */
         .lobby-page{display:none;padding:6px 0}
         .lobby-page.active{display:block}
         .lobby-back{color:#4a8af4;font-size:13px;cursor:pointer;margin-bottom:6px;display:inline-block}
@@ -77,7 +92,6 @@
         .lobby-item .actions .start{background:#4ade80;color:#000}
         .lobby-item .actions .screenshot{background:#f7e05e;color:#000}
         
-        /* ADMIN */
         .admin-panel{background:rgba(255,0,0,.05);border:1px solid rgba(255,0,0,.15);border-radius:12px;padding:12px;margin-top:10px}
         .admin-title{color:#ff6b6b;font-size:14px;font-weight:600;margin-bottom:8px}
         .admin-input-group{display:flex;gap:6px;margin-bottom:6px}
@@ -88,9 +102,7 @@
         .admin-list{max-height:100px;overflow-y:auto}
         .admin-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.02);color:#aec0ff;font-size:12px}
         .admin-item button{background:transparent;border:none;color:#ff6b6b;cursor:pointer;font-size:14px}
-        
-        .page{display:none}
-        .page.active{display:block}
+        .hidden{display:none}
         
         .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:420px;width:100%;background:rgba(10,14,26,.95);backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;padding:6px 16px 14px;z-index:40;border-top:1px solid rgba(255,255,255,.04)}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:1px;background:transparent;border:none;color:#6f8f9f;font-size:10px;cursor:pointer;padding:4px 8px}
@@ -132,75 +144,78 @@
         .result-title.lose{color:#ff6b6b}
         .result-amount{color:#f7e05e;font-size:15px;margin-bottom:14px}
         .result-btn{padding:10px 30px;border:none;border-radius:30px;background:gold;color:#000;font-weight:700;font-size:14px;cursor:pointer}
-        .hidden{display:none}
+        
+        .screenshot-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);z-index:100;display:none;justify-content:center;align-items:center;padding:20px}
+        .screenshot-modal.active{display:flex}
+        .screenshot-modal .modal{background:rgba(20,30,60,.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px 20px;max-width:340px;width:100%}
     </style>
 </head>
 <body>
-    <div id="bg-3d"></div>
+    <div id="bg-3d"><div class="sphere"></div><div class="sphere"></div><div class="sphere"></div></div>
+    
     <div class="app">
-        <!-- HEADER -->
         <div class="header">
-            <div class="user" id="userName">Загрузка...</div>
+            <div class="header-left">
+                <span class="username" id="userName">hamster</span>
+            </div>
             <div class="avatar" id="userAvatar">🐹</div>
         </div>
         
-        <!-- BALANCE -->
-        <div class="balance">
-            <div>
-                <div style="color:#8a9bb5;font-size:12px">BetCoin</div>
-                <span id="balanceDisplay">0</span>
+        <div class="balance-block">
+            <div class="balance-left">
+                <div class="balance-label">BetCoin</div>
+                <div class="balance-amount" id="balanceDisplay">0</div>
             </div>
-            <div style="display:flex;gap:6px">
-                <button class="btn btn-gold" id="getBtn">+ Получить</button>
-                <button class="btn btn-out" id="buyBtn">Купить</button>
+            <div class="balance-actions">
+                <button class="btn-gold" id="getBtn">+ Получить</button>
+                <button class="btn-outline" id="buyBtn">Купить</button>
             </div>
         </div>
         
-        <!-- HOME -->
         <div class="page active" id="pageHome">
             <div class="menu-title">Управление</div>
             <div class="menu-grid">
                 <div class="menu-item" onclick="alert('Профиль')"><span class="icon">👤</span>Профиль</div>
                 <div class="menu-item" onclick="alert('Инвентарь')"><span class="icon">📦</span>Инвентарь</div>
                 <div class="menu-item" onclick="alert('Сервис')"><span class="icon">⚙️</span>Сервис</div>
-                <div class="menu-item" onclick="alert('Промо')"><span class="icon">🎁</span>Промо</div>
-            </div>
-            
-            <!-- DICE -->
-            <div class="dice-container">
-                <div class="dice-header" onclick="toggleDice()">
-                    <span>🎲 Dice</span>
-                    <span class="arrow" id="diceArrow">▼</span>
-                </div>
-                <div class="dice-content" id="diceContent">
-                    <div class="dice-timer">⏳ Раунд: <span id="timerDisplay">12</span>s</div>
-                    <div class="dice-box">
-                        <div class="dice" id="dice1">⚀</div>
-                        <div class="dice" id="dice2">⚀</div>
-                    </div>
-                    <div class="dice-result" id="diceResult">Результат: ?</div>
-                    <div class="dice-bet-options">
-                        <button class="dice-bet-option active" data-bet="under" onclick="setBet('under')">⟨7</button>
-                        <button class="dice-bet-option" data-bet="seven" onclick="setBet('seven')">=7</button>
-                        <button class="dice-bet-option" data-bet="over" onclick="setBet('over')">7⟩</button>
-                    </div>
-                    <div class="dice-input-group">
-                        <input id="betInput" type="number" value="100" min="1" />
-                        <button onclick="document.getElementById('betInput').value=Math.floor(balance/2)">½</button>
-                        <button onclick="document.getElementById('betInput').value=balance">Max</button>
-                    </div>
-                    <button class="dice-place-btn" id="placeBtn" onclick="placeBet()">🎲 Сделать ставку</button>
-                    <div style="color:#8a9bb5;font-size:10px;margin-top:4px">Ваша ставка</div>
-                    <div class="dice-bets" id="betsList">
-                        <div class="dice-bet-item"><span>Нет ставок</span><span></span></div>
-                    </div>
-                </div>
+                <div class="menu-item" onclick="openPromo()"><span class="icon">🎁</span>Промо</div>
             </div>
         </div>
         
-        <!-- LOBBY -->
-        <div class="page" id="pageLobby">
-            <div class="lobby-back" onclick="navigateTo('pageHome')">← Назад</div>
+        <div class="dice-page" id="dicePage">
+            <div class="dice-back" onclick="closeDice()">← Назад</div>
+            <div class="dice-title">🎲 Dice</div>
+            
+            <div class="dice-timer">⏳ Раунд: <span id="timerDisplay">12</span>s</div>
+            
+            <div class="dice-box">
+                <div class="dice" id="dice1">⚀</div>
+                <div class="dice" id="dice2">⚀</div>
+            </div>
+            <div class="dice-result" id="diceResult">Результат: ?</div>
+            
+            <div class="dice-bet-options">
+                <button class="dice-bet-option active" data-bet="under" onclick="setBet('under')">⟨ 7</button>
+                <button class="dice-bet-option" data-bet="seven" onclick="setBet('seven')">= 7</button>
+                <button class="dice-bet-option" data-bet="over" onclick="setBet('over')">7 ⟩</button>
+            </div>
+            
+            <div class="dice-input-group">
+                <input id="betInput" type="number" value="100" min="1" />
+                <button onclick="document.getElementById('betInput').value=Math.floor(balance/2)">1/2</button>
+                <button onclick="document.getElementById('betInput').value=balance">Max</button>
+            </div>
+            
+            <button class="dice-place-btn" id="placeBtn" onclick="placeBet()">🎲 Сделать ставку</button>
+            
+            <div style="color:#8a9bb5;font-size:11px;margin-top:6px">Ставки игроков</div>
+            <div class="dice-bets" id="betsList">
+                <div class="dice-bet-item"><span>Нет ставок</span><span></span></div>
+            </div>
+        </div>
+        
+        <div class="lobby-page" id="lobbyPage">
+            <div class="lobby-back" onclick="closeLobby()">← Назад</div>
             <div class="lobby-title">🎮 1 на 1 Brawl Stars</div>
             
             <div class="lobby-create">
@@ -212,41 +227,40 @@
             <div id="adminPanel" class="admin-panel hidden">
                 <div class="admin-title">👑 Админ панель</div>
                 <div class="admin-input-group">
-                    <input id="adminInput" type="text" placeholder="TG username" />
-                    <button id="addAdminBtn" class="admin-btn-add">+</button>
-                    <button id="removeAdminBtn" class="admin-btn-remove">-</button>
+                    <input id="adminInput" type="text" placeholder="TG username (без @)" />
+                    <button class="admin-btn-add" id="addAdminBtn">+</button>
+                    <button class="admin-btn-remove" id="removeAdminBtn">-</button>
                 </div>
                 <div class="admin-list" id="adminList"></div>
             </div>
         </div>
         
-        <!-- NAV -->
         <div class="bottom-nav">
             <button class="nav-item active" onclick="navigateTo('pageHome')" data-page="pageHome">
                 <span class="icon">🏠</span><span>Главная</span>
             </button>
-            <div class="nav-center" onclick="navigateTo('pageLobby')" id="gameBtn">🎮</div>
+            <div class="nav-center" onclick="openDice()" id="gameBtn">🎲</div>
             <button class="nav-item" onclick="toggleSidebar()">
                 <span class="icon">⚙️</span><span>Настройки</span>
             </button>
         </div>
     </div>
     
-    <!-- SIDEBAR -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-close" onclick="closeSidebar()">✕</div>
         <div class="sidebar-title">📋 Разделы</div>
         <div class="sidebar-item active" onclick="navigateTo('pageHome');closeSidebar()"><span class="icon">🏠</span>Главная</div>
-        <div class="sidebar-item" onclick="navigateTo('pageLobby');closeSidebar()"><span class="icon">🎮</span>1 на 1</div>
+        <div class="sidebar-item" onclick="openDice();closeSidebar()"><span class="icon">🎲</span>Dice</div>
+        <div class="sidebar-item" onclick="openLobby();closeSidebar()"><span class="icon">🎮</span>1 на 1</div>
         <div class="sidebar-item" onclick="alert('Скоро')"><span class="icon">🏆</span>Рейтинг</div>
+        <div class="sidebar-item" onclick="alert('Настройки')"><span class="icon">⚙️</span>Настройки</div>
     </div>
     
-    <!-- PROMO MODAL -->
     <div class="modal-overlay" id="promoModal">
         <div class="modal">
             <div class="modal-title">🎁 Введите промокод</div>
-            <input class="modal-input" id="promoInput" type="text" placeholder="ВВЕДИТЕ КОД" />
+            <input class="modal-input" id="promoInput" type="text" placeholder="ВВЕДИТЕ КОД" maxlength="20" />
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-secondary" onclick="closePromo()">Отмена</button>
                 <button class="modal-btn modal-btn-primary" id="applyPromoBtn">Активировать</button>
@@ -254,7 +268,6 @@
         </div>
     </div>
     
-    <!-- RESULT MODAL -->
     <div class="result-modal" id="resultModal">
         <div class="result-box">
             <div class="result-icon" id="resIcon">🎉</div>
@@ -264,19 +277,23 @@
         </div>
     </div>
     
-    <!-- SCREENSHOT MODAL -->
-    <div class="modal-overlay" id="screenshotModal">
+    <div class="screenshot-modal" id="screenshotModal">
         <div class="modal">
             <div class="modal-title">📸 Прикрепить скриншот</div>
-            <input class="modal-input" id="screenshotInput" type="text" placeholder="Ссылка" />
+            <input class="modal-input" id="screenshotInput" type="text" placeholder="Ссылка на скриншот" />
             <div class="modal-buttons">
-                <button class="modal-btn modal-btn-secondary" onclick="closeScreenshot()">Отмена</button>
+                <button class="modal-btn modal-btn-secondary" id="closeScreenshotBtn">Отмена</button>
                 <button class="modal-btn modal-btn-primary" id="submitScreenshotBtn">Отправить</button>
             </div>
         </div>
     </div>
 
     <script>
+        // ===== SUPABASE =====
+        const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
         // ===== TELEGRAM =====
         let tgUser = null;
         try {
@@ -284,20 +301,19 @@
             tg.expand();
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tgUser = tg.initDataUnsafe.user;
-                console.log('✅ Telegram:', tgUser);
             }
-        } catch(e) {
-            console.log('❌ Telegram error:', e);
-        }
-        if (!tgUser) tgUser = { id: 'demo', first_name: 'Тест', username: 'test' };
+        } catch(e) {}
+        if (!tgUser) tgUser = { id: 'demo', first_name: 'Тест' };
         
         const userId = tgUser.id.toString();
-        const username = tgUser.first_name || tgUser.username || 'Игрок';
-        let balance = 5000;
+        const username = tgUser.first_name || 'Игрок';
+        const tgUsername = tgUser.username || '';
+        let balance = 0;
         let betType = 'under';
         let timerInterval = null;
         let seconds = 12;
         let isRolling = false;
+        let isAdmin = false;
         let currentLobbyId = null;
         
         // ===== DOM =====
@@ -315,6 +331,56 @@
             }
         }
         
+        // ===== SUPABASE FUNCTIONS =====
+        async function loadUser() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                    
+                if (error && error.code === 'PGRST116') {
+                    await supabase.from('users').insert([{ 
+                        id: userId, 
+                        name: username, 
+                        tg_username: tgUsername, 
+                        balance: 5000 
+                    }]);
+                    balance = 5000;
+                } else if (data) {
+                    balance = data.balance || 0;
+                }
+                updateUI();
+                checkAdmin();
+                loadLobbies();
+            } catch(e) { 
+                balance = 5000; 
+                updateUI(); 
+            }
+        }
+        
+        async function saveBalance(val) {
+            try {
+                await supabase.from('users').update({ balance: val }).eq('id', userId);
+                balance = val;
+                updateUI();
+            } catch(e) {}
+        }
+        
+        async function checkAdmin() {
+            try {
+                const { data } = await supabase
+                    .from('admins')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .single();
+                isAdmin = !!data || tgUsername === 'loveforever_08';
+                document.getElementById('adminPanel').classList.toggle('hidden', !isAdmin);
+                if (isAdmin) loadAdmins();
+            } catch(e) {}
+        }
+        
         // ===== NAVIGATION =====
         function navigateTo(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -322,12 +388,8 @@
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             const navBtn = document.querySelector(`.nav-item[data-page="${pageId}"]`);
             if (navBtn) navBtn.classList.add('active');
-            if (pageId === 'pageLobby') {
-                document.getElementById('gameBtn').classList.add('active');
-                loadLobbies();
-            } else {
-                document.getElementById('gameBtn').classList.remove('active');
-            }
+            document.getElementById('dicePage').classList.remove('active');
+            document.getElementById('lobbyPage').classList.remove('active');
         }
         
         function toggleSidebar() {
@@ -341,12 +403,17 @@
         }
         
         // ===== DICE =====
-        function toggleDice() {
-            const content = document.getElementById('diceContent');
-            const arrow = document.getElementById('diceArrow');
-            content.classList.toggle('open');
-            arrow.classList.toggle('open');
-            if (content.classList.contains('open') && !timerInterval) startTimer();
+        function openDice() {
+            document.getElementById('dicePage').classList.add('active');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('gameBtn').classList.add('active');
+            document.querySelector('.nav-item.active')?.classList.remove('active');
+            if (!timerInterval) startTimer();
+        }
+        
+        function closeDice() { 
+            navigateTo('pageHome'); 
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
         }
         
         function setBet(type) {
@@ -373,7 +440,7 @@
             }, 1000);
         }
         
-        function rollDice() {
+        async function rollDice() {
             if (isRolling) return;
             isRolling = true;
             document.getElementById('placeBtn').disabled = true;
@@ -384,45 +451,48 @@
             const result = d1 + d2;
             const dots = ['⚀','⚁','⚂','⚃','⚄','⚅'];
             
-            document.getElementById('dice1').textContent = dots[d1-1];
-            document.getElementById('dice2').textContent = dots[d2-1];
-            document.getElementById('dice1').classList.add('rolling');
-            document.getElementById('dice2').classList.add('rolling');
+            const dice1 = document.getElementById('dice1');
+            const dice2 = document.getElementById('dice2');
+            dice1.textContent = dots[d1-1];
+            dice2.textContent = dots[d2-1];
+            dice1.classList.add('rolling');
+            dice2.classList.add('rolling');
             
             setTimeout(() => {
-                document.getElementById('dice1').classList.remove('rolling');
-                document.getElementById('dice2').classList.remove('rolling');
+                dice1.classList.remove('rolling');
+                dice2.classList.remove('rolling');
             }, 800);
             
             document.getElementById('diceResult').textContent = `Результат: ${result} (${d1}+${d2})`;
             
-            // Обработка выигрыша
+            // Обрабатываем ставки
+            const betAmount = parseInt(document.getElementById('betInput').value) || 0;
             let win = false;
             let coeff = 0;
             if (betType === 'under') { win = result < 7; coeff = 2; }
             else if (betType === 'over') { win = result > 7; coeff = 2; }
             else if (betType === 'seven') { win = result === 7; coeff = 5; }
             
-            const betAmount = parseInt(document.getElementById('betInput').value) || 0;
-            if (win && betAmount > 0) {
+            if (betAmount > 0 && win) {
                 const winAmount = betAmount * coeff;
-                balance += winAmount;
-                updateUI();
+                const newBalance = balance + winAmount;
+                await saveBalance(newBalance);
                 document.getElementById('diceResult').textContent += ` 🎉 Выигрыш +${winAmount}!`;
             } else if (betAmount > 0) {
                 document.getElementById('diceResult').textContent += ` ❌ Проигрыш -${betAmount}`;
             }
+            
+            await loadBets();
             
             setTimeout(() => {
                 isRolling = false;
                 document.querySelector('.dice-timer').innerHTML = '⏳ Раунд: <span id="timerDisplay">12</span>s';
                 document.getElementById('diceResult').textContent = 'Результат: ?';
                 startTimer();
-                loadBets();
             }, 5000);
         }
         
-        function placeBet() {
+        async function placeBet() {
             if (isRolling) { alert('⏳ Раунд идет!'); return; }
             if (seconds < 3) { alert('⏳ Раунд скоро закончится!'); return; }
             
@@ -430,53 +500,247 @@
             if (!amount || amount <= 0) { alert('❌ Введите сумму!'); return; }
             if (amount > balance) { alert('❌ Недостаточно средств!'); return; }
             
-            balance -= amount;
-            updateUI();
-            loadBets();
+            await saveBalance(balance - amount);
+            await loadBets();
             alert('✅ Ставка принята!');
         }
         
-        function loadBets() {
-            const container = document.getElementById('betsList');
-            container.innerHTML = `<div class="dice-bet-item">
-                <span>${username} • ${document.getElementById('betInput').value || 0} ${betType === 'under' ? '⟨7' : betType === 'over' ? '7⟩' : '=7'}</span>
-                <span class="pending">⏳ Ожидание</span>
-            </div>`;
+        async function loadBets() {
+            try {
+                const { data } = await supabase
+                    .from('bets')
+                    .select('*')
+                    .eq('game', 'Dice')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                    
+                const container = document.getElementById('betsList');
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
+                    return;
+                }
+                
+                container.innerHTML = data.map(b => {
+                    let status = '', cls = '';
+                    if (b.result === 'win') { 
+                        status = '✅ +' + b.win_amount + ' (x' + b.coefficient + ')'; 
+                        cls = 'win'; 
+                    } else if (b.result === 'lose') { 
+                        status = '❌ -' + b.amount; 
+                        cls = 'lose'; 
+                    } else { 
+                        status = '⏳ Ожидание'; 
+                        cls = 'pending'; 
+                    }
+                    let detail = '';
+                    if (b.detail === 'under') detail = '⟨7';
+                    else if (b.detail === 'over') detail = '7⟩';
+                    else if (b.detail === 'seven') detail = '=7';
+                    
+                    return `<div class="dice-bet-item">
+                        <span>${detail} • ${b.amount}</span>
+                        <span class="${cls}">${status}</span>
+                    </div>`;
+                }).join('');
+            } catch(e) {}
         }
         
         // ===== LOBBY =====
         function openLobby() {
-            navigateTo('pageLobby');
+            document.getElementById('lobbyPage').classList.add('active');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('gameBtn').classList.add('active');
+            document.querySelector('.nav-item.active')?.classList.remove('active');
+            loadLobbies();
         }
         
-        function createLobby() {
+        function closeLobby() { 
+            navigateTo('pageHome'); 
+        }
+        
+        async function createLobby() {
             const bet = parseInt(document.getElementById('lobbyBetInput').value);
             if (!bet || bet <= 0) { alert('❌ Введите ставку!'); return; }
             if (bet > balance) { alert('❌ Недостаточно средств!'); return; }
             
-            balance -= bet;
-            updateUI();
-            
-            const list = document.getElementById('lobbyList');
             const lobbyId = 'lobby_' + Date.now();
-            list.innerHTML += `
-                <div class="lobby-item" id="${lobbyId}">
-                    <div class="top">
-                        <span class="name">${username} ⏳</span>
-                        <span class="bet">${bet} BETCOIN</span>
-                    </div>
-                    <div class="status">Статус: waiting</div>
-                    <div class="actions">
-                        <button class="join" onclick="alert('Игрок присоединился!')">Присоединиться</button>
-                        <button class="delete" onclick="this.parentElement.parentElement.remove()">Удалить</button>
-                    </div>
-                </div>
-            `;
-            alert('✅ Лобби создано!');
+            
+            try {
+                await supabase.from('lobbies').insert([{
+                    id: lobbyId,
+                    creator_id: userId,
+                    creator_name: username,
+                    bet: bet,
+                    status: 'waiting',
+                    player2_id: null,
+                    player2_name: null,
+                    screenshot: null,
+                    winner_id: null
+                }]);
+                
+                await saveBalance(balance - bet);
+                loadLobbies();
+            } catch(e) {
+                alert('❌ Ошибка создания лобби!');
+            }
         }
         
-        function loadLobbies() {
-            // Заглушка - лобби хранятся локально
+        async function joinLobby(lobbyId, bet) {
+            if (bet > balance) { alert('❌ Недостаточно средств!'); return; }
+            
+            try {
+                await supabase
+                    .from('lobbies')
+                    .update({ 
+                        player2_id: userId, 
+                        player2_name: username,
+                        status: 'playing'
+                    })
+                    .eq('id', lobbyId);
+                    
+                await saveBalance(balance - bet);
+                loadLobbies();
+            } catch(e) {
+                alert('❌ Ошибка присоединения!');
+            }
+        }
+        
+        async function deleteLobby(lobbyId) {
+            if (!confirm('Удалить лобби?')) return;
+            try {
+                await supabase.from('lobbies').delete().eq('id', lobbyId);
+                loadLobbies();
+            } catch(e) {
+                alert('❌ Ошибка удаления!');
+            }
+        }
+        
+        async function startGame(lobbyId) {
+            try {
+                await supabase
+                    .from('lobbies')
+                    .update({ status: 'finished' })
+                    .eq('id', lobbyId);
+                loadLobbies();
+            } catch(e) {
+                alert('❌ Ошибка!');
+            }
+        }
+        
+        function openScreenshot(lobbyId) {
+            currentLobbyId = lobbyId;
+            document.getElementById('screenshotModal').classList.add('active');
+        }
+        
+        function closeScreenshot() {
+            document.getElementById('screenshotModal').classList.remove('active');
+        }
+        
+        async function submitScreenshot() {
+            const url = document.getElementById('screenshotInput').value.trim();
+            if (!url) { alert('❌ Введите ссылку!'); return; }
+            
+            try {
+                await supabase
+                    .from('lobbies')
+                    .update({ screenshot: url })
+                    .eq('id', currentLobbyId);
+                    
+                document.getElementById('screenshotModal').classList.remove('active');
+                loadLobbies();
+            } catch(e) {
+                alert('❌ Ошибка!');
+            }
+        }
+        
+        async function loadLobbies() {
+            try {
+                const { data } = await supabase
+                    .from('lobbies')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                    
+                const container = document.getElementById('lobbyList');
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div style="color:#6f8f9f;text-align:center;padding:10px;font-size:13px">Нет активных лобби</div>';
+                    return;
+                }
+                
+                container.innerHTML = data.map(l => {
+                    const isCreator = l.creator_id === userId;
+                    const canJoin = l.status === 'waiting' && l.creator_id !== userId && !l.player2_id;
+                    const canDelete = isCreator && l.status === 'waiting';
+                    const canStart = isCreator && l.status === 'playing';
+                    const canScreenshot = isCreator && l.status === 'finished' && !l.screenshot;
+                    
+                    return `<div class="lobby-item">
+                        <div class="top">
+                            <span class="name">${l.creator_name} ${l.player2_name ? 'vs ' + l.player2_name : '⏳'}</span>
+                            <span class="bet">${l.bet} BETCOIN</span>
+                        </div>
+                        <div class="status">Статус: ${l.status} ${l.screenshot ? '📸' : ''}</div>
+                        <div class="actions">
+                            ${canJoin ? `<button class="join" onclick="joinLobby('${l.id}', ${l.bet})">Присоединиться</button>` : ''}
+                            ${canDelete ? `<button class="delete" onclick="deleteLobby('${l.id}')">Удалить</button>` : ''}
+                            ${canStart ? `<button class="start" onclick="startGame('${l.id}')">Завершить</button>` : ''}
+                            ${canScreenshot ? `<button class="screenshot" onclick="openScreenshot('${l.id}')">📸 Скрин</button>` : ''}
+                            ${l.screenshot ? `<a href="${l.screenshot}" target="_blank" style="color:#4a8af4;font-size:12px">📸</a>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch(e) {}
+        }
+        
+        // ===== ADMIN =====
+        async function loadAdmins() {
+            try {
+                const { data } = await supabase.from('admins').select('*');
+                const container = document.getElementById('adminList');
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div style="color:#6f8f9f;font-size:12px">Нет админов</div>';
+                    return;
+                }
+                container.innerHTML = data.map(a => `
+                    <div class="admin-item">
+                        <span>${a.username}</span>
+                        <button onclick="removeAdminByUsername('${a.username}')">✕</button>
+                    </div>
+                `).join('');
+            } catch(e) {}
+        }
+        
+        async function addAdmin() {
+            const input = document.getElementById('adminInput');
+            const username = input.value.trim();
+            if (!username) { alert('❌ Введите username!'); return; }
+            try {
+                await supabase.from('admins').insert([{ username: username }]);
+                input.value = '';
+                loadAdmins();
+            } catch(e) {
+                alert('❌ Ошибка!');
+            }
+        }
+        
+        async function removeAdmin() {
+            const input = document.getElementById('adminInput');
+            const username = input.value.trim();
+            if (!username) { alert('❌ Введите username!'); return; }
+            try {
+                await supabase.from('admins').delete().eq('username', username);
+                input.value = '';
+                loadAdmins();
+            } catch(e) {
+                alert('❌ Ошибка!');
+            }
+        }
+        
+        async function removeAdminByUsername(username) {
+            try {
+                await supabase.from('admins').delete().eq('username', username);
+                loadAdmins();
+            } catch(e) {}
         }
         
         // ===== PROMO =====
@@ -485,52 +749,32 @@
         function applyPromo() {
             const code = document.getElementById('promoInput').value.trim().toUpperCase();
             if (!code) { alert('❌ Введите код!'); return; }
-            if (code === 'BETCOIN') {
-                balance += 10000;
-                updateUI();
-                alert('🎉 +10000 BetCoin!');
+            const codes = { 'BETCOIN': 10000 };
+            if (codes[code]) {
+                saveBalance(balance + codes[code]);
+                alert('🎉 +' + codes[code] + ' BetCoin!');
                 closePromo();
             } else { alert('❌ Неверный код!'); }
         }
         
         function closeResult() { document.getElementById('resultModal').classList.remove('active'); }
-        function openScreenshot() { document.getElementById('screenshotModal').classList.add('active'); }
-        function closeScreenshot() { document.getElementById('screenshotModal').classList.remove('active'); }
-        function submitScreenshot() {
-            const url = document.getElementById('screenshotInput').value.trim();
-            if (!url) { alert('❌ Введите ссылку!'); return; }
-            alert('✅ Скриншот прикреплен!');
-            closeScreenshot();
-        }
         
-        // ===== ADMIN =====
-        function addAdmin() {
-            const input = document.getElementById('adminInput');
-            const name = input.value.trim();
-            if (!name) { alert('❌ Введите username!'); return; }
-            const list = document.getElementById('adminList');
-            list.innerHTML += `<div class="admin-item"><span>${name}</span><button onclick="this.parentElement.remove()">✕</button></div>`;
-            input.value = '';
-        }
+        // ===== INIT =====
+        loadUser();
         
-        function removeAdmin() {
-            const input = document.getElementById('adminInput');
-            const name = input.value.trim();
-            if (!name) { alert('❌ Введите username!'); return; }
-            const items = document.querySelectorAll('.admin-item');
-            for (let item of items) {
-                if (item.textContent.includes(name)) {
-                    item.remove();
-                    break;
+        // Realtime для лобби
+        supabase
+            .channel('lobbies')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'lobbies' }, () => {
+                if (document.getElementById('lobbyPage').classList.contains('active')) {
+                    loadLobbies();
                 }
-            }
-            input.value = '';
-        }
+            })
+            .subscribe();
         
-        // ===== BUTTONS =====
+        // ===== КНОПКИ =====
         document.getElementById('getBtn').onclick = function() {
-            balance += 500;
-            updateUI();
+            saveBalance(balance + 500);
             alert('✅ +500 BetCoin!');
         };
         
@@ -539,8 +783,7 @@
             if (amount) {
                 const c = parseInt(amount);
                 if (c > 0) {
-                    balance += c;
-                    updateUI();
+                    saveBalance(balance + c);
                     alert('✅ +' + c + ' BetCoin!');
                 }
             }
@@ -551,30 +794,32 @@
         document.getElementById('removeAdminBtn').onclick = removeAdmin;
         document.getElementById('applyPromoBtn').onclick = applyPromo;
         document.getElementById('resultBtn').onclick = closeResult;
+        document.getElementById('closeScreenshotBtn').onclick = closeScreenshot;
         document.getElementById('submitScreenshotBtn').onclick = submitScreenshot;
-        
-        // ===== INIT =====
-        updateUI();
-        console.log('🚀 BetGame loaded!');
-        console.log('👤 User:', tgUser);
         
         window.navigateTo = navigateTo;
         window.toggleSidebar = toggleSidebar;
         window.closeSidebar = closeSidebar;
-        window.toggleDice = toggleDice;
+        window.openDice = openDice;
+        window.closeDice = closeDice;
         window.setBet = setBet;
         window.placeBet = placeBet;
         window.openLobby = openLobby;
+        window.closeLobby = closeLobby;
         window.createLobby = createLobby;
-        window.openPromo = openPromo;
-        window.closePromo = closePromo;
-        window.applyPromo = applyPromo;
-        window.closeResult = closeResult;
+        window.joinLobby = joinLobby;
+        window.deleteLobby = deleteLobby;
+        window.startGame = startGame;
         window.openScreenshot = openScreenshot;
         window.closeScreenshot = closeScreenshot;
         window.submitScreenshot = submitScreenshot;
         window.addAdmin = addAdmin;
         window.removeAdmin = removeAdmin;
+        window.removeAdminByUsername = removeAdminByUsername;
+        window.openPromo = openPromo;
+        window.closePromo = closePromo;
+        window.applyPromo = applyPromo;
+        window.closeResult = closeResult;
     </script>
 </body>
 </html>

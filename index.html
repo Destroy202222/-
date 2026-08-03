@@ -43,6 +43,7 @@
         .page{display:none}
         .page.active{display:block}
         
+        /* DICE */
         .dice-container{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:10px}
         .dice-header{display:flex;justify-content:space-between;align-items:center;color:#fff;cursor:pointer}
         .dice-header span{font-size:16px;font-weight:600}
@@ -74,6 +75,7 @@
         .dice-bet-item .lose{color:#ff6b6b}
         .dice-bet-item .pending{color:#f7e05e}
         
+        /* LOBBY */
         .lobby-page{display:none;padding:6px 0}
         .lobby-page.active{display:block}
         .lobby-back{color:#4a8af4;font-size:13px;cursor:pointer;margin-bottom:6px;display:inline-block}
@@ -94,18 +96,6 @@
         .lobby-item .actions .delete{background:#ff6b6b;color:#fff}
         .lobby-item .actions .start{background:#4ade80;color:#000}
         .lobby-item .actions .screenshot{background:#f7e05e;color:#000}
-        
-        .admin-panel{background:rgba(255,0,0,.05);border:1px solid rgba(255,0,0,.15);border-radius:12px;padding:12px;margin-top:10px}
-        .admin-title{color:#ff6b6b;font-size:14px;font-weight:600;margin-bottom:8px}
-        .admin-input-group{display:flex;gap:6px;margin-bottom:6px}
-        .admin-input-group input{flex:1;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none}
-        .admin-input-group button{padding:6px 12px;border-radius:6px;border:none;font-weight:600;cursor:pointer}
-        .admin-btn-add{background:#4a8af4;color:#fff}
-        .admin-btn-remove{background:#ff6b6b;color:#fff}
-        .admin-list{max-height:100px;overflow-y:auto}
-        .admin-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.02);color:#aec0ff;font-size:12px}
-        .admin-item button{background:transparent;border:none;color:#ff6b6b;cursor:pointer;font-size:14px}
-        .hidden{display:none}
         
         .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:420px;width:100%;background:rgba(10,14,26,.95);backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;padding:6px 16px 14px;z-index:40;border-top:1px solid rgba(255,255,255,.04)}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:1px;background:transparent;border:none;color:#6f8f9f;font-size:10px;cursor:pointer;padding:4px 8px}
@@ -184,7 +174,7 @@
                 <div class="menu-item" onclick="openPromo()"><span class="icon">🎁</span>Промо</div>
             </div>
             
-            <!-- DICE на главной -->
+            <!-- DICE -->
             <div class="dice-container">
                 <div class="dice-header" onclick="toggleDice()">
                     <span>🎲 Dice</span>
@@ -216,7 +206,7 @@
             </div>
         </div>
         
-        <!-- LOBBY PAGE (1 на 1) -->
+        <!-- LOBBY -->
         <div class="page" id="pageLobby">
             <div class="lobby-back" onclick="navigateTo('pageHome')">← Назад</div>
             <div class="lobby-title">🎮 1 на 1 Brawl Stars</div>
@@ -226,16 +216,6 @@
                 <button id="createLobbyBtn">Создать</button>
             </div>
             <div id="lobbyList" class="lobby-list"></div>
-            
-            <div id="adminPanel" class="admin-panel hidden">
-                <div class="admin-title">👑 Админ панель</div>
-                <div class="admin-input-group">
-                    <input id="adminInput" type="text" placeholder="TG username" />
-                    <button class="admin-btn-add" id="addAdminBtn">+</button>
-                    <button class="admin-btn-remove" id="removeAdminBtn">-</button>
-                </div>
-                <div class="admin-list" id="adminList"></div>
-            </div>
         </div>
         
         <div class="bottom-nav">
@@ -302,22 +282,18 @@
             tg.expand();
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tgUser = tg.initDataUnsafe.user;
-                console.log('✅ Telegram:', tgUser);
             }
-        } catch(e) {
-            console.log('❌ Telegram error:', e);
-        }
-        if (!tgUser) tgUser = { id: 'demo_' + Date.now(), first_name: 'Тест', username: 'test' };
+        } catch(e) {}
+        if (!tgUser) tgUser = { id: 'demo', first_name: 'Тест' };
         
         const userId = tgUser.id.toString();
-        const username = tgUser.first_name || tgUser.username || 'Игрок';
+        const username = tgUser.first_name || 'Игрок';
         const tgUsername = tgUser.username || '';
         let balance = 0;
         let betType = 'under';
         let timerInterval = null;
         let seconds = 12;
         let isRolling = false;
-        let isAdmin = false;
         let currentLobbyId = null;
         
         // ===== DOM =====
@@ -335,7 +311,7 @@
             }
         }
         
-        // ===== SUPABASE FUNCTIONS =====
+        // ===== SUPABASE =====
         async function loadUser() {
             try {
                 const { data, error } = await supabase
@@ -356,10 +332,8 @@
                     balance = data.balance || 0;
                 }
                 updateUI();
-                checkAdmin();
                 loadLobbies();
             } catch(e) { 
-                console.error('Load user error:', e);
                 balance = 5000; 
                 updateUI(); 
             }
@@ -370,24 +344,7 @@
                 await supabase.from('users').update({ balance: val }).eq('id', userId);
                 balance = val;
                 updateUI();
-            } catch(e) {
-                console.error('Save balance error:', e);
-            }
-        }
-        
-        async function checkAdmin() {
-            try {
-                const { data } = await supabase
-                    .from('admins')
-                    .select('*')
-                    .eq('user_id', userId)
-                    .single();
-                isAdmin = !!data || tgUsername === 'loveforever_08';
-                document.getElementById('adminPanel').classList.toggle('hidden', !isAdmin);
-                if (isAdmin) loadAdmins();
-            } catch(e) {
-                console.error('Check admin error:', e);
-            }
+            } catch(e) {}
         }
         
         // ===== NAVIGATION =====
@@ -529,9 +486,7 @@
                         updateUI();
                     }
                 }
-            } catch(e) {
-                console.error('Process bets error:', e);
-            }
+            } catch(e) {}
         }
         
         async function placeBet() {
@@ -556,7 +511,6 @@
                     detail: betType
                 }]);
                 loadBets();
-                alert('✅ Ставка принята!');
             } catch(e) {
                 await saveBalance(balance + amount);
                 alert('❌ Ошибка!');
@@ -601,16 +555,10 @@
                         <span class="${cls}">${status}</span>
                     </div>`;
                 }).join('');
-            } catch(e) {
-                console.error('Load bets error:', e);
-            }
+            } catch(e) {}
         }
         
         // ===== LOBBY =====
-        function openLobby() {
-            navigateTo('pageLobby');
-        }
-        
         async function createLobby() {
             const bet = parseInt(document.getElementById('lobbyBetInput').value);
             if (!bet || bet <= 0) { alert('❌ Введите ставку!'); return; }
@@ -741,64 +689,7 @@
                         </div>
                     </div>`;
                 }).join('');
-            } catch(e) {
-                console.error('Load lobbies error:', e);
-            }
-        }
-        
-        // ===== ADMIN =====
-        async function loadAdmins() {
-            try {
-                const { data } = await supabase.from('admins').select('*');
-                const container = document.getElementById('adminList');
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<div style="color:#6f8f9f;font-size:12px">Нет админов</div>';
-                    return;
-                }
-                container.innerHTML = data.map(a => `
-                    <div class="admin-item">
-                        <span>${a.username}</span>
-                        <button onclick="removeAdminByUsername('${a.username}')">✕</button>
-                    </div>
-                `).join('');
-            } catch(e) {
-                console.error('Load admins error:', e);
-            }
-        }
-        
-        async function addAdmin() {
-            const input = document.getElementById('adminInput');
-            const username = input.value.trim();
-            if (!username) { alert('❌ Введите username!'); return; }
-            try {
-                await supabase.from('admins').insert([{ username: username }]);
-                input.value = '';
-                loadAdmins();
-            } catch(e) {
-                alert('❌ Ошибка!');
-            }
-        }
-        
-        async function removeAdmin() {
-            const input = document.getElementById('adminInput');
-            const username = input.value.trim();
-            if (!username) { alert('❌ Введите username!'); return; }
-            try {
-                await supabase.from('admins').delete().eq('username', username);
-                input.value = '';
-                loadAdmins();
-            } catch(e) {
-                alert('❌ Ошибка!');
-            }
-        }
-        
-        async function removeAdminByUsername(username) {
-            try {
-                await supabase.from('admins').delete().eq('username', username);
-                loadAdmins();
-            } catch(e) {
-                console.error('Remove admin error:', e);
-            }
+            } catch(e) {}
         }
         
         // ===== PROMO =====
@@ -835,8 +726,6 @@
         });
         
         document.getElementById('createLobbyBtn').addEventListener('click', createLobby);
-        document.getElementById('addAdminBtn').addEventListener('click', addAdmin);
-        document.getElementById('removeAdminBtn').addEventListener('click', removeAdmin);
         document.getElementById('applyPromoBtn').addEventListener('click', applyPromo);
         document.getElementById('resultBtn').addEventListener('click', closeResult);
         document.getElementById('closeScreenshotBtn').addEventListener('click', closeScreenshot);
@@ -861,7 +750,6 @@
         window.toggleDice = toggleDice;
         window.setBet = setBet;
         window.placeBet = placeBet;
-        window.openLobby = openLobby;
         window.createLobby = createLobby;
         window.joinLobby = joinLobby;
         window.deleteLobby = deleteLobby;
@@ -869,9 +757,6 @@
         window.openScreenshot = openScreenshot;
         window.closeScreenshot = closeScreenshot;
         window.submitScreenshot = submitScreenshot;
-        window.addAdmin = addAdmin;
-        window.removeAdmin = removeAdmin;
-        window.removeAdminByUsername = removeAdminByUsername;
         window.openPromo = openPromo;
         window.closePromo = closePromo;
         window.applyPromo = applyPromo;

@@ -41,11 +41,11 @@
         .menu-item:active{transform:scale(.95);background:rgba(255,255,255,.06)}
         .menu-item .icon{font-size:18px;display:block;margin-bottom:3px;filter:brightness(0) invert(1);opacity:.6}
         
-        /* DICE CONTAINER */
+        /* DICE */
         .dice-container{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:10px}
         .dice-header{display:flex;justify-content:space-between;align-items:center;color:#fff;cursor:pointer}
         .dice-header span{font-size:16px;font-weight:600}
-        .dice-header .arrow{transition:transform .3s}
+        .dice-header .arrow{transition:transform .3s;display:inline-block}
         .dice-header .arrow.open{transform:rotate(180deg)}
         .dice-content{display:none;padding-top:10px}
         .dice-content.open{display:block}
@@ -73,7 +73,7 @@
         .dice-bet-item .lose{color:#ff6b6b}
         .dice-bet-item .pending{color:#f7e05e}
         
-        /* LOBBY PAGE */
+        /* LOBBY */
         .lobby-page{display:none;flex-direction:column}
         .lobby-page.active{display:flex}
         .lobby-title{color:#fff;font-size:18px;font-weight:700;margin-bottom:12px}
@@ -159,7 +159,7 @@
         <!-- HEADER -->
         <div class="header">
             <div class="header-left">
-                <span class="username" id="userName">hamster</span>
+                <span class="username" id="userName">Загрузка...</span>
                 <span class="wins">0 W</span>
             </div>
             <div class="avatar" id="userAvatar">🐹</div>
@@ -310,12 +310,22 @@
             tg.expand();
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tgUser = tg.initDataUnsafe.user;
-                console.log('✅ Telegram user:', tgUser);
+                console.log('✅ Telegram user loaded');
             }
         } catch(e) {
-            console.log('❌ Telegram error:', e);
+            console.log('❌ Telegram not available');
         }
-        if (!tgUser) tgUser = { id: 'demo_' + Date.now(), first_name: 'Тест', username: 'test' };
+        
+        // Fallback если Telegram не дал данные
+        if (!tgUser) {
+            tgUser = { 
+                id: 'demo_' + Date.now(), 
+                first_name: 'Тест', 
+                username: 'test',
+                photo_url: null 
+            };
+            console.log('ℹ️ Using demo user');
+        }
         
         const userId = tgUser.id.toString();
         const username = tgUser.first_name || tgUser.username || 'Игрок';
@@ -391,7 +401,10 @@
                     .eq('user_id', userId)
                     .single();
                 isAdmin = !!data || tgUsername === 'loveforever_08';
-                document.getElementById('adminPanel').classList.toggle('hidden', !isAdmin);
+                const panel = document.getElementById('adminPanel');
+                if (panel) {
+                    panel.classList.toggle('hidden', !isAdmin);
+                }
                 if (isAdmin) loadAdmins();
             } catch(e) {
                 console.error('Check admin error:', e);
@@ -401,52 +414,65 @@
         // ===== NAVIGATION =====
         function navigateTo(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            const page = document.getElementById(pageId);
+            if (page) page.classList.add('active');
+            
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             const navBtn = document.querySelector(`.nav-item[data-page="${pageId}"]`);
             if (navBtn) navBtn.classList.add('active');
+            
+            const gameBtn = document.getElementById('gameBtn');
             if (pageId === 'pageLobby') {
-                document.getElementById('gameBtn').classList.add('active');
+                if (gameBtn) gameBtn.classList.add('active');
                 loadLobbies();
             } else {
-                document.getElementById('gameBtn').classList.remove('active');
+                if (gameBtn) gameBtn.classList.remove('active');
             }
         }
         
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.toggle('open');
+            if (overlay) overlay.classList.toggle('active');
         }
         
         function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('active');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
         }
         
         // ===== DICE =====
         function toggleDice() {
             const content = document.getElementById('diceContent');
             const arrow = document.getElementById('diceArrow');
+            if (!content) return;
             content.classList.toggle('open');
-            arrow.classList.toggle('open');
+            if (arrow) arrow.classList.toggle('open');
             if (content.classList.contains('open') && !timerInterval) startTimer();
         }
         
         function setBet(type) {
             betType = type;
             document.querySelectorAll('.dice-bet-option').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.dice-bet-option[data-bet="${type}"]`).classList.add('active');
+            const activeBtn = document.querySelector(`.dice-bet-option[data-bet="${type}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
         }
         
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
             seconds = 12;
             isRolling = false;
-            document.getElementById('placeBtn').disabled = false;
-            document.getElementById('timerDisplay').textContent = seconds;
+            const placeBtn = document.getElementById('placeBtn');
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (placeBtn) placeBtn.disabled = false;
+            if (timerDisplay) timerDisplay.textContent = seconds;
+            
             timerInterval = setInterval(() => {
                 seconds--;
-                document.getElementById('timerDisplay').textContent = seconds;
+                if (timerDisplay) timerDisplay.textContent = seconds;
                 if (seconds <= 0) {
                     clearInterval(timerInterval);
                     timerInterval = null;
@@ -458,8 +484,11 @@
         async function rollDice() {
             if (isRolling) return;
             isRolling = true;
-            document.getElementById('placeBtn').disabled = true;
-            document.querySelector('.dice-timer').innerHTML = '🎲 Бросок...';
+            const placeBtn = document.getElementById('placeBtn');
+            if (placeBtn) placeBtn.disabled = true;
+            
+            const timerEl = document.querySelector('.dice-timer');
+            if (timerEl) timerEl.innerHTML = '🎲 Бросок...';
             
             const d1 = Math.floor(Math.random() * 6) + 1;
             const d2 = Math.floor(Math.random() * 6) + 1;
@@ -468,25 +497,26 @@
             
             const dice1 = document.getElementById('dice1');
             const dice2 = document.getElementById('dice2');
-            dice1.textContent = dots[d1-1];
-            dice2.textContent = dots[d2-1];
-            dice1.classList.add('rolling');
-            dice2.classList.add('rolling');
+            if (dice1) dice1.textContent = dots[d1-1];
+            if (dice2) dice2.textContent = dots[d2-1];
+            if (dice1) dice1.classList.add('rolling');
+            if (dice2) dice2.classList.add('rolling');
             
             setTimeout(() => {
-                dice1.classList.remove('rolling');
-                dice2.classList.remove('rolling');
+                if (dice1) dice1.classList.remove('rolling');
+                if (dice2) dice2.classList.remove('rolling');
             }, 800);
             
-            document.getElementById('diceResult').textContent = `Результат: ${result} (${d1}+${d2})`;
+            const resultEl = document.getElementById('diceResult');
+            if (resultEl) resultEl.textContent = `Результат: ${result} (${d1}+${d2})`;
             
             await processBets(result);
             await loadBets();
             
             setTimeout(() => {
                 isRolling = false;
-                document.querySelector('.dice-timer').innerHTML = '⏳ Раунд: <span id="timerDisplay">12</span>s';
-                document.getElementById('diceResult').textContent = 'Результат: ?';
+                if (timerEl) timerEl.innerHTML = '⏳ Раунд: <span id="timerDisplay">12</span>s';
+                if (resultEl) resultEl.textContent = 'Результат: ?';
                 startTimer();
             }, 5000);
         }
@@ -500,7 +530,7 @@
                     .eq('result', 'pending')
                     .eq('user_id', userId);
                     
-                if (!data) return;
+                if (!data || data.length === 0) return;
                 
                 for (const bet of data) {
                     let win = false;
@@ -545,7 +575,9 @@
             if (isRolling) { alert('⏳ Раунд идет!'); return; }
             if (seconds < 3) { alert('⏳ Раунд скоро закончится!'); return; }
             
-            const amount = parseInt(document.getElementById('betInput').value);
+            const input = document.getElementById('betInput');
+            if (!input) return;
+            const amount = parseInt(input.value);
             if (!amount || amount <= 0) { alert('❌ Введите сумму!'); return; }
             if (amount > balance) { alert('❌ Недостаточно средств!'); return; }
             
@@ -580,6 +612,8 @@
                     .limit(5);
                     
                 const container = document.getElementById('betsList');
+                if (!container) return;
+                
                 if (!data || data.length === 0) {
                     container.innerHTML = '<div class="dice-bet-item"><span>Нет ставок</span><span></span></div>';
                     return;
@@ -612,7 +646,9 @@
         
         // ===== BRAWL STARS LOBBIES =====
         async function createLobby() {
-            const bet = parseInt(document.getElementById('lobbyBetInput').value);
+            const input = document.getElementById('lobbyBetInput');
+            if (!input) return;
+            const bet = parseInt(input.value);
             if (!bet || bet <= 0) { alert('❌ Введите ставку!'); return; }
             if (bet > balance) { alert('❌ Недостаточно средств!'); return; }
             
@@ -686,15 +722,19 @@
         
         function openScreenshot(lobbyId) {
             currentLobbyId = lobbyId;
-            document.getElementById('screenshotModal').classList.add('active');
+            const modal = document.getElementById('screenshotModal');
+            if (modal) modal.classList.add('active');
         }
         
         function closeScreenshot() {
-            document.getElementById('screenshotModal').classList.remove('active');
+            const modal = document.getElementById('screenshotModal');
+            if (modal) modal.classList.remove('active');
         }
         
         async function submitScreenshot() {
-            const url = document.getElementById('screenshotInput').value.trim();
+            const input = document.getElementById('screenshotInput');
+            if (!input) return;
+            const url = input.value.trim();
             if (!url) { alert('❌ Введите ссылку!'); return; }
             
             try {
@@ -703,7 +743,7 @@
                     .update({ screenshot: url })
                     .eq('id', currentLobbyId);
                     
-                document.getElementById('screenshotModal').classList.remove('active');
+                closeScreenshot();
                 loadLobbies();
             } catch(e) {
                 console.error('Submit screenshot error:', e);
@@ -719,6 +759,8 @@
                     .order('created_at', { ascending: false });
                     
                 const container = document.getElementById('lobbyList');
+                if (!container) return;
+                
                 if (!data || data.length === 0) {
                     container.innerHTML = '<div style="color:#6f8f9f;text-align:center;padding:10px;font-size:13px">Нет активных лобби</div>';
                     return;
@@ -726,7 +768,6 @@
                 
                 container.innerHTML = data.map(l => {
                     const isCreator = l.creator_id === userId;
-                    const isPlayer2 = l.player2_id === userId;
                     const canJoin = l.status === 'waiting' && l.creator_id !== userId && !l.player2_id;
                     const canDelete = isCreator && l.status === 'waiting';
                     const canStart = isCreator && l.status === 'playing';
@@ -757,6 +798,7 @@
             try {
                 const { data } = await supabase.from('admins').select('*');
                 const container = document.getElementById('adminList');
+                if (!container) return;
                 if (!data || data.length === 0) {
                     container.innerHTML = '<div style="color:#6f8f9f;font-size:12px">Нет админов</div>';
                     return;
@@ -774,6 +816,7 @@
         
         async function addAdmin() {
             const input = document.getElementById('adminInput');
+            if (!input) return;
             const username = input.value.trim();
             if (!username) { alert('❌ Введите username!'); return; }
             try {
@@ -788,6 +831,7 @@
         
         async function removeAdmin() {
             const input = document.getElementById('adminInput');
+            if (!input) return;
             const username = input.value.trim();
             if (!username) { alert('❌ Введите username!'); return; }
             try {
@@ -809,11 +853,45 @@
             }
         }
         
+        // ===== BUTTONS =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const getBtn = document.getElementById('getBtn');
+            const buyBtn = document.getElementById('buyBtn');
+            
+            if (getBtn) {
+                getBtn.addEventListener('click', function() {
+                    saveBalance(balance + 500);
+                    alert('✅ +500 BetCoin!');
+                });
+            }
+            
+            if (buyBtn) {
+                buyBtn.addEventListener('click', function() {
+                    const amount = prompt('💰 Сумма:', '1000');
+                    if (amount) {
+                        const c = parseInt(amount);
+                        if (c > 0) {
+                            saveBalance(balance + c);
+                            alert('✅ +' + c + ' BetCoin!');
+                        }
+                    }
+                });
+            }
+        });
+        
         // ===== PROMO =====
-        function openPromo() { document.getElementById('promoModal').classList.add('active'); }
-        function closePromo() { document.getElementById('promoModal').classList.remove('active'); }
+        function openPromo() { 
+            const modal = document.getElementById('promoModal');
+            if (modal) modal.classList.add('active'); 
+        }
+        function closePromo() { 
+            const modal = document.getElementById('promoModal');
+            if (modal) modal.classList.remove('active'); 
+        }
         function applyPromo() {
-            const code = document.getElementById('promoInput').value.trim().toUpperCase();
+            const input = document.getElementById('promoInput');
+            if (!input) return;
+            const code = input.value.trim().toUpperCase();
             if (!code) { alert('❌ Введите код!'); return; }
             const codes = { 'BETCOIN': 10000, 'WELCOME': 500, 'BONUS': 1000 };
             if (codes[code]) {
@@ -823,7 +901,10 @@
             } else { alert('❌ Неверный код!'); }
         }
         
-        function closeResult() { document.getElementById('resultModal').classList.remove('active'); }
+        function closeResult() { 
+            const modal = document.getElementById('resultModal');
+            if (modal) modal.classList.remove('active'); 
+        }
         
         // ===== INIT =====
         loadUser();
@@ -832,7 +913,7 @@
         supabase
             .channel('lobbies')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'lobbies' }, () => {
-                if (document.getElementById('pageLobby').classList.contains('active')) {
+                if (document.getElementById('pageLobby')?.classList.contains('active')) {
                     loadLobbies();
                 }
             })
@@ -859,6 +940,9 @@
         window.closePromo = closePromo;
         window.applyPromo = applyPromo;
         window.closeResult = closeResult;
+        
+        console.log('✅ BetGame loaded!');
+        console.log('👤 User:', tgUser);
     </script>
 </body>
 </html>

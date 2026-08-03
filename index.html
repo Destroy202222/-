@@ -21,7 +21,6 @@
         .header{display:flex;justify-content:space-between;align-items:center;padding:6px 0 10px;border-bottom:1px solid rgba(255,255,255,.05);margin-bottom:12px}
         .header-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
         .username{color:#fff;font-size:15px;font-weight:600}
-        .wins{color:#6f8f9f;font-size:11px}
         .avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#f7e05e,#ff8a2a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#0a0e1a;overflow:hidden;flex-shrink:0}
         .avatar img{width:100%;height:100%;object-fit:cover}
         
@@ -41,39 +40,37 @@
         .menu-item:active{transform:scale(.95);background:rgba(255,255,255,.06)}
         .menu-item .icon{font-size:18px;display:block;margin-bottom:3px;filter:brightness(0) invert(1);opacity:.6}
         
-        /* DICE на главной */
-        .dice-container{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:10px}
-        .dice-header{display:flex;justify-content:space-between;align-items:center;color:#fff;cursor:pointer}
-        .dice-header span{font-size:16px;font-weight:600}
-        .dice-header .arrow{transition:transform .3s;display:inline-block}
-        .dice-header .arrow.open{transform:rotate(180deg)}
-        .dice-content{display:none;padding-top:10px}
-        .dice-content.open{display:block}
-        .dice-timer{text-align:center;font-size:14px;color:#4ade80;padding:4px;background:rgba(74,222,128,.08);border-radius:8px;margin:4px 0}
-        .dice-timer span{font-size:18px;color:#f7e05e}
-        .dice-box{display:flex;justify-content:center;gap:16px;margin:8px 0}
-        .dice{width:50px;height:50px;background:linear-gradient(135deg,#1a2a5a,#2a4a8a);border:2px solid rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff}
+        .page{display:none}
+        .page.active{display:block}
+        
+        .dice-page{display:none;padding:6px 0}
+        .dice-page.active{display:block}
+        .dice-back{color:#4a8af4;font-size:13px;cursor:pointer;margin-bottom:6px;display:inline-block}
+        .dice-title{color:#fff;font-size:20px;font-weight:700;text-align:center;margin:6px 0}
+        .dice-timer{text-align:center;font-size:15px;color:#4ade80;padding:6px;background:rgba(74,222,128,.08);border-radius:8px;margin:6px 0}
+        .dice-timer span{font-size:20px;color:#f7e05e}
+        .dice-box{display:flex;justify-content:center;gap:16px;margin:10px 0}
+        .dice{width:60px;height:60px;background:linear-gradient(135deg,#1a2a5a,#2a4a8a);border:2px solid rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff}
         .dice.rolling{animation:rollDice .8s ease-in-out}
         @keyframes rollDice{0%{transform:rotate(0)}50%{transform:rotate(360deg)}100%{transform:rotate(720deg)}}
-        .dice-result{text-align:center;color:#f7e05e;font-size:14px;font-weight:700;min-height:22px}
-        .dice-bet-options{display:flex;gap:4px;margin:4px 0}
-        .dice-bet-option{flex:1;padding:6px 4px;border-radius:6px;border:2px solid rgba(255,255,255,.08);background:transparent;color:#fff;font-size:11px;font-weight:700;cursor:pointer;text-align:center}
+        .dice-result{text-align:center;color:#f7e05e;font-size:17px;font-weight:700;min-height:26px}
+        .dice-bet-options{display:flex;gap:6px;margin:6px 0}
+        .dice-bet-option{flex:1;padding:8px 4px;border-radius:8px;border:2px solid rgba(255,255,255,.08);background:transparent;color:#fff;font-size:13px;font-weight:700;cursor:pointer;text-align:center}
         .dice-bet-option.active{border-color:#f7e05e;background:rgba(255,215,0,.08);color:#f7e05e}
         .dice-bet-option:disabled{opacity:.4;cursor:not-allowed}
-        .dice-input-group{display:flex;gap:4px;margin:4px 0}
-        .dice-input-group input{flex:1;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:12px;outline:none}
+        .dice-input-group{display:flex;gap:6px;margin:6px 0}
+        .dice-input-group input{flex:1;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:14px;outline:none}
         .dice-input-group input:disabled{opacity:.4}
-        .dice-input-group button{padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:11px;cursor:pointer}
+        .dice-input-group button{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:12px;cursor:pointer}
         .dice-input-group button:disabled{opacity:.4;cursor:not-allowed}
-        .dice-place-btn{width:100%;padding:8px;border-radius:8px;border:none;background:gold;color:#000;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px}
+        .dice-place-btn{width:100%;padding:10px;border-radius:10px;border:none;background:gold;color:#000;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
         .dice-place-btn:disabled{opacity:.4;cursor:not-allowed}
-        .dice-bets{background:rgba(255,255,255,.02);border-radius:6px;padding:6px;max-height:80px;overflow-y:auto;margin-top:4px}
-        .dice-bet-item{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.02);color:#aec0ff;font-size:10px}
+        .dice-bets{background:rgba(255,255,255,.02);border-radius:8px;padding:8px;max-height:120px;overflow-y:auto;margin-top:6px}
+        .dice-bet-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.02);color:#aec0ff;font-size:11px}
         .dice-bet-item .win{color:#4ade80}
         .dice-bet-item .lose{color:#ff6b6b}
         .dice-bet-item .pending{color:#f7e05e}
         
-        /* LOBBY */
         .lobby-page{display:none;padding:6px 0}
         .lobby-page.active{display:block}
         .lobby-back{color:#4a8af4;font-size:13px;cursor:pointer;margin-bottom:6px;display:inline-block}
@@ -95,7 +92,6 @@
         .lobby-item .actions .start{background:#4ade80;color:#000}
         .lobby-item .actions .screenshot{background:#f7e05e;color:#000}
         
-        /* ADMIN */
         .admin-panel{background:rgba(255,0,0,.05);border:1px solid rgba(255,0,0,.15);border-radius:12px;padding:12px;margin-top:10px}
         .admin-title{color:#ff6b6b;font-size:14px;font-weight:600;margin-bottom:8px}
         .admin-input-group{display:flex;gap:6px;margin-bottom:6px}
@@ -106,9 +102,7 @@
         .admin-list{max-height:100px;overflow-y:auto}
         .admin-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.02);color:#aec0ff;font-size:12px}
         .admin-item button{background:transparent;border:none;color:#ff6b6b;cursor:pointer;font-size:14px}
-        
-        .page{display:none}
-        .page.active{display:block}
+        .hidden{display:none}
         
         .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:420px;width:100%;background:rgba(10,14,26,.95);backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;padding:6px 16px 14px;z-index:40;border-top:1px solid rgba(255,255,255,.04)}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:1px;background:transparent;border:none;color:#6f8f9f;font-size:10px;cursor:pointer;padding:4px 8px}
@@ -150,7 +144,10 @@
         .result-title.lose{color:#ff6b6b}
         .result-amount{color:#f7e05e;font-size:15px;margin-bottom:14px}
         .result-btn{padding:10px 30px;border:none;border-radius:30px;background:gold;color:#000;font-weight:700;font-size:14px;cursor:pointer}
-        .hidden{display:none}
+        
+        .screenshot-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);z-index:100;display:none;justify-content:center;align-items:center;padding:20px}
+        .screenshot-modal.active{display:flex}
+        .screenshot-modal .modal{background:rgba(20,30,60,.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px 20px;max-width:340px;width:100%}
     </style>
 </head>
 <body>
@@ -160,7 +157,6 @@
         <div class="header">
             <div class="header-left">
                 <span class="username" id="userName">hamster</span>
-                <span class="wins">0 W</span>
             </div>
             <div class="avatar" id="userAvatar">🐹</div>
         </div>
@@ -176,7 +172,6 @@
             </div>
         </div>
         
-        <!-- HOME -->
         <div class="page active" id="pageHome">
             <div class="menu-title">Управление</div>
             <div class="menu-grid">
@@ -185,47 +180,47 @@
                 <div class="menu-item" onclick="alert('Сервис')"><span class="icon">⚙️</span>Сервис</div>
                 <div class="menu-item" onclick="openPromo()"><span class="icon">🎁</span>Промо</div>
             </div>
+        </div>
+        
+        <div class="dice-page" id="dicePage">
+            <div class="dice-back" onclick="closeDice()">← Назад</div>
+            <div class="dice-title">🎲 Dice</div>
             
-            <!-- DICE -->
-            <div class="dice-container">
-                <div class="dice-header" onclick="toggleDice()">
-                    <span>🎲 Dice</span>
-                    <span class="arrow" id="diceArrow">▼</span>
-                </div>
-                <div class="dice-content" id="diceContent">
-                    <div class="dice-timer">⏳ Раунд: <span id="timerDisplay">12</span>s</div>
-                    <div class="dice-box">
-                        <div class="dice" id="dice1">⚀</div>
-                        <div class="dice" id="dice2">⚀</div>
-                    </div>
-                    <div class="dice-result" id="diceResult">Результат: ?</div>
-                    <div class="dice-bet-options">
-                        <button class="dice-bet-option active" data-bet="under" onclick="setBet('under')">⟨7</button>
-                        <button class="dice-bet-option" data-bet="seven" onclick="setBet('seven')">=7</button>
-                        <button class="dice-bet-option" data-bet="over" onclick="setBet('over')">7⟩</button>
-                    </div>
-                    <div class="dice-input-group">
-                        <input id="betInput" type="number" value="100" min="1" />
-                        <button onclick="document.getElementById('betInput').value=Math.floor(balance/2)">½</button>
-                        <button onclick="document.getElementById('betInput').value=balance">Max</button>
-                    </div>
-                    <button class="dice-place-btn" id="placeBtn" onclick="placeBet()">🎲 Сделать ставку</button>
-                    <div style="color:#8a9bb5;font-size:10px;margin-top:4px">Ваша ставка</div>
-                    <div class="dice-bets" id="betsList">
-                        <div class="dice-bet-item"><span>Нет ставок</span><span></span></div>
-                    </div>
-                </div>
+            <div class="dice-timer">⏳ Раунд: <span id="timerDisplay">12</span>s</div>
+            
+            <div class="dice-box">
+                <div class="dice" id="dice1">⚀</div>
+                <div class="dice" id="dice2">⚀</div>
+            </div>
+            <div class="dice-result" id="diceResult">Результат: ?</div>
+            
+            <div class="dice-bet-options">
+                <button class="dice-bet-option active" data-bet="under" onclick="setBet('under')">⟨ 7</button>
+                <button class="dice-bet-option" data-bet="seven" onclick="setBet('seven')">= 7</button>
+                <button class="dice-bet-option" data-bet="over" onclick="setBet('over')">7 ⟩</button>
+            </div>
+            
+            <div class="dice-input-group">
+                <input id="betInput" type="number" value="100" min="1" />
+                <button onclick="document.getElementById('betInput').value=Math.floor(balance/2)">1/2</button>
+                <button onclick="document.getElementById('betInput').value=balance">Max</button>
+            </div>
+            
+            <button class="dice-place-btn" id="placeBtn" onclick="placeBet()">🎲 Сделать ставку</button>
+            
+            <div style="color:#8a9bb5;font-size:11px;margin-top:6px">Ставки игроков</div>
+            <div class="dice-bets" id="betsList">
+                <div class="dice-bet-item"><span>Нет ставок</span><span></span></div>
             </div>
         </div>
         
-        <!-- LOBBY -->
-        <div class="page" id="pageLobby">
-            <div class="lobby-back" onclick="navigateTo('pageHome')">← Назад</div>
+        <div class="lobby-page" id="lobbyPage">
+            <div class="lobby-back" onclick="closeLobby()">← Назад</div>
             <div class="lobby-title">🎮 1 на 1 Brawl Stars</div>
             
             <div class="lobby-create">
                 <input id="lobbyBetInput" type="number" placeholder="Ставка BETCOIN" value="100" min="1" />
-                <button onclick="createLobby()">Создать</button>
+                <button id="createLobbyBtn">Создать</button>
             </div>
             <div id="lobbyList" class="lobby-list"></div>
             
@@ -233,19 +228,18 @@
                 <div class="admin-title">👑 Админ панель</div>
                 <div class="admin-input-group">
                     <input id="adminInput" type="text" placeholder="TG username (без @)" />
-                    <button class="admin-btn-add" onclick="addAdmin()">+</button>
-                    <button class="admin-btn-remove" onclick="removeAdmin()">-</button>
+                    <button class="admin-btn-add" id="addAdminBtn">+</button>
+                    <button class="admin-btn-remove" id="removeAdminBtn">-</button>
                 </div>
                 <div class="admin-list" id="adminList"></div>
             </div>
         </div>
         
-        <!-- NAV -->
         <div class="bottom-nav">
             <button class="nav-item active" onclick="navigateTo('pageHome')" data-page="pageHome">
                 <span class="icon">🏠</span><span>Главная</span>
             </button>
-            <div class="nav-center" onclick="navigateTo('pageLobby')" id="gameBtn">🎮</div>
+            <div class="nav-center" onclick="openDice()" id="gameBtn">🎲</div>
             <button class="nav-item" onclick="toggleSidebar()">
                 <span class="icon">⚙️</span><span>Настройки</span>
             </button>
@@ -257,7 +251,8 @@
         <div class="sidebar-close" onclick="closeSidebar()">✕</div>
         <div class="sidebar-title">📋 Разделы</div>
         <div class="sidebar-item active" onclick="navigateTo('pageHome');closeSidebar()"><span class="icon">🏠</span>Главная</div>
-        <div class="sidebar-item" onclick="navigateTo('pageLobby');closeSidebar()"><span class="icon">🎮</span>1 на 1</div>
+        <div class="sidebar-item" onclick="openDice();closeSidebar()"><span class="icon">🎲</span>Dice</div>
+        <div class="sidebar-item" onclick="openLobby();closeSidebar()"><span class="icon">🎮</span>1 на 1</div>
         <div class="sidebar-item" onclick="alert('Скоро')"><span class="icon">🏆</span>Рейтинг</div>
         <div class="sidebar-item" onclick="alert('Настройки')"><span class="icon">⚙️</span>Настройки</div>
     </div>
@@ -268,7 +263,7 @@
             <input class="modal-input" id="promoInput" type="text" placeholder="ВВЕДИТЕ КОД" maxlength="20" />
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-secondary" onclick="closePromo()">Отмена</button>
-                <button class="modal-btn modal-btn-primary" onclick="applyPromo()">Активировать</button>
+                <button class="modal-btn modal-btn-primary" id="applyPromoBtn">Активировать</button>
             </div>
         </div>
     </div>
@@ -278,17 +273,17 @@
             <div class="result-icon" id="resIcon">🎉</div>
             <div class="result-title" id="resTitle">Вы выиграли!</div>
             <div class="result-amount" id="resAmount">+0 BetCoin</div>
-            <button class="result-btn" onclick="closeResult()">Продолжить</button>
+            <button class="result-btn" id="resultBtn">Продолжить</button>
         </div>
     </div>
     
-    <div class="modal-overlay" id="screenshotModal">
+    <div class="screenshot-modal" id="screenshotModal">
         <div class="modal">
             <div class="modal-title">📸 Прикрепить скриншот</div>
             <input class="modal-input" id="screenshotInput" type="text" placeholder="Ссылка на скриншот" />
             <div class="modal-buttons">
-                <button class="modal-btn modal-btn-secondary" onclick="closeScreenshot()">Отмена</button>
-                <button class="modal-btn modal-btn-primary" onclick="submitScreenshot()">Отправить</button>
+                <button class="modal-btn modal-btn-secondary" id="closeScreenshotBtn">Отмена</button>
+                <button class="modal-btn modal-btn-primary" id="submitScreenshotBtn">Отправить</button>
             </div>
         </div>
     </div>
@@ -307,9 +302,7 @@
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tgUser = tg.initDataUnsafe.user;
             }
-        } catch(e) {
-            console.log('Telegram not available');
-        }
+        } catch(e) {}
         if (!tgUser) tgUser = { id: 'demo', first_name: 'Тест' };
         
         const userId = tgUser.id.toString();
@@ -362,7 +355,6 @@
                 checkAdmin();
                 loadLobbies();
             } catch(e) { 
-                console.log('Load user error:', e);
                 balance = 5000; 
                 updateUI(); 
             }
@@ -373,9 +365,7 @@
                 await supabase.from('users').update({ balance: val }).eq('id', userId);
                 balance = val;
                 updateUI();
-            } catch(e) {
-                console.log('Save balance error:', e);
-            }
+            } catch(e) {}
         }
         
         async function checkAdmin() {
@@ -398,12 +388,8 @@
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             const navBtn = document.querySelector(`.nav-item[data-page="${pageId}"]`);
             if (navBtn) navBtn.classList.add('active');
-            if (pageId === 'pageLobby') {
-                document.getElementById('gameBtn').classList.add('active');
-                loadLobbies();
-            } else {
-                document.getElementById('gameBtn').classList.remove('active');
-            }
+            document.getElementById('dicePage').classList.remove('active');
+            document.getElementById('lobbyPage').classList.remove('active');
         }
         
         function toggleSidebar() {
@@ -417,12 +403,17 @@
         }
         
         // ===== DICE =====
-        function toggleDice() {
-            const content = document.getElementById('diceContent');
-            const arrow = document.getElementById('diceArrow');
-            content.classList.toggle('open');
-            arrow.classList.toggle('open');
-            if (content.classList.contains('open') && !timerInterval) startTimer();
+        function openDice() {
+            document.getElementById('dicePage').classList.add('active');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('gameBtn').classList.add('active');
+            document.querySelector('.nav-item.active')?.classList.remove('active');
+            if (!timerInterval) startTimer();
+        }
+        
+        function closeDice() { 
+            navigateTo('pageHome'); 
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
         }
         
         function setBet(type) {
@@ -494,7 +485,7 @@
                     .eq('result', 'pending')
                     .eq('user_id', userId);
                     
-                if (!data || data.length === 0) return;
+                if (!data) return;
                 
                 for (const bet of data) {
                     let win = false;
@@ -532,9 +523,7 @@
                         updateUI();
                     }
                 }
-            } catch(e) {
-                console.log('Process bets error:', e);
-            }
+            } catch(e) {}
         }
         
         async function placeBet() {
@@ -603,12 +592,22 @@
                         <span class="${cls}">${status}</span>
                     </div>`;
                 }).join('');
-            } catch(e) {
-                console.log('Load bets error:', e);
-            }
+            } catch(e) {}
         }
         
         // ===== LOBBY =====
+        function openLobby() {
+            document.getElementById('lobbyPage').classList.add('active');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('gameBtn').classList.add('active');
+            document.querySelector('.nav-item.active')?.classList.remove('active');
+            loadLobbies();
+        }
+        
+        function closeLobby() { 
+            navigateTo('pageHome'); 
+        }
+        
         async function createLobby() {
             const bet = parseInt(document.getElementById('lobbyBetInput').value);
             if (!bet || bet <= 0) { alert('❌ Введите ставку!'); return; }
@@ -739,9 +738,7 @@
                         </div>
                     </div>`;
                 }).join('');
-            } catch(e) {
-                console.log('Load lobbies error:', e);
-            }
+            } catch(e) {}
         }
         
         // ===== ADMIN =====
@@ -795,23 +792,6 @@
             } catch(e) {}
         }
         
-        // ===== BUTTONS =====
-        document.getElementById('getBtn').addEventListener('click', function() {
-            saveBalance(balance + 500);
-            alert('✅ +500 BetCoin!');
-        });
-        
-        document.getElementById('buyBtn').addEventListener('click', function() {
-            const amount = prompt('💰 Сумма:', '1000');
-            if (amount) {
-                const c = parseInt(amount);
-                if (c > 0) {
-                    saveBalance(balance + c);
-                    alert('✅ +' + c + ' BetCoin!');
-                }
-            }
-        });
-        
         // ===== PROMO =====
         function openPromo() { document.getElementById('promoModal').classList.add('active'); }
         function closePromo() { document.getElementById('promoModal').classList.remove('active'); }
@@ -835,18 +815,50 @@
         supabase
             .channel('lobbies')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'lobbies' }, () => {
-                if (document.getElementById('pageLobby').classList.contains('active')) {
+                if (document.getElementById('lobbyPage').classList.contains('active')) {
                     loadLobbies();
                 }
             })
             .subscribe();
         
+        // ===== КНОПКИ ЧЕРЕЗ addEventListener =====
+        document.getElementById('getBtn').addEventListener('click', function() {
+            saveBalance(balance + 500);
+            alert('✅ +500 BetCoin!');
+        });
+        
+        document.getElementById('buyBtn').addEventListener('click', function() {
+            const amount = prompt('💰 Сумма:', '1000');
+            if (amount) {
+                const c = parseInt(amount);
+                if (c > 0) {
+                    saveBalance(balance + c);
+                    alert('✅ +' + c + ' BetCoin!');
+                }
+            }
+        });
+        
+        document.getElementById('createLobbyBtn').addEventListener('click', createLobby);
+        
+        document.getElementById('addAdminBtn').addEventListener('click', addAdmin);
+        document.getElementById('removeAdminBtn').addEventListener('click', removeAdmin);
+        
+        document.getElementById('applyPromoBtn').addEventListener('click', applyPromo);
+        
+        document.getElementById('resultBtn').addEventListener('click', closeResult);
+        
+        document.getElementById('closeScreenshotBtn').addEventListener('click', closeScreenshot);
+        document.getElementById('submitScreenshotBtn').addEventListener('click', submitScreenshot);
+        
         window.navigateTo = navigateTo;
         window.toggleSidebar = toggleSidebar;
         window.closeSidebar = closeSidebar;
-        window.toggleDice = toggleDice;
+        window.openDice = openDice;
+        window.closeDice = closeDice;
         window.setBet = setBet;
         window.placeBet = placeBet;
+        window.openLobby = openLobby;
+        window.closeLobby = closeLobby;
         window.createLobby = createLobby;
         window.joinLobby = joinLobby;
         window.deleteLobby = deleteLobby;

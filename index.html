@@ -97,7 +97,7 @@
             min-height: 100vh;
         }
 
-        /* ===== ПРОФИЛЬ (АВАТАРКА + НИКНЕЙМ) ===== */
+        /* ===== ПРОФИЛЬ (АВАТАРКА + НИКНЕЙМ ИЗ TELEGRAM) ===== */
         .profile {
             display: flex;
             align-items: center;
@@ -138,7 +138,7 @@
             text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* ===== БАЛАНС ===== */
+        /* ===== БАЛАНС (ДАННЫЕ ИЗ SUPABASE) ===== */
         .balance-block {
             width: 100%;
             background: rgba(255, 255, 255, 0.04);
@@ -173,7 +173,6 @@
             text-shadow: 0 0 40px rgba(247, 224, 94, 0.08);
         }
 
-        /* ===== ИНДИВИДУАЛЬНАЯ ЭМОДЗИ ВАЛЮТЫ (CSS) ===== */
         .currency-icon {
             display: inline-block;
             font-size: 38px;
@@ -404,13 +403,13 @@
     <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
     <div class="app">
 
-        <!-- ПРОФИЛЬ (АВАТАРКА + НИКНЕЙМ) -->
+        <!-- ПРОФИЛЬ (АВАТАРКА + НИКНЕЙМ ИЗ TELEGRAM) -->
         <div class="profile">
             <div class="avatar" id="userAvatar">🐹</div>
             <div class="nickname" id="userName">Загрузка...</div>
         </div>
 
-        <!-- БАЛАНС -->
+        <!-- БАЛАНС (ДАННЫЕ ИЗ SUPABASE) -->
         <div class="balance-block">
             <div class="balance-label">Ваш баланс</div>
             <div class="balance-amount">
@@ -472,7 +471,7 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // ===== TELEGRAM =====
+        // ===== TELEGRAM (никнейм и аватарка из Telegram) =====
         let tgUser = null;
         let isAdmin = false;
 
@@ -487,6 +486,7 @@
             console.log('ℹ️ Telegram не доступен');
         }
 
+        // Демо-режим
         if (!tgUser) {
             tgUser = {
                 id: 'demo_' + Date.now(),
@@ -521,8 +521,11 @@
 
         function updateUI() {
             balanceDisplay.textContent = balance.toLocaleString();
+
+            // Никнейм из Telegram
             userName.textContent = username;
 
+            // Аватарка из Telegram
             if (tgUser.photo_url) {
                 userAvatar.innerHTML = `<img src="${tgUser.photo_url}" alt="avatar" />`;
             } else {
@@ -540,10 +543,9 @@
                     .single();
 
                 if (error && error.code === 'PGRST116') {
-                    // Создаём пользователя
+                    // Создаём пользователя в Supabase (только для баланса)
                     await supabase.from('users').insert([{
                         id: userId,
-                        name: username,
                         balance: 5000
                     }]);
                     balance = 5000;
@@ -551,7 +553,7 @@
                     balance = data.balance || 0;
                 }
                 updateUI();
-                console.log('✅ Баланс загружен:', balance);
+                console.log('✅ Баланс загружен из Supabase:', balance);
             } catch (e) {
                 console.error('❌ Ошибка загрузки баланса:', e);
                 balance = 5000;
@@ -578,7 +580,7 @@
         loadBalance();
 
         console.log('🚀 BETCASH запущен!');
-        console.log('👤 Пользователь:', tgUser);
+        console.log('👤 Пользователь из Telegram:', tgUser);
         console.log('👑 Админ режим:', isAdmin);
     </script>
 

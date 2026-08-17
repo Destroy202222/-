@@ -471,22 +471,42 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // ===== TELEGRAM (никнейм и аватарка из Telegram) =====
+        // ===== TELEGRAM =====
         let tgUser = null;
         let isAdmin = false;
 
         try {
             const tg = window.Telegram.WebApp;
             tg.expand();
+
+            // Проверяем разные способы получения данных
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tgUser = tg.initDataUnsafe.user;
-                console.log('✅ Telegram user:', tgUser);
+                console.log('✅ Telegram user (initDataUnsafe):', tgUser);
+            } else if (tg.initData) {
+                // Парсим initData если пользователь не пришёл напрямую
+                const params = new URLSearchParams(tg.initData);
+                const userParam = params.get('user');
+                if (userParam) {
+                    try {
+                        tgUser = JSON.parse(decodeURIComponent(userParam));
+                        console.log('✅ Telegram user (initData):', tgUser);
+                    } catch (e) {
+                        console.error('❌ Ошибка парсинга user:', e);
+                    }
+                }
+            }
+
+            // Если пользователь всё ещё null, пробуем получить через WebApp
+            if (!tgUser && tg.WebApp && tg.WebApp.initDataUnsafe) {
+                tgUser = tg.WebApp.initDataUnsafe.user;
+                console.log('✅ Telegram user (WebApp):', tgUser);
             }
         } catch (e) {
-            console.log('ℹ️ Telegram не доступен');
+            console.error('❌ Ошибка Telegram:', e);
         }
 
-        // Демо-режим
+        // Если всё равно нет пользователя — демо-режим
         if (!tgUser) {
             tgUser = {
                 id: 'demo_' + Date.now(),
@@ -525,7 +545,7 @@
             // Никнейм из Telegram
             userName.textContent = username;
 
-            // Аватарка из Telegram
+            // Аватарка из Telegram (если есть)
             if (tgUser.photo_url) {
                 userAvatar.innerHTML = `<img src="${tgUser.photo_url}" alt="avatar" />`;
             } else {
@@ -549,6 +569,7 @@
                         balance: 5000
                     }]);
                     balance = 5000;
+                    console.log('✅ Новый пользователь создан в Supabase');
                 } else if (data) {
                     balance = data.balance || 0;
                 }

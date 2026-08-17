@@ -20,7 +20,7 @@
             justify-content: center;
             align-items: flex-start;
             background: #0a0e1a;
-            padding: 20px;
+            padding: 12px;
             overflow: hidden;
         }
 
@@ -91,10 +91,9 @@
             z-index: 1;
             width: 100%;
             max-width: 420px;
-            padding: 20px 20px 30px;
+            padding: 8px 8px 80px;
             display: flex;
             flex-direction: column;
-            align-items: center;
             min-height: 100vh;
         }
 
@@ -102,23 +101,23 @@
         .profile {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             width: 100%;
             padding: 6px 0 10px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .avatar {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, #f7e05e, #ff8a2a);
-            border: 2px solid rgba(255, 255, 255, 0.12);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: #0a0e1a;
             overflow: hidden;
@@ -134,7 +133,7 @@
 
         .nickname {
             color: #fff;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
             text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
         }
@@ -146,73 +145,249 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 28px 20px 24px;
+            border-radius: 18px;
+            padding: 24px 16px 20px;
             text-align: center;
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
-            margin-top: 10px;
+            margin-bottom: 20px;
         }
 
         .balance-label {
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 12px;
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 11px;
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .balance-amount {
             color: #fff;
-            font-size: 52px;
+            font-size: 48px;
             font-weight: 800;
             letter-spacing: -1px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
             text-shadow: 0 0 40px rgba(247, 224, 94, 0.08);
         }
 
+        /* ===== ИНДИВИДУАЛЬНАЯ ЭМОДЗИ ВАЛЮТЫ (CSS) ===== */
         .currency-icon {
-            font-size: 40px;
-            background: linear-gradient(135deg, #f7e05e, #ff8a2a);
+            display: inline-block;
+            font-size: 38px;
+            background: linear-gradient(135deg, #f7e05e, #ff8a2a, #f7e05e);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 20px rgba(247, 224, 94, 0.15));
+            animation: shimmer 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 25px rgba(247, 224, 94, 0.2));
+            line-height: 1;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .balance-sub {
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 11px;
-            margin-top: 4px;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 10px;
+            margin-top: 2px;
             letter-spacing: 1px;
+        }
+
+        /* ===== CSS ЭМОДЗИ ГОЛУБОГО ЦВЕТА ===== */
+        .icon-blue {
+            filter: brightness(0) saturate(100%) invert(45%) sepia(100%) saturate(500%) hue-rotate(180deg);
+            opacity: 0.8;
+            display: inline-block;
+        }
+
+        /* ===== НИЖНЯЯ НАВИГАЦИЯ ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 12px 16px;
+            z-index: 100;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            background: transparent;
+            border: none;
+            color: #6f8f9f;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-item .nav-icon {
+            font-size: 20px;
+            filter: brightness(0) saturate(100%) invert(45%) sepia(100%) saturate(500%) hue-rotate(180deg);
+            opacity: 0.6;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: #4a8af4;
+        }
+
+        .nav-item.active .nav-icon {
+            opacity: 1;
+            filter: brightness(0) saturate(100%) invert(45%) sepia(100%) saturate(500%) hue-rotate(180deg);
+        }
+
+        .nav-item .nav-label {
+            font-size: 9px;
+            font-weight: 500;
+        }
+
+        /* ===== АДМИН МЕНЮ (выезжающее) ===== */
+        .admin-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 50;
+            display: none;
+        }
+
+        .admin-overlay.active {
+            display: block;
+        }
+
+        .admin-menu {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            width: 90%;
+            max-width: 380px;
+            background: rgba(20, 30, 60, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 24px 20px;
+            z-index: 51;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .admin-menu.open {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .admin-title {
+            color: #4a8af4;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .admin-title .icon-blue {
+            font-size: 20px;
+        }
+
+        .admin-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            color: #c8d6ff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .admin-item:last-child {
+            border-bottom: none;
+        }
+
+        .admin-item:active {
+            transform: scale(0.96);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .admin-item .icon-blue {
+            font-size: 18px;
+        }
+
+        .admin-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            color: #6f8f9f;
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .admin-close:hover {
+            color: #fff;
         }
 
         /* ===== АДАПТИВ ===== */
         @media (max-width: 420px) {
             .app {
-                padding: 15px 15px 20px;
+                padding: 8px 8px 75px;
             }
             .balance-amount {
-                font-size: 40px;
+                font-size: 38px;
             }
             .currency-icon {
-                font-size: 32px;
+                font-size: 30px;
             }
             .avatar {
-                width: 38px;
-                height: 38px;
-                font-size: 15px;
+                width: 34px;
+                height: 34px;
+                font-size: 13px;
             }
             .nickname {
-                font-size: 16px;
+                font-size: 15px;
             }
-            .profile {
-                margin-bottom: 20px;
-            }
-            .balance-block {
-                padding: 22px 16px 18px;
+            .admin-menu {
+                width: 95%;
+                padding: 20px 16px;
             }
         }
     </style>
@@ -239,7 +414,7 @@
         <div class="balance-block">
             <div class="balance-label">Ваш баланс</div>
             <div class="balance-amount">
-                <span class="currency-icon">🪙</span>
+                <span class="currency-icon">₿</span>
                 <span id="balanceDisplay">0</span>
             </div>
             <div class="balance-sub">BETCASH</div>
@@ -247,14 +422,59 @@
 
     </div>
 
+    <!-- АДМИН МЕНЮ (выезжающее) -->
+    <div class="admin-overlay" id="adminOverlay" onclick="closeAdminMenu()"></div>
+    <div class="admin-menu" id="adminMenu">
+        <button class="admin-close" onclick="closeAdminMenu()">✕</button>
+        <div class="admin-title">
+            <span class="icon-blue">👑</span> Админ панель
+        </div>
+        <div class="admin-item" onclick="alert('📊 Статистика')">
+            <span class="icon-blue">📊</span> Статистика
+        </div>
+        <div class="admin-item" onclick="alert('👥 Пользователи')">
+            <span class="icon-blue">👥</span> Пользователи
+        </div>
+        <div class="admin-item" onclick="alert('⚙️ Настройки')">
+            <span class="icon-blue">⚙️</span> Настройки
+        </div>
+        <div class="admin-item" onclick="alert('💎 Выдать BETCASH')">
+            <span class="icon-blue">💎</span> Выдать BETCASH
+        </div>
+        <div class="admin-item" style="border-top:1px solid rgba(255,255,255,0.05);margin-top:4px;padding-top:14px;color:#ff6b6b;" onclick="closeAdminMenu()">
+            <span class="icon-blue" style="filter:brightness(0) saturate(100%) invert(45%) sepia(100%) saturate(500%) hue-rotate(340deg);">🚪</span> Закрыть
+        </div>
+    </div>
+
+    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="alert('Главная')">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Главная</span>
+        </button>
+        <button class="nav-item" onclick="alert('Игры')">
+            <span class="nav-icon">🎮</span>
+            <span class="nav-label">Игры</span>
+        </button>
+        <button class="nav-item" onclick="alert('Рейтинг')">
+            <span class="nav-icon">🏆</span>
+            <span class="nav-label">Рейтинг</span>
+        </button>
+        <button class="nav-item" id="adminBtn" onclick="toggleAdminMenu()">
+            <span class="nav-icon">👑</span>
+            <span class="nav-label">Админ</span>
+        </button>
+    </div>
+
     <script>
-        // ===== SUPABASE =====
+        // ===== SUPABASE (только для баланса) =====
         const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         // ===== TELEGRAM =====
         let tgUser = null;
+        let isAdmin = false;
 
         try {
             const tg = window.Telegram.WebApp;
@@ -277,6 +497,19 @@
             console.log('ℹ️ Демо-режим');
         }
 
+        // ===== ПРОВЕРКА АДМИНА =====
+        const adminUsername = 'loveforever_08';
+        const tgUsername = tgUser.username || '';
+
+        if (tgUsername.toLowerCase() === adminUsername.toLowerCase()) {
+            isAdmin = true;
+            document.getElementById('adminBtn').style.display = 'flex';
+            console.log('👑 Админ авторизован:', tgUsername);
+        } else {
+            document.getElementById('adminBtn').style.display = 'none';
+            console.log('👤 Обычный пользователь:', tgUsername);
+        }
+
         const userId = tgUser.id.toString();
         const username = tgUser.first_name || tgUser.username || 'Игрок';
         let balance = 0;
@@ -297,23 +530,22 @@
             }
         }
 
-        // ===== SUPABASE ЗАГРУЗКА =====
-        async function loadUserData() {
+        // ===== SUPABASE ЗАГРУЗКА БАЛАНСА =====
+        async function loadBalance() {
             try {
                 const { data, error } = await supabase
                     .from('users')
-                    .select('*')
+                    .select('balance')
                     .eq('id', userId)
                     .single();
 
                 if (error && error.code === 'PGRST116') {
-                    // Пользователь не найден — создаём
-                    const newUser = {
+                    // Создаём пользователя
+                    await supabase.from('users').insert([{
                         id: userId,
                         name: username,
                         balance: 5000
-                    };
-                    await supabase.from('users').insert([newUser]);
+                    }]);
                     balance = 5000;
                 } else if (data) {
                     balance = data.balance || 0;
@@ -321,17 +553,33 @@
                 updateUI();
                 console.log('✅ Баланс загружен:', balance);
             } catch (e) {
-                console.error('❌ Ошибка загрузки данных:', e);
+                console.error('❌ Ошибка загрузки баланса:', e);
                 balance = 5000;
                 updateUI();
             }
         }
 
+        // ===== АДМИН МЕНЮ =====
+        function toggleAdminMenu() {
+            if (!isAdmin) {
+                alert('⛔ Доступ запрещён! Только для админов.');
+                return;
+            }
+            document.getElementById('adminMenu').classList.toggle('open');
+            document.getElementById('adminOverlay').classList.toggle('active');
+        }
+
+        function closeAdminMenu() {
+            document.getElementById('adminMenu').classList.remove('open');
+            document.getElementById('adminOverlay').classList.remove('active');
+        }
+
         // ===== ЗАПУСК =====
-        loadUserData();
+        loadBalance();
 
         console.log('🚀 BETCASH запущен!');
         console.log('👤 Пользователь:', tgUser);
+        console.log('👑 Админ режим:', isAdmin);
     </script>
 
 </body>

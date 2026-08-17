@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>BETCASH BRAWL STARS</title>
+    <title>BETCASH</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -17,7 +18,7 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             background: #0a0e1a;
             padding: 20px;
             overflow: hidden;
@@ -33,6 +34,7 @@
             z-index: 0;
             background: radial-gradient(ellipse at 30% 40%, #1a2a5a 0%, #070a12 70%);
             overflow: hidden;
+            pointer-events: none;
         }
 
         .sphere {
@@ -89,62 +91,39 @@
             z-index: 1;
             width: 100%;
             max-width: 420px;
-            padding: 20px;
+            padding: 20px 20px 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            justify-content: center;
         }
 
-        /* ===== ЛОГОТИП ===== */
-        .logo {
-            font-size: 28px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #f7e05e, #ff8a2a);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-            text-shadow: 0 0 40px rgba(247, 224, 94, 0.15);
-        }
-
-        .logo-sub {
-            font-size: 13px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.3);
-            text-align: center;
-            margin-bottom: 40px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* ===== АВАТАРКА + НИКНЕЙМ ===== */
+        /* ===== ПРОФИЛЬ (АВАТАРКА + НИКНЕЙМ) ===== */
         .profile {
             display: flex;
             align-items: center;
             gap: 14px;
-            margin-bottom: 50px;
             width: 100%;
-            justify-content: center;
+            padding: 6px 0 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 30px;
         }
 
         .avatar {
-            width: 56px;
-            height: 56px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: linear-gradient(135deg, #f7e05e, #ff8a2a);
-            border: 3px solid rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.12);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
             color: #0a0e1a;
             overflow: hidden;
             flex-shrink: 0;
-            box-shadow: 0 4px 30px rgba(247, 224, 94, 0.2);
+            box-shadow: 0 4px 20px rgba(247, 224, 94, 0.15);
         }
 
         .avatar img {
@@ -155,8 +134,8 @@
 
         .nickname {
             color: #fff;
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 600;
             text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
         }
 
@@ -167,10 +146,11 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 30px 20px 28px;
+            border-radius: 20px;
+            padding: 28px 20px 24px;
             text-align: center;
-            box-shadow: 0 8px 50px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+            margin-top: 10px;
         }
 
         .balance-label {
@@ -179,109 +159,60 @@
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .balance-amount {
             color: #fff;
-            font-size: 48px;
+            font-size: 52px;
             font-weight: 800;
             letter-spacing: -1px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            text-shadow: 0 0 40px rgba(247, 224, 94, 0.1);
+            gap: 12px;
+            text-shadow: 0 0 40px rgba(247, 224, 94, 0.08);
         }
 
         .currency-icon {
-            font-size: 36px;
+            font-size: 40px;
             background: linear-gradient(135deg, #f7e05e, #ff8a2a);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 20px rgba(247, 224, 94, 0.2));
+            filter: drop-shadow(0 0 20px rgba(247, 224, 94, 0.15));
         }
 
         .balance-sub {
-            color: rgba(255, 255, 255, 0.25);
-            font-size: 12px;
-            margin-top: 6px;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 11px;
+            margin-top: 4px;
             letter-spacing: 1px;
-        }
-
-        /* ===== КНОПКИ ===== */
-        .buttons {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 14px 10px;
-            border: none;
-            border-radius: 16px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            letter-spacing: 0.3px;
-        }
-
-        .btn:active {
-            transform: scale(0.96);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #f7e05e, #e8b42b);
-            color: #0a0e1a;
-            box-shadow: 0 4px 30px rgba(247, 224, 94, 0.25);
-        }
-
-        .btn-primary:active {
-            box-shadow: 0 2px 15px rgba(247, 224, 94, 0.15);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.06);
-            color: #c8d6ff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-secondary:active {
-            background: rgba(255, 255, 255, 0.1);
         }
 
         /* ===== АДАПТИВ ===== */
         @media (max-width: 420px) {
             .app {
-                padding: 15px;
-            }
-            .logo {
-                font-size: 24px;
+                padding: 15px 15px 20px;
             }
             .balance-amount {
-                font-size: 38px;
+                font-size: 40px;
             }
             .currency-icon {
-                font-size: 30px;
-            }
-            .btn {
-                font-size: 13px;
-                padding: 12px 8px;
-            }
-            .profile {
-                margin-bottom: 35px;
+                font-size: 32px;
             }
             .avatar {
-                width: 48px;
-                height: 48px;
-                font-size: 18px;
+                width: 38px;
+                height: 38px;
+                font-size: 15px;
             }
             .nickname {
-                font-size: 17px;
+                font-size: 16px;
+            }
+            .profile {
+                margin-bottom: 20px;
+            }
+            .balance-block {
+                padding: 22px 16px 18px;
             }
         }
     </style>
@@ -297,10 +228,6 @@
 
     <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
     <div class="app">
-
-        <!-- ЛОГОТИП -->
-        <div class="logo">BETCASH</div>
-        <div class="logo-sub">Brawl Stars</div>
 
         <!-- ПРОФИЛЬ (АВАТАРКА + НИКНЕЙМ) -->
         <div class="profile">
@@ -318,15 +245,14 @@
             <div class="balance-sub">BETCASH</div>
         </div>
 
-        <!-- КНОПКИ -->
-        <div class="buttons">
-            <button class="btn btn-primary" id="getCoinsBtn">+ Получить</button>
-            <button class="btn btn-secondary" id="buyCoinsBtn">💎 Купить</button>
-        </div>
-
     </div>
 
     <script>
+        // ===== SUPABASE =====
+        const supabaseUrl = 'https://dlprylagddsmtzpmzxqy.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRscHJ5bGFnZGRzbXR6cG16eHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDY5MjcsImV4cCI6MjA5OTg4MjkyN30.xyRO-nChHDfqFgtYkhsMOkM3F8BsZGOvacQ0zhjBuRI';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         // ===== TELEGRAM =====
         let tgUser = null;
 
@@ -341,7 +267,6 @@
             console.log('ℹ️ Telegram не доступен');
         }
 
-        // Демо-режим
         if (!tgUser) {
             tgUser = {
                 id: 'demo_' + Date.now(),
@@ -352,52 +277,60 @@
             console.log('ℹ️ Демо-режим');
         }
 
-        // ===== DOM ЭЛЕМЕНТЫ =====
+        const userId = tgUser.id.toString();
+        const username = tgUser.first_name || tgUser.username || 'Игрок';
+        let balance = 0;
+
+        // ===== DOM =====
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const balanceDisplay = document.getElementById('balanceDisplay');
 
-        // ===== БАЛАНС =====
-        let balance = 5000;
-
-        // ===== ОБНОВЛЕНИЕ UI =====
         function updateUI() {
             balanceDisplay.textContent = balance.toLocaleString();
-
-            const name = tgUser.first_name || tgUser.username || 'Игрок';
-            userName.textContent = name;
+            userName.textContent = username;
 
             if (tgUser.photo_url) {
                 userAvatar.innerHTML = `<img src="${tgUser.photo_url}" alt="avatar" />`;
             } else {
-                userAvatar.textContent = name.charAt(0).toUpperCase();
+                userAvatar.textContent = username.charAt(0).toUpperCase();
             }
         }
 
-        // ===== КНОПКИ =====
-        document.getElementById('getCoinsBtn').addEventListener('click', function() {
-            balance += 500;
-            updateUI();
-            alert('✅ +500 BETCASH!');
-        });
+        // ===== SUPABASE ЗАГРУЗКА =====
+        async function loadUserData() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
 
-        document.getElementById('buyCoinsBtn').addEventListener('click', function() {
-            const amount = prompt('💰 Сколько BETCASH купить?', '1000');
-            if (!amount) return;
-            const coins = parseInt(amount);
-            if (isNaN(coins) || coins <= 0) {
-                alert('❌ Введите корректную сумму!');
-                return;
+                if (error && error.code === 'PGRST116') {
+                    // Пользователь не найден — создаём
+                    const newUser = {
+                        id: userId,
+                        name: username,
+                        balance: 5000
+                    };
+                    await supabase.from('users').insert([newUser]);
+                    balance = 5000;
+                } else if (data) {
+                    balance = data.balance || 0;
+                }
+                updateUI();
+                console.log('✅ Баланс загружен:', balance);
+            } catch (e) {
+                console.error('❌ Ошибка загрузки данных:', e);
+                balance = 5000;
+                updateUI();
             }
-            balance += coins;
-            updateUI();
-            alert(`✅ +${coins} BETCASH!`);
-        });
+        }
 
         // ===== ЗАПУСК =====
-        updateUI();
+        loadUserData();
 
-        console.log('🚀 BETCASH BRAWL STARS запущен!');
+        console.log('🚀 BETCASH запущен!');
         console.log('👤 Пользователь:', tgUser);
     </script>
 

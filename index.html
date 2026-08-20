@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detailing_31 | Автомойка</title>
-  <!-- Google Fonts + Font Awesome -->
+  <title>Detailing_31 | Главная</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
@@ -54,6 +53,7 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       color: #0b2e3d;
+      text-decoration: none;
     }
     .logo span {
       color: #2a7f8f;
@@ -80,6 +80,10 @@
     .nav a:hover {
       color: #1d6f80;
       border-bottom-color: #3b8b9e;
+    }
+    .nav a.active {
+      border-bottom-color: #3b8b9e;
+      color: #1d6f80;
     }
     .nav i {
       margin-right: 8px;
@@ -135,7 +139,6 @@
       margin-right: 12px;
     }
 
-    /* мастер в hero — Илья Гомулин Тонировка 5 */
     .hero-master {
       background: #ffffffdd;
       backdrop-filter: blur(4px);
@@ -174,238 +177,210 @@
       color: #f5c542;
     }
 
-    /* section title */
-    .section-title {
-      font-size: 2.2rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      margin: 44px 0 28px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      border-bottom: 2px solid #d1e2eb;
-      padding-bottom: 14px;
-      color: #103946;
-    }
-    .section-title i {
-      color: #3b8b9e;
-      font-size: 2rem;
-    }
-
-    /* service grid */
-    .service-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 28px;
-    }
-
-    .service-card {
+    /* секция с Ильей */
+    .ilya-section {
       background: #ffffff;
-      border-radius: 32px;
-      padding: 24px 20px 28px;
-      transition: 0.2s ease;
-      border: 1px solid #deecf2;
-      box-shadow: 0 6px 14px rgba(0, 20, 30, 0.02);
-      display: flex;
-      flex-direction: column;
-    }
-    .service-card:hover {
-      transform: translateY(-5px);
-      border-color: #8bb8cb;
-      box-shadow: 0 16px 28px rgba(0, 40, 55, 0.06);
-    }
-    .service-icon {
-      font-size: 2.6rem;
-      color: #2f7d90;
-      margin-bottom: 10px;
-    }
-    .service-card h3 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #0b2d3b;
-    }
-    .service-card .desc {
-      color: #2e4f5e;
-      font-size: 0.95rem;
-      flex: 1;
-      margin: 10px 0 16px;
-    }
-    .service-card .price {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #0b2d3b;
-      background: #e5f0f6;
-      padding: 4px 18px;
       border-radius: 40px;
-      display: inline-block;
-      align-self: flex-start;
-    }
-    .service-card .price small {
-      font-weight: 400;
-      font-size: 0.9rem;
-      color: #3f6779;
-      margin-left: 6px;
+      padding: 36px 40px;
+      margin: 30px 0 40px;
+      box-shadow: 0 6px 24px rgba(0, 20, 30, 0.04);
+      border: 1px solid #deecf2;
     }
 
-    /* COMPLEX */
-    .complex-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 28px;
-      margin: 20px 0 30px;
-    }
-
-    .complex-card {
-      background: #ffffff;
-      padding: 28px 24px;
-      border-radius: 32px;
-      border-left: 8px solid #3b8b9e;
-      box-shadow: 0 6px 18px rgba(0, 20, 30, 0.02);
-      border: 1px solid #dfeef5;
-    }
-    .complex-card h4 {
-      font-size: 1.7rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #0b2d3b;
-    }
-    .complex-card h4 i {
-      color: #3b8b9e;
-    }
-    .complex-card ul {
-      margin: 14px 0 18px 20px;
-      list-style: square;
-      color: #1e4b5b;
-    }
-    .complex-card ul li {
-      margin: 6px 0;
-    }
-    .complex-card .price-big {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #0b2d3b;
-      background: #e5f0f6;
-      padding: 2px 22px;
-      border-radius: 60px;
-      display: inline-block;
-    }
-    .complex-card .price-big small {
-      font-size: 0.95rem;
-      font-weight: 400;
-      color: #3f6779;
-    }
-
-    /* отдельный блок с мастером (дублируем для наглядности) */
-    .master-spotlight {
-      background: #e4f0f7;
-      border-radius: 48px;
-      padding: 24px 32px;
-      margin: 40px 0 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px 24px;
-      border: 1px solid #b7d3e0;
-    }
-    .master-spotlight .ms-left {
+    .ilya-header {
       display: flex;
       align-items: center;
       gap: 20px;
       flex-wrap: wrap;
+      margin-bottom: 18px;
     }
-    .master-spotlight .ms-icon {
-      font-size: 2.8rem;
-      color: #1e5b6e;
-    }
-    .master-spotlight .ms-name {
-      font-size: 1.9rem;
+    .ilya-header h2 {
+      font-size: 2.2rem;
       font-weight: 700;
-      color: #09303f;
-      letter-spacing: -0.01em;
+      color: #0b2e3d;
     }
-    .master-spotlight .ms-badge {
+    .ilya-header .badge-5 {
       background: #1e5b6e;
       color: white;
       padding: 6px 24px;
       border-radius: 60px;
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       display: inline-flex;
       align-items: center;
       gap: 10px;
     }
-    .master-spotlight .ms-badge i {
+    .ilya-header .badge-5 i {
       color: #f5c542;
-      font-size: 1.1rem;
-    }
-    .master-spotlight .ms-desc {
-      color: #1a4a5a;
-      font-weight: 500;
     }
 
-    /* цена от 300 до 2000 */
-    .price-wide {
-      background: #ddecf4;
-      border-radius: 40px;
-      padding: 24px 32px;
-      margin: 36px 0 10px;
-      border: 1px solid #b7d3e0;
+    .ilya-content {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    .price-wide h3 {
-      font-size: 2rem;
-      display: flex;
+      flex-direction: column;
       gap: 14px;
+    }
+    .ilya-content .highlight {
+      background: #f0f7fb;
+      padding: 16px 24px;
+      border-radius: 20px;
+      border-left: 6px solid #3b8b9e;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #1a3f4e;
+    }
+    .ilya-content .highlight i {
+      color: #3b8b9e;
+      margin-right: 12px;
+    }
+    .ilya-content p {
+      font-size: 1.05rem;
+      color: #1d3c4b;
+      max-width: 700px;
+    }
+
+    /* страницы-блоки (скрыты, доступны по навигации) */
+    .page-block {
+      display: none;
+      background: #ffffff;
+      border-radius: 40px;
+      padding: 32px 36px;
+      margin: 20px 0 40px;
+      border: 1px solid #deecf2;
+      box-shadow: 0 6px 24px rgba(0, 20, 30, 0.04);
+    }
+    .page-block.active {
+      display: block;
+    }
+    .page-block h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0b2e3d;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .page-block h2 i {
+      color: #3b8b9e;
+    }
+
+    /* услуги грид */
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+    }
+    .service-card {
+      background: #f7fafc;
+      border-radius: 28px;
+      padding: 22px 18px 24px;
+      border: 1px solid #e2edf3;
+      transition: 0.2s;
+    }
+    .service-card:hover {
+      border-color: #8bb8cb;
+      background: #f0f7fb;
+    }
+    .service-card .s-icon {
+      font-size: 2.2rem;
+      color: #2f7d90;
+      margin-bottom: 8px;
+    }
+    .service-card h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
       color: #0b2d3b;
     }
-    .price-wide h3 i {
-      color: #2a7f8f;
+    .service-card .desc {
+      color: #2e4f5e;
+      font-size: 0.9rem;
+      margin: 8px 0 12px;
     }
-    .price-wide p {
-      font-size: 1.1rem;
-      color: #1a4a5a;
+    .service-card .price {
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #0b2d3b;
+      background: #e5f0f6;
+      padding: 2px 16px;
+      border-radius: 40px;
+      display: inline-block;
     }
-    .price-wide .pill {
-      background: #ffffff;
-      padding: 10px 28px;
-      border-radius: 60px;
-      font-weight: 600;
-      border: 1px solid #9bbccd;
+    .service-card .price small {
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: #3f6779;
     }
 
-    /* FOOTER */
+    /* комплексы */
+    .complex-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 8px;
+    }
+    .complex-card {
+      background: #f7fafc;
+      padding: 24px 20px;
+      border-radius: 28px;
+      border-left: 6px solid #3b8b9e;
+      border: 1px solid #e2edf3;
+      border-left-width: 6px;
+    }
+    .complex-card h4 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #0b2d3b;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .complex-card h4 i {
+      color: #3b8b9e;
+    }
+    .complex-card ul {
+      margin: 12px 0 16px 18px;
+      color: #1e4b5b;
+      list-style: square;
+    }
+    .complex-card ul li {
+      margin: 4px 0;
+    }
+    .complex-card .price-big {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #0b2d3b;
+      background: #e5f0f6;
+      padding: 2px 18px;
+      border-radius: 60px;
+      display: inline-block;
+    }
+    .complex-card .price-big small {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: #3f6779;
+    }
+
     .footer {
-      margin-top: 50px;
+      margin-top: 40px;
       background: #e2edf4;
-      padding: 30px 0 20px;
+      padding: 28px 0 20px;
       border-top: 1px solid #c7dae5;
     }
     .footer .container {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 20px;
+      gap: 16px;
       color: #1d4353;
-    }
-    .footer .copy {
-      font-weight: 500;
     }
     .footer .social a {
       color: #1d4b5a;
-      margin-left: 24px;
-      font-size: 1.6rem;
+      margin-left: 22px;
+      font-size: 1.5rem;
       transition: 0.2s;
     }
     .footer .social a:hover {
       color: #1e5b6e;
-      transform: scale(1.05);
     }
 
     /* адаптив */
@@ -416,24 +391,14 @@
       }
       .nav a {
         margin-left: 0;
-        margin-right: 22px;
+        margin-right: 18px;
+        font-size: 0.95rem;
       }
       .hero-text h1 {
         font-size: 2.4rem;
       }
-      .hero-master .master-name {
-        font-size: 1.3rem;
-      }
-      .master-spotlight .ms-name {
-        font-size: 1.5rem;
-      }
-    }
-    @media (max-width: 480px) {
-      .hero-text h1 {
-        font-size: 2rem;
-      }
-      .hero-master {
-        padding: 14px 18px;
+      .ilya-header h2 {
+        font-size: 1.8rem;
       }
     }
   </style>
@@ -443,11 +408,12 @@
   <!-- HEADER -->
   <header class="header">
     <div class="container header-wrap">
-      <div class="logo"><i class="fas fa-car"></i>Detailing_<span>31</span></div>
-      <nav class="nav">
-        <a href="#services"><i class="fas fa-broom"></i>Услуги</a>
-        <a href="#complex"><i class="fas fa-layer-group"></i>Комплексы</a>
-        <a href="#master"><i class="fas fa-user-cog"></i>Мастер</a>
+      <a href="#" class="logo" onclick="showPage('home')"><i class="fas fa-car"></i>Detailing_<span>31</span></a>
+      <nav class="nav" id="mainNav">
+        <a href="#" class="active" data-page="home" onclick="showPage('home')"><i class="fas fa-home"></i>Главная</a>
+        <a href="#" data-page="services" onclick="showPage('services')"><i class="fas fa-broom"></i>Услуги</a>
+        <a href="#" data-page="complex" onclick="showPage('complex')"><i class="fas fa-layer-group"></i>Комплексы</a>
+        <a href="#" data-page="master" onclick="showPage('master')"><i class="fas fa-user-cog"></i>О мастере</a>
         <a href="#"><i class="fas fa-phone-alt"></i>+7 999 123-45-67</a>
       </nav>
     </div>
@@ -463,8 +429,6 @@
           <i class="fas fa-tag"></i> Цены от 300 до 2000 ₽
         </div>
       </div>
-
-      <!-- мастер с именем и тонировкой 5 -->
       <div class="hero-master">
         <span class="master-icon"><i class="fas fa-user-tie"></i></span>
         <span class="master-name">Илья Гомулин</span>
@@ -475,113 +439,158 @@
 
   <div class="container">
 
-    <!-- УСЛУГИ -->
-    <h2 class="section-title" id="services"><i class="fas fa-soap"></i> Наши услуги</h2>
-    <div class="service-grid">
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-car-wash"></i></div>
-        <h3>Мойка кузова</h3>
-        <div class="desc">Активная пена, бесконтактная мойка, сушка. Деликатный уход за ЛКП.</div>
-        <div class="price">300 ₽ <small>легковой</small></div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-chair"></i></div>
-        <h3>Мойка салона</h3>
-        <div class="desc">Химчистка сидений, панели, ковров. Удаление запахов, озонирование.</div>
-        <div class="price">800 ₽ <small>комплекс</small></div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-bolt"></i></div>
-        <h3>Детейлинг</h3>
-        <div class="desc">Полировка, керамика, защита фар, антидождь. Преображение авто.</div>
-        <div class="price">1500 ₽ <small>от</small></div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-tint"></i></div>
-        <h3>Чернение резины</h3>
-        <div class="desc">Восстановление цвета шин, защита от выцветания, блеск.</div>
-        <div class="price">350 ₽ <small>4 колеса</small></div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-wind"></i></div>
-        <h3>Озонирование</h3>
-        <div class="desc">Уничтожение бактерий, запахов, аллергенов. Свежесть в салоне.</div>
-        <div class="price">500 ₽ <small>сеанс</small></div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-robot"></i></div>
-        <h3>Бесконтактная мойка</h3>
-        <div class="desc">Щадящий режим, для всех типов кузова, включая плёнку.</div>
-        <div class="price">400 ₽ <small>стандарт</small></div>
+    <!-- ГЛАВНАЯ СТРАНИЦА (по умолчанию активна) -->
+    <div id="page-home" class="page-block active">
+      <div class="ilya-section" style="margin-top:0; box-shadow:none; border:none; background:transparent; padding:0;">
+        <div class="ilya-header">
+          <h2><i class="fas fa-user-astronaut" style="color:#3b8b9e;"></i> Илья Гомулин</h2>
+          <span class="badge-5"><i class="fas fa-star"></i> Тонировка 5</span>
+        </div>
+        <div class="ilya-content">
+          <div class="highlight">
+            <i class="fas fa-exclamation-triangle"></i> Мусора кроме Вовы не доебываются!
+          </div>
+          <p>
+            <i class="fas fa-check-circle" style="color:#2a7f8f;"></i> Илья — мастер с 8-летним стажем, специалист по тонировке и детейлингу. 
+            Выполняет работы любой сложности, использует только качественные материалы. 
+            Тонировка 5 — его фирменный стиль, который гарантирует идеальный результат.
+          </p>
+          <p style="margin-top:4px;">
+            <i class="fas fa-shield-alt" style="color:#2a7f8f;"></i> Работает с любыми марками авто, даёт гарантию на все виды работ.
+          </p>
+        </div>
       </div>
     </div>
 
-    <!-- КОМПЛЕКСЫ -->
-    <h2 class="section-title" id="complex"><i class="fas fa-cubes"></i> Комплексные пакеты</h2>
-    <div class="complex-grid">
-      <div class="complex-card">
-        <h4><i class="fas fa-leaf"></i> Стандарт</h4>
-        <ul>
-          <li>Мойка кузова</li>
-          <li>Мойка салона (пылесос)</li>
-          <li>Чернение резины</li>
-        </ul>
-        <div class="price-big">700 ₽ <small>эконом</small></div>
-      </div>
-      <div class="complex-card">
-        <h4><i class="fas fa-star"></i> Премиум</h4>
-        <ul>
-          <li>Мойка кузова + полировка</li>
-          <li>Химчистка салона</li>
-          <li>Озонирование</li>
-          <li>Защита фар</li>
-        </ul>
-        <div class="price-big">1450 ₽ <small>VIP</small></div>
-      </div>
-      <div class="complex-card">
-        <h4><i class="fas fa-gem"></i> Детейлинг MAX</h4>
-        <ul>
-          <li>Полировка кузова</li>
-          <li>Керамика 3 слоя</li>
-          <li>Полная химчистка салона</li>
-          <li>Антидождь + озонирование</li>
-        </ul>
-        <div class="price-big">2000 ₽ <small>максимум</small></div>
-      </div>
-    </div>
-
-    <!-- БЛОК МАСТЕРА (отдельно, с тонировкой 5) -->
-    <h2 class="section-title" id="master"><i class="fas fa-user-cog"></i> Наш мастер</h2>
-    <div class="master-spotlight">
-      <div class="ms-left">
-        <span class="ms-icon"><i class="fas fa-user-astronaut"></i></span>
-        <span class="ms-name">Илья Гомулин</span>
-        <span class="ms-badge"><i class="fas fa-star"></i> Тонировка 5</span>
-      </div>
-      <div class="ms-desc">
-        <i class="fas fa-award" style="color: #1e5b6e;"></i> Сертифицированный специалист, стаж 8 лет
+    <!-- СТРАНИЦА УСЛУГ -->
+    <div id="page-services" class="page-block">
+      <h2><i class="fas fa-soap"></i> Наши услуги</h2>
+      <div class="service-grid">
+        <div class="service-card">
+          <div class="s-icon"><i class="fas fa-car-wash"></i></div>
+          <h3>Мойка кузова</h3>
+          <div class="desc">Активная пена, бесконтактная мойка, сушка.</div>
+          <div class="price">300 ₽ <small>легковой</small></div>
+        </div>
+        <div class="service-card">
+          <div class="s-icon"><i class="fas fa-chair"></i></div>
+          <h3>Мойка салона</h3>
+          <div class="desc">Химчистка сидений, панели, ковров, озонирование.</div>
+          <div class="price">800 ₽ <small>комплекс</small></div>
+        </div>
+        <div class="service-card">
+          <div class="s-icon"><i class="fas fa-bolt"></i></div>
+          <h3>Детейлинг</h3>
+          <div class="desc">Полировка, керамика, защита фар.</div>
+          <div class="price">1500 ₽ <small>от</small></div>
+        </div>
+        <div class="service-card">
+          <div class="s-icon"><i class="fas fa-tint"></i></div>
+          <h3>Чернение резины</h3>
+          <div class="desc">Восстановление цвета, защита, блеск.</div>
+          <div class="price">350 ₽ <small>4 колеса</small></div>
+        </div>
+        <div class="service-card">
+          <div class="s-icon"><i class="fas fa-wind"></i></div>
+          <h3>Озонирование</h3>
+          <div class="desc">Уничтожение бактерий, запахов.</div>
+          <div class="price">500 ₽ <small>сеанс</small></div>
+        </div>
+        <div class="service-card">
+          <div class="s-icon"><i class="fas fa-robot"></i></div>
+          <h3>Бесконтактная мойка</h3>
+          <div class="desc">Щадящий режим для всех типов кузова.</div>
+          <div class="price">400 ₽ <small>стандарт</small></div>
+        </div>
       </div>
     </div>
 
-    <!-- Цена от 300 до 2000 -->
-    <div class="price-wide">
+    <!-- СТРАНИЦА КОМПЛЕКСОВ -->
+    <div id="page-complex" class="page-block">
+      <h2><i class="fas fa-cubes"></i> Комплексные пакеты</h2>
+      <div class="complex-grid">
+        <div class="complex-card">
+          <h4><i class="fas fa-leaf"></i> Стандарт</h4>
+          <ul>
+            <li>Мойка кузова</li>
+            <li>Мойка салона (пылесос)</li>
+            <li>Чернение резины</li>
+          </ul>
+          <div class="price-big">700 ₽ <small>эконом</small></div>
+        </div>
+        <div class="complex-card">
+          <h4><i class="fas fa-star"></i> Премиум</h4>
+          <ul>
+            <li>Мойка кузова + полировка</li>
+            <li>Химчистка салона</li>
+            <li>Озонирование</li>
+          </ul>
+          <div class="price-big">1450 ₽ <small>VIP</small></div>
+        </div>
+        <div class="complex-card">
+          <h4><i class="fas fa-gem"></i> Детейлинг MAX</h4>
+          <ul>
+            <li>Полировка кузова</li>
+            <li>Керамика 3 слоя</li>
+            <li>Полная химчистка салона</li>
+            <li>Антидождь + озонирование</li>
+          </ul>
+          <div class="price-big">2000 ₽ <small>максимум</small></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- СТРАНИЦА О МАСТЕРЕ -->
+    <div id="page-master" class="page-block">
+      <h2><i class="fas fa-user-cog"></i> О мастере</h2>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap; background:#f0f7fb; padding:20px 28px; border-radius:32px;">
+          <span style="font-size:3.5rem; color:#2a7f8f;"><i class="fas fa-user-tie"></i></span>
+          <div>
+            <div style="font-size:2.2rem; font-weight:700; color:#0b2e3d;">Илья Гомулин</div>
+            <span style="background:#1e5b6e; color:white; padding:4px 20px; border-radius:40px; font-weight:600; display:inline-block; margin-top:4px;">
+              <i class="fas fa-star" style="color:#f5c542;"></i> Тонировка 5
+            </span>
+          </div>
+        </div>
+        <div style="background:#f9fbfc; padding:20px 28px; border-radius:24px; border-left:6px solid #3b8b9e;">
+          <p style="font-size:1.1rem; font-weight:500; color:#1a3f4e;">
+            <i class="fas fa-exclamation-triangle" style="color:#e67e22; margin-right:12px;"></i>
+            <strong>Мусора кроме Вовы не доебываются!</strong>
+          </p>
+        </div>
+        <p style="font-size:1.05rem; color:#1d3c4b; max-width:700px;">
+          <i class="fas fa-check-circle" style="color:#2a7f8f; margin-right:10px;"></i>
+          Илья — сертифицированный мастер с 8-летним опытом. Специализируется на тонировке, полировке и детейлинге. 
+          Тонировка 5 — его авторская техника, которая обеспечивает идеальное затемнение и защиту салона.
+        </p>
+        <p style="font-size:1.05rem; color:#1d3c4b;">
+          <i class="fas fa-shield-alt" style="color:#2a7f8f; margin-right:10px;"></i>
+          Работает с авто премиум-класса, даёт гарантию 12 месяцев на все виды работ.
+        </p>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:6px;">
+          <span style="background:#e5f0f6; padding:8px 20px; border-radius:40px; font-weight:500;"><i class="fas fa-calendar-check" style="color:#2a7f8f;"></i> Стаж: 8 лет</span>
+          <span style="background:#e5f0f6; padding:8px 20px; border-radius:40px; font-weight:500;"><i class="fas fa-car" style="color:#2a7f8f;"></i> 500+ авто</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- цена -->
+    <div style="background:#ddecf4; border-radius:40px; padding:20px 28px; margin:30px 0 10px; border:1px solid #b7d3e0; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px;">
       <div>
-        <h3><i class="fas fa-hand-holding-usd"></i> Гибкая система цен</h3>
-        <p>От <strong>300 ₽</strong> до <strong>2000 ₽</strong> — выбирайте идеальный вариант</p>
+        <h3 style="font-size:1.8rem; display:flex; gap:12px; color:#0b2d3b;"><i class="fas fa-hand-holding-usd" style="color:#2a7f8f;"></i> Цены от 300 до 2000 ₽</h3>
+        <p style="color:#1a4a5a;">Выберите подходящий пакет услуг</p>
       </div>
-      <div class="pill">
-        <i class="fas fa-calendar-check" style="color: #2a7f8f;"></i> Запись онлайн
-      </div>
+      <span style="background:#ffffff; padding:10px 28px; border-radius:60px; font-weight:600; border:1px solid #9bbccd;">
+        <i class="fas fa-calendar-check" style="color:#2a7f8f;"></i> Запись онлайн
+      </span>
     </div>
 
   </div>
 
-  <!-- FOOTER -->
   <footer class="footer">
     <div class="container">
-      <div class="copy">
-        <i class="fas fa-car"></i> Detailing_31 © 2026 — Все права защищены.
-      </div>
+      <div class="copy"><i class="fas fa-car"></i> Detailing_31 © 2026</div>
       <div class="social">
         <a href="#"><i class="fab fa-instagram"></i></a>
         <a href="#"><i class="fab fa-vk"></i></a>
@@ -590,6 +599,32 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    function showPage(pageId) {
+      // скрыть все страницы
+      document.querySelectorAll('.page-block').forEach(el => el.classList.remove('active'));
+      // показать нужную
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+
+      // обновить активный пункт меню
+      document.querySelectorAll('#mainNav a[data-page]').forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.page === pageId) {
+          link.classList.add('active');
+        }
+      });
+
+      // скролл к началу
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // подсветка при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+      // по умолчанию home активен
+    });
+  </script>
 
 </body>
 </html>

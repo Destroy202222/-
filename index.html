@@ -1,490 +1,538 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elysium — портал Standoff 2</title>
-    <style>
-        /* ===== ГЛОБАЛЬНЫЙ СБРОС И ФОН ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detailing_31 | Автомойка</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
 
-        body {
-            background: radial-gradient(circle at 10% 20%, #0b0e1a, #030407);
-            color: #e8e8e8;
-            min-height: 100vh;
-            padding: 20px 30px;
-        }
+    body {
+      background-color: #0b0d10;
+      color: #f0f4fa;
+      line-height: 1.5;
+    }
 
-        /* ===== ШАПКА ===== */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #2a2f45;
-            padding-bottom: 18px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
+    /* контейнер */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
 
-        .logo h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #c0a0ff, #7a5cff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-        }
-        .logo span {
-            font-size: 0.9rem;
-            color: #8892b0;
-            -webkit-text-fill-color: #8892b0;
-            margin-left: 8px;
-        }
+    /* шапка */
+    .header {
+      background: #14181c;
+      padding: 18px 0;
+      border-bottom: 2px solid #2a8b9b;
+      box-shadow: 0 4px 20px rgba(0, 20, 30, 0.6);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
 
-        .nav a {
-            color: #b0b9d4;
-            text-decoration: none;
-            margin-left: 28px;
-            font-weight: 500;
-            font-size: 1rem;
-            transition: 0.2s;
-        }
-        .nav a:hover {
-            color: #c8b0ff;
-            border-bottom: 2px solid #7a5cff;
-            padding-bottom: 4px;
-        }
+    .header-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
 
-        /* ===== КАРУСЕЛЬ МАТЧЕЙ (LIVE) ===== */
-        .live-matches {
-            background: #12162bcc;
-            backdrop-filter: blur(4px);
-            border-radius: 18px;
-            padding: 22px 28px;
-            margin-bottom: 40px;
-            border: 1px solid #2e3452;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-        }
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #40d0e0;
+      text-shadow: 0 0 10px #1e7a8a;
+    }
+    .logo span {
+      color: #f5c542;
+    }
 
-        .live-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-        .live-header h2 {
-            font-weight: 400;
-            font-size: 1.3rem;
-            color: #bcc6e6;
-        }
-        .live-header .badge {
-            background: #e04a4a;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            color: #fff;
-        }
+    .nav a {
+      color: #cbd5e0;
+      margin-left: 28px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.2s;
+      font-size: 1.05rem;
+      border-bottom: 2px solid transparent;
+      padding-bottom: 4px;
+    }
+    .nav a:hover {
+      color: #7ad8e8;
+      border-bottom-color: #40d0e0;
+    }
 
-        .match-grid {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: space-around;
-        }
+    .nav i {
+      margin-right: 8px;
+    }
 
-        .match-card {
-            background: #1b2140;
-            padding: 14px 22px;
-            border-radius: 40px;
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            border-left: 4px solid #7a5cff;
-            min-width: 200px;
-            flex: 1 0 auto;
-            max-width: 280px;
-            box-shadow: 0 2px 12px #0b0e1f;
-        }
-        .match-card .team {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .match-card .team img {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #2c3357;
-        }
-        .match-card .vs {
-            color: #6e7aa3;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        .match-card .score {
-            font-weight: 700;
-            color: #f0f4ff;
-            background: #0b0f22;
-            padding: 2px 12px;
-            border-radius: 30px;
-            font-size: 0.95rem;
-        }
-        .match-card .live-tag {
-            background: #e04a4a;
-            padding: 2px 10px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+    /* герой */
+    .hero {
+      background: linear-gradient(145deg, #10171e, #1a252f);
+      padding: 50px 0 40px;
+      border-radius: 0 0 40px 40px;
+      margin-bottom: 30px;
+      box-shadow: inset 0 -8px 12px rgba(0, 0, 0, 0.5);
+    }
 
-        /* ===== ОСНОВНАЯ СЕТКА: НОВОСТИ + РЕЙТИНГ ===== */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
+    .hero-content {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+    }
 
-        /* ----- БЛОК НОВОСТЕЙ ----- */
-        .news-block {
-            background: #10142bcc;
-            backdrop-filter: blur(4px);
-            border-radius: 20px;
-            padding: 22px 26px;
-            border: 1px solid #2a2f4a;
-        }
+    .hero-text h1 {
+      font-size: 3.2rem;
+      font-weight: 700;
+      color: #f0f9ff;
+    }
+    .hero-text h1 i {
+      color: #f5c542;
+      margin-right: 12px;
+    }
+    .hero-text p {
+      font-size: 1.3rem;
+      max-width: 550px;
+      margin: 18px 0 12px;
+      color: #b6ccdc;
+    }
+    .hero-text .price-tag {
+      background: #1d3340;
+      padding: 12px 28px;
+      border-radius: 60px;
+      display: inline-block;
+      font-weight: 600;
+      font-size: 1.3rem;
+      border-left: 5px solid #f5c542;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+    }
+    .hero-text .price-tag i {
+      color: #f5c542;
+      margin-right: 12px;
+    }
 
-        .news-block h2, .rank-block h2 {
-            font-weight: 400;
-            font-size: 1.4rem;
-            border-bottom: 1px solid #2f3557;
-            padding-bottom: 12px;
-            margin-bottom: 22px;
-            color: #d0d9f0;
-        }
+    .hero-gallery {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
-        .news-item {
-            display: flex;
-            gap: 18px;
-            margin-bottom: 24px;
-            border-bottom: 1px solid #1f2542;
-            padding-bottom: 20px;
-        }
-        .news-item:last-child {
-            border-bottom: 0;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
+    .hero-gallery img {
+      width: 160px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+      transition: transform 0.2s;
+      border: 2px solid #2f4a57;
+    }
+    .hero-gallery img:hover {
+      transform: scale(1.03);
+      border-color: #40d0e0;
+    }
 
-        .news-item .date {
-            color: #7d88b0;
-            font-size: 0.8rem;
-            min-width: 70px;
-        }
-        .news-item .content h3 {
-            font-weight: 500;
-            font-size: 1.1rem;
-            color: #eef3ff;
-        }
-        .news-item .content p {
-            color: #a7b2d6;
-            font-size: 0.95rem;
-            margin-top: 4px;
-        }
-        .news-tag {
-            display: inline-block;
-            background: #2a3157;
-            padding: 0 12px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            color: #b7c2ec;
-            margin-top: 6px;
-        }
+    /* секции */
+    .section-title {
+      font-size: 2.4rem;
+      font-weight: 600;
+      margin: 50px 0 30px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 3px solid #2f4a57;
+      padding-bottom: 12px;
+    }
+    .section-title i {
+      color: #f5c542;
+      font-size: 2rem;
+    }
 
-        /* ----- БЛОК РЕЙТИНГА (ТОП-10) ----- */
-        .rank-block {
-            background: #10142bcc;
-            backdrop-filter: blur(4px);
-            border-radius: 20px;
-            padding: 22px 18px;
-            border: 1px solid #2a2f4a;
-        }
+    /* карточки услуг */
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 30px;
+    }
 
-        .rank-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+    .service-card {
+      background: #1a232b;
+      border-radius: 30px;
+      padding: 24px 20px 28px;
+      transition: 0.25s ease;
+      border: 1px solid #2d404b;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+    }
+    .service-card:hover {
+      transform: translateY(-8px);
+      border-color: #40d0e0;
+      background: #1e2a34;
+      box-shadow: 0 18px 28px rgba(0, 30, 40, 0.6);
+    }
 
-        .rank-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 14px;
-            border-radius: 40px;
-            background: #181f3a;
-            transition: 0.15s;
-        }
-        .rank-row:hover {
-            background: #29305a;
-            transform: scale(1.01);
-        }
-        .rank-row .pos {
-            font-weight: 700;
-            color: #6a77a8;
-            width: 28px;
-        }
-        .rank-row .team-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-        .rank-row .team-info img {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: #2a3357;
-        }
-        .rank-row .team-info span {
-            font-weight: 500;
-        }
-        .rank-row .rating {
-            background: #1b2348;
-            padding: 2px 14px;
-            border-radius: 30px;
-            font-weight: 600;
-            color: #b7bff0;
-            font-size: 0.85rem;
-        }
+    .service-icon {
+      font-size: 2.8rem;
+      color: #40d0e0;
+      margin-bottom: 12px;
+    }
+    .service-card h3 {
+      font-size: 1.7rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .service-card .desc {
+      color: #bacfd9;
+      font-size: 0.95rem;
+      flex: 1;
+      margin: 8px 0 16px;
+    }
+    .service-card .price {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #f5c542;
+      background: #0f1a20;
+      padding: 6px 16px;
+      border-radius: 40px;
+      display: inline-block;
+      align-self: flex-start;
+      border: 1px solid #3a5b68;
+    }
+    .service-card .price small {
+      font-weight: 300;
+      font-size: 1rem;
+      color: #a0bccb;
+      margin-left: 6px;
+    }
 
-        /* ===== СТАТИСТИКА ИГРОКОВ ===== */
-        .stats-block {
-            background: #10142bcc;
-            backdrop-filter: blur(4px);
-            border-radius: 20px;
-            padding: 22px 26px;
-            border: 1px solid #2a2f4a;
-            margin-top: 10px;
-        }
+    /* фото-галерея машин */
+    .car-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 25px;
+      margin: 30px 0 20px;
+    }
 
-        .stats-block h2 {
-            font-weight: 400;
-            font-size: 1.4rem;
-            border-bottom: 1px solid #2f3557;
-            padding-bottom: 12px;
-            margin-bottom: 22px;
-            color: #d0d9f0;
-        }
+    .car-item {
+      background: #141d24;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid #2c414d;
+      transition: 0.2s;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+    }
+    .car-item:hover {
+      transform: scale(1.02);
+      border-color: #f5c542;
+    }
+    .car-item img {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      display: block;
+    }
+    .car-item .car-label {
+      padding: 14px 12px;
+      background: #0f171f;
+      font-weight: 500;
+      text-align: center;
+      letter-spacing: 0.3px;
+      color: #d3e2ed;
+      font-size: 0.95rem;
+    }
+    .car-item .car-label i {
+      color: #f5c542;
+      margin-right: 6px;
+    }
 
-        .stat-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px 50px;
-            justify-content: space-around;
-        }
+    /* комплексные пакеты */
+    .complex-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin: 20px 0 30px;
+    }
 
-        .stat-item {
-            text-align: center;
-        }
-        .stat-item .value {
-            font-size: 2.1rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #c8b0ff, #8b6eff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .stat-item .label {
-            color: #8892b8;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-        }
+    .complex-card {
+      background: #17222b;
+      padding: 28px 22px;
+      border-radius: 30px;
+      border-left: 8px solid #f5c542;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+    }
+    .complex-card h4 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .complex-card h4 i {
+      color: #40d0e0;
+    }
+    .complex-card ul {
+      margin: 14px 0 18px 18px;
+      list-style: square;
+      color: #c4d7e3;
+    }
+    .complex-card ul li {
+      margin: 6px 0;
+    }
+    .complex-card .price-big {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f5c542;
+      background: #0e191f;
+      padding: 4px 20px;
+      border-radius: 60px;
+      display: inline-block;
+    }
+    .complex-card .price-big small {
+      font-size: 1rem;
+      font-weight: 300;
+      color: #96b2c2;
+    }
 
-        /* ===== ПОДВАЛ ===== */
-        .footer {
-            margin-top: 50px;
-            border-top: 1px solid #1f2545;
-            padding-top: 22px;
-            text-align: center;
-            color: #57617a;
-            font-size: 0.9rem;
-            letter-spacing: 0.3px;
-        }
-        .footer a {
-            color: #8b7bcb;
-            text-decoration: none;
-        }
+    /* футер */
+    .footer {
+      margin-top: 60px;
+      background: #0e161d;
+      padding: 35px 0 20px;
+      border-top: 2px solid #1d3340;
+    }
 
-        /* ===== АДАПТИВ ===== */
-        @media (max-width: 820px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-            .nav a {
-                margin-left: 0;
-                margin-right: 20px;
-            }
-            .match-grid {
-                justify-content: center;
-            }
-        }
-        @media (max-width: 500px) {
-            body {
-                padding: 12px 14px;
-            }
-            .match-card {
-                flex-wrap: wrap;
-                justify-content: center;
-                border-radius: 30px;
-            }
-        }
-    </style>
+    .footer .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 25px;
+    }
+
+    .footer .copy {
+      color: #7f9aa8;
+    }
+    .footer .social a {
+      color: #b0ccda;
+      margin-left: 22px;
+      font-size: 1.7rem;
+      transition: 0.2s;
+    }
+    .footer .social a:hover {
+      color: #f5c542;
+      transform: scale(1.1);
+    }
+
+    /* адаптив */
+    @media (max-width: 720px) {
+      .header-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .nav a {
+        margin-left: 0;
+        margin-right: 22px;
+      }
+      .hero-text h1 {
+        font-size: 2.4rem;
+      }
+      .hero-gallery img {
+        width: 130px;
+        height: 100px;
+      }
+      .section-title {
+        font-size: 2rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .hero-text h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- ========== ШАПКА ========== -->
-    <header class="header">
-        <div class="logo">
-            <h1>ELYSIUM <span>// Standoff 2</span></h1>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container header-wrap">
+      <div class="logo">Detailing_31 <span><i class="fas fa-car"></i></span></div>
+      <nav class="nav">
+        <a href="#services"><i class="fas fa-broom"></i>Услуги</a>
+        <a href="#complex"><i class="fas fa-layer-group"></i>Комплексы</a>
+        <a href="#cars"><i class="fas fa-images"></i>Фото</a>
+        <a href="#"><i class="fas fa-phone-alt"></i>+7 999 123-45-67</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-content">
+      <div class="hero-text">
+        <h1><i class="fas fa-sparkles"></i> Detailing_31</h1>
+        <p>Профессиональная автомойка и детейлинг. Полный комплекс услуг для вашего автомобиля.</p>
+        <div class="price-tag">
+          <i class="fas fa-tag"></i> Цены от 300 до 2000 ₽
         </div>
-        <nav class="nav">
-            <a href="#">Матчи</a>
-            <a href="#">Новости</a>
-            <a href="#">Рейтинг</a>
-            <a href="#">Статистика</a>
-            <a href="#">Трансферы</a>
-        </nav>
-    </header>
+      </div>
+      <div class="hero-gallery">
+        <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=400&h=300&fit=crop&auto=format" alt="Мойка авто">
+        <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=400&h=300&fit=crop&auto=format" alt="Чистый салон">
+        <img src="https://images.unsplash.com/photo-1562911791-c7a97b729ec5?w=400&h=300&fit=crop&auto=format" alt="Детейлинг">
+      </div>
+    </div>
+  </section>
 
-    <!-- ========== LIVE МАТЧИ ========== -->
-    <section class="live-matches">
-        <div class="live-header">
-            <h2>⚡ LIVE матчи</h2>
-            <span class="badge">3 прямых эфира</span>
-        </div>
-        <div class="match-grid">
+  <div class="container">
 
-            <div class="match-card">
-                <div class="team"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%237a5cff'/%3E%3C/svg%3E" alt="logo"> Team Spirit</div>
-                <span class="vs">VS</span>
-                <div class="team"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23f1c40f'/%3E%3C/svg%3E" alt="logo"> NaVi</div>
-                <span class="score">13 : 11</span>
-                <span class="live-tag">LIVE</span>
-            </div>
-
-            <div class="match-card">
-                <div class="team"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%239b59b6'/%3E%3C/svg%3E" alt="logo"> G2 Esports</div>
-                <span class="vs">VS</span>
-                <div class="team"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23e67e22'/%3E%3C/svg%3E" alt="logo"> Faze Clan</div>
-                <span class="score">8 : 5</span>
-                <span class="live-tag">LIVE</span>
-            </div>
-
-            <div class="match-card">
-                <div class="team"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%233498db'/%3E%3C/svg%3E" alt="logo"> MOUZ</div>
-                <span class="vs">VS</span>
-                <div class="team"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23e74c3c'/%3E%3C/svg%3E" alt="logo"> Virtus.pro</div>
-                <span class="score">10 : 10</span>
-                <span class="live-tag">LIVE</span>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- ========== ОСНОВНАЯ СЕТКА ========== -->
-    <div class="main-grid">
-
-        <!-- НОВОСТИ -->
-        <section class="news-block">
-            <h2>📰 Последние новости</h2>
-
-            <div class="news-item">
-                <div class="date">17 авг</div>
-                <div class="content">
-                    <h3>Team Spirit выходит в финал Elysium Cup</h3>
-                    <p>Команда обыграла NaVi со счётом 2:1 и гарантировала себе место в гранд-финале.</p>
-                    <span class="news-tag">Турнир</span>
-                </div>
-            </div>
-
-            <div class="news-item">
-                <div class="date">16 авг</div>
-                <div class="content">
-                    <h3>G2 Esports подписывает нового игрока</h3>
-                    <p>К составу присоединился 17-летний снайпер из СНГ — транфер подтверждён.</p>
-                    <span class="news-tag">Трансфер</span>
-                </div>
-            </div>
-
-            <div class="news-item">
-                <div class="date">15 авг</div>
-                <div class="content">
-                    <h3>Обновление рейтинга: NaVi поднимается на 2-е место</h3>
-                    <p>После победы над Faze Clan команда улучшила свои позиции в топ-10.</p>
-                    <span class="news-tag">Рейтинг</span>
-                </div>
-            </div>
-
-            <div class="news-item">
-                <div class="date">14 авг</div>
-                <div class="content">
-                    <h3>Анонс Elysium Major 2026</h3>
-                    <p>Призовой фонд составит 500 000 $, а турнир пройдёт в Казани.</p>
-                    <span class="news-tag">Анонс</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- РЕЙТИНГ КОМАНД -->
-        <section class="rank-block">
-            <h2>🏆 Рейтинг команд</h2>
-            <div class="rank-list">
-
-                <div class="rank-row"><span class="pos">#1</span><div class="team-info"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%237a5cff'/%3E%3C/svg%3E" alt="logo"><span>Team Spirit</span></div><span class="rating">1024</span></div>
-                <div class="rank-row"><span class="pos">#2</span><div class="team-info"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23f1c40f'/%3E%3C/svg%3E" alt="logo"><span>NaVi</span></div><span class="rating">998</span></div>
-                <div class="rank-row"><span class="pos">#3</span><div class="team-info"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%239b59b6'/%3E%3C/svg%3E" alt="logo"><span>G2 Esports</span></div><span class="rating">967</span></div>
-                <div class="rank-row"><span class="pos">#4</span><div class="team-info"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23e67e22'/%3E%3C/svg%3E" alt="logo"><span>Faze Clan</span></div><span class="rating">934</span></div>
-                <div class="rank-row"><span class="pos">#5</span><div class="team-info"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%233498db'/%3E%3C/svg%3E" alt="logo"><span>MOUZ</span></div><span class="rating">912</span></div>
-                <div class="rank-row"><span class="pos">#6</span><div class="team-info"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23e74c3c'/%3E%3C/svg%3E" alt="logo"><span>Virtus.pro</span></div><span class="rating">891</span></div>
-                <div class="rank-row"><span class="pos">#7</span><div class="team-info"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%232ecc71'/%3E%3C/svg%3E" alt="logo"><span>Eternal Fire</span></div><span class="rating">873</span></div>
-                <div class="rank-row"><span class="pos">#8</span><div class="team-info"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23f39c12'/%3E%3C/svg%3E" alt="logo"><span>9INE</span></div><span class="rating">854</span></div>
-                <div class="rank-row"><span class="pos">#9</span><div class="team-info"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%231abc9c'/%3E%3C/svg%3E" alt="logo"><span>BIG</span></div><span class="rating">832</span></div>
-                <div class="rank-row"><span class="pos">#10</span><div class="team-info"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23d35400'/%3E%3C/svg%3E" alt="logo"><span>Heroic</span></div><span class="rating">811</span></div>
-
-            </div>
-        </section>
+    <!-- УСЛУГИ -->
+    <h2 class="section-title" id="services"><i class="fas fa-soap"></i> Наши услуги</h2>
+    <div class="service-grid">
+      <!-- карточка 1 -->
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-car-wash"></i></div>
+        <h3>Мойка кузова</h3>
+        <div class="desc">Активная пена, бесконтактная мойка, сушка. Деликатный уход за ЛКП.</div>
+        <div class="price">300 ₽ <small>легковой</small></div>
+      </div>
+      <!-- карточка 2 -->
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-chair"></i></div>
+        <h3>Мойка салона</h3>
+        <div class="desc">Химчистка сидений, панели, ковров. Удаление запахов, озонирование.</div>
+        <div class="price">800 ₽ <small>комплекс</small></div>
+      </div>
+      <!-- карточка 3 -->
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-bolt"></i></div>
+        <h3>Детейлинг</h3>
+        <div class="desc">Полировка, керамика, защита фар, антидождь. Преображение авто.</div>
+        <div class="price">1500 ₽ <small>от</small></div>
+      </div>
+      <!-- карточка 4 -->
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-tint"></i></div>
+        <h3>Чернение резины</h3>
+        <div class="desc">Восстановление цвета шин, защита от выцветания, блеск.</div>
+        <div class="price">350 ₽ <small>4 колеса</small></div>
+      </div>
+      <!-- карточка 5 -->
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-wind"></i></div>
+        <h3>Озонирование</h3>
+        <div class="desc">Уничтожение бактерий, запахов, аллергенов. Свежесть в салоне.</div>
+        <div class="price">500 ₽ <small>сеанс</small></div>
+      </div>
+      <!-- карточка 6 -->
+      <div class="service-card">
+        <div class="service-icon"><i class="fas fa-robot"></i></div>
+        <h3>Бесконтактная мойка</h3>
+        <div class="desc">Щадящий режим, для всех типов кузова, включая плёнку.</div>
+        <div class="price">400 ₽ <small>стандарт</small></div>
+      </div>
     </div>
 
-    <!-- ========== СТАТИСТИКА ========== -->
-    <section class="stats-block">
-        <h2>📊 Топ-игроки по рейтингу (за 3 месяца)</h2>
-        <div class="stat-grid">
-            <div class="stat-item"><div class="value">1.37</div><div class="label">donk (Team Spirit)</div></div>
-            <div class="stat-item"><div class="value">1.29</div><div class="label">s1mple (NaVi)</div></div>
-            <div class="stat-item"><div class="value">1.24</div><div class="label">m0NESY (G2)</div></div>
-            <div class="stat-item"><div class="value">1.18</div><div class="label">ropz (Faze)</div></div>
-            <div class="stat-item"><div class="value">1.12</div><div class="label">Jame (Virtus.pro)</div></div>
-        </div>
-    </section>
+    <!-- КОМПЛЕКСНЫЕ ПАКЕТЫ -->
+    <h2 class="section-title" id="complex"><i class="fas fa-cubes"></i> Комплексные пакеты</h2>
+    <div class="complex-grid">
+      <div class="complex-card">
+        <h4><i class="fas fa-leaf"></i> Стандарт</h4>
+        <ul>
+          <li>Мойка кузова</li>
+          <li>Мойка салона (пылесос)</li>
+          <li>Чернение резины</li>
+        </ul>
+        <div class="price-big">700 ₽ <small>эконом</small></div>
+      </div>
+      <div class="complex-card">
+        <h4><i class="fas fa-star"></i> Премиум</h4>
+        <ul>
+          <li>Мойка кузова + полировка</li>
+          <li>Химчистка салона</li>
+          <li>Озонирование</li>
+          <li>Защита фар</li>
+        </ul>
+        <div class="price-big">1450 ₽ <small>VIP</small></div>
+      </div>
+      <div class="complex-card">
+        <h4><i class="fas fa-gem"></i> Детейлинг MAX</h4>
+        <ul>
+          <li>Полировка кузова</li>
+          <li>Керамика 3 слоя</li>
+          <li>Полная химчистка салона</li>
+          <li>Антидождь + озонирование</li>
+        </ul>
+        <div class="price-big">2000 ₽ <small>максимум</small></div>
+      </div>
+    </div>
 
-    <!-- ========== ПОДВАЛ ========== -->
-    <footer class="footer">
-        <p>Elysium — независимый портал по Standoff 2. Данные обновлены 17.08.2026.</p>
-        <p style="margin-top: 6px;">Следите за нами в соцсетях | <a href="#">VK</a> · <a href="#">Telegram</a> · <a href="#">YouTube</a></p>
-    </footer>
+    <!-- ГАЛЕРЕЯ МАШИН -->
+    <h2 class="section-title" id="cars"><i class="fas fa-car-side"></i> Фото наших работ</h2>
+    <div class="car-gallery">
+      <div class="car-item">
+        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop&auto=format" alt="Audi">
+        <div class="car-label"><i class="fas fa-check-circle" style="color:#40d0e0;"></i> Audi A6 — детейлинг</div>
+      </div>
+      <div class="car-item">
+        <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=400&h=300&fit=crop&auto=format" alt="BMW">
+        <div class="car-label"><i class="fas fa-check-circle" style="color:#40d0e0;"></i> BMW X5 — полировка</div>
+      </div>
+      <div class="car-item">
+        <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400&h=300&fit=crop&auto=format" alt="Mercedes">
+        <div class="car-label"><i class="fas fa-check-circle" style="color:#40d0e0;"></i> Mercedes S — салон</div>
+      </div>
+      <div class="car-item">
+        <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=300&fit=crop&auto=format" alt="Sport car">
+        <div class="car-label"><i class="fas fa-check-circle" style="color:#40d0e0;"></i> Porsche — керамика</div>
+      </div>
+      <div class="car-item">
+        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop&auto=format" alt="Toyota">
+        <div class="car-label"><i class="fas fa-check-circle" style="color:#40d0e0;"></i> Toyota Camry — мойка</div>
+      </div>
+    </div>
+
+    <!-- дополнительный блок с ценой от 300 до 2000 -->
+    <div style="background: #14212b; border-radius: 40px; padding: 26px 30px; margin: 40px 0 10px; border: 1px solid #2f4a57;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+        <div>
+          <h3 style="font-size: 2rem; display: flex; gap: 14px;"><i class="fas fa-hand-holding-usd" style="color: #f5c542;"></i> Гибкая система цен</h3>
+          <p style="color: #bdd3df; font-size: 1.1rem;">От <strong style="color: #f5c542;">300 ₽</strong> до <strong style="color: #f5c542;">2000 ₽</strong> в зависимости от пакета и объёма работ.</p>
+        </div>
+        <div style="background: #0e1a22; padding: 12px 30px; border-radius: 60px; border: 1px solid #f5c542;">
+          <i class="fas fa-calendar-check" style="color: #f5c542;"></i> Запись онлайн
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="copy">
+        <i class="fas fa-car"></i> Detailing_31 © 2026 — Все права защищены.
+      </div>
+      <div class="social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-vk"></i></a>
+        <a href="#"><i class="fab fa-whatsapp"></i></a>
+        <a href="#"><i class="fas fa-phone-alt"></i></a>
+      </div>
+    </div>
+  </footer>
 
 </body>
 </html>

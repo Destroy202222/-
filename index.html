@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -34,7 +35,7 @@
       position: relative;
     }
 
-    /* ===== ХЕДЕР как у fonbet ===== */
+    /* ===== ХЕДЕР ===== */
     .header {
       background: #0c101c;
       padding: 16px 20px 12px 20px;
@@ -100,9 +101,29 @@
     }
 
     .balance-currency {
+      display: flex;
+      align-items: center;
+      gap: 4px;
       color: #7a8bb0;
       font-size: 14px;
       font-weight: 500;
+    }
+
+    /* CSS логотип валюты Red */
+    .currency-red {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      background: #e53e3e;
+      border-radius: 50%;
+      color: white;
+      font-weight: 800;
+      font-size: 11px;
+      line-height: 1;
+      box-shadow: 0 0 8px rgba(229, 62, 62, 0.5);
+      margin-right: 2px;
     }
 
     .user-icon {
@@ -118,38 +139,62 @@
       border: 1px solid #3f5077;
     }
 
-    /* ===== НАВИГАЦИЯ (как в fonbet) ===== */
-    .nav-tabs {
-      display: flex;
-      gap: 4px;
+    /* ===== ГЛАВНОЕ МЕНЮ (информация о сайте) ===== */
+    .main-menu {
       background: #0b0f1a;
-      padding: 8px 16px 0 16px;
+      padding: 18px 20px 16px;
       border-bottom: 1px solid #1c253b;
-      overflow-x: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
-    .nav-tab {
-      padding: 10px 20px 10px 20px;
-      font-weight: 600;
+    .menu-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #dce6ff;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-title .red-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background: #e53e3e;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(229, 62, 62, 0.7);
+    }
+
+    .menu-sub {
       font-size: 14px;
-      color: #7d8db0;
-      border-radius: 20px 20px 0 0;
-      cursor: default;
-      background: transparent;
-      border: none;
-      white-space: nowrap;
-      transition: 0.1s;
-      border-bottom: 3px solid transparent;
+      color: #8b9fcb;
+      line-height: 1.5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
     }
 
-    .nav-tab.active {
-      color: #ffffff;
-      background: #141c2e;
-      border-bottom: 3px solid #e53e3e;
+    .menu-sub .red-currency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #1a233a;
+      padding: 2px 12px 2px 8px;
+      border-radius: 60px;
+      border: 1px solid #e53e3e;
+      font-weight: 600;
+      color: #e53e3e;
+      font-size: 13px;
     }
 
-    .nav-tab:not(.active) {
-      opacity: 0.7;
+    .menu-sub .red-currency-badge .currency-red {
+      width: 18px;
+      height: 18px;
+      font-size: 10px;
     }
 
     /* ===== БАННЕР КИБЕРСПОРТА ===== */
@@ -176,6 +221,31 @@
       font-weight: 700;
       letter-spacing: -0.3px;
       color: #dce6ff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .banner-title .red-icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      background: #e53e3e;
+      border-radius: 6px;
+      position: relative;
+      box-shadow: 0 0 12px rgba(229, 62, 62, 0.4);
+    }
+    .banner-title .red-icon::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      background: white;
+      border-radius: 2px;
+      opacity: 0.7;
     }
 
     .banner-sub {
@@ -197,11 +267,31 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #e53e3e;
       border: 1px solid #4d618f;
     }
 
-    /* ===== МАТЧИ ===== */
+    /* ===== РАЗДЕЛ "ИГРЫ" ===== */
+    .section-label {
+      padding: 0 16px 6px 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #c7d7ff;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-label .red-line {
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, #e53e3e, transparent);
+      border-radius: 2px;
+    }
+
     .matches-section {
       padding: 0 16px 16px 16px;
       display: flex;
@@ -313,7 +403,7 @@
       transform: scale(0.92);
     }
 
-    /* ===== КУПОН (FONBET СТИЛЬ) ===== */
+    /* ===== КУПОН ===== */
     .cupon-section {
       background: #0d1422;
       margin: 8px 16px 0 16px;
@@ -335,6 +425,18 @@
       font-size: 20px;
       color: #c7d7ff;
       letter-spacing: -0.2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cupon-header h3 .red-cube {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      background: #e53e3e;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(229, 62, 62, 0.5);
     }
 
     .cupon-actions {
@@ -470,11 +572,9 @@
       .odds-btn { padding: 8px 14px; font-size: 14px; }
       .team { font-size: 14px; }
       .cupon-header h3 { font-size: 17px; }
-      .nav-tab { padding: 8px 12px; font-size: 12px; }
+      .menu-title { font-size: 17px; }
+      .menu-sub { font-size: 13px; }
     }
-
-    /* анимация */
-    .match-card, .cupon-section { transition: 0.1s; }
   </style>
 </head>
 <body>
@@ -489,27 +589,43 @@
     <div class="header-right">
       <div class="balance-block">
         <span class="balance-amount" id="balanceDisplay">20 000</span>
-        <span class="balance-currency">₽</span>
+        <span class="balance-currency">
+          <span class="currency-red">R</span> Red
+        </span>
       </div>
       <div class="user-icon">👤</div>
     </div>
   </div>
 
-  <!-- НАВИГАЦИЯ как в fonbet -->
-  <div class="nav-tabs">
-    <button class="nav-tab active">🔥 Live</button>
-    <button class="nav-tab">📅 Линия</button>
-    <button class="nav-tab">🎮 Киберспорт</button>
-    <button class="nav-tab">📊 Результаты</button>
+  <!-- ГЛАВНОЕ МЕНЮ (информация о сайте) -->
+  <div class="main-menu">
+    <div class="menu-title">
+      <span class="red-dot"></span> SkyRed — ставки на Standoff 2
+    </div>
+    <div class="menu-sub">
+      <span>Ставки на киберспорт Standoff 2</span>
+      <span class="red-currency-badge">
+        <span class="currency-red">R</span> Валюта Red
+      </span>
+      <span>• Реальные коэффициенты</span>
+    </div>
   </div>
 
   <!-- БАННЕР -->
   <div class="cyber-banner">
     <div class="banner-left">
-      <div class="banner-title">⚡ Standoff 2</div>
+      <div class="banner-title">
+        <span class="red-icon"></span> Standoff 2
+      </div>
       <div class="banner-sub">Киберспорт • Турнир S2 Major</div>
     </div>
-    <div class="banner-icon">🎯</div>
+    <div class="banner-icon">S2</div>
+  </div>
+
+  <!-- РАЗДЕЛ "ИГРЫ" -->
+  <div class="section-label">
+    <span>Игры</span>
+    <span class="red-line"></span>
   </div>
 
   <!-- МАТЧИ -->
@@ -521,7 +637,7 @@
         <div class="vs">VS</div>
         <div class="team"><span class="team-logo">NAVI</span> NAVI</div>
       </div>
-      <div class="match-meta">🏆 S2 Major • карта 3 • BO3</div>
+      <div class="match-meta">S2 Major • карта 3 • BO3</div>
       <div class="odds-row">
         <div class="odds-btn" data-match="1" data-outcome="team1" data-odds="1.85">VP <span>1.85</span></div>
         <div class="odds-btn" data-match="1" data-outcome="team2" data-odds="2.10">NAVI <span>2.10</span></div>
@@ -534,7 +650,7 @@
         <div class="vs">VS</div>
         <div class="team"><span class="team-logo">FZ</span> Faze Clan</div>
       </div>
-      <div class="match-meta">🏆 S2 Challenger • карта 2 • BO5</div>
+      <div class="match-meta">S2 Challenger • карта 2 • BO5</div>
       <div class="odds-row">
         <div class="odds-btn" data-match="2" data-outcome="team1" data-odds="1.72">G2 <span>1.72</span></div>
         <div class="odds-btn" data-match="2" data-outcome="team2" data-odds="2.25">Faze <span>2.25</span></div>
@@ -545,7 +661,9 @@
   <!-- КУПОН -->
   <div class="cupon-section">
     <div class="cupon-header">
-      <h3>📋 Купон</h3>
+      <h3>
+        <span class="red-cube"></span> Купон
+      </h3>
       <div class="cupon-actions">
         <button class="reset-btn" id="clearCouponBtn">Очистить</button>
       </div>
@@ -561,7 +679,7 @@
     <div id="messageArea" class="toast"></div>
   </div>
 
-  <div class="footer-small">SkyRed • 18+ • Ставки на киберспорт Standoff 2</div>
+  <div class="footer-small">SkyRed • 18+ • Ставки на киберспорт Standoff 2 • Валюта Red</div>
 </div>
 
 <script>
@@ -569,7 +687,7 @@
     // ===== ПОЛНОЦЕННАЯ СИСТЕМА СТАВОК =====
     let balance = 20000;
     const INITIAL_BALANCE = 20000;
-    let selectedBets = []; // { matchId, outcome, odds, label }
+    let selectedBets = [];
 
     const balanceEl = document.getElementById('balanceDisplay');
     const cuponItemsEl = document.getElementById('cuponItems');
@@ -605,7 +723,6 @@
       cuponItemsEl.innerHTML = html;
       totalOddsEl.textContent = totalOdds.toFixed(2);
 
-      // обработчики удаления
       document.querySelectorAll('.cupon-item .remove').forEach(btn => {
         btn.addEventListener('click', function(e) {
           const idx = parseInt(this.dataset.index, 10);
@@ -630,7 +747,6 @@
     }
 
     function addBet(matchId, outcome, odds, label) {
-      // проверка дубликата
       const exists = selectedBets.some(b => b.matchId === matchId && b.outcome === outcome);
       if (exists) {
         showMessage('Этот исход уже в купоне', '#e57373');
@@ -642,7 +758,6 @@
       return true;
     }
 
-    // обработчики на кнопки коэффициентов
     document.querySelectorAll('.odds-btn').forEach(btn => {
       btn.addEventListener('click', function(e) {
         const matchId = this.dataset.match;
@@ -654,14 +769,12 @@
       });
     });
 
-    // очистка купона
     clearBtn.addEventListener('click', function() {
       selectedBets = [];
       renderCoupon();
       showMessage('Купон очищен', '#8d9fc7');
     });
 
-    // === СТАВКА (полноценная логика) ===
     placeBetBtn.addEventListener('click', function() {
       if (selectedBets.length === 0) {
         showMessage('Добавьте хотя бы один исход', '#e57373');
@@ -671,37 +784,32 @@
       let totalOdds = 1;
       selectedBets.forEach(b => totalOdds *= b.odds);
 
-      const betAmount = 100; // фиксированная для теста
+      const betAmount = 100;
       if (balance < betAmount) {
-        showMessage(`Недостаточно средств. Нужно ${betAmount} ₽`, '#e57373');
+        showMessage(`Недостаточно средств. Нужно ${betAmount} Red`, '#e57373');
         return;
       }
 
-      // списываем
       balance -= betAmount;
       updateBalanceUI();
 
-      // Имитация расчёта выигрыша (всегда выигрыш для теста)
       const winAmount = Math.round(betAmount * totalOdds);
       balance += winAmount;
       updateBalanceUI();
 
       const betDetails = selectedBets.map(b => b.label).join(' + ');
-      showMessage(`✅ Ставка принята! Выигрыш: ${winAmount} ₽ (коэф. ${totalOdds.toFixed(2)})`, '#b5e45a');
+      showMessage(`Ставка принята! Выигрыш: ${winAmount} Red (коэф. ${totalOdds.toFixed(2)})`, '#b5e45a');
 
-      // очищаем купон
       selectedBets = [];
       renderCoupon();
     });
 
-    // двойной клик по балансу — сброс до 20 000
     balanceEl.addEventListener('dblclick', function() {
       balance = INITIAL_BALANCE;
       updateBalanceUI();
-      showMessage('Баланс сброшен до 20 000 ₽', '#b5e45a');
+      showMessage('Баланс сброшен до 20 000 Red', '#b5e45a');
     });
 
-    // инициализация
     updateBalanceUI();
     renderCoupon();
   })();

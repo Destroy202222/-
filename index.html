@@ -52,7 +52,6 @@
       gap: 12px;
     }
 
-    /* CSS-логотип сайта (звезда в круге) */
     .site-logo {
       width: 44px;
       height: 44px;
@@ -132,7 +131,6 @@
       font-weight: 500;
     }
 
-    /* CSS-логотип валюты Red (красный бриллиант) */
     .currency-red {
       display: inline-flex;
       align-items: center;
@@ -169,7 +167,7 @@
       border: 1px solid #3f5077;
     }
 
-    /* ===== ИНФО-БЛОК (без баннера) ===== */
+    /* ===== ИНФО-БЛОК ===== */
     .info-block {
       background: #0b0f1a;
       padding: 14px 20px 14px;
@@ -701,12 +699,37 @@
       font-size: 20px;
       font-weight: 600;
       color: #5e7196;
+      position: relative;
+    }
+
+    /* CSS-эмодзи красного цвета */
+    .nav-item .nav-icon.icon-games::before {
+      content: '⚔';
+      font-size: 22px;
+      color: #e53e3e;
+      filter: drop-shadow(0 0 8px rgba(229, 62, 62, 0.3));
+    }
+    .nav-item .nav-icon.icon-coupon::before {
+      content: '📋';
+      font-size: 22px;
+      color: #e53e3e;
+      filter: drop-shadow(0 0 8px rgba(229, 62, 62, 0.3));
+    }
+    .nav-item .nav-icon.icon-profile::before {
+      content: '👤';
+      font-size: 22px;
+      color: #e53e3e;
+      filter: drop-shadow(0 0 8px rgba(229, 62, 62, 0.3));
     }
 
     .nav-item.active .nav-icon {
       background: #e53e3e;
-      color: white;
       box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+    }
+
+    .nav-item.active .nav-icon::before {
+      color: white !important;
+      filter: none !important;
     }
 
     .nav-item.active {
@@ -723,32 +746,37 @@
       opacity: 1;
     }
 
-    /* CSS-эмодзи красного цвета */
-    .nav-item .nav-icon.icon-games::before {
-      content: '⚔';
-      font-size: 22px;
-    }
-    .nav-item .nav-icon.icon-coupon::before {
-      content: '📋';
-      font-size: 22px;
-    }
-    .nav-item .nav-icon.icon-profile::before {
-      content: '👤';
-      font-size: 22px;
-    }
-
-    .nav-item.active .nav-icon.icon-games::before,
-    .nav-item.active .nav-icon.icon-coupon::before,
-    .nav-item.active .nav-icon.icon-profile::before {
+    /* Счетчик на купоне */
+    .nav-item .coupon-badge {
+      position: absolute;
+      top: -4px;
+      right: -6px;
+      background: #e53e3e;
       color: white;
-      filter: none;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px rgba(229, 62, 62, 0.6);
+      border: 2px solid #0c101c;
+      padding: 0 4px;
+      transition: all 0.2s ease;
+      transform: scale(0.8);
+      opacity: 0;
+      pointer-events: none;
     }
 
-    .nav-item:not(.active) .nav-icon.icon-games::before,
-    .nav-item:not(.active) .nav-icon.icon-coupon::before,
-    .nav-item:not(.active) .nav-icon.icon-profile::before {
-      color: #e53e3e;
-      filter: drop-shadow(0 0 6px rgba(229, 62, 62, 0.3));
+    .nav-item .coupon-badge.show {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .nav-item.active .coupon-badge {
+      border-color: #e53e3e;
     }
 
     .footer-small {
@@ -924,7 +952,9 @@
     <span class="nav-label">Игры</span>
   </button>
   <button class="nav-item" data-section="coupon">
-    <span class="nav-icon icon-coupon"></span>
+    <span class="nav-icon icon-coupon">
+      <span class="coupon-badge" id="couponBadge">0</span>
+    </span>
     <span class="nav-label">Купон</span>
   </button>
   <button class="nav-item" data-section="profile">
@@ -950,6 +980,7 @@
     const clearBtn = document.getElementById('clearCouponBtn');
     const messageEl = document.getElementById('messageArea');
     const betAmountInput = document.getElementById('betAmountInput');
+    const couponBadge = document.getElementById('couponBadge');
 
     // секции
     const gamesSection = document.getElementById('gamesSection');
@@ -987,11 +1018,22 @@
     }
 
     // ===== КУПОН =====
+    function updateCouponBadge() {
+      const count = selectedBets.length;
+      if (count > 0) {
+        couponBadge.textContent = count;
+        couponBadge.classList.add('show');
+      } else {
+        couponBadge.classList.remove('show');
+      }
+    }
+
     function renderCoupon() {
       if (selectedBets.length === 0) {
         cuponItemsEl.innerHTML = `<div style="color: #5b6e96; font-size: 14px; padding: 8px 0;">Выберите коэффициент</div>`;
         totalOddsEl.textContent = '—';
         placeBetBtn.disabled = true;
+        updateCouponBadge();
         return;
       }
 
@@ -1022,6 +1064,7 @@
       });
 
       placeBetBtn.disabled = false;
+      updateCouponBadge();
     }
 
     function showMessage(text, color = '#b5e45a') {
@@ -1054,8 +1097,7 @@
         const teamSpan = this.textContent.trim().split(' ')[0];
         const label = `${teamSpan} (${odds.toFixed(2)})`;
         addBet(matchId, outcome, odds, label);
-        // переключаем на купон
-        switchSection('coupon');
+        // НЕ переключаем на купон автоматически
       });
     });
 

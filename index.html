@@ -169,7 +169,7 @@
       border: 1px solid #3f5077;
     }
 
-    /* ===== ИНФО-БЛОК (вместо главного меню) ===== */
+    /* ===== ИНФО-БЛОК (без баннера) ===== */
     .info-block {
       background: #0b0f1a;
       padding: 14px 20px 14px;
@@ -230,69 +230,6 @@
       font-size: 8px;
     }
 
-    /* ===== БАННЕР ===== */
-    .cyber-banner {
-      background: linear-gradient(135deg, #121b2e, #0a111f);
-      margin: 16px 16px 12px 16px;
-      padding: 14px 20px;
-      border-radius: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border: 1px solid #2b3857;
-      box-shadow: 0 6px 0 #070a12;
-    }
-
-    .banner-left {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .banner-title {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      color: #dce6ff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .banner-title .red-shield {
-      display: inline-block;
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, #e53e3e, #b71c1c);
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-      box-shadow: 0 0 16px rgba(229, 62, 62, 0.4);
-    }
-
-    .banner-sub {
-      font-size: 13px;
-      color: #8b9fcb;
-      background: #1c2742;
-      padding: 4px 14px;
-      border-radius: 60px;
-      display: inline-block;
-      width: fit-content;
-      border: 1px solid #3a4b70;
-    }
-
-    .banner-icon {
-      background: #263458;
-      width: 56px;
-      height: 56px;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      font-weight: 700;
-      color: #e53e3e;
-      border: 1px solid #4d618f;
-    }
-
     /* ===== КОНТЕНТ ===== */
     .content-area {
       padding: 0 16px 16px;
@@ -300,7 +237,7 @@
     }
 
     .section-hidden {
-      display: none;
+      display: none !important;
     }
 
     /* ===== МАТЧИ (ИГРЫ) ===== */
@@ -308,6 +245,7 @@
       display: flex;
       flex-direction: column;
       gap: 18px;
+      padding-top: 16px;
     }
 
     .match-card {
@@ -421,6 +359,7 @@
       border-radius: 32px;
       border: 1px solid #253051;
       box-shadow: 0 8px 0 #060a12;
+      margin-top: 16px;
     }
 
     .cupon-header {
@@ -522,16 +461,52 @@
       color: #b5e45a;
     }
 
+    .bet-amount-section {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .bet-amount-section label {
+      color: #9aafd9;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .bet-amount-input {
+      background: #0b1324;
+      border: 1px solid #2e4168;
+      border-radius: 60px;
+      padding: 10px 18px;
+      color: #f0f3fa;
+      font-size: 16px;
+      font-weight: 600;
+      width: 140px;
+      outline: none;
+      transition: 0.15s;
+    }
+
+    .bet-amount-input:focus {
+      border-color: #e53e3e;
+      box-shadow: 0 0 20px rgba(229, 62, 62, 0.15);
+    }
+
+    .bet-amount-input::-webkit-inner-spin-button {
+      opacity: 1;
+    }
+
     .place-bet-btn {
       background: #e53e3e;
       border: none;
       border-radius: 60px;
-      padding: 16px 20px;
+      padding: 14px 20px;
       font-weight: 700;
-      font-size: 20px;
+      font-size: 18px;
       color: white;
-      width: 100%;
-      margin-top: 18px;
+      flex: 1;
+      min-width: 140px;
       box-shadow: 0 7px 0 #871f1f;
       transition: 0.08s;
       cursor: pointer;
@@ -564,24 +539,95 @@
       display: none;
     }
 
-    /* ===== ПРОФИЛЬ ===== */
+    /* ===== ПРОФИЛЬ (современный) ===== */
     .profile-content {
-      padding: 10px 0;
+      padding: 16px 0;
     }
 
     .profile-card {
-      background: #111926;
-      border-radius: 28px;
-      padding: 24px 22px;
+      background: linear-gradient(145deg, #111926, #0d1422);
+      border-radius: 32px;
+      padding: 28px 24px;
       border: 1px solid #26314b;
-      box-shadow: 0 6px 0 #080c16;
+      box-shadow: 0 8px 0 #080c16, inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, #e53e3e, #8b0000);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: white;
+      margin: 0 auto 16px;
+      box-shadow: 0 8px 30px rgba(229, 62, 62, 0.3);
+      border: 3px solid #2a3b62;
+    }
+
+    .profile-name {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #e8efff;
+      margin-bottom: 4px;
+    }
+
+    .profile-status {
+      text-align: center;
+      color: #b5e45a;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .profile-status .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #b5e45a;
+      border-radius: 50%;
+      animation: blink-dot 2s infinite;
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      background: #0b1324;
+      border-radius: 16px;
+      padding: 14px 16px;
+      border: 1px solid #1f2a44;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #e8efff;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #7a8bb0;
+      margin-top: 4px;
     }
 
     .profile-row {
       display: flex;
       justify-content: space-between;
       padding: 12px 0;
-      border-bottom: 1px solid #1f2840;
+      border-bottom: 1px solid #1a2340;
     }
 
     .profile-row:last-child {
@@ -596,6 +642,9 @@
     .profile-value {
       color: #e8efff;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .profile-value .currency-red {
@@ -603,7 +652,6 @@
       height: 20px;
       font-size: 8px;
       display: inline-flex;
-      margin-right: 4px;
     }
 
     /* ===== НИЖНЯЯ НАВИГАЦИЯ ===== */
@@ -643,15 +691,16 @@
     }
 
     .nav-item .nav-icon {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 12px;
       transition: 0.15s;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 600;
+      color: #5e7196;
     }
 
     .nav-item.active .nav-icon {
@@ -664,11 +713,6 @@
       color: #ffffff;
     }
 
-    .nav-item:not(.active) .nav-icon {
-      color: #5e7196;
-      background: transparent;
-    }
-
     .nav-item .nav-label {
       font-size: 10px;
       letter-spacing: 0.3px;
@@ -679,27 +723,33 @@
       opacity: 1;
     }
 
-    /* иконки навигации (CSS) */
-    .icon-games {
-      position: relative;
-    }
-    .icon-games::before {
+    /* CSS-эмодзи красного цвета */
+    .nav-item .nav-icon.icon-games::before {
       content: '⚔';
-      font-size: 20px;
+      font-size: 22px;
     }
-    .icon-coupon::before {
+    .nav-item .nav-icon.icon-coupon::before {
       content: '📋';
-      font-size: 20px;
+      font-size: 22px;
     }
-    .icon-profile::before {
+    .nav-item .nav-icon.icon-profile::before {
       content: '👤';
-      font-size: 20px;
+      font-size: 22px;
     }
 
-    /* активные иконки (красные) */
-    .nav-item.active .icon-games::before { color: white; }
-    .nav-item.active .icon-coupon::before { color: white; }
-    .nav-item.active .icon-profile::before { color: white; }
+    .nav-item.active .nav-icon.icon-games::before,
+    .nav-item.active .nav-icon.icon-coupon::before,
+    .nav-item.active .nav-icon.icon-profile::before {
+      color: white;
+      filter: none;
+    }
+
+    .nav-item:not(.active) .nav-icon.icon-games::before,
+    .nav-item:not(.active) .nav-icon.icon-coupon::before,
+    .nav-item:not(.active) .nav-icon.icon-profile::before {
+      color: #e53e3e;
+      filter: drop-shadow(0 0 6px rgba(229, 62, 62, 0.3));
+    }
 
     .footer-small {
       margin-top: 28px;
@@ -720,6 +770,8 @@
       .team { font-size: 14px; }
       .cupon-header h3 { font-size: 17px; }
       .nav-item { padding: 4px 10px; min-width: 50px; }
+      .bet-amount-input { width: 100px; }
+      .profile-stats { grid-template-columns: 1fr 1fr; }
     }
 
     @media (max-width: 420px) {
@@ -761,17 +813,6 @@
         <span class="currency-red"><span>R</span></span> Валюта Red
       </span>
     </div>
-  </div>
-
-  <!-- БАННЕР -->
-  <div class="cyber-banner">
-    <div class="banner-left">
-      <div class="banner-title">
-        <span class="red-shield"></span> Standoff 2
-      </div>
-      <div class="banner-sub">Турнир S2 Major • Live</div>
-    </div>
-    <div class="banner-icon">S2</div>
   </div>
 
   <!-- КОНТЕНТ -->
@@ -822,7 +863,11 @@
           <span>Общий коэффициент</span>
           <span id="totalOddsDisplay">—</span>
         </div>
-        <button class="place-bet-btn" id="placeBetBtn">Сделать ставку</button>
+        <div class="bet-amount-section">
+          <label for="betAmountInput">Сумма ставки (Red)</label>
+          <input type="number" id="betAmountInput" class="bet-amount-input" value="100" min="10" step="10">
+          <button class="place-bet-btn" id="placeBetBtn">Сделать ставку</button>
+        </div>
         <div id="messageArea" class="toast"></div>
       </div>
     </div>
@@ -831,14 +876,29 @@
     <div id="profileSection" class="section-hidden">
       <div class="profile-content">
         <div class="profile-card">
+          <div class="profile-avatar">⭐</div>
+          <div class="profile-name">SkyPlayer</div>
+          <div class="profile-status">
+            <span class="status-dot"></span> Активен
+          </div>
+          <div class="profile-stats">
+            <div class="stat-item">
+              <div class="stat-value" id="profileBalance">20 000</div>
+              <div class="stat-label">Баланс (Red)</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="profileBetsCount">0</div>
+              <div class="stat-label">Всего ставок</div>
+            </div>
+          </div>
           <div class="profile-row">
             <span class="profile-label">Имя пользователя</span>
             <span class="profile-value">SkyPlayer</span>
           </div>
           <div class="profile-row">
-            <span class="profile-label">Баланс</span>
+            <span class="profile-label">Валюта</span>
             <span class="profile-value">
-              <span class="currency-red"><span>R</span></span> <span id="profileBalance">20 000</span> Red
+              <span class="currency-red"><span>R</span></span> Red
             </span>
           </div>
           <div class="profile-row">
@@ -846,8 +906,8 @@
             <span class="profile-value" style="color: #b5e45a;">Активен</span>
           </div>
           <div class="profile-row">
-            <span class="profile-label">Всего ставок</span>
-            <span class="profile-value">0</span>
+            <span class="profile-label">Дата регистрации</span>
+            <span class="profile-value">Сегодня</span>
           </div>
         </div>
       </div>
@@ -879,14 +939,17 @@
     let balance = 20000;
     const INITIAL_BALANCE = 20000;
     let selectedBets = [];
+    let totalBetsCount = 0;
 
     const balanceEl = document.getElementById('balanceDisplay');
     const profileBalanceEl = document.getElementById('profileBalance');
+    const profileBetsCountEl = document.getElementById('profileBetsCount');
     const cuponItemsEl = document.getElementById('cuponItems');
     const totalOddsEl = document.getElementById('totalOddsDisplay');
     const placeBetBtn = document.getElementById('placeBetBtn');
     const clearBtn = document.getElementById('clearCouponBtn');
     const messageEl = document.getElementById('messageArea');
+    const betAmountInput = document.getElementById('betAmountInput');
 
     // секции
     const gamesSection = document.getElementById('gamesSection');
@@ -920,6 +983,7 @@
     function updateBalanceUI() {
       balanceEl.textContent = balance.toLocaleString('ru-RU');
       if (profileBalanceEl) profileBalanceEl.textContent = balance.toLocaleString('ru-RU');
+      if (profileBetsCountEl) profileBetsCountEl.textContent = totalBetsCount;
     }
 
     // ===== КУПОН =====
@@ -1010,13 +1074,19 @@
       let totalOdds = 1;
       selectedBets.forEach(b => totalOdds *= b.odds);
 
-      const betAmount = 100;
+      let betAmount = parseInt(betAmountInput.value, 10);
+      if (isNaN(betAmount) || betAmount < 10) {
+        showMessage('Минимальная ставка 10 Red', '#e57373');
+        return;
+      }
+
       if (balance < betAmount) {
         showMessage(`Недостаточно средств. Нужно ${betAmount} Red`, '#e57373');
         return;
       }
 
       balance -= betAmount;
+      totalBetsCount += 1;
       updateBalanceUI();
 
       const winAmount = Math.round(betAmount * totalOdds);
@@ -1027,6 +1097,7 @@
 
       selectedBets = [];
       renderCoupon();
+      betAmountInput.value = 100;
     });
 
     // ===== СБРОС БАЛАНСА =====

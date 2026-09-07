@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -20,7 +19,8 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      padding: 12px 10px 30px;
+      padding: 12px 10px 90px;
+      position: relative;
     }
 
     .app {
@@ -49,21 +49,44 @@
     .logo-area {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .logo-icon {
-      background: #e53e3e;
-      width: 40px;
-      height: 40px;
+    /* CSS-логотип сайта (звезда в круге) */
+    .site-logo {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #e53e3e, #b71c1c);
       border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
-      font-size: 24px;
-      color: white;
-      box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+      position: relative;
+      box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+      transition: transform 0.2s;
+    }
+    .site-logo::before {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      opacity: 0.95;
+    }
+    .site-logo::after {
+      content: '';
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 50%;
+      animation: pulse-ring 2s infinite;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 0.3; }
+      100% { transform: scale(0.9); opacity: 0.8; }
     }
 
     .logo-text {
@@ -109,21 +132,28 @@
       font-weight: 500;
     }
 
-    /* CSS логотип валюты Red */
+    /* CSS-логотип валюты Red (красный бриллиант) */
     .currency-red {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 20px;
-      height: 20px;
-      background: #e53e3e;
-      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, #e53e3e, #8b0000);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
       color: white;
       font-weight: 800;
-      font-size: 11px;
-      line-height: 1;
-      box-shadow: 0 0 8px rgba(229, 62, 62, 0.5);
+      font-size: 10px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      box-shadow: 0 0 12px rgba(229, 62, 62, 0.4);
       margin-right: 2px;
+      transform: rotate(45deg);
+      position: relative;
+    }
+    .currency-red span {
+      transform: rotate(-45deg);
+      font-size: 9px;
+      letter-spacing: 0.5px;
     }
 
     .user-icon {
@@ -139,46 +169,49 @@
       border: 1px solid #3f5077;
     }
 
-    /* ===== ГЛАВНОЕ МЕНЮ (информация о сайте) ===== */
-    .main-menu {
+    /* ===== ИНФО-БЛОК (вместо главного меню) ===== */
+    .info-block {
       background: #0b0f1a;
-      padding: 18px 20px 16px;
+      padding: 14px 20px 14px;
       border-bottom: 1px solid #1c253b;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
-    .menu-title {
-      font-size: 20px;
+    .info-title {
+      font-size: 18px;
       font-weight: 700;
       color: #dce6ff;
-      letter-spacing: -0.3px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .menu-title .red-dot {
+    .info-title .red-dot {
       display: inline-block;
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       background: #e53e3e;
       border-radius: 50%;
-      box-shadow: 0 0 12px rgba(229, 62, 62, 0.7);
+      box-shadow: 0 0 14px rgba(229, 62, 62, 0.7);
+      animation: blink-dot 2s infinite;
+    }
+    @keyframes blink-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
 
-    .menu-sub {
-      font-size: 14px;
+    .info-sub {
+      font-size: 13px;
       color: #8b9fcb;
-      line-height: 1.5;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
-    .menu-sub .red-currency-badge {
+    .info-sub .red-badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -188,19 +221,19 @@
       border: 1px solid #e53e3e;
       font-weight: 600;
       color: #e53e3e;
-      font-size: 13px;
+      font-size: 12px;
     }
 
-    .menu-sub .red-currency-badge .currency-red {
+    .info-sub .red-badge .currency-red {
       width: 18px;
       height: 18px;
-      font-size: 10px;
+      font-size: 8px;
     }
 
-    /* ===== БАННЕР КИБЕРСПОРТА ===== */
+    /* ===== БАННЕР ===== */
     .cyber-banner {
       background: linear-gradient(135deg, #121b2e, #0a111f);
-      margin: 16px 16px 20px 16px;
+      margin: 16px 16px 12px 16px;
       padding: 14px 20px;
       border-radius: 30px;
       display: flex;
@@ -226,26 +259,13 @@
       gap: 8px;
     }
 
-    .banner-title .red-icon {
+    .banner-title .red-shield {
       display: inline-block;
-      width: 24px;
-      height: 24px;
-      background: #e53e3e;
-      border-radius: 6px;
-      position: relative;
-      box-shadow: 0 0 12px rgba(229, 62, 62, 0.4);
-    }
-    .banner-title .red-icon::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 10px;
-      height: 10px;
-      background: white;
-      border-radius: 2px;
-      opacity: 0.7;
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #e53e3e, #b71c1c);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      box-shadow: 0 0 16px rgba(229, 62, 62, 0.4);
     }
 
     .banner-sub {
@@ -267,33 +287,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 700;
       color: #e53e3e;
       border: 1px solid #4d618f;
     }
 
-    /* ===== РАЗДЕЛ "ИГРЫ" ===== */
-    .section-label {
-      padding: 0 16px 6px 16px;
-      font-size: 18px;
-      font-weight: 700;
-      color: #c7d7ff;
-      letter-spacing: -0.2px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    /* ===== КОНТЕНТ ===== */
+    .content-area {
+      padding: 0 16px 16px;
+      display: block;
     }
 
-    .section-label .red-line {
-      flex: 1;
-      height: 2px;
-      background: linear-gradient(90deg, #e53e3e, transparent);
-      border-radius: 2px;
+    .section-hidden {
+      display: none;
     }
 
+    /* ===== МАТЧИ (ИГРЫ) ===== */
     .matches-section {
-      padding: 0 16px 16px 16px;
       display: flex;
       flex-direction: column;
       gap: 18px;
@@ -406,7 +417,6 @@
     /* ===== КУПОН ===== */
     .cupon-section {
       background: #0d1422;
-      margin: 8px 16px 0 16px;
       padding: 18px 18px 22px;
       border-radius: 32px;
       border: 1px solid #253051;
@@ -432,11 +442,11 @@
 
     .cupon-header h3 .red-cube {
       display: inline-block;
-      width: 18px;
-      height: 18px;
-      background: #e53e3e;
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, #e53e3e, #b71c1c);
       border-radius: 4px;
-      box-shadow: 0 0 10px rgba(229, 62, 62, 0.5);
+      box-shadow: 0 0 12px rgba(229, 62, 62, 0.4);
     }
 
     .cupon-actions {
@@ -554,6 +564,143 @@
       display: none;
     }
 
+    /* ===== ПРОФИЛЬ ===== */
+    .profile-content {
+      padding: 10px 0;
+    }
+
+    .profile-card {
+      background: #111926;
+      border-radius: 28px;
+      padding: 24px 22px;
+      border: 1px solid #26314b;
+      box-shadow: 0 6px 0 #080c16;
+    }
+
+    .profile-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #1f2840;
+    }
+
+    .profile-row:last-child {
+      border-bottom: none;
+    }
+
+    .profile-label {
+      color: #8b9fcb;
+      font-weight: 500;
+    }
+
+    .profile-value {
+      color: #e8efff;
+      font-weight: 600;
+    }
+
+    .profile-value .currency-red {
+      width: 20px;
+      height: 20px;
+      font-size: 8px;
+      display: inline-flex;
+      margin-right: 4px;
+    }
+
+    /* ===== НИЖНЯЯ НАВИГАЦИЯ ===== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0c101c;
+      border-top: 1px solid #1f2840;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 10px 12px;
+      max-width: 820px;
+      margin: 0 auto;
+      border-radius: 30px 30px 0 0;
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.7);
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      color: #5e7196;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 4px 16px;
+      transition: 0.15s;
+      position: relative;
+      min-width: 60px;
+    }
+
+    .nav-item .nav-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      transition: 0.15s;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .nav-item.active .nav-icon {
+      background: #e53e3e;
+      color: white;
+      box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+    }
+
+    .nav-item.active {
+      color: #ffffff;
+    }
+
+    .nav-item:not(.active) .nav-icon {
+      color: #5e7196;
+      background: transparent;
+    }
+
+    .nav-item .nav-label {
+      font-size: 10px;
+      letter-spacing: 0.3px;
+      opacity: 0.8;
+    }
+
+    .nav-item.active .nav-label {
+      opacity: 1;
+    }
+
+    /* иконки навигации (CSS) */
+    .icon-games {
+      position: relative;
+    }
+    .icon-games::before {
+      content: '⚔';
+      font-size: 20px;
+    }
+    .icon-coupon::before {
+      content: '📋';
+      font-size: 20px;
+    }
+    .icon-profile::before {
+      content: '👤';
+      font-size: 20px;
+    }
+
+    /* активные иконки (красные) */
+    .nav-item.active .icon-games::before { color: white; }
+    .nav-item.active .icon-coupon::before { color: white; }
+    .nav-item.active .icon-profile::before { color: white; }
+
     .footer-small {
       margin-top: 28px;
       text-align: center;
@@ -572,8 +719,14 @@
       .odds-btn { padding: 8px 14px; font-size: 14px; }
       .team { font-size: 14px; }
       .cupon-header h3 { font-size: 17px; }
-      .menu-title { font-size: 17px; }
-      .menu-sub { font-size: 13px; }
+      .nav-item { padding: 4px 10px; min-width: 50px; }
+    }
+
+    @media (max-width: 420px) {
+      .site-logo { width: 36px; height: 36px; }
+      .site-logo::before { width: 18px; height: 18px; }
+      .logo-text { font-size: 18px; }
+      .balance-block { padding: 4px 12px; }
     }
   </style>
 </head>
@@ -583,31 +736,30 @@
   <!-- ХЕДЕР -->
   <div class="header">
     <div class="logo-area">
-      <div class="logo-icon">SR</div>
+      <div class="site-logo"></div>
       <div class="logo-text">SkyRed</div>
     </div>
     <div class="header-right">
       <div class="balance-block">
         <span class="balance-amount" id="balanceDisplay">20 000</span>
         <span class="balance-currency">
-          <span class="currency-red">R</span> Red
+          <span class="currency-red"><span>R</span></span> Red
         </span>
       </div>
       <div class="user-icon">👤</div>
     </div>
   </div>
 
-  <!-- ГЛАВНОЕ МЕНЮ (информация о сайте) -->
-  <div class="main-menu">
-    <div class="menu-title">
+  <!-- ИНФО-БЛОК -->
+  <div class="info-block">
+    <div class="info-title">
       <span class="red-dot"></span> SkyRed — ставки на Standoff 2
     </div>
-    <div class="menu-sub">
-      <span>Ставки на киберспорт Standoff 2</span>
-      <span class="red-currency-badge">
-        <span class="currency-red">R</span> Валюта Red
+    <div class="info-sub">
+      <span>Киберспорт • Реальные коэффициенты</span>
+      <span class="red-badge">
+        <span class="currency-red"><span>R</span></span> Валюта Red
       </span>
-      <span>• Реальные коэффициенты</span>
     </div>
   </div>
 
@@ -615,91 +767,162 @@
   <div class="cyber-banner">
     <div class="banner-left">
       <div class="banner-title">
-        <span class="red-icon"></span> Standoff 2
+        <span class="red-shield"></span> Standoff 2
       </div>
-      <div class="banner-sub">Киберспорт • Турнир S2 Major</div>
+      <div class="banner-sub">Турнир S2 Major • Live</div>
     </div>
     <div class="banner-icon">S2</div>
   </div>
 
-  <!-- РАЗДЕЛ "ИГРЫ" -->
-  <div class="section-label">
-    <span>Игры</span>
-    <span class="red-line"></span>
+  <!-- КОНТЕНТ -->
+  <div class="content-area">
+    <!-- Раздел ИГРЫ -->
+    <div id="gamesSection" class="matches-section">
+      <div class="match-card" data-match="1">
+        <div class="match-teams">
+          <div class="team"><span class="team-logo">VP</span> Virtus.pro</div>
+          <div class="vs">VS</div>
+          <div class="team"><span class="team-logo">NAVI</span> NAVI</div>
+        </div>
+        <div class="match-meta">S2 Major • карта 3 • BO3</div>
+        <div class="odds-row">
+          <div class="odds-btn" data-match="1" data-outcome="team1" data-odds="1.85">VP <span>1.85</span></div>
+          <div class="odds-btn" data-match="1" data-outcome="team2" data-odds="2.10">NAVI <span>2.10</span></div>
+        </div>
+      </div>
+      <div class="match-card" data-match="2">
+        <div class="match-teams">
+          <div class="team"><span class="team-logo">G2</span> G2 Esports</div>
+          <div class="vs">VS</div>
+          <div class="team"><span class="team-logo">FZ</span> Faze Clan</div>
+        </div>
+        <div class="match-meta">S2 Challenger • карта 2 • BO5</div>
+        <div class="odds-row">
+          <div class="odds-btn" data-match="2" data-outcome="team1" data-odds="1.72">G2 <span>1.72</span></div>
+          <div class="odds-btn" data-match="2" data-outcome="team2" data-odds="2.25">Faze <span>2.25</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Раздел КУПОН -->
+    <div id="couponSection" class="section-hidden">
+      <div class="cupon-section">
+        <div class="cupon-header">
+          <h3>
+            <span class="red-cube"></span> Купон
+          </h3>
+          <div class="cupon-actions">
+            <button class="reset-btn" id="clearCouponBtn">Очистить</button>
+          </div>
+        </div>
+        <div class="cupon-items" id="cuponItems">
+          <div style="color: #5b6e96; font-size: 14px; padding: 8px 0;">Выберите коэффициент</div>
+        </div>
+        <div class="cupon-total">
+          <span>Общий коэффициент</span>
+          <span id="totalOddsDisplay">—</span>
+        </div>
+        <button class="place-bet-btn" id="placeBetBtn">Сделать ставку</button>
+        <div id="messageArea" class="toast"></div>
+      </div>
+    </div>
+
+    <!-- Раздел ПРОФИЛЬ -->
+    <div id="profileSection" class="section-hidden">
+      <div class="profile-content">
+        <div class="profile-card">
+          <div class="profile-row">
+            <span class="profile-label">Имя пользователя</span>
+            <span class="profile-value">SkyPlayer</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-label">Баланс</span>
+            <span class="profile-value">
+              <span class="currency-red"><span>R</span></span> <span id="profileBalance">20 000</span> Red
+            </span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-label">Статус</span>
+            <span class="profile-value" style="color: #b5e45a;">Активен</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-label">Всего ставок</span>
+            <span class="profile-value">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- МАТЧИ -->
-  <div class="matches-section" id="matchesContainer">
-    <!-- матч 1 -->
-    <div class="match-card" data-match="1">
-      <div class="match-teams">
-        <div class="team"><span class="team-logo">VP</span> Virtus.pro</div>
-        <div class="vs">VS</div>
-        <div class="team"><span class="team-logo">NAVI</span> NAVI</div>
-      </div>
-      <div class="match-meta">S2 Major • карта 3 • BO3</div>
-      <div class="odds-row">
-        <div class="odds-btn" data-match="1" data-outcome="team1" data-odds="1.85">VP <span>1.85</span></div>
-        <div class="odds-btn" data-match="1" data-outcome="team2" data-odds="2.10">NAVI <span>2.10</span></div>
-      </div>
-    </div>
-    <!-- матч 2 -->
-    <div class="match-card" data-match="2">
-      <div class="match-teams">
-        <div class="team"><span class="team-logo">G2</span> G2 Esports</div>
-        <div class="vs">VS</div>
-        <div class="team"><span class="team-logo">FZ</span> Faze Clan</div>
-      </div>
-      <div class="match-meta">S2 Challenger • карта 2 • BO5</div>
-      <div class="odds-row">
-        <div class="odds-btn" data-match="2" data-outcome="team1" data-odds="1.72">G2 <span>1.72</span></div>
-        <div class="odds-btn" data-match="2" data-outcome="team2" data-odds="2.25">Faze <span>2.25</span></div>
-      </div>
-    </div>
-  </div>
+  <div class="footer-small">SkyRed • 18+ • Ставки на киберспорт Standoff 2</div>
+</div>
 
-  <!-- КУПОН -->
-  <div class="cupon-section">
-    <div class="cupon-header">
-      <h3>
-        <span class="red-cube"></span> Купон
-      </h3>
-      <div class="cupon-actions">
-        <button class="reset-btn" id="clearCouponBtn">Очистить</button>
-      </div>
-    </div>
-    <div class="cupon-items" id="cuponItems">
-      <div style="color: #5b6e96; font-size: 14px; padding: 8px 0;">Выберите коэффициент</div>
-    </div>
-    <div class="cupon-total">
-      <span>Общий коэффициент</span>
-      <span id="totalOddsDisplay">—</span>
-    </div>
-    <button class="place-bet-btn" id="placeBetBtn">Сделать ставку</button>
-    <div id="messageArea" class="toast"></div>
-  </div>
-
-  <div class="footer-small">SkyRed • 18+ • Ставки на киберспорт Standoff 2 • Валюта Red</div>
+<!-- НИЖНЯЯ НАВИГАЦИЯ -->
+<div class="bottom-nav" id="bottomNav">
+  <button class="nav-item active" data-section="games">
+    <span class="nav-icon icon-games"></span>
+    <span class="nav-label">Игры</span>
+  </button>
+  <button class="nav-item" data-section="coupon">
+    <span class="nav-icon icon-coupon"></span>
+    <span class="nav-label">Купон</span>
+  </button>
+  <button class="nav-item" data-section="profile">
+    <span class="nav-icon icon-profile"></span>
+    <span class="nav-label">Профиль</span>
+  </button>
 </div>
 
 <script>
   (function() {
-    // ===== ПОЛНОЦЕННАЯ СИСТЕМА СТАВОК =====
+    // ===== СОСТОЯНИЕ =====
     let balance = 20000;
     const INITIAL_BALANCE = 20000;
     let selectedBets = [];
 
     const balanceEl = document.getElementById('balanceDisplay');
+    const profileBalanceEl = document.getElementById('profileBalance');
     const cuponItemsEl = document.getElementById('cuponItems');
     const totalOddsEl = document.getElementById('totalOddsDisplay');
     const placeBetBtn = document.getElementById('placeBetBtn');
     const clearBtn = document.getElementById('clearCouponBtn');
     const messageEl = document.getElementById('messageArea');
 
-    function updateBalanceUI() {
-      balanceEl.textContent = balance.toLocaleString('ru-RU');
+    // секции
+    const gamesSection = document.getElementById('gamesSection');
+    const couponSection = document.getElementById('couponSection');
+    const profileSection = document.getElementById('profileSection');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    // ===== НАВИГАЦИЯ =====
+    function switchSection(section) {
+      gamesSection.classList.add('section-hidden');
+      couponSection.classList.add('section-hidden');
+      profileSection.classList.add('section-hidden');
+
+      if (section === 'games') gamesSection.classList.remove('section-hidden');
+      else if (section === 'coupon') couponSection.classList.remove('section-hidden');
+      else if (section === 'profile') profileSection.classList.remove('section-hidden');
+
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.section === section) item.classList.add('active');
+      });
     }
 
+    navItems.forEach(item => {
+      item.addEventListener('click', function() {
+        switchSection(this.dataset.section);
+      });
+    });
+
+    // ===== БАЛАНС =====
+    function updateBalanceUI() {
+      balanceEl.textContent = balance.toLocaleString('ru-RU');
+      if (profileBalanceEl) profileBalanceEl.textContent = balance.toLocaleString('ru-RU');
+    }
+
+    // ===== КУПОН =====
     function renderCoupon() {
       if (selectedBets.length === 0) {
         cuponItemsEl.innerHTML = `<div style="color: #5b6e96; font-size: 14px; padding: 8px 0;">Выберите коэффициент</div>`;
@@ -758,6 +981,7 @@
       return true;
     }
 
+    // ===== ОБРАБОТЧИКИ =====
     document.querySelectorAll('.odds-btn').forEach(btn => {
       btn.addEventListener('click', function(e) {
         const matchId = this.dataset.match;
@@ -766,6 +990,8 @@
         const teamSpan = this.textContent.trim().split(' ')[0];
         const label = `${teamSpan} (${odds.toFixed(2)})`;
         addBet(matchId, outcome, odds, label);
+        // переключаем на купон
+        switchSection('coupon');
       });
     });
 
@@ -797,21 +1023,23 @@
       balance += winAmount;
       updateBalanceUI();
 
-      const betDetails = selectedBets.map(b => b.label).join(' + ');
       showMessage(`Ставка принята! Выигрыш: ${winAmount} Red (коэф. ${totalOdds.toFixed(2)})`, '#b5e45a');
 
       selectedBets = [];
       renderCoupon();
     });
 
+    // ===== СБРОС БАЛАНСА =====
     balanceEl.addEventListener('dblclick', function() {
       balance = INITIAL_BALANCE;
       updateBalanceUI();
       showMessage('Баланс сброшен до 20 000 Red', '#b5e45a');
     });
 
+    // ===== ИНИЦИАЛИЗАЦИЯ =====
     updateBalanceUI();
     renderCoupon();
+    switchSection('games');
   })();
 </script>
 </body>

@@ -51,8 +51,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(12px);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(16px);
             z-index: 9998;
             display: none;
             align-items: center;
@@ -62,51 +62,70 @@
         .modal-overlay.active { display: flex; }
         .modal-box {
             background: #14141f;
-            border: 1px solid #2a2a4a;
-            border-radius: 24px;
+            border: 1px solid rgba(255,215,0,0.15);
+            border-radius: 28px;
             padding: 32px 28px;
-            max-width: 420px;
+            max-width: 440px;
             width: 100%;
-            animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
         }
         @keyframes modalIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from { transform: scale(0.85) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
         }
         .modal-box .modal-title {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 800;
             text-align: center;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         .modal-box .modal-title .highlight { color: #ffd700; }
         .modal-box .modal-sub {
             text-align: center;
             color: #8888aa;
             font-size: 13px;
-            margin-bottom: 20px;
+            margin-bottom: 6px;
+        }
+        .modal-box .modal-timer {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffd700;
+            margin: 8px 0 16px;
+            font-variant-numeric: tabular-nums;
+        }
+        .modal-box .modal-timer.warning { color: #ff6b6b; animation: pulseTimer 0.5s ease-in-out infinite; }
+        @keyframes pulseTimer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
         .modal-players {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 20px;
             max-height: 300px;
             overflow-y: auto;
+            padding-right: 4px;
         }
+        .modal-players::-webkit-scrollbar { width: 3px; }
+        .modal-players::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
+        .modal-players::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 10px; }
         .modal-player {
             display: flex;
             align-items: center;
             gap: 12px;
             background: #1a1a2e;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 10px 14px;
             border: 1px solid #2a2a4a;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
         }
         .modal-player.confirmed {
             border-color: #51cf66;
-            background: rgba(81,207,102,0.05);
+            background: rgba(81,207,102,0.08);
+            box-shadow: 0 0 20px rgba(81,207,102,0.05);
         }
         .modal-player .avatar {
             width: 40px;
@@ -125,13 +144,14 @@
         .modal-player .info .name { font-weight: 600; font-size: 14px; }
         .modal-player .info .status { font-size: 12px; color: #666; }
         .modal-player .status-icon {
-            font-size: 20px;
+            font-size: 22px;
+            transition: all 0.3s ease;
         }
         .modal-player .status-icon.confirmed { color: #51cf66; }
-        .modal-player .status-icon.pending { color: #ffd700; animation: pulse 1.5s ease-in-out infinite; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        .modal-player .status-icon.pending { color: #ffd700; animation: pulseIcon 1s ease-in-out infinite; }
+        @keyframes pulseIcon {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
         }
         .modal-actions {
             display: flex;
@@ -139,12 +159,12 @@
         }
         .modal-actions button {
             flex: 1;
-            padding: 12px;
+            padding: 14px;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-family: inherit;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -152,8 +172,8 @@
             background: linear-gradient(135deg, #51cf66, #2b8a3e);
             color: #fff;
         }
-        .modal-actions .btn-confirm:hover { transform: scale(1.02); }
-        .modal-actions .btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .modal-actions .btn-confirm:hover:not(:disabled) { transform: scale(1.02); }
+        .modal-actions .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         .modal-actions .btn-cancel-modal {
             background: #2a2a4a;
             color: #fff;
@@ -469,14 +489,6 @@
         .btn-queue:hover { transform: scale(1.02); }
         .btn-queue.cancel { background: #ff6b6b; color: #fff; }
         .btn-queue:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .btn-queue.confirm {
-            background: linear-gradient(135deg, #51cf66, #2b8a3e);
-            animation: pulseBtn 1.5s ease-in-out infinite;
-        }
-        @keyframes pulseBtn {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
 
         .party-block {
             background: #14141f;
@@ -530,7 +542,6 @@
         }
         .party-member .remove:hover { color: #ff4444; }
         .party-empty { color: #555; font-size: 13px; }
-
         .party-feature {
             font-size: 11px;
             color: #555;
@@ -1328,6 +1339,7 @@
     <div class="modal-box">
         <div class="modal-title">🎮 Матч <span class="highlight">найден!</span></div>
         <div class="modal-sub">Подтвердите участие, чтобы начать игру</div>
+        <div class="modal-timer" id="modalTimer">25</div>
         <div class="modal-players" id="modalPlayers"></div>
         <div class="modal-actions">
             <button class="btn-cancel-modal" onclick="cancelMatchConfirm()">Отмена</button>
@@ -1438,7 +1450,7 @@
             </div>
 
             <div class="search-main-block" id="searchMainBlock">
-                <div class="search-status" id="searchStatus">ИЩЕМ МАТЧ</div>
+                <div class="search-status" id="searchStatus">Поиск</div>
                 <div class="search-mode" id="searchMode">3×3</div>
                 <div class="search-sub-mode" id="searchSubMode">рейтинг · 12</div>
                 
@@ -1621,7 +1633,7 @@
             <div class="friends-empty">
                 <i class="fas fa-user-friends"></i>
                 <p>У вас пока нет друзей</p>
-                <span style="font-size:12px;color:#666;">Ищите игроков по никнейму</span>
+                <span style="font-size:12px;color:#666;">Ищите игроков по никнейму и отправляйте заявки</span>
             </div>
         </div>
     </div>
@@ -1679,6 +1691,7 @@
     let partyFriends = [];
     let friendsList = [];
     let friendRequests = [];
+    let myFriends = [];
     let isSearching = false;
     let searchTimerInterval = null;
     let searchSeconds = 0;
@@ -1689,6 +1702,8 @@
     let waitingConfirm = false;
     let confirmedPlayers = [];
     let matchPlayers = [];
+    let confirmTimer = null;
+    let confirmTimeLeft = 25;
 
     let draftState = {
         gameNumber: 1,
@@ -2009,7 +2024,7 @@
 
         document.getElementById('queueBtn').style.display = 'none';
         document.getElementById('cancelBtn').style.display = 'inline-flex';
-        document.getElementById('searchStatus').textContent = 'ИЩЕМ МАТЧ';
+        document.getElementById('searchStatus').textContent = 'Поиск';
         document.getElementById('searchCurrentPlayers').textContent = queue.length;
         document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
 
@@ -2033,6 +2048,7 @@
         if (currentPlayers < maxPlayers && isSearching) {
             setTimeout(() => {
                 if (!isSearching) return;
+                // Боты автоматически подтверждают участие
                 const botName = 'Bot' + (botCounter + 1);
                 botCounter++;
                 queue.push({ id: 'bot_' + Date.now(), username: botName });
@@ -2042,6 +2058,12 @@
                 if (queue.length >= 6) {
                     clearInterval(searchTimerInterval);
                     isSearching = false;
+                    // Боты автоматически подтверждают
+                    matchPlayers = queue.map(p => ({
+                        ...p,
+                        confirmed: p.id.startsWith('bot_') ? true : false
+                    }));
+                    confirmedPlayers = queue.filter(p => p.id.startsWith('bot_')).map(p => p.id);
                     showConfirmModal();
                 } else {
                     simulateBotSearch();
@@ -2054,17 +2076,21 @@
         waitingConfirm = true;
         matchPlayers = queue.map(p => ({
             ...p,
-            confirmed: false
+            confirmed: p.id.startsWith('bot_') ? true : false
         }));
-        confirmedPlayers = [];
+        confirmedPlayers = queue.filter(p => p.id.startsWith('bot_')).map(p => p.id);
 
         const modal = document.getElementById('confirmModal');
         const container = document.getElementById('modalPlayers');
         const confirmBtn = document.getElementById('confirmMatchBtn');
+        const timerEl = document.getElementById('modalTimer');
         
         modal.classList.add('active');
         confirmBtn.disabled = true;
         confirmBtn.textContent = '⏳ Ожидание всех...';
+        confirmTimeLeft = 25;
+        timerEl.textContent = confirmTimeLeft;
+        timerEl.className = 'modal-timer';
         
         renderModalPlayers();
 
@@ -2072,17 +2098,58 @@
         setTimeout(() => {
             confirmPlayer(currentUser.id);
         }, 500);
+
+        // Запускаем таймер
+        if (confirmTimer) clearInterval(confirmTimer);
+        confirmTimer = setInterval(() => {
+            confirmTimeLeft--;
+            timerEl.textContent = confirmTimeLeft;
+            if (confirmTimeLeft <= 5) {
+                timerEl.className = 'modal-timer warning';
+            }
+            if (confirmTimeLeft <= 0) {
+                clearInterval(confirmTimer);
+                handleConfirmTimeout();
+            }
+        }, 1000);
+    }
+
+    function handleConfirmTimeout() {
+        // Находим неподтвердивших игроков
+        const notConfirmed = matchPlayers.filter(p => !confirmedPlayers.includes(p.id) && !p.id.startsWith('bot_'));
+        
+        if (notConfirmed.length > 0) {
+            // Удаляем их из очереди
+            queue = queue.filter(p => confirmedPlayers.includes(p.id) || p.id.startsWith('bot_'));
+            // Если осталось меньше 6 - продолжаем поиск
+            if (queue.length < 6) {
+                document.getElementById('confirmModal').classList.remove('active');
+                waitingConfirm = false;
+                showToast('info', 'Поиск продолжается', `${notConfirmed.length} игроков не подтвердили участие`);
+                // Добавляем новых ботов
+                isSearching = true;
+                document.getElementById('searchCurrentPlayers').textContent = queue.length;
+                simulateBotSearch();
+                return;
+            }
+        }
+        
+        // Если все подтвердили или остались только боты
+        document.getElementById('confirmModal').classList.remove('active');
+        waitingConfirm = false;
+        startMatch();
     }
 
     function renderModalPlayers() {
         const container = document.getElementById('modalPlayers');
         container.innerHTML = matchPlayers.map(p => {
             const isConfirmed = confirmedPlayers.includes(p.id);
+            const isBot = p.id.startsWith('bot_');
             return `
                 <div class="modal-player ${isConfirmed ? 'confirmed' : ''}">
                     <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
                     <div class="info">
-                        <div class="name">${p.username} ${p.id.startsWith('bot_') ? '🤖' : ''}</div>
+                        <div class="name">${p.username} ${isBot ? '🤖' : ''}</div>
                         <div class="status">${isConfirmed ? '✅ Готов' : '⏳ Ожидание...'}</div>
                     </div>
                     <div class="status-icon ${isConfirmed ? 'confirmed' : 'pending'}">
@@ -2101,8 +2168,9 @@
             confirmBtn.textContent = '✅ Все готовы! Начать матч';
             confirmBtn.onclick = confirmMatch;
         } else {
+            const pending = matchPlayers.filter(p => !confirmedPlayers.includes(p.id) && !p.id.startsWith('bot_'));
             confirmBtn.disabled = true;
-            confirmBtn.textContent = `⏳ Ожидание ${matchPlayers.filter(p => !confirmedPlayers.includes(p.id)).length} игроков...`;
+            confirmBtn.textContent = `⏳ Ожидание ${pending.length} игроков...`;
         }
     }
 
@@ -2110,6 +2178,14 @@
         if (!confirmedPlayers.includes(playerId)) {
             confirmedPlayers.push(playerId);
             renderModalPlayers();
+            // Проверяем, все ли подтвердили
+            const allConfirmed = matchPlayers.every(p => confirmedPlayers.includes(p.id));
+            if (allConfirmed) {
+                // Все подтвердили - можно начинать
+                document.getElementById('confirmMatchBtn').disabled = false;
+                document.getElementById('confirmMatchBtn').textContent = '✅ Все готовы! Начать матч';
+                document.getElementById('confirmMatchBtn').onclick = confirmMatch;
+            }
         }
     }
 
@@ -2118,6 +2194,7 @@
         if (!allConfirmed) return;
         
         waitingConfirm = false;
+        clearInterval(confirmTimer);
         document.getElementById('confirmModal').classList.remove('active');
         document.getElementById('searchStatus').textContent = 'МАТЧ НАЧИНАЕТСЯ...';
         startMatch();
@@ -2125,6 +2202,7 @@
 
     function cancelMatchConfirm() {
         waitingConfirm = false;
+        clearInterval(confirmTimer);
         document.getElementById('confirmModal').classList.remove('active');
         document.getElementById('queueBtn').style.display = 'block';
         document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
@@ -2133,7 +2211,7 @@
         document.getElementById('cancelBtn').style.display = 'none';
         document.getElementById('searchCurrentPlayers').textContent = '0';
         document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
-        document.getElementById('searchStatus').textContent = 'ИЩЕМ МАТЧ';
+        document.getElementById('searchStatus').textContent = 'Поиск';
         showToast('info', 'Поиск отменён', 'Вы отменили поиск');
     }
 
@@ -2142,6 +2220,7 @@
         isSearching = false;
         waitingConfirm = false;
         clearInterval(searchTimerInterval);
+        clearInterval(confirmTimer);
         queue = [];
         document.getElementById('confirmModal').classList.remove('active');
         document.getElementById('queueBtn').style.display = 'block';
@@ -2151,7 +2230,7 @@
         document.getElementById('cancelBtn').style.display = 'none';
         document.getElementById('searchCurrentPlayers').textContent = '0';
         document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
-        document.getElementById('searchStatus').textContent = 'ИЩЕМ МАТЧ';
+        document.getElementById('searchStatus').textContent = 'Поиск';
         showToast('info', 'Поиск отменён', 'Вы отменили поиск');
     }
 
@@ -2641,7 +2720,9 @@
             friendsList = data || [];
             
             // Загружаем заявки (для демонстрации)
-            friendRequests = friendsList.slice(0, 2).map(f => f.id);
+            // В реальном приложении заявки хранятся в отдельной таблице
+            friendRequests = [];
+            myFriends = [];
             
             renderFriends();
         } catch (e) {
@@ -2653,15 +2734,17 @@
         const container = document.getElementById('friendsListContainer');
         const count = document.getElementById('friendsCount');
         
-        let filtered = friendsList;
+        let filtered = [];
         let isRequests = false;
         
-        if (friendsTab === 'requests') {
+        if (friendsTab === 'friends') {
+            filtered = myFriends;
+        } else if (friendsTab === 'requests') {
             isRequests = true;
-            filtered = friendsList.filter(f => friendRequests.includes(f.id));
+            filtered = friendRequests.map(id => friendsList.find(f => f.id === id)).filter(Boolean);
         }
         
-        const friendsCount = friendsList.length;
+        const friendsCount = myFriends.length;
         count.textContent = friendsCount + ' друзей';
 
         if (filtered.length === 0) {
@@ -2669,29 +2752,30 @@
                 <div class="friends-empty">
                     <i class="fas fa-user-friends"></i>
                     <p>${isRequests ? 'Нет заявок в друзья' : 'У вас пока нет друзей'}</p>
-                    <span style="font-size:12px;color:#666;">Ищите игроков по никнейму</span>
+                    <span style="font-size:12px;color:#666;">Ищите игроков по никнейму и отправляйте заявки</span>
                 </div>
             `;
             return;
         }
 
         container.innerHTML = filtered.map(f => {
-            const isFriend = true;
+            const isFriend = myFriends.some(m => m.id === f.id);
             const isRequest = friendRequests.includes(f.id);
             const inParty = partyFriends.some(p => p.id === f.id);
             
-            let statusClass = 'friend';
-            let statusText = 'Друг';
+            let statusClass = 'none';
+            let statusText = 'Не в друзьях';
             let actions = '';
             
             if (isRequest && !isFriend) {
                 statusClass = 'request';
-                statusText = 'Заявка';
+                statusText = 'Заявка отправлена';
                 actions = `
-                    <button class="btn-accept" onclick="acceptFriend('${f.id}')"><i class="fas fa-check"></i></button>
                     <button class="btn-decline" onclick="declineFriend('${f.id}')"><i class="fas fa-times"></i></button>
                 `;
             } else if (isFriend) {
+                statusClass = 'friend';
+                statusText = 'Друг';
                 if (inParty) {
                     actions = `
                         <button class="btn-remove" onclick="removeFromParty('${f.id}')"><i class="fas fa-user-minus"></i></button>
@@ -2703,6 +2787,10 @@
                         <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
                     `;
                 }
+            } else {
+                actions = `
+                    <button class="btn-add" onclick="sendFriendRequest('${f.id}')"><i class="fas fa-user-plus"></i> Добавить</button>
+                `;
             }
             
             return `
@@ -2741,7 +2829,7 @@
                 <div class="friends-empty">
                     <i class="fas fa-search"></i>
                     <p>Никто не найден</p>
-                    <button class="btn-add" style="margin-top:12px;padding:8px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#ffd700,#ff6b00);color:#0b0b0f;font-weight:700;cursor:pointer;" onclick="sendFriendRequest('${query}')">
+                    <button style="margin-top:12px;padding:8px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#ffd700,#ff6b00);color:#0b0b0f;font-weight:700;cursor:pointer;" onclick="sendFriendRequestByUsername('${query}')">
                         <i class="fas fa-user-plus"></i> Отправить заявку
                     </button>
                 </div>
@@ -2750,8 +2838,40 @@
         }
 
         container.innerHTML = filtered.map(f => {
-            const isFriend = true;
+            const isFriend = myFriends.some(m => m.id === f.id);
+            const isRequest = friendRequests.includes(f.id);
             const inParty = partyFriends.some(p => p.id === f.id);
+            
+            let statusClass = 'none';
+            let statusText = 'Не в друзьях';
+            let actions = '';
+            
+            if (isRequest && !isFriend) {
+                statusClass = 'request';
+                statusText = 'Заявка отправлена';
+                actions = `
+                    <button class="btn-decline" onclick="declineFriend('${f.id}')"><i class="fas fa-times"></i></button>
+                `;
+            } else if (isFriend) {
+                statusClass = 'friend';
+                statusText = 'Друг';
+                if (inParty) {
+                    actions = `
+                        <button class="btn-remove" onclick="removeFromParty('${f.id}')"><i class="fas fa-user-minus"></i></button>
+                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
+                    `;
+                } else {
+                    actions = `
+                        <button class="btn-invite" onclick="inviteToParty('${f.id}')"><i class="fas fa-user-plus"></i> Пригласить</button>
+                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
+                    `;
+                }
+            } else {
+                actions = `
+                    <button class="btn-add" onclick="sendFriendRequest('${f.id}')"><i class="fas fa-user-plus"></i> Добавить</button>
+                `;
+            }
+            
             return `
                 <div class="friend-item">
                     <div class="avatar">${f.username.charAt(0).toUpperCase()}</div>
@@ -2759,49 +2879,55 @@
                         <div class="name">${f.username} ${f.isadmin ? '👑' : ''}</div>
                         <div class="status">ELO: ${f.elo || 1000}</div>
                     </div>
-                    <span class="status-badge friend">Друг</span>
-                    <div class="friend-actions">
-                        ${inParty ? 
-                            `<button class="btn-remove" onclick="removeFromParty('${f.id}')"><i class="fas fa-user-minus"></i></button>` :
-                            `<button class="btn-invite" onclick="inviteToParty('${f.id}')"><i class="fas fa-user-plus"></i> Пригласить</button>`
-                        }
-                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
-                    </div>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                    <div class="friend-actions">${actions}</div>
                 </div>
             `;
         }).join('');
     }
 
-    function sendFriendRequest(username) {
+    function sendFriendRequest(userId) {
+        if (friendRequests.includes(userId)) {
+            return showToast('info', 'Уже отправлено', 'Заявка уже была отправлена');
+        }
+        if (myFriends.some(f => f.id === userId)) {
+            return showToast('info', 'Уже друг', 'Этот пользователь уже в друзьях');
+        }
+        friendRequests.push(userId);
+        showToast('success', 'Заявка отправлена', 'Пользователь получит уведомление');
+        renderFriends();
+    }
+
+    function sendFriendRequestByUsername(username) {
         const user = friendsList.find(f => f.username.toLowerCase() === username.toLowerCase());
         if (user) {
-            if (!friendRequests.includes(user.id)) {
-                friendRequests.push(user.id);
-                showToast('success', 'Заявка отправлена', 'Пользователь получит уведомление');
-                renderFriends();
-            } else {
-                showToast('info', 'Уже отправлено', 'Заявка уже была отправлена');
-            }
+            sendFriendRequest(user.id);
         } else {
             showToast('error', 'Ошибка', 'Пользователь не найден');
         }
     }
 
     function acceptFriend(id) {
-        friendRequests = friendRequests.filter(f => f !== id);
-        showToast('success', 'Друг добавлен', 'Теперь вы друзья!');
-        renderFriends();
+        const user = friendsList.find(f => f.id === id);
+        if (user) {
+            myFriends.push(user);
+            friendRequests = friendRequests.filter(f => f !== id);
+            renderFriends();
+            showToast('success', 'Друг добавлен', 'Теперь вы друзья!');
+        }
     }
 
     function declineFriend(id) {
         friendRequests = friendRequests.filter(f => f !== id);
-        showToast('info', 'Отклонено', 'Заявка отклонена');
         renderFriends();
+        showToast('info', 'Отклонено', 'Заявка отклонена');
     }
 
     function inviteToParty(id) {
-        const friend = friendsList.find(f => f.id === id);
-        if (!friend) return;
+        const friend = myFriends.find(f => f.id === id);
+        if (!friend) {
+            return showToast('error', 'Ошибка', 'Этот пользователь не в друзьях');
+        }
         
         if (partyFriends.some(p => p.id === id)) {
             return showToast('info', 'Уже в пати', 'Этот игрок уже в вашей пати');
@@ -2809,15 +2935,6 @@
         
         if (partyFriends.length >= 2) {
             return showToast('error', 'Ошибка', 'Максимум 2 человека в пати');
-        }
-        
-        // Проверяем, есть ли заявка
-        if (!friendRequests.includes(id)) {
-            // Отправляем заявку автоматически
-            friendRequests.push(id);
-            showToast('info', 'Заявка отправлена', 'Сначала добавьте в друзья');
-            renderFriends();
-            return;
         }
         
         partyFriends.push({ id: friend.id, username: friend.username });
@@ -2835,7 +2952,7 @@
 
     function removeFriend(id) {
         if (!confirm('Удалить из друзей?')) return;
-        friendsList = friendsList.filter(f => f.id !== id);
+        myFriends = myFriends.filter(f => f.id !== id);
         renderFriends();
         showToast('info', 'Удалён', 'Пользователь удалён из друзей');
     }

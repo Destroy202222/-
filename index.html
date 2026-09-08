@@ -44,6 +44,123 @@
         .toast .ttl.info { color: #4dabf7; }
         .toast .txt { font-size: 13px; color: #b0b0c0; }
 
+        /* ===== МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #14141f;
+            border: 1px solid #2a2a4a;
+            border-radius: 24px;
+            padding: 32px 28px;
+            max-width: 420px;
+            width: 100%;
+            animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-box .modal-title {
+            font-size: 20px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .modal-box .modal-title .highlight { color: #ffd700; }
+        .modal-box .modal-sub {
+            text-align: center;
+            color: #8888aa;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .modal-players {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .modal-player {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: 1px solid #2a2a4a;
+            transition: all 0.3s ease;
+        }
+        .modal-player.confirmed {
+            border-color: #51cf66;
+            background: rgba(81,207,102,0.05);
+        }
+        .modal-player .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #ff6b00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: #0b0b0f;
+            flex-shrink: 0;
+        }
+        .modal-player .info { flex: 1; }
+        .modal-player .info .name { font-weight: 600; font-size: 14px; }
+        .modal-player .info .status { font-size: 12px; color: #666; }
+        .modal-player .status-icon {
+            font-size: 20px;
+        }
+        .modal-player .status-icon.confirmed { color: #51cf66; }
+        .modal-player .status-icon.pending { color: #ffd700; animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .modal-actions .btn-confirm {
+            background: linear-gradient(135deg, #51cf66, #2b8a3e);
+            color: #fff;
+        }
+        .modal-actions .btn-confirm:hover { transform: scale(1.02); }
+        .modal-actions .btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .modal-actions .btn-cancel-modal {
+            background: #2a2a4a;
+            color: #fff;
+        }
+        .modal-actions .btn-cancel-modal:hover { background: #3a3a5a; }
+
+        /* ===== АВТОРИЗАЦИЯ ===== */
         .auth-page {
             display: flex;
             align-items: center;
@@ -168,7 +285,6 @@
         .page { display: none; padding-bottom: 20px; }
         .page.active { display: block; }
 
-        /* ===== ГЛАВНАЯ ===== */
         .home-hero { margin-top: 8px; }
         .hero-badge {
             display: inline-block;
@@ -247,7 +363,6 @@
         .prize-item.bronze .reward { color: #cd7f32; }
         .prize-premium { text-align: center; font-size: 13px; color: #8888aa; }
 
-        /* ===== ПОИСК МАТЧА (НОВЫЙ ДИЗАЙН) ===== */
         .search-page-wrapper { padding-top: 8px; }
         
         .search-header-block {
@@ -356,14 +471,13 @@
         .btn-queue:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .btn-queue.confirm {
             background: linear-gradient(135deg, #51cf66, #2b8a3e);
-            animation: pulse 1.5s ease-in-out infinite;
+            animation: pulseBtn 1.5s ease-in-out infinite;
         }
-        @keyframes pulse {
+        @keyframes pulseBtn {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.03); }
         }
 
-        /* ===== ПАТИ ===== */
         .party-block {
             background: #14141f;
             border: 1px solid #2a2a4a;
@@ -532,8 +646,9 @@
             font-size: 11px;
             font-weight: 600;
         }
-        .friend-item .status-badge.online { background: rgba(81,207,102,0.2); color: #51cf66; }
-        .friend-item .status-badge.offline { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .friend-item .status-badge.friend { background: rgba(81,207,102,0.2); color: #51cf66; }
+        .friend-item .status-badge.request { background: rgba(255,215,0,0.2); color: #ffd700; }
+        .friend-item .status-badge.none { background: rgba(255,107,107,0.2); color: #ff6b6b; }
         .friend-item .friend-actions {
             display: flex;
             gap: 6px;
@@ -563,6 +678,16 @@
             color: #fff;
         }
         .friend-item .friend-actions .btn-add:hover { transform: scale(1.05); }
+        .friend-item .friend-actions .btn-accept {
+            background: #51cf66;
+            color: #fff;
+        }
+        .friend-item .friend-actions .btn-accept:hover { transform: scale(1.05); }
+        .friend-item .friend-actions .btn-decline {
+            background: #ff6b6b;
+            color: #fff;
+        }
+        .friend-item .friend-actions .btn-decline:hover { transform: scale(1.05); }
 
         .friends-empty {
             text-align: center;
@@ -788,7 +913,6 @@
         .btn-end:hover:not(:disabled) { transform: scale(1.02); }
         .btn-end:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ===== ПРОФИЛЬ ===== */
         .profile-card {
             background: #14141f;
             border: 1px solid #2a2a4a;
@@ -1199,6 +1323,19 @@
     <div class="txt" id="toastText">Действие выполнено</div>
 </div>
 
+<!-- ===== МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ ===== -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-box">
+        <div class="modal-title">🎮 Матч <span class="highlight">найден!</span></div>
+        <div class="modal-sub">Подтвердите участие, чтобы начать игру</div>
+        <div class="modal-players" id="modalPlayers"></div>
+        <div class="modal-actions">
+            <button class="btn-cancel-modal" onclick="cancelMatchConfirm()">Отмена</button>
+            <button class="btn-confirm" id="confirmMatchBtn" onclick="confirmMatch()" disabled>⏳ Ожидание всех...</button>
+        </div>
+    </div>
+</div>
+
 <div class="auth-page" id="authPage">
     <div class="auth-box">
         <div class="auth-logo">
@@ -1271,7 +1408,7 @@
 
     <div class="page active" id="pageHome">
         <div class="home-hero">
-            <div class="hero-badge">КИБЕРСПОРТИВНАЯ ПЛАТФОРМА</div>
+            <div class="hero-badge">КИБЕРСПОРТИВНАЯ ПЛАТФОРМА ПО BRAWL STARS</div>
             <div class="hero-title">Проверь свой <span>скилл</span>, поднимай <span>уровень</span> и играй против сильнейших.</div>
             <div class="hero-stats-row">
                 <div class="hero-stat"><div class="number" id="activePlayersHome">0</div><div class="label">Активные игроки</div></div>
@@ -1322,11 +1459,11 @@
             </div>
 
             <div class="party-block">
-                <div class="party-title"><i class="fas fa-users"></i> Пати <span id="partyCount">0/5</span></div>
+                <div class="party-title"><i class="fas fa-users"></i> Пати <span id="partyCount">0/2</span></div>
                 <div class="party-members" id="partyMembers">
                     <span class="party-empty">Нет участников</span>
                 </div>
-                <div class="party-feature"><i class="fas fa-info-circle"></i> Приглашайте друзей из списка друзей</div>
+                <div class="party-feature"><i class="fas fa-info-circle"></i> Приглашайте друзей из списка друзей (макс. 2 человека)</div>
             </div>
         </div>
     </div>
@@ -1472,7 +1609,6 @@
 
         <div class="friends-tabs">
             <button class="tab active" data-tab="friends" onclick="switchFriendsTab('friends')">Все</button>
-            <button class="tab" data-tab="online" onclick="switchFriendsTab('online')">Online</button>
             <button class="tab" data-tab="requests" onclick="switchFriendsTab('requests')">Заявки</button>
         </div>
 
@@ -1551,6 +1687,8 @@
     let activeMatchId = null;
     let friendsTab = 'friends';
     let waitingConfirm = false;
+    let confirmedPlayers = [];
+    let matchPlayers = [];
 
     let draftState = {
         gameNumber: 1,
@@ -1852,19 +1990,22 @@
         }
         if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
 
-        // Добавляем всех из пати
+        // Добавляем всех из пати (макс 2 человека)
         queue = [{ id: currentUser.id, username: currentUser.username }];
         partyFriends.forEach(f => {
-            queue.push({ id: f.id, username: f.username });
+            if (queue.length < 2) {
+                queue.push({ id: f.id, username: f.username });
+            }
         });
         
-        if (queue.length > 6) {
-            return showToast('error', 'Ошибка', 'В пати больше 6 человек');
+        if (queue.length > 2) {
+            return showToast('error', 'Ошибка', 'В пати больше 2 человек');
         }
 
         isSearching = true;
         searchSeconds = 0;
         waitingConfirm = false;
+        confirmedPlayers = [];
 
         document.getElementById('queueBtn').style.display = 'none';
         document.getElementById('cancelBtn').style.display = 'inline-flex';
@@ -1901,15 +2042,7 @@
                 if (queue.length >= 6) {
                     clearInterval(searchTimerInterval);
                     isSearching = false;
-                    // Показываем кнопку подтверждения
-                    waitingConfirm = true;
-                    document.getElementById('searchStatus').textContent = 'ПОДТВЕРДИТЕ УЧАСТИЕ';
-                    document.getElementById('queueBtn').style.display = 'block';
-                    document.getElementById('queueBtn').textContent = '✅ Подтвердить участие';
-                    document.getElementById('queueBtn').className = 'btn-queue confirm';
-                    document.getElementById('queueBtn').onclick = confirmMatch;
-                    document.getElementById('cancelBtn').style.display = 'none';
-                    showToast('info', 'Матч найден!', 'Подтвердите участие, чтобы начать матч');
+                    showConfirmModal();
                 } else {
                     simulateBotSearch();
                 }
@@ -1917,12 +2050,91 @@
         }
     }
 
+    function showConfirmModal() {
+        waitingConfirm = true;
+        matchPlayers = queue.map(p => ({
+            ...p,
+            confirmed: false
+        }));
+        confirmedPlayers = [];
+
+        const modal = document.getElementById('confirmModal');
+        const container = document.getElementById('modalPlayers');
+        const confirmBtn = document.getElementById('confirmMatchBtn');
+        
+        modal.classList.add('active');
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = '⏳ Ожидание всех...';
+        
+        renderModalPlayers();
+
+        // Автоматически подтверждаем за текущего пользователя
+        setTimeout(() => {
+            confirmPlayer(currentUser.id);
+        }, 500);
+    }
+
+    function renderModalPlayers() {
+        const container = document.getElementById('modalPlayers');
+        container.innerHTML = matchPlayers.map(p => {
+            const isConfirmed = confirmedPlayers.includes(p.id);
+            return `
+                <div class="modal-player ${isConfirmed ? 'confirmed' : ''}">
+                    <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
+                    <div class="info">
+                        <div class="name">${p.username} ${p.id.startsWith('bot_') ? '🤖' : ''}</div>
+                        <div class="status">${isConfirmed ? '✅ Готов' : '⏳ Ожидание...'}</div>
+                    </div>
+                    <div class="status-icon ${isConfirmed ? 'confirmed' : 'pending'}">
+                        ${isConfirmed ? '✅' : '⏳'}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Проверяем, все ли подтвердили
+        const allConfirmed = matchPlayers.every(p => confirmedPlayers.includes(p.id));
+        const confirmBtn = document.getElementById('confirmMatchBtn');
+        
+        if (allConfirmed) {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = '✅ Все готовы! Начать матч';
+            confirmBtn.onclick = confirmMatch;
+        } else {
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = `⏳ Ожидание ${matchPlayers.filter(p => !confirmedPlayers.includes(p.id)).length} игроков...`;
+        }
+    }
+
+    function confirmPlayer(playerId) {
+        if (!confirmedPlayers.includes(playerId)) {
+            confirmedPlayers.push(playerId);
+            renderModalPlayers();
+        }
+    }
+
     function confirmMatch() {
-        if (!waitingConfirm) return;
+        const allConfirmed = matchPlayers.every(p => confirmedPlayers.includes(p.id));
+        if (!allConfirmed) return;
+        
         waitingConfirm = false;
-        document.getElementById('queueBtn').style.display = 'none';
+        document.getElementById('confirmModal').classList.remove('active');
         document.getElementById('searchStatus').textContent = 'МАТЧ НАЧИНАЕТСЯ...';
         startMatch();
+    }
+
+    function cancelMatchConfirm() {
+        waitingConfirm = false;
+        document.getElementById('confirmModal').classList.remove('active');
+        document.getElementById('queueBtn').style.display = 'block';
+        document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
+        document.getElementById('queueBtn').className = 'btn-queue';
+        document.getElementById('queueBtn').onclick = startSearch;
+        document.getElementById('cancelBtn').style.display = 'none';
+        document.getElementById('searchCurrentPlayers').textContent = '0';
+        document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
+        document.getElementById('searchStatus').textContent = 'ИЩЕМ МАТЧ';
+        showToast('info', 'Поиск отменён', 'Вы отменили поиск');
     }
 
     function cancelSearch() {
@@ -1931,6 +2143,7 @@
         waitingConfirm = false;
         clearInterval(searchTimerInterval);
         queue = [];
+        document.getElementById('confirmModal').classList.remove('active');
         document.getElementById('queueBtn').style.display = 'block';
         document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
         document.getElementById('queueBtn').className = 'btn-queue';
@@ -2426,6 +2639,10 @@
             if (error) throw error;
 
             friendsList = data || [];
+            
+            // Загружаем заявки (для демонстрации)
+            friendRequests = friendsList.slice(0, 2).map(f => f.id);
+            
             renderFriends();
         } catch (e) {
             console.error('Ошибка загрузки друзей:', e);
@@ -2437,20 +2654,21 @@
         const count = document.getElementById('friendsCount');
         
         let filtered = friendsList;
+        let isRequests = false;
         
-        if (friendsTab === 'online') {
-            filtered = friendsList.slice(0, 5);
-        } else if (friendsTab === 'requests') {
-            filtered = [];
+        if (friendsTab === 'requests') {
+            isRequests = true;
+            filtered = friendsList.filter(f => friendRequests.includes(f.id));
         }
         
-        count.textContent = filtered.length + ' друзей';
+        const friendsCount = friendsList.length;
+        count.textContent = friendsCount + ' друзей';
 
         if (filtered.length === 0) {
             container.innerHTML = `
                 <div class="friends-empty">
                     <i class="fas fa-user-friends"></i>
-                    <p>${friendsTab === 'requests' ? 'Нет заявок в друзья' : 'У вас пока нет друзей'}</p>
+                    <p>${isRequests ? 'Нет заявок в друзья' : 'У вас пока нет друзей'}</p>
                     <span style="font-size:12px;color:#666;">Ищите игроков по никнейму</span>
                 </div>
             `;
@@ -2458,7 +2676,35 @@
         }
 
         container.innerHTML = filtered.map(f => {
+            const isFriend = true;
+            const isRequest = friendRequests.includes(f.id);
             const inParty = partyFriends.some(p => p.id === f.id);
+            
+            let statusClass = 'friend';
+            let statusText = 'Друг';
+            let actions = '';
+            
+            if (isRequest && !isFriend) {
+                statusClass = 'request';
+                statusText = 'Заявка';
+                actions = `
+                    <button class="btn-accept" onclick="acceptFriend('${f.id}')"><i class="fas fa-check"></i></button>
+                    <button class="btn-decline" onclick="declineFriend('${f.id}')"><i class="fas fa-times"></i></button>
+                `;
+            } else if (isFriend) {
+                if (inParty) {
+                    actions = `
+                        <button class="btn-remove" onclick="removeFromParty('${f.id}')"><i class="fas fa-user-minus"></i></button>
+                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
+                    `;
+                } else {
+                    actions = `
+                        <button class="btn-invite" onclick="inviteToParty('${f.id}')"><i class="fas fa-user-plus"></i> Пригласить</button>
+                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
+                    `;
+                }
+            }
+            
             return `
                 <div class="friend-item">
                     <div class="avatar">${f.username.charAt(0).toUpperCase()}</div>
@@ -2466,14 +2712,8 @@
                         <div class="name">${f.username} ${f.isadmin ? '👑' : ''}</div>
                         <div class="status">ELO: ${f.elo || 1000}</div>
                     </div>
-                    <span class="status-badge ${inParty ? 'online' : 'offline'}">${inParty ? 'В пати' : 'Не в игре'}</span>
-                    <div class="friend-actions">
-                        ${inParty ? 
-                            `<button class="btn-remove" onclick="removeFromParty('${f.id}')"><i class="fas fa-user-minus"></i></button>` :
-                            `<button class="btn-invite" onclick="inviteToParty('${f.id}')"><i class="fas fa-user-plus"></i> Пригласить</button>`
-                        }
-                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
-                    </div>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                    <div class="friend-actions">${actions}</div>
                 </div>
             `;
         }).join('');
@@ -2501,12 +2741,16 @@
                 <div class="friends-empty">
                     <i class="fas fa-search"></i>
                     <p>Никто не найден</p>
+                    <button class="btn-add" style="margin-top:12px;padding:8px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#ffd700,#ff6b00);color:#0b0b0f;font-weight:700;cursor:pointer;" onclick="sendFriendRequest('${query}')">
+                        <i class="fas fa-user-plus"></i> Отправить заявку
+                    </button>
                 </div>
             `;
             return;
         }
 
         container.innerHTML = filtered.map(f => {
+            const isFriend = true;
             const inParty = partyFriends.some(p => p.id === f.id);
             return `
                 <div class="friend-item">
@@ -2515,7 +2759,7 @@
                         <div class="name">${f.username} ${f.isadmin ? '👑' : ''}</div>
                         <div class="status">ELO: ${f.elo || 1000}</div>
                     </div>
-                    <span class="status-badge ${inParty ? 'online' : 'offline'}">${inParty ? 'В пати' : 'Не в игре'}</span>
+                    <span class="status-badge friend">Друг</span>
                     <div class="friend-actions">
                         ${inParty ? 
                             `<button class="btn-remove" onclick="removeFromParty('${f.id}')"><i class="fas fa-user-minus"></i></button>` :
@@ -2528,6 +2772,33 @@
         }).join('');
     }
 
+    function sendFriendRequest(username) {
+        const user = friendsList.find(f => f.username.toLowerCase() === username.toLowerCase());
+        if (user) {
+            if (!friendRequests.includes(user.id)) {
+                friendRequests.push(user.id);
+                showToast('success', 'Заявка отправлена', 'Пользователь получит уведомление');
+                renderFriends();
+            } else {
+                showToast('info', 'Уже отправлено', 'Заявка уже была отправлена');
+            }
+        } else {
+            showToast('error', 'Ошибка', 'Пользователь не найден');
+        }
+    }
+
+    function acceptFriend(id) {
+        friendRequests = friendRequests.filter(f => f !== id);
+        showToast('success', 'Друг добавлен', 'Теперь вы друзья!');
+        renderFriends();
+    }
+
+    function declineFriend(id) {
+        friendRequests = friendRequests.filter(f => f !== id);
+        showToast('info', 'Отклонено', 'Заявка отклонена');
+        renderFriends();
+    }
+
     function inviteToParty(id) {
         const friend = friendsList.find(f => f.id === id);
         if (!friend) return;
@@ -2536,8 +2807,17 @@
             return showToast('info', 'Уже в пати', 'Этот игрок уже в вашей пати');
         }
         
-        if (partyFriends.length >= 5) {
-            return showToast('error', 'Ошибка', 'Максимум 5 человек в пати');
+        if (partyFriends.length >= 2) {
+            return showToast('error', 'Ошибка', 'Максимум 2 человека в пати');
+        }
+        
+        // Проверяем, есть ли заявка
+        if (!friendRequests.includes(id)) {
+            // Отправляем заявку автоматически
+            friendRequests.push(id);
+            showToast('info', 'Заявка отправлена', 'Сначала добавьте в друзья');
+            renderFriends();
+            return;
         }
         
         partyFriends.push({ id: friend.id, username: friend.username });
@@ -2907,7 +3187,7 @@
     //  ПАТИ
     // ============================================================
     function updatePartyUI() {
-        document.getElementById('partyCount').textContent = partyFriends.length + '/5';
+        document.getElementById('partyCount').textContent = partyFriends.length + '/2';
         renderPartyMembers();
     }
 

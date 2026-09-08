@@ -11,7 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
     <style>
-        /* ===== ВСЕ СТИЛИ ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0b0b0f;
@@ -21,7 +20,6 @@
             min-height: 100vh;
             line-height: 1.5;
         }
-
         .toast {
             position: fixed;
             top: 20px;
@@ -39,10 +37,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.8);
             backdrop-filter: blur(12px);
         }
-        .toast.visible {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+        .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
         .toast .ttl { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
         .toast .ttl.success { color: #51cf66; }
         .toast .ttl.error { color: #ff6b6b; }
@@ -144,11 +139,7 @@
         .auth-footer a:hover { text-decoration: underline; }
 
         .main-wrapper { display: none; max-width: 480px; margin: 0 auto; padding: 0 16px; }
-        
-        .header {
-            padding: 16px 0 8px;
-            cursor: pointer;
-        }
+        .header { padding: 16px 0 8px; cursor: pointer; }
         .header .logo h1 { font-size: 20px; font-weight: 900; }
         .header .logo h1 span { color: #ffd700; }
 
@@ -168,12 +159,7 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-        .hero-title {
-            font-size: 24px;
-            font-weight: 800;
-            line-height: 1.2;
-            margin: 16px 0 20px;
-        }
+        .hero-title { font-size: 24px; font-weight: 800; line-height: 1.2; margin: 16px 0 20px; }
         .hero-title span { color: #ffd700; }
         
         .hero-stats-row {
@@ -207,11 +193,7 @@
             transition: transform 0.2s ease;
         }
         .btn-hero:hover { transform: scale(1.02); }
-        .btn-hero.outline {
-            background: transparent;
-            border: 1px solid #2a2a4a;
-            color: #fff;
-        }
+        .btn-hero.outline { background: transparent; border: 1px solid #2a2a4a; color: #fff; }
 
         .prize-block {
             background: #14141f;
@@ -387,12 +369,7 @@
             font-size: 13px;
             border: 1px solid #2a2a4a;
         }
-        .friend-tag .remove {
-            color: #ff6b6b;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 700;
-        }
+        .friend-tag .remove { color: #ff6b6b; cursor: pointer; font-size: 14px; font-weight: 700; }
         .friend-tag .remove:hover { color: #ff4444; }
 
         .party-feature {
@@ -521,11 +498,7 @@
         }
         .ban-btn:hover { border-color: #ffd700; }
         .ban-btn.banned { display: none; }
-        .ban-btn.selected {
-            border-color: #ffd700;
-            background: rgba(255,215,0,0.1);
-            color: #ffd700;
-        }
+        .ban-btn.selected { border-color: #ffd700; background: rgba(255,215,0,0.1); color: #ffd700; }
         .ban-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .ban-status {
@@ -574,18 +547,8 @@
             font-weight: 700;
             cursor: pointer;
         }
-        .screenshot-preview {
-            margin: 8px 0;
-            max-height: 200px;
-            overflow: hidden;
-            border-radius: 10px;
-        }
-        .screenshot-preview img {
-            width: 100%;
-            height: auto;
-            max-height: 200px;
-            object-fit: cover;
-        }
+        .screenshot-preview { margin: 8px 0; max-height: 200px; overflow: hidden; border-radius: 10px; }
+        .screenshot-preview img { width: 100%; height: auto; max-height: 200px; object-fit: cover; }
         .screenshot-status { font-size: 13px; color: #8888aa; }
 
         .match-result-section {
@@ -618,10 +581,7 @@
         .result-btn.blue-win { background: #4dabf7; color: #fff; }
         .result-btn.orange-win { background: #ff922b; color: #fff; }
 
-        .match-actions {
-            display: none;
-            margin-top: 8px;
-        }
+        .match-actions { display: none; margin-top: 8px; }
         .match-actions.admin-visible { display: block; }
         .btn-end {
             width: 100%;
@@ -664,11 +624,7 @@
             flex-shrink: 0;
         }
         .profile-info .username { font-size: 20px; font-weight: 800; }
-        .profile-info .details {
-            font-size: 12px;
-            color: #8888aa;
-            margin-top: 4px;
-        }
+        .profile-info .details { font-size: 12px; color: #8888aa; margin-top: 4px; }
         .profile-info .details span { margin-right: 12px; }
         .admin-badge {
             display: none;
@@ -724,12 +680,7 @@
             margin-bottom: 16px;
         }
         .profile-admin-panel.visible { display: block; }
-        .admin-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #ffd700;
-        }
+        .admin-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #ffd700; }
         .admin-title i { margin-right: 6px; }
         .admin-section {
             margin-bottom: 16px;
@@ -781,12 +732,7 @@
             border-radius: 16px;
             font-size: 13px;
         }
-        .admin-tag .remove {
-            color: #ff6b6b;
-            cursor: pointer;
-            font-weight: 700;
-            margin-left: 4px;
-        }
+        .admin-tag .remove { color: #ff6b6b; cursor: pointer; font-weight: 700; margin-left: 4px; }
         .admin-tag .remove:hover { color: #ff4444; }
         .admin-empty { color: #555; font-size: 13px; padding: 4px 0; }
 
@@ -825,14 +771,8 @@
         }
         .promo-status { font-size: 13px; color: #8888aa; }
 
-        .match-dynamics {
-            margin-bottom: 16px;
-        }
-        .match-dynamics .title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
+        .match-dynamics { margin-bottom: 16px; }
+        .match-dynamics .title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
         .match-dynamics .title i { margin-right: 6px; color: #ffd700; }
         
         .chart-container {
@@ -859,17 +799,9 @@
         }
         .chart-bar.win { background: #51cf66; }
         .chart-bar.loss { background: #ff6b6b; }
-        .bar-label {
-            font-size: 8px;
-            color: #666;
-            margin-top: 2px;
-        }
+        .bar-label { font-size: 8px; color: #666; margin-top: 2px; }
 
-        .match-history .title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
+        .match-history .title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
         .match-history .title i { margin-right: 6px; color: #ffd700; }
 
         .match-item {
@@ -887,11 +819,7 @@
         .match-item .result.win { color: #51cf66; font-weight: 600; }
         .match-item .result.loss { color: #ff6b6b; font-weight: 600; }
 
-        .placeholder {
-            text-align: center;
-            padding: 60px 20px;
-            color: #555;
-        }
+        .placeholder { text-align: center; padding: 60px 20px; color: #555; }
         .placeholder i { font-size: 48px; margin-bottom: 16px; display: block; color: #2a2a4a; }
         .placeholder h2 { font-size: 18px; font-weight: 700; color: #8888aa; }
 
@@ -1230,12 +1158,12 @@
 
 <script>
     // ============================================================
-    //  SUPABASE - НОВОЕ ПОДКЛЮЧЕНИЕ
+    //  SUPABASE - ПОДКЛЮЧЕНИЕ
     // ============================================================
     const SUPABASE_URL = 'https://tgjltbpmuczfkikvmmde.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log('✅ Supabase подключен к новому проекту!');
+    console.log('✅ Supabase подключен!');
 
     // ============================================================
     //  ПЕРЕМЕННЫЕ
@@ -1331,7 +1259,7 @@
     }
 
     // ============================================================
-    //  РЕГИСТРАЦИЯ (ИСПРАВЛЕННАЯ)
+    //  РЕГИСТРАЦИЯ (ПОЛНОСТЬЮ ИСПРАВЛЕНА)
     // ============================================================
     async function registerUser() {
         const username = document.getElementById('regUsername').value.trim();
@@ -1375,21 +1303,12 @@
             const partyCode = generateCode();
             const userId = 'user_' + Date.now().toString();
 
-            // СОЗДАЁМ ПОЛЬЗОВАТЕЛЯ БЕЗ isAdmin (он будет false по умолчанию)
+            // ТОЛЬКО НУЖНЫЕ ПОЛЯ - остальные будут по умолчанию
             const newUser = {
                 id: userId,
                 username: username,
                 password: password,
-                matches: 0,
-                wins: 0,
-                losses: 0,
-                elo: 1000,
-                mvp: 0,
-                balance: 0,
-                registered: new Date().toISOString(),
-                lastLogin: new Date().toISOString(),
                 partyCode: partyCode
-                // isAdmin НЕ УКАЗЫВАЕМ - будет false по умолчанию
             };
 
             const { data, error } = await supabaseClient
@@ -1420,7 +1339,7 @@
     }
 
     // ============================================================
-    //  ВХОД (ИСПРАВЛЕННЫЙ)
+    //  ВХОД
     // ============================================================
     async function loginUser() {
         const username = document.getElementById('loginUsername').value.trim();
@@ -1483,9 +1402,14 @@
             
             document.getElementById('pName').textContent = currentUser.username;
             document.getElementById('avatar').textContent = currentUser.username.charAt(0).toUpperCase();
-            const regDate = currentUser.registered ? new Date(currentUser.registered).toLocaleDateString('ru-RU') : '—';
-            document.getElementById('pReg').textContent = regDate;
+            
+            // Дата регистрации
+            if (currentUser.registered) {
+                const regDate = new Date(currentUser.registered).toLocaleDateString('ru-RU');
+                document.getElementById('pReg').textContent = regDate;
+            }
 
+            // Статистика
             const matches = currentUser.matches || 0;
             const wins = currentUser.wins || 0;
             const winrate = matches > 0 ? Math.round((wins / matches) * 100) : 0;
@@ -1494,16 +1418,15 @@
             document.getElementById('pMvp').textContent = currentUser.mvp || 0;
             document.getElementById('pElo').textContent = currentUser.elo || 1000;
 
-            // ПРОВЕРКА АДМИНА - используем isAdmin из БД
+            // Проверка админа
             const isAdmin = currentUser.isAdmin === true;
-            const isDestro = currentUser.username === 'Destro';
             
-            console.log('🔍 Проверка прав:', { isAdmin, isDestro, user: currentUser.username });
+            console.log('🔍 Проверка прав:', { isAdmin, user: currentUser.username });
             
             const adminBadge = document.getElementById('adminBadge');
             const adminPanel = document.getElementById('profileAdminPanel');
             
-            if (isAdmin || isDestro) {
+            if (isAdmin) {
                 adminBadge.classList.add('visible');
                 adminPanel.classList.add('visible');
                 await renderAdminList();
@@ -1684,7 +1607,7 @@
     }
 
     function checkMatchResultVisibility() {
-        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
+        const isAdmin = currentUser?.isAdmin === true;
         const isPlayer = isPlayerInMatch;
         
         if (draftState.isComplete && isPlayer) {
@@ -1792,8 +1715,7 @@
         if (!currentMatch || !draftState.isComplete) {
             return showToast('error', 'Ошибка', 'Дождитесь завершения драфта');
         }
-        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
-        if (!isAdmin) {
+        if (!currentUser?.isAdmin) {
             return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
         }
         finishMatch('blue');
@@ -1803,8 +1725,7 @@
         if (!currentMatch || !draftState.isComplete) {
             return showToast('error', 'Ошибка', 'Дождитесь завершения драфта');
         }
-        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
-        if (!isAdmin) {
+        if (!currentUser?.isAdmin) {
             return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
         }
         finishMatch('orange');
@@ -1812,8 +1733,7 @@
 
     async function finishMatch(winner) {
         if (!currentMatch || !currentUser) return;
-        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
-        if (!isAdmin) {
+        if (!currentUser.isAdmin) {
             return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
         }
 
@@ -1913,8 +1833,7 @@
         if (!draftState.isComplete) {
             return showToast('info', 'Дождитесь драфта', 'Сначала завершите выбор режима');
         }
-        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
-        if (!isAdmin) {
+        if (!currentUser?.isAdmin) {
             return showToast('error', 'Доступ запрещён', 'Только администраторы могут завершить матч');
         }
         if (!confirm('Завершить матч без засчитывания?')) return;
@@ -2206,8 +2125,7 @@
     }
 
     async function addAdmin() {
-        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
-        if (!isAdmin) {
+        if (!currentUser?.isAdmin) {
             showToast('error', 'Доступ запрещён', 'Только администраторы могут управлять админами');
             return;
         }
@@ -2263,8 +2181,7 @@
     }
 
     async function removeAdmin(userId) {
-        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
-        if (!isAdmin) {
+        if (!currentUser?.isAdmin) {
             showToast('error', 'Доступ запрещён', 'Только администраторы могут управлять админами');
             return;
         }
@@ -2312,7 +2229,7 @@
                 <span class="admin-tag" style="${p.used_count >= p.max_uses ? 'opacity:0.5;' : ''}">
                     ${p.code} — ${p.amount} ₽ (${p.used_count}/${p.max_uses})
                     ${p.used_count >= p.max_uses ? '✅ Использован' : '🟢 Активен'}
-                    ${p.used_count < p.max_uses && (currentUser?.isAdmin || currentUser?.username === 'Destro') ? 
+                    ${p.used_count < p.max_uses && currentUser?.isAdmin ? 
                         `<span class="remove" onclick="deletePromo('${p.id}')">&times;</span>` : ''
                     }
                 </span>
@@ -2323,8 +2240,7 @@
     }
 
     async function createPromo() {
-        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
-        if (!isAdmin) {
+        if (!currentUser?.isAdmin) {
             showToast('error', 'Доступ запрещён', 'Только администраторы могут создавать промокоды');
             return;
         }

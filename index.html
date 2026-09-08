@@ -153,32 +153,6 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(0.9); }
         }
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .modal-actions button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            font-family: inherit;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .modal-actions .btn-confirm {
-            background: linear-gradient(135deg, #51cf66, #2b8a3e);
-            color: #fff;
-        }
-        .modal-actions .btn-confirm:hover:not(:disabled) { transform: scale(1.02); }
-        .modal-actions .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-        .modal-actions .btn-cancel-modal {
-            background: #2a2a4a;
-            color: #fff;
-        }
-        .modal-actions .btn-cancel-modal:hover { background: #3a3a5a; }
 
         /* ===== АВТОРИЗАЦИЯ ===== */
         .auth-page {
@@ -1334,17 +1308,14 @@
     <div class="txt" id="toastText">Действие выполнено</div>
 </div>
 
-<!-- ===== МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ ===== -->
+<!-- ===== МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ (БЕЗ КНОПКИ ОТМЕНЫ) ===== -->
 <div class="modal-overlay" id="confirmModal">
     <div class="modal-box">
         <div class="modal-title">🎮 Матч <span class="highlight">найден!</span></div>
-        <div class="modal-sub">Подтвердите участие, чтобы начать игру</div>
+        <div class="modal-sub">Подтверждение участия...</div>
         <div class="modal-timer" id="modalTimer">25</div>
         <div class="modal-players" id="modalPlayers"></div>
-        <div class="modal-actions">
-            <button class="btn-cancel-modal" onclick="cancelMatchConfirm()">Отмена</button>
-            <button class="btn-confirm" id="confirmMatchBtn" onclick="confirmMatch()" disabled>⏳ Ожидание всех...</button>
-        </div>
+        <!-- Кнопка отмены УБРАНА! -->
     </div>
 </div>
 
@@ -1442,10 +1413,11 @@
         </div>
     </div>
 
+    <!-- ===== ПОИСК МАТЧА (УБРАНА НАДПИСЬ "ИЩЕМ МАТЧ 3x3") ===== -->
     <div class="page" id="pageMatches">
         <div class="search-page-wrapper">
             <div class="search-header-block">
-                <div class="search-title">Поиск матча</div>
+                <div class="search-title">Поиск</div>
                 <div class="search-sub">3×3 режим · рейтинг</div>
             </div>
 
@@ -1704,6 +1676,7 @@
     let matchPlayers = [];
     let confirmTimer = null;
     let confirmTimeLeft = 25;
+    let isAutoConfirmed = false;
 
     let draftState = {
         gameNumber: 1,
@@ -2005,7 +1978,6 @@
         }
         if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
 
-        // Добавляем всех из пати (макс 2 человека)
         queue = [{ id: currentUser.id, username: currentUser.username }];
         partyFriends.forEach(f => {
             if (queue.length < 2) {
@@ -2021,6 +1993,7 @@
         searchSeconds = 0;
         waitingConfirm = false;
         confirmedPlayers = [];
+        isAutoConfirmed = false;
 
         document.getElementById('queueBtn').style.display = 'none';
         document.getElementById('cancelBtn').style.display = 'inline-flex';
@@ -2048,7 +2021,6 @@
         if (currentPlayers < maxPlayers && isSearching) {
             setTimeout(() => {
                 if (!isSearching) return;
-                // Боты автоматически подтверждают участие
                 const botName = 'Bot' + (botCounter + 1);
                 botCounter++;
                 queue.push({ id: 'bot_' + Date.now(), username: botName });
@@ -2058,7 +2030,6 @@
                 if (queue.length >= 6) {
                     clearInterval(searchTimerInterval);
                     isSearching = false;
-                    // Боты автоматически подтверждают
                     matchPlayers = queue.map(p => ({
                         ...p,
                         confirmed: p.id.startsWith('bot_') ? true : false
@@ -2082,22 +2053,17 @@
 
         const modal = document.getElementById('confirmModal');
         const container = document.getElementById('modalPlayers');
-        const confirmBtn = document.getElementById('confirmMatchBtn');
         const timerEl = document.getElementById('modalTimer');
         
         modal.classList.add('active');
-        confirmBtn.disabled = true;
-        confirmBtn.textContent = '⏳ Ожидание всех...';
         confirmTimeLeft = 25;
         timerEl.textContent = confirmTimeLeft;
         timerEl.className = 'modal-timer';
         
         renderModalPlayers();
 
-        // Автоматически подтверждаем за текущего пользователя
-        setTimeout(() => {
-            confirmPlayer(currentUser.id);
-        }, 500);
+        // НЕ АВТОМАТИЧЕСКИ ПОДТВЕРЖДАЕМ ЗА ПОЛЬЗОВАТЕЛЯ — он должен нажать кнопку "Подтвердить"
+        // Кнопка отмены убрана
 
         // Запускаем таймер
         if (confirmTimer) clearInterval(confirmTimer);
@@ -2126,7 +2092,6 @@
                 document.getElementById('confirmModal').classList.remove('active');
                 waitingConfirm = false;
                 showToast('info', 'Поиск продолжается', `${notConfirmed.length} игроков не подтвердили участие`);
-                // Добавляем новых ботов
                 isSearching = true;
                 document.getElementById('searchCurrentPlayers').textContent = queue.length;
                 simulateBotSearch();
@@ -2145,11 +2110,12 @@
         container.innerHTML = matchPlayers.map(p => {
             const isConfirmed = confirmedPlayers.includes(p.id);
             const isBot = p.id.startsWith('bot_');
+            const isCurrentUser = p.id === currentUser.id;
             return `
                 <div class="modal-player ${isConfirmed ? 'confirmed' : ''}">
                     <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
                     <div class="info">
-                        <div class="name">${p.username} ${isBot ? '🤖' : ''}</div>
+                        <div class="name">${p.username} ${isBot ? '🤖' : ''} ${isCurrentUser ? ' (Вы)' : ''}</div>
                         <div class="status">${isConfirmed ? '✅ Готов' : '⏳ Ожидание...'}</div>
                     </div>
                     <div class="status-icon ${isConfirmed ? 'confirmed' : 'pending'}">
@@ -2159,61 +2125,37 @@
             `;
         }).join('');
 
-        // Проверяем, все ли подтвердили
+        // Проверяем, все ли подтвердили (кроме ботов)
         const allConfirmed = matchPlayers.every(p => confirmedPlayers.includes(p.id));
-        const confirmBtn = document.getElementById('confirmMatchBtn');
-        
         if (allConfirmed) {
-            confirmBtn.disabled = false;
-            confirmBtn.textContent = '✅ Все готовы! Начать матч';
-            confirmBtn.onclick = confirmMatch;
-        } else {
-            const pending = matchPlayers.filter(p => !confirmedPlayers.includes(p.id) && !p.id.startsWith('bot_'));
-            confirmBtn.disabled = true;
-            confirmBtn.textContent = `⏳ Ожидание ${pending.length} игроков...`;
-        }
-    }
-
-    function confirmPlayer(playerId) {
-        if (!confirmedPlayers.includes(playerId)) {
-            confirmedPlayers.push(playerId);
-            renderModalPlayers();
-            // Проверяем, все ли подтвердили
-            const allConfirmed = matchPlayers.every(p => confirmedPlayers.includes(p.id));
-            if (allConfirmed) {
-                // Все подтвердили - можно начинать
-                document.getElementById('confirmMatchBtn').disabled = false;
-                document.getElementById('confirmMatchBtn').textContent = '✅ Все готовы! Начать матч';
-                document.getElementById('confirmMatchBtn').onclick = confirmMatch;
-            }
+            clearInterval(confirmTimer);
+            setTimeout(() => {
+                document.getElementById('confirmModal').classList.remove('active');
+                waitingConfirm = false;
+                startMatch();
+            }, 500);
         }
     }
 
     function confirmMatch() {
-        const allConfirmed = matchPlayers.every(p => confirmedPlayers.includes(p.id));
-        if (!allConfirmed) return;
-        
-        waitingConfirm = false;
-        clearInterval(confirmTimer);
-        document.getElementById('confirmModal').classList.remove('active');
-        document.getElementById('searchStatus').textContent = 'МАТЧ НАЧИНАЕТСЯ...';
-        startMatch();
+        // Эта функция вызывается, когда пользователь нажимает на себя
+        if (!waitingConfirm) return;
+        if (!confirmedPlayers.includes(currentUser.id)) {
+            confirmedPlayers.push(currentUser.id);
+            renderModalPlayers();
+        }
     }
 
-    function cancelMatchConfirm() {
-        waitingConfirm = false;
-        clearInterval(confirmTimer);
-        document.getElementById('confirmModal').classList.remove('active');
-        document.getElementById('queueBtn').style.display = 'block';
-        document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-        document.getElementById('queueBtn').className = 'btn-queue';
-        document.getElementById('queueBtn').onclick = startSearch;
-        document.getElementById('cancelBtn').style.display = 'none';
-        document.getElementById('searchCurrentPlayers').textContent = '0';
-        document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
-        document.getElementById('searchStatus').textContent = 'Поиск';
-        showToast('info', 'Поиск отменён', 'Вы отменили поиск');
-    }
+    // Добавляем возможность подтверждения по клику на себя в модалке
+    document.addEventListener('click', function(e) {
+        const modalPlayer = e.target.closest('.modal-player');
+        if (modalPlayer && waitingConfirm) {
+            const playerName = modalPlayer.querySelector('.name')?.textContent || '';
+            if (playerName.includes('(Вы)')) {
+                confirmMatch();
+            }
+        }
+    });
 
     function cancelSearch() {
         if (!isSearching && !waitingConfirm) return;
@@ -2257,7 +2199,6 @@
         document.getElementById('queueBtn').onclick = startSearch;
         document.getElementById('cancelBtn').style.display = 'none';
 
-        // Увеличиваем номер игры
         draftState.gameNumber = (draftState.gameNumber || 0) + 1;
         resetDraft();
 
@@ -2718,9 +2659,6 @@
             if (error) throw error;
 
             friendsList = data || [];
-            
-            // Загружаем заявки (для демонстрации)
-            // В реальном приложении заявки хранятся в отдельной таблице
             friendRequests = [];
             myFriends = [];
             

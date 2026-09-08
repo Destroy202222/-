@@ -22,7 +22,6 @@
             line-height: 1.5;
         }
 
-        /* ===== ТОСТ ===== */
         .toast {
             position: fixed;
             top: 20px;
@@ -50,7 +49,6 @@
         .toast .ttl.info { color: #4dabf7; }
         .toast .txt { font-size: 13px; color: #b0b0c0; }
 
-        /* ===== АВТОРИЗАЦИЯ ===== */
         .auth-page {
             display: flex;
             align-items: center;
@@ -145,7 +143,6 @@
         .auth-footer a { color: #ffd700; cursor: pointer; text-decoration: none; font-weight: 600; }
         .auth-footer a:hover { text-decoration: underline; }
 
-        /* ===== ОСНОВНОЙ САЙТ ===== */
         .main-wrapper { display: none; max-width: 480px; margin: 0 auto; padding: 0 16px; }
         
         .header {
@@ -158,7 +155,6 @@
         .page { display: none; padding-bottom: 20px; }
         .page.active { display: block; }
 
-        /* ===== ГЛАВНАЯ ===== */
         .home-hero { margin-top: 8px; }
         .hero-badge {
             display: inline-block;
@@ -246,7 +242,6 @@
         .prize-item.bronze .reward { color: #cd7f32; }
         .prize-premium { text-align: center; font-size: 13px; color: #8888aa; }
 
-        /* ===== ПОИСК МАТЧА ===== */
         .search-page-wrapper { padding-top: 8px; }
         .search-header-block { margin-bottom: 20px; }
         .search-title { font-size: 22px; font-weight: 800; }
@@ -309,7 +304,6 @@
         .progress-text { font-size: 18px; font-weight: 700; }
         .progress-timer { font-size: 14px; color: #8888aa; }
 
-        /* ===== ПАТИ ===== */
         .party-block {
             background: #14141f;
             border: 1px solid #2a2a4a;
@@ -411,7 +405,6 @@
         }
         .party-feature i { margin-right: 6px; color: #ffd700; }
 
-        /* ===== СТРАНИЦА МАТЧА ===== */
         .match-page { padding-top: 8px; }
         .match-info-bar {
             display: flex;
@@ -487,7 +480,6 @@
             border-radius: 10px;
         }
 
-        /* ===== БАН РЕЖИМОВ ===== */
         .bans-container {
             display: grid;
             gap: 16px;
@@ -545,7 +537,6 @@
         }
         .ban-status .status-text.done { color: #51cf66; }
 
-        /* ===== СКРИНШОТ ===== */
         .screenshot-section {
             display: none;
             background: #14141f;
@@ -597,7 +588,6 @@
         }
         .screenshot-status { font-size: 13px; color: #8888aa; }
 
-        /* ===== РЕЗУЛЬТАТ МАТЧА ===== */
         .match-result-section {
             display: none;
             background: #14141f;
@@ -648,7 +638,6 @@
         .btn-end:hover:not(:disabled) { transform: scale(1.02); }
         .btn-end:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ===== ПРОФИЛЬ ===== */
         .profile-card {
             background: #14141f;
             border: 1px solid #2a2a4a;
@@ -727,7 +716,6 @@
         .btn-action.edit { background: #2a2a4a; color: #fff; }
         .btn-action.logout { background: #ff6b6b; color: #fff; }
 
-        /* ===== АДМИН-ПАНЕЛЬ ===== */
         .profile-admin-panel {
             display: none;
             background: #1a1a2e;
@@ -837,7 +825,6 @@
         }
         .promo-status { font-size: 13px; color: #8888aa; }
 
-        /* ===== МАТЧ ИСТОРИЯ ===== */
         .match-dynamics {
             margin-bottom: 16px;
         }
@@ -900,7 +887,6 @@
         .match-item .result.win { color: #51cf66; font-weight: 600; }
         .match-item .result.loss { color: #ff6b6b; font-weight: 600; }
 
-        /* ===== ПЛЕЙСХОЛДЕРЫ ===== */
         .placeholder {
             text-align: center;
             padding: 60px 20px;
@@ -909,7 +895,6 @@
         .placeholder i { font-size: 48px; margin-bottom: 16px; display: block; color: #2a2a4a; }
         .placeholder h2 { font-size: 18px; font-weight: 700; color: #8888aa; }
 
-        /* ===== НИЖНЯЯ НАВИГАЦИЯ ===== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -943,7 +928,6 @@
         .bottom-nav .item.active { color: #ffd700; }
         .bottom-nav .item span { font-weight: 500; }
 
-        /* ===== АДАПТИВ ===== */
         @media (max-width: 480px) {
             .auth-box { padding: 24px 20px; }
             .hero-title { font-size: 20px; }
@@ -956,13 +940,11 @@
 </head>
 <body>
 
-<!-- ===== ТОСТ ===== -->
 <div class="toast" id="toast">
     <div class="ttl" id="toastTitle">Успешно</div>
     <div class="txt" id="toastText">Действие выполнено</div>
 </div>
 
-<!-- ===== АВТОРИЗАЦИЯ ===== -->
 <div class="auth-page" id="authPage">
     <div class="auth-box">
         <div class="auth-logo">
@@ -1025,13 +1007,11 @@
     </div>
 </div>
 
-<!-- ===== ОСНОВНОЙ САЙТ ===== -->
 <div class="main-wrapper" id="mainSite" style="display:none;">
     <header class="header" onclick="navigate('home')">
         <div class="logo"><h1>⚡ Brawl Stars</h1></div>
     </header>
 
-    <!-- ===== ГЛАВНАЯ ===== -->
     <div class="page active" id="pageHome">
         <div class="home-hero">
             <div class="hero-badge">КИБЕРСПОРТИВНАЯ ПЛАТФОРМА BRAWL STARS</div>
@@ -1056,7 +1036,6 @@
         </div>
     </div>
 
-    <!-- ===== ПОИСК МАТЧА ===== -->
     <div class="page" id="pageMatches">
         <div class="search-page-wrapper">
             <div class="search-header-block">
@@ -1099,7 +1078,6 @@
         </div>
     </div>
 
-    <!-- ===== МАТЧ ===== -->
     <div class="page match-page" id="matchPage">
         <div class="match-info-bar" id="matchInfoBar">
             <div class="info-item"><i class="fas fa-hashtag"></i> Номер игры: <span class="value highlight" id="matchGameNumber">#1</span></div>
@@ -1164,7 +1142,6 @@
         </div>
     </div>
 
-    <!-- ===== ПРОФИЛЬ ===== -->
     <div class="page" id="pageProfile">
         <div class="profile-card">
             <div class="profile-header">
@@ -1234,13 +1211,11 @@
         </div>
     </div>
 
-    <!-- ===== ДРУГИЕ СТРАНИЦЫ ===== -->
     <div class="page friends-page" id="pageFriends"><div class="placeholder"><i class="fas fa-user-friends"></i><h2>Друзья</h2></div></div>
     <div class="page top-page" id="pageTop"><div class="placeholder"><i class="fas fa-trophy"></i><h2>Топ игроков</h2></div></div>
     <div class="page wallet-page" id="pageWallet"><div class="placeholder"><i class="fas fa-wallet"></i><h2>Кошелёк</h2></div></div>
     <div class="page" id="pageShop"><div class="placeholder"><i class="fas fa-store"></i><h2>Магазин</h2></div></div>
 
-    <!-- ===== НИЖНЯЯ НАВИГАЦИЯ ===== -->
     <nav class="bottom-nav">
         <button class="item" data-page="profile" onclick="navigate('profile')"><i class="fas fa-user"></i><span>Профиль</span></button>
         <button class="item" data-page="shop" onclick="navigate('shop')"><i class="fas fa-store"></i><span>Шоп</span></button>
@@ -1270,7 +1245,6 @@
     let currentMatch = null;
     let botCounter = 0;
     let partyFriends = [];
-    let friendsTab = 'friends';
     let isSearching = false;
     let searchTimerInterval = null;
     let searchSeconds = 0;
@@ -1309,120 +1283,6 @@
             if (id && username) return { id, username };
         } catch (e) {}
         return null;
-    }
-
-    // ============================================================
-    //  СОХРАНЕНИЕ МАТЧА В SUPABASE
-    // ============================================================
-    async function saveMatchToSupabase() {
-        if (!currentMatch) return;
-
-        try {
-            const matchData = {
-                id: activeMatchId || Date.now().toString(),
-                orange: JSON.stringify(currentMatch.orange),
-                blue: JSON.stringify(currentMatch.blue),
-                draft_state: JSON.stringify(draftState),
-                updated_at: new Date().toISOString()
-            };
-
-            const { data: existing } = await supabaseClient
-                .from('active_matches')
-                .select('id')
-                .eq('id', matchData.id)
-                .maybeSingle();
-
-            if (existing) {
-                await supabaseClient
-                    .from('active_matches')
-                    .update(matchData)
-                    .eq('id', matchData.id);
-            } else {
-                matchData.created_at = new Date().toISOString();
-                await supabaseClient
-                    .from('active_matches')
-                    .insert([matchData]);
-            }
-
-            activeMatchId = matchData.id;
-            console.log('✅ Матч сохранён в Supabase:', activeMatchId);
-        } catch (e) {
-            console.error('Ошибка сохранения матча:', e);
-        }
-    }
-
-    // ============================================================
-    //  ЗАГРУЗКА МАТЧА ИЗ SUPABASE
-    // ============================================================
-    async function loadMatchFromSupabase() {
-        try {
-            if (!currentUser) return false;
-
-            const { data, error } = await supabaseClient
-                .from('active_matches')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(1);
-
-            if (error || !data || data.length === 0) {
-                console.log('❌ Нет активных матчей');
-                return false;
-            }
-
-            const match = data[0];
-            console.log('📦 Найден матч в Supabase:', match);
-            
-            const orange = JSON.parse(match.orange);
-            const blue = JSON.parse(match.blue);
-            
-            const isInMatch = orange.some(p => p.id === currentUser.id) || 
-                              blue.some(p => p.id === currentUser.id);
-
-            if (isInMatch) {
-                currentMatch = { orange, blue };
-                isPlayerInMatch = true;
-                activeMatchId = match.id;
-                
-                if (match.draft_state) {
-                    draftState = JSON.parse(match.draft_state);
-                    console.log('✅ Драфт загружен:', draftState);
-                }
-                
-                document.getElementById('matchNavLabel').textContent = 'Матч';
-                document.querySelector('#matchNavBtn i').className = 'fas fa-gamepad';
-                
-                console.log('✅ Матч загружен из Supabase');
-                return true;
-            } else {
-                console.log('❌ Пользователь не участвует в этом матче');
-                await supabaseClient
-                    .from('active_matches')
-                    .delete()
-                    .eq('id', match.id);
-                return false;
-            }
-        } catch (e) {
-            console.error('Ошибка загрузки матча:', e);
-            return false;
-        }
-    }
-
-    // ============================================================
-    //  УДАЛЕНИЕ МАТЧА ИЗ SUPABASE
-    // ============================================================
-    async function deleteMatchFromSupabase() {
-        if (!activeMatchId) return;
-
-        try {
-            await supabaseClient
-                .from('active_matches')
-                .delete()
-                .eq('id', activeMatchId);
-            activeMatchId = null;
-            console.log('✅ Матч удалён из Supabase');
-        } catch (e) {
-            console.error('Ошибка удаления матча:', e);
-        }
     }
 
     // ============================================================
@@ -1471,7 +1331,7 @@
     }
 
     // ============================================================
-    //  РЕГИСТРАЦИЯ
+    //  РЕГИСТРАЦИЯ (ИСПРАВЛЕННАЯ)
     // ============================================================
     async function registerUser() {
         const username = document.getElementById('regUsername').value.trim();
@@ -1499,6 +1359,7 @@
         messageEl.textContent = '⏳ Проверка...';
 
         try {
+            // Проверяем существует ли пользователь
             const { data: existing } = await supabaseClient
                 .from('users')
                 .select('username')
@@ -1512,9 +1373,11 @@
             }
 
             const partyCode = generateCode();
+            const userId = 'user_' + Date.now().toString();
 
+            // СОЗДАЁМ ПОЛЬЗОВАТЕЛЯ БЕЗ isAdmin (он будет false по умолчанию)
             const newUser = {
-                id: Date.now().toString(),
+                id: userId,
                 username: username,
                 password: password,
                 matches: 0,
@@ -1525,8 +1388,8 @@
                 balance: 0,
                 registered: new Date().toISOString(),
                 lastLogin: new Date().toISOString(),
-                isAdmin: false,
                 partyCode: partyCode
+                // isAdmin НЕ УКАЗЫВАЕМ - будет false по умолчанию
             };
 
             const { data, error } = await supabaseClient
@@ -1536,28 +1399,28 @@
                 .single();
 
             if (error) {
-                console.error('❌ Ошибка:', error);
+                console.error('❌ Ошибка регистрации:', error);
                 messageEl.className = 'auth-message show error';
-                messageEl.textContent = '❌ ' + error.message;
+                messageEl.textContent = '❌ Ошибка: ' + error.message;
                 return;
             }
 
             currentUser = data;
             saveSession(data);
             messageEl.className = 'auth-message show success';
-            messageEl.textContent = '✅ ' + username + ' создан!';
+            messageEl.textContent = '✅ Аккаунт создан! Добро пожаловать, ' + username;
             
             setTimeout(() => checkAuth(), 1000);
 
         } catch (e) {
             console.error('❌ Ошибка:', e);
             messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Ошибка сервера';
+            messageEl.textContent = '❌ Ошибка сервера: ' + e.message;
         }
     }
 
     // ============================================================
-    //  ВХОД
+    //  ВХОД (ИСПРАВЛЕННЫЙ)
     // ============================================================
     async function loginUser() {
         const username = document.getElementById('loginUsername').value.trim();
@@ -1593,7 +1456,7 @@
                 return;
             }
 
-            console.log('✅ Найден:', data);
+            console.log('✅ Найден пользователь:', data);
 
             currentUser = data;
             saveSession(data);
@@ -1618,13 +1481,11 @@
             document.getElementById('authPage').style.display = 'none';
             document.getElementById('mainSite').style.display = 'block';
             
-            // Профиль
             document.getElementById('pName').textContent = currentUser.username;
             document.getElementById('avatar').textContent = currentUser.username.charAt(0).toUpperCase();
             const regDate = currentUser.registered ? new Date(currentUser.registered).toLocaleDateString('ru-RU') : '—';
             document.getElementById('pReg').textContent = regDate;
 
-            // Обновляем статистику
             const matches = currentUser.matches || 0;
             const wins = currentUser.wins || 0;
             const winrate = matches > 0 ? Math.round((wins / matches) * 100) : 0;
@@ -1633,36 +1494,24 @@
             document.getElementById('pMvp').textContent = currentUser.mvp || 0;
             document.getElementById('pElo').textContent = currentUser.elo || 1000;
 
-            // АДМИН-ПАНЕЛЬ В ПРОФИЛЕ - ТОЛЬКО ДЛЯ DESTRO
+            // ПРОВЕРКА АДМИНА - используем isAdmin из БД
+            const isAdmin = currentUser.isAdmin === true;
             const isDestro = currentUser.username === 'Destro';
             
-            console.log('🔍 ПРОВЕРКА АДМИНА:', currentUser.username, 'isDestro:', isDestro);
+            console.log('🔍 Проверка прав:', { isAdmin, isDestro, user: currentUser.username });
             
             const adminBadge = document.getElementById('adminBadge');
-            if (isDestro) {
-                adminBadge.classList.add('visible');
-            } else {
-                adminBadge.classList.remove('visible');
-            }
-            
             const adminPanel = document.getElementById('profileAdminPanel');
-            if (isDestro) {
+            
+            if (isAdmin || isDestro) {
+                adminBadge.classList.add('visible');
                 adminPanel.classList.add('visible');
                 await renderAdminList();
                 await renderPromoList();
                 showToast('success', '👑 Администратор', 'Добро пожаловать в админ-панель!');
             } else {
+                adminBadge.classList.remove('visible');
                 adminPanel.classList.remove('visible');
-            }
-            
-            // ЗАГРУЗКА МАТЧА ИЗ SUPABASE
-            const matchLoaded = await loadMatchFromSupabase();
-
-            if (matchLoaded && currentMatch) {
-                renderMatchPage();
-                document.getElementById('matchNavLabel').textContent = 'Матч';
-                document.querySelector('#matchNavBtn i').className = 'fas fa-gamepad';
-                showToast('info', 'Активный матч', 'Вы уже в матче!');
             }
 
             updateQueueUI();
@@ -1811,8 +1660,6 @@
         currentMatch = { orange, blue };
         isPlayerInMatch = true;
         
-        saveMatchToSupabase();
-        
         queue = [];
 
         document.getElementById('searchMainBlock').classList.remove('searching');
@@ -1837,7 +1684,7 @@
     }
 
     function checkMatchResultVisibility() {
-        const isAdmin = currentUser?.username === 'Destro';
+        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
         const isPlayer = isPlayerInMatch;
         
         if (draftState.isComplete && isPlayer) {
@@ -1939,14 +1786,15 @@
     });
 
     // ============================================================
-    //  ЗАСЧИТЫВАНИЕ МАТЧА (ТОЛЬКО ДЛЯ DESTRO)
+    //  ЗАСЧИТЫВАНИЕ МАТЧА
     // ============================================================
     document.getElementById('blueWinBtn').addEventListener('click', function() {
         if (!currentMatch || !draftState.isComplete) {
             return showToast('error', 'Ошибка', 'Дождитесь завершения драфта');
         }
-        if (currentUser?.username !== 'Destro') {
-            return showToast('error', 'Доступ запрещён', 'Только Destro может засчитывать матчи');
+        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
+        if (!isAdmin) {
+            return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
         }
         finishMatch('blue');
     });
@@ -1955,16 +1803,18 @@
         if (!currentMatch || !draftState.isComplete) {
             return showToast('error', 'Ошибка', 'Дождитесь завершения драфта');
         }
-        if (currentUser?.username !== 'Destro') {
-            return showToast('error', 'Доступ запрещён', 'Только Destro может засчитывать матчи');
+        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
+        if (!isAdmin) {
+            return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
         }
         finishMatch('orange');
     });
 
     async function finishMatch(winner) {
         if (!currentMatch || !currentUser) return;
-        if (currentUser?.username !== 'Destro') {
-            return showToast('error', 'Доступ запрещён', 'Только Destro может засчитывать матчи');
+        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
+        if (!isAdmin) {
+            return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
         }
 
         const map = draftState.modeFinal || 'Gem Grab';
@@ -2053,7 +1903,6 @@
         document.getElementById('screenshotPreview').innerHTML = '';
         document.getElementById('screenshotStatus').textContent = '';
 
-        await deleteMatchFromSupabase();
         navigate('matches');
         updateQueueUI();
         showToast('info', 'Матч завершён', 'Статистика сохранена!');
@@ -2064,8 +1913,9 @@
         if (!draftState.isComplete) {
             return showToast('info', 'Дождитесь драфта', 'Сначала завершите выбор режима');
         }
-        if (currentUser?.username !== 'Destro') {
-            return showToast('error', 'Доступ запрещён', 'Только Destro может завершить матч');
+        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
+        if (!isAdmin) {
+            return showToast('error', 'Доступ запрещён', 'Только администраторы могут завершить матч');
         }
         if (!confirm('Завершить матч без засчитывания?')) return;
         
@@ -2076,8 +1926,6 @@
         document.getElementById('screenshotSection').classList.remove('visible');
         document.getElementById('matchActions').classList.remove('admin-visible');
         document.getElementById('endMatchBtn').disabled = true;
-        
-        deleteMatchFromSupabase();
         
         navigate('matches');
         updateQueueUI();
@@ -2096,7 +1944,6 @@
             currentCaptain: 0,
             isComplete: false
         };
-        saveMatchToSupabase();
         renderDraftUI();
     }
 
@@ -2156,7 +2003,6 @@
             bansContainer.style.display = 'grid';
         }
 
-        saveMatchToSupabase();
         checkMatchResultVisibility();
     }
 
@@ -2360,8 +2206,9 @@
     }
 
     async function addAdmin() {
-        if (currentUser?.username !== 'Destro') {
-            showToast('error', 'Доступ запрещён', 'Только Destro может управлять админами');
+        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
+        if (!isAdmin) {
+            showToast('error', 'Доступ запрещён', 'Только администраторы могут управлять админами');
             return;
         }
 
@@ -2416,8 +2263,9 @@
     }
 
     async function removeAdmin(userId) {
-        if (currentUser?.username !== 'Destro') {
-            showToast('error', 'Доступ запрещён', 'Только Destro может управлять админами');
+        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
+        if (!isAdmin) {
+            showToast('error', 'Доступ запрещён', 'Только администраторы могут управлять админами');
             return;
         }
 
@@ -2464,7 +2312,7 @@
                 <span class="admin-tag" style="${p.used_count >= p.max_uses ? 'opacity:0.5;' : ''}">
                     ${p.code} — ${p.amount} ₽ (${p.used_count}/${p.max_uses})
                     ${p.used_count >= p.max_uses ? '✅ Использован' : '🟢 Активен'}
-                    ${p.used_count < p.max_uses && currentUser?.username === 'Destro' ? 
+                    ${p.used_count < p.max_uses && (currentUser?.isAdmin || currentUser?.username === 'Destro') ? 
                         `<span class="remove" onclick="deletePromo('${p.id}')">&times;</span>` : ''
                     }
                 </span>
@@ -2475,8 +2323,9 @@
     }
 
     async function createPromo() {
-        if (currentUser?.username !== 'Destro') {
-            showToast('error', 'Доступ запрещён', 'Только Destro может создавать промокоды');
+        const isAdmin = currentUser?.isAdmin === true || currentUser?.username === 'Destro';
+        if (!isAdmin) {
+            showToast('error', 'Доступ запрещён', 'Только администраторы могут создавать промокоды');
             return;
         }
 
@@ -2552,66 +2401,6 @@
             }
 
             showToast('success', 'Готово', 'Промокод удалён');
-            renderPromoList();
-
-        } catch (e) {
-            showToast('error', 'Ошибка', e.message);
-        }
-    }
-
-    // ============================================================
-    //  ПРОМОКОД В КОШЕЛЬКЕ
-    // ============================================================
-    async function applyPromo() {
-        const input = document.getElementById('promoInput');
-        const code = input.value.trim().toUpperCase();
-        if (!code) return showToast('error', 'Ошибка', 'Введите промокод');
-        if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
-
-        try {
-            const { data, error } = await supabaseClient
-                .from('promocodes')
-                .select('*')
-                .eq('code', code)
-                .single();
-
-            if (error || !data) {
-                showToast('error', 'Ошибка', 'Промокод не найден');
-                return;
-            }
-
-            if (data.used_count >= data.max_uses) {
-                showToast('error', 'Ошибка', 'Промокод уже использован');
-                return;
-            }
-
-            const { error: updateError } = await supabaseClient
-                .from('promocodes')
-                .update({ used_count: data.used_count + 1 })
-                .eq('id', data.id);
-
-            if (updateError) {
-                showToast('error', 'Ошибка', updateError.message);
-                return;
-            }
-
-            const newBalance = (currentUser.balance || 0) + data.amount;
-            
-            const { error: balanceError } = await supabaseClient
-                .from('users')
-                .update({ balance: newBalance })
-                .eq('id', currentUser.id);
-
-            if (balanceError) {
-                showToast('error', 'Ошибка', balanceError.message);
-                return;
-            }
-
-            currentUser.balance = newBalance;
-            saveSession(currentUser);
-
-            showToast('success', 'Промокод применён!', 'Вы получили ' + data.amount + ' ₽. Баланс: ' + newBalance + ' ₽');
-            input.value = '';
             renderPromoList();
 
         } catch (e) {
@@ -2750,7 +2539,6 @@
 
         await checkAuth();
         
-        // Обновляем топ при переходе на страницу
         document.querySelector('[data-page="top"]')?.addEventListener('click', renderTopPage);
     });
 </script>

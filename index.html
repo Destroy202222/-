@@ -141,7 +141,6 @@
         .main-wrapper { display: none; max-width: 480px; margin: 0 auto; padding: 0 16px; }
         .header { padding: 16px 0 8px; cursor: pointer; }
         .header .logo h1 { font-size: 20px; font-weight: 900; }
-        .header .logo h1 span { color: #ffd700; }
 
         .page { display: none; padding-bottom: 20px; }
         .page.active { display: block; }
@@ -1158,16 +1157,12 @@
 
 <script>
     // ============================================================
-    //  SUPABASE - ПОДКЛЮЧЕНИЕ
+    //  SUPABASE
     // ============================================================
     const SUPABASE_URL = 'https://tgjltbpmuczfkikvmmde.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log('✅ Supabase подключен!');
 
-    // ============================================================
-    //  ПЕРЕМЕННЫЕ
-    // ============================================================
     let currentUser = null;
     let queue = [];
     let currentMatch = null;
@@ -1189,33 +1184,6 @@
         isComplete: false
     };
 
-    // ============================================================
-    //  СОХРАНЕНИЕ СЕССИИ
-    // ============================================================
-    function saveSession(user) {
-        try {
-            localStorage.setItem('brawl_user_id', user.id);
-            localStorage.setItem('brawl_username', user.username);
-        } catch (e) { console.error('Ошибка сохранения сессии:', e); }
-    }
-
-    function clearSession() {
-        localStorage.removeItem('brawl_user_id');
-        localStorage.removeItem('brawl_username');
-    }
-
-    function getSession() {
-        try {
-            const id = localStorage.getItem('brawl_user_id');
-            const username = localStorage.getItem('brawl_username');
-            if (id && username) return { id, username };
-        } catch (e) {}
-        return null;
-    }
-
-    // ============================================================
-    //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-    // ============================================================
     function generateCode() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let code = '';
@@ -1237,9 +1205,27 @@
         toast._t = setTimeout(() => toast.classList.remove('visible'), 4000);
     }
 
-    // ============================================================
-    //  ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК АВТОРИЗАЦИИ
-    // ============================================================
+    function saveSession(user) {
+        try {
+            localStorage.setItem('brawl_user_id', user.id);
+            localStorage.setItem('brawl_username', user.username);
+        } catch (e) {}
+    }
+
+    function clearSession() {
+        localStorage.removeItem('brawl_user_id');
+        localStorage.removeItem('brawl_username');
+    }
+
+    function getSession() {
+        try {
+            const id = localStorage.getItem('brawl_user_id');
+            const username = localStorage.getItem('brawl_username');
+            if (id && username) return { id, username };
+        } catch (e) {}
+        return null;
+    }
+
     function switchAuthTab(tab) {
         document.querySelectorAll('.auth-tabs .tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
@@ -1258,9 +1244,6 @@
         document.getElementById('registerMessage').textContent = '';
     }
 
-    // ============================================================
-    //  РЕГИСТРАЦИЯ (ПОЛНОСТЬЮ ИСПРАВЛЕНА)
-    // ============================================================
     async function registerUser() {
         const username = document.getElementById('regUsername').value.trim();
         const password = document.getElementById('regPassword').value;
@@ -1287,7 +1270,6 @@
         messageEl.textContent = '⏳ Проверка...';
 
         try {
-            // Проверяем существует ли пользователь
             const { data: existing } = await supabaseClient
                 .from('users')
                 .select('username')
@@ -1303,7 +1285,6 @@
             const partyCode = generateCode();
             const userId = 'user_' + Date.now().toString();
 
-            // ТОЛЬКО НУЖНЫЕ ПОЛЯ - остальные будут по умолчанию
             const newUser = {
                 id: userId,
                 username: username,
@@ -1318,7 +1299,6 @@
                 .single();
 
             if (error) {
-                console.error('❌ Ошибка регистрации:', error);
                 messageEl.className = 'auth-message show error';
                 messageEl.textContent = '❌ Ошибка: ' + error.message;
                 return;
@@ -1332,15 +1312,11 @@
             setTimeout(() => checkAuth(), 1000);
 
         } catch (e) {
-            console.error('❌ Ошибка:', e);
             messageEl.className = 'auth-message show error';
             messageEl.textContent = '❌ Ошибка сервера: ' + e.message;
         }
     }
 
-    // ============================================================
-    //  ВХОД
-    // ============================================================
     async function loginUser() {
         const username = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value;
@@ -1375,8 +1351,6 @@
                 return;
             }
 
-            console.log('✅ Найден пользователь:', data);
-
             currentUser = data;
             saveSession(data);
             
@@ -1386,15 +1360,11 @@
             await checkAuth();
 
         } catch (e) {
-            console.error('❌ Ошибка:', e);
             messageEl.className = 'auth-message show error';
             messageEl.textContent = '❌ Ошибка сервера';
         }
     }
 
-    // ============================================================
-    //  ПРОВЕРКА АВТОРИЗАЦИИ
-    // ============================================================
     async function checkAuth() {
         if (currentUser) {
             document.getElementById('authPage').style.display = 'none';
@@ -1403,13 +1373,11 @@
             document.getElementById('pName').textContent = currentUser.username;
             document.getElementById('avatar').textContent = currentUser.username.charAt(0).toUpperCase();
             
-            // Дата регистрации
             if (currentUser.registered) {
                 const regDate = new Date(currentUser.registered).toLocaleDateString('ru-RU');
                 document.getElementById('pReg').textContent = regDate;
             }
 
-            // Статистика
             const matches = currentUser.matches || 0;
             const wins = currentUser.wins || 0;
             const winrate = matches > 0 ? Math.round((wins / matches) * 100) : 0;
@@ -1418,10 +1386,7 @@
             document.getElementById('pMvp').textContent = currentUser.mvp || 0;
             document.getElementById('pElo').textContent = currentUser.elo || 1000;
 
-            // Проверка админа
             const isAdmin = currentUser.isAdmin === true;
-            
-            console.log('🔍 Проверка прав:', { isAdmin, user: currentUser.username });
             
             const adminBadge = document.getElementById('adminBadge');
             const adminPanel = document.getElementById('profileAdminPanel');
@@ -1431,7 +1396,6 @@
                 adminPanel.classList.add('visible');
                 await renderAdminList();
                 await renderPromoList();
-                showToast('success', '👑 Администратор', 'Добро пожаловать в админ-панель!');
             } else {
                 adminBadge.classList.remove('visible');
                 adminPanel.classList.remove('visible');
@@ -1448,9 +1412,6 @@
         }
     }
 
-    // ============================================================
-    //  ВЫХОД
-    // ============================================================
     function handleLogout() {
         if (!confirm('Выйти из аккаунта?')) return;
         clearSession();
@@ -1461,9 +1422,6 @@
         showToast('info', 'Выход', 'Вы вышли');
     }
 
-    // ============================================================
-    //  НАВИГАЦИЯ
-    // ============================================================
     const pages = {
         home: 'pageHome',
         profile: 'pageProfile',
@@ -1487,9 +1445,6 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // ============================================================
-    //  ПОИСК МАТЧА
-    // ============================================================
     function startSearch() {
         if (isSearching) return;
         if (currentMatch) {
@@ -1568,9 +1523,6 @@
         document.getElementById('matchCount').textContent = matchPlayers;
     }
 
-    // ============================================================
-    //  МАТЧ
-    // ============================================================
     function startMatch() {
         const shuffled = [...queue];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -1670,9 +1622,6 @@
         checkMatchResultVisibility();
     }
 
-    // ============================================================
-    //  ЗАГРУЗКА СКРИНШОТА
-    // ============================================================
     document.getElementById('screenshotUploadBtn').addEventListener('click', function() {
         const input = document.getElementById('screenshotInput');
         const file = input.files[0];
@@ -1708,9 +1657,6 @@
         reader.readAsDataURL(file);
     });
 
-    // ============================================================
-    //  ЗАСЧИТЫВАНИЕ МАТЧА
-    // ============================================================
     document.getElementById('blueWinBtn').addEventListener('click', function() {
         if (!currentMatch || !draftState.isComplete) {
             return showToast('error', 'Ошибка', 'Дождитесь завершения драфта');
@@ -1851,9 +1797,6 @@
         showToast('info', 'Матч завершён', 'Матч отменён');
     }
 
-    // ============================================================
-    //  ДРАФТ
-    // ============================================================
     function resetDraft() {
         draftState = {
             gameNumber: draftState.gameNumber + 1,
@@ -1947,9 +1890,6 @@
         renderDraftUI();
     }
 
-    // ============================================================
-    //  ПРОФИЛЬ
-    // ============================================================
     async function updateProfile() {
         if (!currentUser) return;
         
@@ -1966,9 +1906,6 @@
         await renderChart();
     }
 
-    // ============================================================
-    //  ИСТОРИЯ МАТЧЕЙ
-    // ============================================================
     async function loadMatchHistory() {
         if (!currentUser) return;
         
@@ -2002,9 +1939,6 @@
         }
     }
 
-    // ============================================================
-    //  ДИНАМИКА МАТЧЕЙ (ГРАФИК)
-    // ============================================================
     async function renderChart() {
         try {
             const { data, error } = await supabaseClient
@@ -2042,9 +1976,6 @@
         }
     }
 
-    // ============================================================
-    //  ТОП ИГРОКОВ
-    // ============================================================
     async function renderTopPage() {
         try {
             const { data: users, error } = await supabaseClient
@@ -2092,9 +2023,6 @@
         }
     }
 
-    // ============================================================
-    //  АДМИН-ПАНЕЛЬ
-    // ============================================================
     async function renderAdminList() {
         try {
             const { data: admins, error } = await supabaseClient
@@ -2207,9 +2135,6 @@
         }
     }
 
-    // ============================================================
-    //  ПРОМОКОДЫ
-    // ============================================================
     async function renderPromoList() {
         try {
             const { data, error } = await supabaseClient
@@ -2324,9 +2249,6 @@
         }
     }
 
-    // ============================================================
-    //  ПАТИ
-    // ============================================================
     function updatePartyUI() {
         if (!currentUser) return;
         if (!currentUser.partyCode) {
@@ -2390,12 +2312,7 @@
         });
     }
 
-    // ============================================================
-    //  ПОДКЛЮЧЕНИЕ ОБРАБОТЧИКОВ
-    // ============================================================
     document.addEventListener('DOMContentLoaded', async function() {
-        console.log('✅ DOM ЗАГРУЖЕН!');
-
         document.getElementById('tabLogin').addEventListener('click', function() {
             switchAuthTab('login');
         });
@@ -2435,7 +2352,6 @@
             handleModesBan(value);
         });
 
-        // Восстановление сессии
         const session = getSession();
         if (session) {
             try {
@@ -2448,13 +2364,11 @@
 
                 if (!error && data) {
                     currentUser = data;
-                    console.log('✅ Сессия восстановлена:', data.username);
                 }
             } catch (e) {}
         }
 
         await checkAuth();
-        
         document.querySelector('[data-page="top"]')?.addEventListener('click', renderTopPage);
     });
 </script>

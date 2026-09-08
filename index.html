@@ -1244,6 +1244,9 @@
         document.getElementById('registerMessage').textContent = '';
     }
 
+    // ============================================================
+    //  РЕГИСТРАЦИЯ (ИСПРАВЛЕНА - partycode МАЛЕНЬКИМИ БУКВАМИ)
+    // ============================================================
     async function registerUser() {
         const username = document.getElementById('regUsername').value.trim();
         const password = document.getElementById('regPassword').value;
@@ -1285,11 +1288,12 @@
             const partyCode = generateCode();
             const userId = 'user_' + Date.now().toString();
 
+            // ВНИМАНИЕ: partycode - ВСЕ МАЛЕНЬКИЕ БУКВЫ!
             const newUser = {
                 id: userId,
                 username: username,
                 password: password,
-                partyCode: partyCode
+                partycode: partyCode
             };
 
             const { data, error } = await supabaseClient
@@ -1299,6 +1303,7 @@
                 .single();
 
             if (error) {
+                console.error('Ошибка регистрации:', error);
                 messageEl.className = 'auth-message show error';
                 messageEl.textContent = '❌ Ошибка: ' + error.message;
                 return;
@@ -1312,11 +1317,15 @@
             setTimeout(() => checkAuth(), 1000);
 
         } catch (e) {
+            console.error('Ошибка:', e);
             messageEl.className = 'auth-message show error';
             messageEl.textContent = '❌ Ошибка сервера: ' + e.message;
         }
     }
 
+    // ============================================================
+    //  ВХОД
+    // ============================================================
     async function loginUser() {
         const username = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value;
@@ -1365,6 +1374,9 @@
         }
     }
 
+    // ============================================================
+    //  ПРОВЕРКА АВТОРИЗАЦИИ
+    // ============================================================
     async function checkAuth() {
         if (currentUser) {
             document.getElementById('authPage').style.display = 'none';
@@ -1386,7 +1398,8 @@
             document.getElementById('pMvp').textContent = currentUser.mvp || 0;
             document.getElementById('pElo').textContent = currentUser.elo || 1000;
 
-            const isAdmin = currentUser.isAdmin === true;
+            // ВНИМАНИЕ: isadmin - ВСЕ МАЛЕНЬКИЕ БУКВЫ!
+            const isAdmin = currentUser.isadmin === true;
             
             const adminBadge = document.getElementById('adminBadge');
             const adminPanel = document.getElementById('profileAdminPanel');
@@ -1445,6 +1458,9 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // ============================================================
+    //  ПОИСК МАТЧА
+    // ============================================================
     function startSearch() {
         if (isSearching) return;
         if (currentMatch) {
@@ -1559,7 +1575,7 @@
     }
 
     function checkMatchResultVisibility() {
-        const isAdmin = currentUser?.isAdmin === true;
+        const isAdmin = currentUser?.isadmin === true;
         const isPlayer = isPlayerInMatch;
         
         if (draftState.isComplete && isPlayer) {
@@ -1661,7 +1677,7 @@
         if (!currentMatch || !draftState.isComplete) {
             return showToast('error', 'Ошибка', 'Дождитесь завершения драфта');
         }
-        if (!currentUser?.isAdmin) {
+        if (!currentUser?.isadmin) {
             return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
         }
         finishMatch('blue');
@@ -1671,7 +1687,7 @@
         if (!currentMatch || !draftState.isComplete) {
             return showToast('error', 'Ошибка', 'Дождитесь завершения драфта');
         }
-        if (!currentUser?.isAdmin) {
+        if (!currentUser?.isadmin) {
             return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
         }
         finishMatch('orange');
@@ -1679,7 +1695,7 @@
 
     async function finishMatch(winner) {
         if (!currentMatch || !currentUser) return;
-        if (!currentUser.isAdmin) {
+        if (!currentUser.isadmin) {
             return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
         }
 
@@ -1717,7 +1733,7 @@
                             losses: newLosses,
                             elo: newElo,
                             mvp: newMvp,
-                            lastLogin: new Date().toISOString()
+                            lastlogin: new Date().toISOString()
                         })
                         .eq('id', player.id);
                 }
@@ -1779,7 +1795,7 @@
         if (!draftState.isComplete) {
             return showToast('info', 'Дождитесь драфта', 'Сначала завершите выбор режима');
         }
-        if (!currentUser?.isAdmin) {
+        if (!currentUser?.isadmin) {
             return showToast('error', 'Доступ запрещён', 'Только администраторы могут завершить матч');
         }
         if (!confirm('Завершить матч без засчитывания?')) return;
@@ -2011,7 +2027,7 @@
                         <div class="rank ${rankClass}">#${rankNum}</div>
                         <div class="avatar">${initial}</div>
                         <div class="info">
-                            <div class="name">${u.username} ${u.isAdmin ? '👑' : ''}</div>
+                            <div class="name">${u.username} ${u.isadmin ? '👑' : ''}</div>
                             <div class="stats">${u.matches || 0} матчей | ${winrate}% побед</div>
                         </div>
                         <div class="elo">${u.elo || 1000}<span class="elo-label">ELO</span></div>
@@ -2027,8 +2043,8 @@
         try {
             const { data: admins, error } = await supabaseClient
                 .from('users')
-                .select('id, username, isAdmin')
-                .eq('isAdmin', true);
+                .select('id, username, isadmin')
+                .eq('isadmin', true);
 
             if (error) throw error;
 
@@ -2053,7 +2069,7 @@
     }
 
     async function addAdmin() {
-        if (!currentUser?.isAdmin) {
+        if (!currentUser?.isadmin) {
             showToast('error', 'Доступ запрещён', 'Только администраторы могут управлять админами');
             return;
         }
@@ -2070,7 +2086,7 @@
         try {
             const { data: user, error } = await supabaseClient
                 .from('users')
-                .select('id, isAdmin')
+                .select('id, isadmin')
                 .eq('username', username)
                 .maybeSingle();
 
@@ -2080,7 +2096,7 @@
                 return;
             }
 
-            if (user.isAdmin) {
+            if (user.isadmin) {
                 statusEl.className = 'admin-status show error';
                 statusEl.textContent = '❌ Этот пользователь уже администратор';
                 return;
@@ -2088,7 +2104,7 @@
 
             const { error: updateError } = await supabaseClient
                 .from('users')
-                .update({ isAdmin: true })
+                .update({ isadmin: true })
                 .eq('id', user.id);
 
             if (updateError) {
@@ -2109,7 +2125,7 @@
     }
 
     async function removeAdmin(userId) {
-        if (!currentUser?.isAdmin) {
+        if (!currentUser?.isadmin) {
             showToast('error', 'Доступ запрещён', 'Только администраторы могут управлять админами');
             return;
         }
@@ -2119,7 +2135,7 @@
         try {
             const { error } = await supabaseClient
                 .from('users')
-                .update({ isAdmin: false })
+                .update({ isadmin: false })
                 .eq('id', userId);
 
             if (error) {
@@ -2154,7 +2170,7 @@
                 <span class="admin-tag" style="${p.used_count >= p.max_uses ? 'opacity:0.5;' : ''}">
                     ${p.code} — ${p.amount} ₽ (${p.used_count}/${p.max_uses})
                     ${p.used_count >= p.max_uses ? '✅ Использован' : '🟢 Активен'}
-                    ${p.used_count < p.max_uses && currentUser?.isAdmin ? 
+                    ${p.used_count < p.max_uses && currentUser?.isadmin ? 
                         `<span class="remove" onclick="deletePromo('${p.id}')">&times;</span>` : ''
                     }
                 </span>
@@ -2165,7 +2181,7 @@
     }
 
     async function createPromo() {
-        if (!currentUser?.isAdmin) {
+        if (!currentUser?.isadmin) {
             showToast('error', 'Доступ запрещён', 'Только администраторы могут создавать промокоды');
             return;
         }
@@ -2251,15 +2267,15 @@
 
     function updatePartyUI() {
         if (!currentUser) return;
-        if (!currentUser.partyCode) {
-            currentUser.partyCode = generateCode();
+        if (!currentUser.partycode) {
+            currentUser.partycode = generateCode();
             supabaseClient
                 .from('users')
-                .update({ partyCode: currentUser.partyCode })
+                .update({ partycode: currentUser.partycode })
                 .eq('id', currentUser.id)
                 .then(() => {});
         }
-        document.getElementById('playerCode').textContent = currentUser.partyCode || '—';
+        document.getElementById('playerCode').textContent = currentUser.partycode || '—';
         renderPartyFriends();
     }
 
@@ -2282,10 +2298,10 @@
         if (!code) return showToast('error', 'Ошибка', 'Введите код');
         if (code.length !== 6) return showToast('error', 'Ошибка', 'Код должен состоять из 6 букв');
         if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
-        if (partyFriends.some(f => f.partyCode === code)) {
+        if (partyFriends.some(f => f.partycode === code)) {
             return showToast('info', 'Уже в пати', 'Этот игрок уже в вашей пати');
         }
-        partyFriends.push({ id: 'friend_' + Date.now(), username: 'Игрок_' + code, partyCode: code });
+        partyFriends.push({ id: 'friend_' + Date.now(), username: 'Игрок_' + code, partycode: code });
         renderPartyFriends();
         document.getElementById('partyCodeInput').value = '';
         showToast('success', 'Добавлен!', 'Игрок добавлен в пати');

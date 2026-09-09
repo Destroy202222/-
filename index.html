@@ -11,7 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
     <style>
-        /* ===== ВСЕ СТИЛИ (ТЕ ЖЕ, ЧТО И БЫЛИ) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0b0b0f;
@@ -1155,6 +1154,54 @@
         .admin-tag .remove:hover { color: #ff4444; }
         .admin-empty { color: #555; font-size: 13px; padding: 4px 0; }
 
+        /* ===== АДМИН-МЕНЕДЖЕР МАТЧЕЙ ===== */
+        .admin-matches-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #2a2a4a;
+        }
+        .admin-matches-section .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8888aa;
+            margin-bottom: 8px;
+        }
+        .admin-match-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a2e;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 6px;
+            border: 1px solid #2a2a4a;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .admin-match-item:hover {
+            border-color: #ffd700;
+            background: rgba(255,215,0,0.05);
+        }
+        .admin-match-item .match-info {
+            font-size: 12px;
+        }
+        .admin-match-item .match-info .match-id {
+            color: #8888aa;
+        }
+        .admin-match-item .match-info .match-players {
+            color: #fff;
+            font-weight: 600;
+        }
+        .admin-match-item .match-status {
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        .admin-match-item .match-status.pending { background: rgba(255,215,0,0.2); color: #ffd700; }
+        .admin-match-item .match-status.completed { background: rgba(81,207,102,0.2); color: #51cf66; }
+
+        /* ===== ПРОМОКОДЫ ===== */
         .promo-section {
             display: flex;
             flex-direction: column;
@@ -1528,7 +1575,6 @@
         </div>
     </div>
 
-    <!-- ===== ПОИСК МАТЧА ===== -->
     <div class="page" id="pageMatches">
         <div class="search-page-wrapper">
             <div class="search-header-block">
@@ -1567,7 +1613,6 @@
         </div>
     </div>
 
-    <!-- ===== МАТЧ ===== -->
     <div class="page match-page" id="matchPage">
         <div class="match-info-bar" id="matchInfoBar">
             <div class="info-item"><i class="fas fa-hashtag"></i> Номер игры: <span class="value highlight" id="matchGameNumber">#1</span></div>
@@ -1648,7 +1693,6 @@
         </div>
     </div>
 
-    <!-- ===== ПРОФИЛЬ ===== -->
     <div class="page" id="pageProfile">
         <div class="profile-card">
             <div class="profile-header">
@@ -1676,6 +1720,7 @@
 
             <div class="profile-admin-panel" id="profileAdminPanel">
                 <div class="admin-title"><i class="fas fa-user-shield"></i> Админ-панель</div>
+                
                 <div class="admin-section">
                     <div class="section-title">Добавить администратора</div>
                     <div class="admin-input-group">
@@ -1684,10 +1729,12 @@
                     </div>
                     <div class="admin-status" id="adminAddStatus"></div>
                 </div>
+                
                 <div class="admin-section">
                     <div class="section-title">Список администраторов</div>
                     <div class="admin-list" id="adminList"><div class="admin-empty">Загрузка...</div></div>
                 </div>
+                
                 <div class="admin-section">
                     <div class="section-title">Создать промокод</div>
                     <div class="promo-section">
@@ -1700,9 +1747,18 @@
                         <div class="promo-status" id="promoStatus"></div>
                     </div>
                 </div>
+                
                 <div class="admin-section">
                     <div class="section-title">Список промокодов</div>
                     <div class="admin-list" id="promoList"><div class="admin-empty">Нет промокодов</div></div>
+                </div>
+
+                <!-- ===== АДМИН-МЕНЕДЖЕР МАТЧЕЙ ===== -->
+                <div class="admin-matches-section">
+                    <div class="section-title"><i class="fas fa-gamepad"></i> Не завершённые матчи</div>
+                    <div id="adminMatchesList">
+                        <div class="admin-empty">Нет активных матчей</div>
+                    </div>
                 </div>
             </div>
 
@@ -1718,7 +1774,6 @@
         </div>
     </div>
 
-    <!-- ===== ДРУЗЬЯ ===== -->
     <div class="page friends-page" id="pageFriends">
         <div class="friends-header">
             <h2>Друзья</h2>
@@ -1744,7 +1799,6 @@
         </div>
     </div>
 
-    <!-- ===== ТОП ===== -->
     <div class="page top-page" id="pageTop">
         <div class="top-header">
             <h2>Топ игроков</h2>
@@ -1755,7 +1809,6 @@
         </div>
     </div>
 
-    <!-- ===== КОШЕЛЁК ===== -->
     <div class="page wallet-page" id="pageWallet">
         <div class="wallet-card">
             <div class="balance" id="walletBalance">0 ₽</div>
@@ -1793,7 +1846,6 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let currentUser = null;
-    let queue = [];
     let currentMatch = null;
     let partyFriends = [];
     let friendsList = [];
@@ -1804,7 +1856,6 @@
     let searchSeconds = 0;
     let currentScreenshot = null;
     let isPlayerInMatch = false;
-    let activeMatchId = null;
     let friendsTab = 'friends';
     let waitingConfirm = false;
     let confirmedPlayers = [];
@@ -1815,6 +1866,8 @@
     let isCaptain = false;
     let searchChannel = null;
     let currentMatchId = null;
+    let adminMatches = [];
+    let selectedAdminMatch = null;
 
     let draftState = {
         gameNumber: 1,
@@ -1828,17 +1881,11 @@
     // ============================================================
     //  ФОРМУЛА ELO
     // ============================================================
-    function calculateEloChange(playerElo, opponentElo, K = 32) {
-        const expected = 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
-        return Math.round(K * (1 - expected));
-    }
-
-    function calculateEloChangeForMatch(winnerElo, loserElo, K = 32) {
+    function calculateEloChange(winnerElo, loserElo, K = 32) {
         const expectedWinner = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
-        const expectedLoser = 1 / (1 + Math.pow(10, (winnerElo - loserElo) / 400));
         return {
             winnerChange: Math.round(K * (1 - expectedWinner)),
-            loserChange: Math.round(K * (0 - expectedLoser))
+            loserChange: Math.round(K * (0 - (1 / (1 + Math.pow(10, (winnerElo - loserElo) / 400)))))
         };
     }
 
@@ -2069,6 +2116,7 @@
                 adminPanel.classList.add('visible');
                 await renderAdminList();
                 await renderPromoList();
+                await loadAdminMatches();
             } else {
                 adminBadge.classList.remove('visible');
                 adminPanel.classList.remove('visible');
@@ -2161,12 +2209,12 @@
                 elo: currentUser.elo || 1000,
                 status: 'searching',
                 party_id: partyFriends.length > 0 ? 'party_' + Date.now() : null,
-                party_members: partyFriends.map(f => f.username),
+                party_members: partyFriends.map(f => f.username).join(','),
                 created_at: new Date().toISOString()
             });
 
         if (queueError) {
-            showToast('error', 'Ошибка', 'Не удалось встать в очередь');
+            showToast('error', 'Ошибка', 'Не удалось встать в очередь: ' + queueError.message);
             return;
         }
 
@@ -2175,8 +2223,8 @@
         document.getElementById('queueBtn').style.display = 'none';
         document.getElementById('cancelBtn').style.display = 'inline-flex';
         document.getElementById('searchStatus').textContent = 'Поиск';
-        document.getElementById('searchCurrentPlayers').textContent = '1';
-        document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
+
+        await updateQueueCount();
 
         if (searchTimerInterval) clearInterval(searchTimerInterval);
         searchTimerInterval = setInterval(() => {
@@ -2198,22 +2246,40 @@
                 schema: 'public',
                 table: 'queue'
             }, async (payload) => {
-                // Обновляем количество игроков в очереди
-                const { count } = await supabaseClient
-                    .from('queue')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('status', 'searching');
-
-                document.getElementById('searchCurrentPlayers').textContent = count || 0;
-
-                // Проверяем, есть ли 6 игроков
-                if (count >= 6) {
-                    await createMatchFromQueue();
-                }
+                await updateQueueCount();
             })
             .subscribe();
 
         showToast('info', 'Поиск начат', 'Ищем игроков...');
+    }
+
+    async function updateQueueCount() {
+        const { count, error } = await supabaseClient
+            .from('queue')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'searching');
+
+        if (!error) {
+            const currentCount = count || 0;
+            document.getElementById('searchCurrentPlayers').textContent = currentCount;
+            
+            // Получаем список игроков для отображения
+            const { data: players } = await supabaseClient
+                .from('queue')
+                .select('username')
+                .eq('status', 'searching')
+                .limit(6);
+            
+            if (players && players.length > 0) {
+                const names = players.map(p => p.username).join(', ');
+                document.getElementById('searchStatus').textContent = 'Поиск (' + names + ')';
+            }
+
+            // Проверяем, есть ли 6 игроков
+            if (currentCount >= 6 && isSearching) {
+                await createMatchFromQueue();
+            }
+        }
     }
 
     async function createMatchFromQueue() {
@@ -2230,11 +2296,11 @@
         if (!players || players.length < 6) return;
 
         // Удаляем их из очереди
-        const playerIds = players.map(p => p.id);
+        const ids = players.map(p => p.id);
         await supabaseClient
             .from('queue')
             .delete()
-            .in('id', playerIds);
+            .in('id', ids);
 
         // Создаём матч
         const shuffled = [...players];
@@ -2254,16 +2320,17 @@
             .from('active_matches')
             .insert({
                 id: matchId,
-                orange: orange,
-                blue: blue,
+                orange: JSON.stringify(orange.map(p => ({ id: p.user_id, username: p.username, elo: p.elo }))),
+                blue: JSON.stringify(blue.map(p => ({ id: p.user_id, username: p.username, elo: p.elo }))),
                 draft_state: JSON.stringify(draftState),
+                status: 'pending',
                 created_at: new Date().toISOString()
             });
 
         // Создаём матч в локальном состоянии
         currentMatch = { 
-            orange: orange.map(p => ({ id: p.user_id, username: p.username })), 
-            blue: blue.map(p => ({ id: p.user_id, username: p.username }))
+            orange: orange.map(p => ({ id: p.user_id, username: p.username, elo: p.elo })), 
+            blue: blue.map(p => ({ id: p.user_id, username: p.username, elo: p.elo }))
         };
         isPlayerInMatch = true;
         isCaptain = blue.length > 0 && blue[0].user_id === currentUser.id;
@@ -2294,10 +2361,15 @@
         if (!isSearching) return;
 
         // Удаляем из очереди
-        await supabaseClient
+        const { error } = await supabaseClient
             .from('queue')
             .delete()
-            .eq('user_id', currentUser.id);
+            .eq('user_id', currentUser.id)
+            .eq('status', 'searching');
+
+        if (error) {
+            console.error('Ошибка удаления из очереди:', error);
+        }
 
         isSearching = false;
         clearInterval(searchTimerInterval);
@@ -2308,6 +2380,7 @@
         document.getElementById('cancelBtn').style.display = 'none';
         document.getElementById('searchCurrentPlayers').textContent = '0';
         document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
+        document.getElementById('searchStatus').textContent = 'Поиск';
 
         if (searchChannel) {
             supabaseClient.removeChannel(searchChannel);
@@ -2426,10 +2499,10 @@
     }
 
     function startMatchAfterConfirm() {
-        // Удаляем матч из активных
+        // Обновляем статус матча
         supabaseClient
             .from('active_matches')
-            .delete()
+            .update({ status: 'active' })
             .eq('id', currentMatchId);
 
         draftState.gameNumber = (draftState.gameNumber || 0) + 1;
@@ -2452,6 +2525,11 @@
         showToast('success', 'Матч начался!', `${currentMatch.orange.length + currentMatch.blue.length} игроков в игре`);
         checkMatchResultVisibility();
         checkLobbyVisibility();
+        
+        // Обновляем админ-панель
+        if (currentUser?.isadmin) {
+            loadAdminMatches();
+        }
     }
 
     // ============================================================
@@ -2572,6 +2650,111 @@
     }
 
     // ============================================================
+    //  АДМИН-МЕНЕДЖЕР МАТЧЕЙ
+    // ============================================================
+    async function loadAdminMatches() {
+        if (!currentUser?.isadmin) return;
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('active_matches')
+                .select('*')
+                .in('status', ['pending', 'active'])
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            adminMatches = data || [];
+            renderAdminMatches();
+        } catch (e) {
+            console.error('Ошибка загрузки матчей:', e);
+        }
+    }
+
+    function renderAdminMatches() {
+        const container = document.getElementById('adminMatchesList');
+        
+        if (adminMatches.length === 0) {
+            container.innerHTML = '<div class="admin-empty">Нет активных матчей</div>';
+            return;
+        }
+
+        container.innerHTML = adminMatches.map(match => {
+            let players = [];
+            try {
+                const orange = JSON.parse(match.orange);
+                const blue = JSON.parse(match.blue);
+                players = [...orange, ...blue];
+            } catch (e) {
+                players = [];
+            }
+            
+            const playerNames = players.map(p => p.username).join(', ');
+            const statusText = match.status === 'pending' ? 'Ожидает' : 'В процессе';
+            const statusClass = match.status === 'pending' ? 'pending' : 'completed';
+
+            return `
+                <div class="admin-match-item" onclick="openAdminMatch('${match.id}')">
+                    <div class="match-info">
+                        <div class="match-id">#${match.id.substring(0, 8)}</div>
+                        <div class="match-players">${playerNames || 'Нет игроков'}</div>
+                    </div>
+                    <span class="match-status ${statusClass}">${statusText}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function openAdminMatch(matchId) {
+        if (!currentUser?.isadmin) return;
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('active_matches')
+                .select('*')
+                .eq('id', matchId)
+                .single();
+
+            if (error) throw error;
+
+            selectedAdminMatch = data;
+            
+            // Загружаем матч для админа
+            const orange = JSON.parse(data.orange);
+            const blue = JSON.parse(data.blue);
+            
+            currentMatch = { orange, blue };
+            isPlayerInMatch = true;
+            isCaptain = false; // Админ не капитан
+            
+            if (data.draft_state) {
+                draftState = JSON.parse(data.draft_state);
+            } else {
+                draftState = {
+                    gameNumber: 1,
+                    modeOptions: ['Gem Grab', 'Brawl Ball', 'Knockout', 'Heist', 'Bounty', 'Hot Zone', 'Siege'],
+                    modeBanned: [],
+                    modeFinal: null,
+                    currentCaptain: 0,
+                    isComplete: false
+                };
+            }
+
+            document.getElementById('matchResultSection').classList.add('admin-visible');
+            document.getElementById('matchActions').classList.add('admin-visible');
+            document.getElementById('endMatchBtn').disabled = false;
+            document.getElementById('screenshotSection').classList.add('visible');
+
+            navigate('matchPage');
+            renderMatchPage();
+            showToast('success', 'Матч загружен', 'Вы можете засчитать результат');
+
+        } catch (e) {
+            showToast('error', 'Ошибка', 'Не удалось загрузить матч');
+        }
+    }
+
+    // ============================================================
     //  СКРИНШОТ
     // ============================================================
     document.getElementById('screenshotUploadBtn').addEventListener('click', function() {
@@ -2639,15 +2822,13 @@
         }
 
         const map = draftState.modeFinal || 'Gem Grab';
-        
-        // Получаем игроков с их ELO
         const allPlayers = [...currentMatch.orange, ...currentMatch.blue];
         const orangePlayers = currentMatch.orange;
         const bluePlayers = currentMatch.blue;
         const winners = winner === 'blue' ? bluePlayers : orangePlayers;
         const losers = winner === 'blue' ? orangePlayers : bluePlayers;
 
-        // Получаем ELO всех игроков
+        // Получаем текущие ELO игроков
         const playerIds = allPlayers.map(p => p.id);
         const { data: playersData } = await supabaseClient
             .from('users')
@@ -2659,29 +2840,27 @@
             eloMap[p.id] = p.elo || 1000;
         });
 
-        // Вычисляем средний ELO для каждой команды
+        // Вычисляем средний ELO команд
         const avgWinnerElo = winners.reduce((sum, p) => sum + (eloMap[p.id] || 1000), 0) / winners.length;
         const avgLoserElo = losers.reduce((sum, p) => sum + (eloMap[p.id] || 1000), 0) / losers.length;
 
-        // Для каждого игрока считаем изменение ELO
-        const eloChanges = {};
+        // ELO изменения
         const K = 32;
+        const eloChanges = {};
 
         for (const winnerPlayer of winners) {
             const winnerElo = eloMap[winnerPlayer.id] || 1000;
             const expected = 1 / (1 + Math.pow(10, (avgLoserElo - winnerElo) / 400));
-            const change = Math.round(K * (1 - expected));
-            eloChanges[winnerPlayer.id] = change;
+            eloChanges[winnerPlayer.id] = Math.round(K * (1 - expected));
         }
 
         for (const loserPlayer of losers) {
             const loserElo = eloMap[loserPlayer.id] || 1000;
             const expected = 1 / (1 + Math.pow(10, (avgWinnerElo - loserElo) / 400));
-            const change = Math.round(K * (0 - expected));
-            eloChanges[loserPlayer.id] = change;
+            eloChanges[loserPlayer.id] = Math.round(K * (0 - expected));
         }
 
-        // Обновляем статистику игроков
+        // Обновляем статистику
         for (const player of allPlayers) {
             const isWin = winners.some(w => w.id === player.id);
             const eloChange = eloChanges[player.id] || 0;
@@ -2733,6 +2912,14 @@
             }
         }
 
+        // Удаляем активный матч
+        if (currentMatchId) {
+            await supabaseClient
+                .from('active_matches')
+                .delete()
+                .eq('id', currentMatchId);
+        }
+
         // Обновляем текущего пользователя
         const { data: updatedUser } = await supabaseClient
             .from('users')
@@ -2759,6 +2946,7 @@
         currentMatch = null;
         isPlayerInMatch = false;
         isCaptain = false;
+        selectedAdminMatch = null;
         draftState.isComplete = false;
         currentScreenshot = null;
         lobbyLink = null;
@@ -2767,6 +2955,9 @@
         document.getElementById('screenshotStatus').textContent = '';
         document.getElementById('lobbyInput').value = '';
         document.getElementById('lobbyLinkDisplay').classList.remove('visible');
+
+        // Обновляем админ-панель
+        await loadAdminMatches();
 
         navigate('matches');
         showToast('info', 'Матч завершён', 'Статистика сохранена!');
@@ -2785,6 +2976,7 @@
         currentMatch = null;
         isPlayerInMatch = false;
         isCaptain = false;
+        selectedAdminMatch = null;
         draftState.isComplete = false;
         document.getElementById('matchResultSection').classList.remove('admin-visible');
         document.getElementById('lobbySection').classList.remove('visible');
@@ -2793,6 +2985,11 @@
         document.getElementById('endMatchBtn').disabled = true;
         lobbyLink = null;
         document.getElementById('lobbyLinkDisplay').classList.remove('visible');
+        
+        // Обновляем админ-панель
+        if (currentUser?.isadmin) {
+            loadAdminMatches();
+        }
         
         navigate('matches');
         showToast('info', 'Матч завершён', 'Матч отменён');

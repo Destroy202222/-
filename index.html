@@ -255,7 +255,7 @@
         .hero-badge { display: inline-block; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.2); padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; color: #ffd700; letter-spacing: 1px; text-transform: uppercase; }
         .hero-title { font-size: 24px; font-weight: 800; line-height: 1.2; margin: 16px 0 20px; }
         .hero-title span { color: #ffd700; }
-        .hero-stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .hero-stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .hero-stat { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; text-align: center; }
         .hero-stat .number { font-size: 28px; font-weight: 900; color: #ffd700; }
         .hero-stat .label { font-size: 12px; color: #8888aa; margin-top: 4px; }
@@ -755,8 +755,18 @@
             <div class="hero-badge">КИБЕРСПОРТИВНАЯ ПЛАТФОРМА ПО BRAWL STARS</div>
             <div class="hero-title">Проверь свой <span>скилл</span>, поднимай <span>уровень</span> и играй против сильнейших.</div>
             <div class="hero-stats-row">
-                <div class="hero-stat"><div class="number" id="activePlayersHome">0</div><div class="label">Активные игроки</div></div>
-                <div class="hero-stat"><div class="number" id="totalMatchesHome">0</div><div class="label">Сыграно матчей</div></div>
+                <div class="hero-stat">
+                    <div class="number" id="activePlayersHome">0</div>
+                    <div class="label">В поиске</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="number" id="inMatchPlayersHome">0</div>
+                    <div class="label">В матче</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="number" id="totalMatchesHome">0</div>
+                    <div class="label">Сыграно матчей</div>
+                </div>
             </div>
             <div class="hero-actions">
                 <button class="btn-hero" onclick="navigate('matches')"><i class="fas fa-search"></i> Поиск матча</button>
@@ -1119,6 +1129,49 @@
     }
 
     // ============================================================
+    //  ОБНОВЛЕНИЕ СТАТИСТИКИ НА ГЛАВНОЙ
+    // ============================================================
+    async function updateHomeStats() {
+        try {
+            // 1. Игроки в поиске (в очереди)
+            const { count: queueCount } = await supabaseClient
+                .from('queue')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'searching');
+
+            // 2. Игроки в матче (активные матчи)
+            const { data: activeMatches } = await supabaseClient
+                .from('active_matches')
+                .select('orange, blue')
+                .in('status', ['pending', 'active']);
+
+            let inMatchPlayers = 0;
+            if (activeMatches) {
+                activeMatches.forEach(match => {
+                    try {
+                        const orange = JSON.parse(match.orange);
+                        const blue = JSON.parse(match.blue);
+                        inMatchPlayers += orange.length + blue.length;
+                    } catch (e) {}
+                });
+            }
+
+            // 3. Сыграно матчей (из истории)
+            const { count: historyCount } = await supabaseClient
+                .from('match_history')
+                .select('*', { count: 'exact', head: true });
+
+            // Обновляем UI
+            document.getElementById('activePlayersHome').textContent = queueCount || 0;
+            document.getElementById('inMatchPlayersHome').textContent = inMatchPlayers || 0;
+            document.getElementById('totalMatchesHome').textContent = historyCount || 0;
+
+        } catch (e) {
+            console.error('Ошибка обновления статистики:', e);
+        }
+    }
+
+    // ============================================================
     //  ПРОВЕРКА ОЧЕРЕДИ ПРИ ЗАГРУЗКЕ
     // ============================================================
     async function checkQueueOnLoad() {
@@ -1332,13 +1385,13 @@
                 adminPanel.classList.remove('visible');
             }
 
-            // ПРОВЕРЯЕМ ОЧЕРЕДЬ ПРИ ЗАГРУЗКЕ
             await checkQueueOnLoad();
 
             await loadMatchHistory();
             await renderChart();
             await renderTopPage();
             await loadFriends();
+            await updateHomeStats();
 
             updatePartyUI();
             navigate('home');
@@ -1405,6 +1458,7 @@
                 console.log('🔄 Поиск возобновлён (страница активна)');
                 updateQueueCount();
             }
+            updateHomeStats();
         }
     });
 
@@ -1432,7 +1486,6 @@
         }
         if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
 
-        // Сначала проверяем и очищаем старую очередь
         await checkQueueOnLoad();
 
         const { data: existingQueue } = await supabaseClient
@@ -1473,6 +1526,7 @@
         document.getElementById('searchStatus').textContent = 'Поиск';
 
         await updateQueueCount();
+        await updateHomeStats();
 
         if (searchTimerInterval) clearInterval(searchTimerInterval);
         searchTimerInterval = setInterval(() => {
@@ -1498,6 +1552,7 @@
             }, async (payload) => {
                 console.log('🔄 Изменение в очереди:', payload);
                 await updateQueueCount();
+                await updateHomeStats();
             })
             .subscribe((status) => {
                 console.log('📡 Статус подписки на очередь:', status);
@@ -1507,6 +1562,7 @@
         queueUpdateInterval = setInterval(() => {
             if (isSearching) {
                 updateQueueCount();
+                updateHomeStats();
             } else {
                 clearInterval(queueUpdateInterval);
                 queueUpdateInterval = null;
@@ -1632,6 +1688,7 @@
         showConfirmModal();
 
         showToast('success', 'Матч найден!', 'Подтвердите участие');
+        await updateHomeStats();
     }
 
     async function cancelSearch() {
@@ -1667,6 +1724,7 @@
             searchChannel = null;
         }
 
+        await updateHomeStats();
         showToast('info', 'Поиск отменён', 'Вы отменили поиск');
     }
 
@@ -1803,6 +1861,7 @@
         showToast('success', 'Матч начался!', `${currentMatch.orange.length + currentMatch.blue.length} игроков в игре`);
         checkMatchResultVisibility();
         checkLobbyVisibility();
+        updateHomeStats();
         
         if (currentUser?.isadmin) {
             loadAdminMatches();
@@ -2243,6 +2302,7 @@
         document.getElementById('lobbyLinkDisplay').classList.remove('visible');
 
         await loadAdminMatches();
+        await updateHomeStats();
         navigate('matches');
         showToast('info', 'Матч завершён', 'Статистика сохранена!');
     }
@@ -2274,6 +2334,7 @@
             loadAdminMatches();
         }
         
+        updateHomeStats();
         navigate('matches');
         showToast('info', 'Матч завершён', 'Матч отменён');
     }

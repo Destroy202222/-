@@ -44,7 +44,6 @@
         .toast .ttl.info { color: #4dabf7; }
         .toast .txt { font-size: 13px; color: #b0b0c0; }
 
-        /* ===== МОДАЛЬНОЕ ОКНО ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -152,7 +151,6 @@
         .modal-actions .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         .modal-actions .btn-confirm.confirmed { background: linear-gradient(135deg, #51cf66, #2b8a3e); color: #fff; }
 
-        /* ===== АВТОРИЗАЦИЯ ===== */
         .auth-page {
             display: flex;
             align-items: center;
@@ -250,7 +248,6 @@
         .page { display: none; padding-bottom: 20px; }
         .page.active { display: block; }
 
-        /* ===== ГЛАВНАЯ ===== */
         .home-hero { margin-top: 8px; }
         .hero-badge { display: inline-block; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.2); padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; color: #ffd700; letter-spacing: 1px; text-transform: uppercase; }
         .hero-title { font-size: 24px; font-weight: 800; line-height: 1.2; margin: 16px 0 20px; }
@@ -277,7 +274,6 @@
         .prize-item.bronze .reward { color: #cd7f32; }
         .prize-premium { text-align: center; font-size: 13px; color: #8888aa; }
 
-        /* ===== ПОИСК ===== */
         .search-page-wrapper { padding-top: 8px; }
         .search-header-block { text-align: center; padding: 16px 0 20px; }
         .search-header-block .search-title { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #ffd700, #ff6b00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -343,7 +339,6 @@
         .party-feature { font-size: 11px; color: #555; margin-top: 8px; padding: 8px 12px; background: #1a1a2e; border-radius: 8px; }
         .party-feature i { margin-right: 6px; color: #ffd700; }
 
-        /* ===== МАТЧ ===== */
         .match-page { padding-top: 8px; }
         .match-info-bar { display: flex; flex-wrap: wrap; gap: 12px; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
         .info-item { font-size: 13px; color: #8888aa; }
@@ -363,7 +358,6 @@
         .player-card .info .name { font-size: 13px; font-weight: 600; }
         .player-card .captain-badge { font-size: 10px; color: #ffd700; padding: 2px 8px; background: rgba(255,215,0,0.1); border-radius: 10px; }
 
-        /* ===== БАН КАРТ (ТОЛЬКО ДЛЯ КАПИТАНОВ) ===== */
         .bans-container { display: grid; gap: 16px; margin-bottom: 16px; }
         .ban-section { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; }
         .ban-header { margin-bottom: 12px; }
@@ -441,7 +435,6 @@
         .btn-end:hover:not(:disabled) { transform: scale(1.02); }
         .btn-end:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ===== ПРОФИЛЬ ===== */
         .profile-card { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 20px; }
         .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
         .profile-avatar {
@@ -1046,6 +1039,8 @@
     let adminMatches = [];
     let selectedAdminMatch = null;
     let queueUpdateInterval = null;
+    let matchChannel = null;
+    let isConfirming = false;
 
     let draftState = {
         gameNumber: 1,
@@ -1133,13 +1128,11 @@
     // ============================================================
     async function updateHomeStats() {
         try {
-            // 1. Игроки в поиске (в очереди)
             const { count: queueCount } = await supabaseClient
                 .from('queue')
                 .select('*', { count: 'exact', head: true })
                 .eq('status', 'searching');
 
-            // 2. Игроки в матче (активные матчи)
             const { data: activeMatches } = await supabaseClient
                 .from('active_matches')
                 .select('orange, blue')
@@ -1156,12 +1149,10 @@
                 });
             }
 
-            // 3. Сыграно матчей (из истории)
             const { count: historyCount } = await supabaseClient
                 .from('match_history')
                 .select('*', { count: 'exact', head: true });
 
-            // Обновляем UI
             document.getElementById('activePlayersHome').textContent = queueCount || 0;
             document.getElementById('inMatchPlayersHome').textContent = inMatchPlayers || 0;
             document.getElementById('totalMatchesHome').textContent = historyCount || 0;
@@ -1220,6 +1211,61 @@
             await updateQueueCount();
         } catch (e) {
             console.error('Ошибка checkQueueOnLoad:', e);
+        }
+    }
+
+    // ============================================================
+    //  ПРОВЕРКА АКТИВНОГО МАТЧА ПРИ ЗАГРУЗКЕ
+    // ============================================================
+    async function checkActiveMatchOnLoad() {
+        if (!currentUser) return;
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('active_matches')
+                .select('*')
+                .in('status', ['pending', 'active'])
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (error || !data || data.length === 0) {
+                return;
+            }
+
+            const match = data[0];
+            const orange = JSON.parse(match.orange);
+            const blue = JSON.parse(match.blue);
+            
+            const isInMatch = orange.some(p => p.id === currentUser.id) || 
+                              blue.some(p => p.id === currentUser.id);
+
+            if (isInMatch) {
+                console.log('✅ Найден активный матч при загрузке');
+                currentMatch = { orange, blue };
+                isPlayerInMatch = true;
+                currentMatchId = match.id;
+                isCaptain = blue.length > 0 && blue[0].id === currentUser.id;
+                
+                if (match.draft_state) {
+                    draftState = JSON.parse(match.draft_state);
+                }
+
+                if (match.status === 'pending') {
+                    // Матч ожидает подтверждения
+                    matchPlayers = [...orange, ...blue];
+                    confirmedPlayers = [];
+                    showConfirmModal();
+                    // Подписываемся на изменения матча
+                    subscribeToMatch(match.id);
+                } else if (match.status === 'active') {
+                    // Матч уже активен
+                    navigate('matchPage');
+                    renderMatchPage();
+                    showToast('info', 'Активный матч', 'Вы уже в матче!');
+                }
+            }
+        } catch (e) {
+            console.error('Ошибка проверки активного матча:', e);
         }
     }
 
@@ -1386,6 +1432,7 @@
             }
 
             await checkQueueOnLoad();
+            await checkActiveMatchOnLoad();
 
             await loadMatchHistory();
             await renderChart();
@@ -1411,6 +1458,10 @@
         if (searchChannel) {
             supabaseClient.removeChannel(searchChannel);
             searchChannel = null;
+        }
+        if (matchChannel) {
+            supabaseClient.removeChannel(matchChannel);
+            matchChannel = null;
         }
         if (queueUpdateInterval) {
             clearInterval(queueUpdateInterval);
@@ -1443,6 +1494,56 @@
         document.querySelectorAll('.bottom-nav .item').forEach(b => b.classList.remove('active'));
         document.querySelector(`.bottom-nav .item[data-page="${page}"]`)?.classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ============================================================
+    //  ПОДПИСКА НА ИЗМЕНЕНИЯ МАТЧА
+    // ============================================================
+    function subscribeToMatch(matchId) {
+        if (matchChannel) {
+            supabaseClient.removeChannel(matchChannel);
+            matchChannel = null;
+        }
+
+        matchChannel = supabaseClient
+            .channel('match_channel_' + matchId)
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'active_matches',
+                filter: `id=eq.${matchId}`
+            }, async (payload) => {
+                console.log('🔄 Изменение в матче:', payload);
+                
+                if (payload.eventType === 'DELETE') {
+                    document.getElementById('confirmModal').classList.remove('active');
+                    waitingConfirm = false;
+                    currentMatch = null;
+                    isPlayerInMatch = false;
+                    showToast('info', 'Матч отменён', 'Кто-то не подтвердил участие');
+                    navigate('matches');
+                    return;
+                }
+
+                if (payload.eventType === 'UPDATE') {
+                    const newData = payload.new;
+                    if (newData.status === 'active') {
+                        document.getElementById('confirmModal').classList.remove('active');
+                        waitingConfirm = false;
+                        // Загружаем обновленный матч
+                        const orange = JSON.parse(newData.orange);
+                        const blue = JSON.parse(newData.blue);
+                        currentMatch = { orange, blue };
+                        if (newData.draft_state) {
+                            draftState = JSON.parse(newData.draft_state);
+                        }
+                        startMatchAfterConfirm();
+                    }
+                }
+            })
+            .subscribe((status) => {
+                console.log('📡 Статус подписки на матч:', status);
+            });
     }
 
     // ============================================================
@@ -1683,6 +1784,10 @@
             searchChannel = null;
         }
 
+        // ПОДПИСЫВАЕМСЯ НА МАТЧ
+        subscribeToMatch(matchId);
+
+        // ПОКАЗЫВАЕМ МОДАЛЬНОЕ ОКНО ВСЕМ ИГРОКАМ
         matchPlayers = [...currentMatch.orange, ...currentMatch.blue];
         confirmedPlayers = [];
         showConfirmModal();
@@ -1732,6 +1837,9 @@
     //  ПОДТВЕРЖДЕНИЕ МАТЧА
     // ============================================================
     function showConfirmModal() {
+        if (isConfirming) return;
+        isConfirming = true;
+        
         waitingConfirm = true;
         matchPlayers = [...currentMatch.orange, ...currentMatch.blue];
 
@@ -1762,6 +1870,10 @@
                 handleConfirmTimeout();
             }
         }, 1000);
+
+        // Обновляем кнопку поиска
+        document.getElementById('matchNavLabel').textContent = 'Матч';
+        document.querySelector('#matchNavBtn i').className = 'fas fa-gamepad';
     }
 
     function renderModalPlayers() {
@@ -1794,7 +1906,15 @@
             setTimeout(() => {
                 document.getElementById('confirmModal').classList.remove('active');
                 waitingConfirm = false;
-                startMatchAfterConfirm();
+                isConfirming = false;
+                // Обновляем статус матча на active
+                supabaseClient
+                    .from('active_matches')
+                    .update({ status: 'active' })
+                    .eq('id', currentMatchId)
+                    .then(() => {
+                        startMatchAfterConfirm();
+                    });
             }, 800);
         }
     }
@@ -1816,6 +1936,7 @@
         if (notConfirmed.length > 0) {
             document.getElementById('confirmModal').classList.remove('active');
             waitingConfirm = false;
+            isConfirming = false;
             showToast('info', 'Матч отменён', `${notConfirmed.length} игроков не подтвердили участие`);
             
             supabaseClient
@@ -1826,20 +1947,20 @@
             currentMatch = null;
             isPlayerInMatch = false;
             isCaptain = false;
+            document.getElementById('matchNavLabel').textContent = 'Поиск';
+            document.querySelector('#matchNavBtn i').className = 'fas fa-search';
             navigate('matches');
             return;
         }
         
         document.getElementById('confirmModal').classList.remove('active');
         waitingConfirm = false;
+        isConfirming = false;
         startMatchAfterConfirm();
     }
 
     function startMatchAfterConfirm() {
-        supabaseClient
-            .from('active_matches')
-            .update({ status: 'active' })
-            .eq('id', currentMatchId);
+        if (!currentMatch) return;
 
         draftState.gameNumber = (draftState.gameNumber || 0) + 1;
         resetDraft();
@@ -1862,6 +1983,8 @@
         checkMatchResultVisibility();
         checkLobbyVisibility();
         updateHomeStats();
+        document.getElementById('matchNavLabel').textContent = 'Матч';
+        document.querySelector('#matchNavBtn i').className = 'fas fa-gamepad';
         
         if (currentUser?.isadmin) {
             loadAdminMatches();
@@ -2303,6 +2426,8 @@
 
         await loadAdminMatches();
         await updateHomeStats();
+        document.getElementById('matchNavLabel').textContent = 'Поиск';
+        document.querySelector('#matchNavBtn i').className = 'fas fa-search';
         navigate('matches');
         showToast('info', 'Матч завершён', 'Статистика сохранена!');
     }
@@ -2335,6 +2460,8 @@
         }
         
         updateHomeStats();
+        document.getElementById('matchNavLabel').textContent = 'Поиск';
+        document.querySelector('#matchNavBtn i').className = 'fas fa-search';
         navigate('matches');
         showToast('info', 'Матч завершён', 'Матч отменён');
     }
@@ -2552,22 +2679,57 @@
     }
 
     // ============================================================
-    //  ДРУЗЬЯ
+    //  ДРУЗЬЯ (С БД)
     // ============================================================
     async function loadFriends() {
+        if (!currentUser) return;
+
         try {
-            const { data, error } = await supabaseClient
+            // Загружаем друзей
+            const { data: friendsData } = await supabaseClient
+                .from('friends')
+                .select('friend_id')
+                .eq('user_id', currentUser.id);
+
+            const friendIds = friendsData ? friendsData.map(f => f.friend_id) : [];
+            
+            if (friendIds.length > 0) {
+                const { data: usersData } = await supabaseClient
+                    .from('users')
+                    .select('id, username, isadmin, elo')
+                    .in('id', friendIds);
+                myFriends = usersData || [];
+            } else {
+                myFriends = [];
+            }
+
+            // Загружаем входящие заявки
+            const { data: requestsData } = await supabaseClient
+                .from('friend_requests')
+                .select('from_user_id')
+                .eq('to_user_id', currentUser.id)
+                .eq('status', 'pending');
+
+            const requestIds = requestsData ? requestsData.map(r => r.from_user_id) : [];
+            
+            if (requestIds.length > 0) {
+                const { data: usersData } = await supabaseClient
+                    .from('users')
+                    .select('id, username, isadmin, elo')
+                    .in('id', requestIds);
+                friendRequests = usersData || [];
+            } else {
+                friendRequests = [];
+            }
+
+            // Загружаем всех остальных пользователей для поиска
+            const { data: allUsers } = await supabaseClient
                 .from('users')
                 .select('id, username, isadmin, elo')
-                .neq('id', currentUser.id)
-                .limit(20);
+                .neq('id', currentUser.id);
 
-            if (error) throw error;
+            friendsList = allUsers || [];
 
-            friendsList = data || [];
-            friendRequests = [];
-            myFriends = [];
-            
             renderFriends();
         } catch (e) {
             console.error('Ошибка загрузки друзей:', e);
@@ -2585,7 +2747,7 @@
             filtered = myFriends;
         } else if (friendsTab === 'requests') {
             isRequests = true;
-            filtered = friendRequests.map(id => friendsList.find(f => f.id === id)).filter(Boolean);
+            filtered = friendRequests;
         }
         
         const friendsCount = myFriends.length;
@@ -2604,7 +2766,7 @@
 
         container.innerHTML = filtered.map(f => {
             const isFriend = myFriends.some(m => m.id === f.id);
-            const isRequest = friendRequests.includes(f.id);
+            const isRequest = friendRequests.some(r => r.id === f.id);
             const inParty = partyFriends.some(p => p.id === f.id);
             
             let statusClass = 'none';
@@ -2613,8 +2775,9 @@
             
             if (isRequest && !isFriend) {
                 statusClass = 'request';
-                statusText = 'Заявка отправлена';
+                statusText = 'Заявка';
                 actions = `
+                    <button class="btn-accept" onclick="acceptFriend('${f.id}')"><i class="fas fa-check"></i></button>
                     <button class="btn-decline" onclick="declineFriend('${f.id}')"><i class="fas fa-times"></i></button>
                 `;
             } else if (isFriend) {
@@ -2683,7 +2846,7 @@
 
         container.innerHTML = filtered.map(f => {
             const isFriend = myFriends.some(m => m.id === f.id);
-            const isRequest = friendRequests.includes(f.id);
+            const isRequest = friendRequests.some(r => r.id === f.id);
             const inParty = partyFriends.some(p => p.id === f.id);
             
             let statusClass = 'none';
@@ -2692,8 +2855,9 @@
             
             if (isRequest && !isFriend) {
                 statusClass = 'request';
-                statusText = 'Заявка отправлена';
+                statusText = 'Заявка';
                 actions = `
+                    <button class="btn-accept" onclick="acceptFriend('${f.id}')"><i class="fas fa-check"></i></button>
                     <button class="btn-decline" onclick="declineFriend('${f.id}')"><i class="fas fa-times"></i></button>
                 `;
             } else if (isFriend) {
@@ -2730,16 +2894,107 @@
         }).join('');
     }
 
-    function sendFriendRequest(userId) {
-        if (friendRequests.includes(userId)) {
-            return showToast('info', 'Уже отправлено', 'Заявка уже была отправлена');
+    async function sendFriendRequest(userId) {
+        if (!currentUser) return;
+
+        const { data: existing } = await supabaseClient
+            .from('friend_requests')
+            .select('*')
+            .eq('from_user_id', currentUser.id)
+            .eq('to_user_id', userId)
+            .maybeSingle();
+
+        if (existing) {
+            if (existing.status === 'pending') {
+                return showToast('info', 'Уже отправлено', 'Заявка уже была отправлена');
+            }
+            if (existing.status === 'accepted') {
+                return showToast('info', 'Уже друг', 'Этот пользователь уже в друзьях');
+            }
         }
-        if (myFriends.some(f => f.id === userId)) {
+
+        const { data: isFriend } = await supabaseClient
+            .from('friends')
+            .select('*')
+            .or(`user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`)
+            .or(`user_id.eq.${userId},friend_id.eq.${userId}`)
+            .maybeSingle();
+
+        if (isFriend) {
             return showToast('info', 'Уже друг', 'Этот пользователь уже в друзьях');
         }
-        friendRequests.push(userId);
+
+        const { error } = await supabaseClient
+            .from('friend_requests')
+            .insert({
+                from_user_id: currentUser.id,
+                to_user_id: userId,
+                status: 'pending'
+            });
+
+        if (error) {
+            showToast('error', 'Ошибка', 'Не удалось отправить заявку: ' + error.message);
+            return;
+        }
+
         showToast('success', 'Заявка отправлена', 'Пользователь получит уведомление');
-        renderFriends();
+        await loadFriends();
+    }
+
+    async function acceptFriend(userId) {
+        if (!currentUser) return;
+
+        const { error: updateError } = await supabaseClient
+            .from('friend_requests')
+            .update({ status: 'accepted' })
+            .eq('from_user_id', userId)
+            .eq('to_user_id', currentUser.id);
+
+        if (updateError) {
+            showToast('error', 'Ошибка', 'Не удалось принять заявку');
+            return;
+        }
+
+        await supabaseClient
+            .from('friends')
+            .insert([
+                { user_id: currentUser.id, friend_id: userId },
+                { user_id: userId, friend_id: currentUser.id }
+            ]);
+
+        showToast('success', 'Друг добавлен', 'Теперь вы друзья!');
+        await loadFriends();
+    }
+
+    async function declineFriend(userId) {
+        if (!currentUser) return;
+
+        const { error } = await supabaseClient
+            .from('friend_requests')
+            .update({ status: 'declined' })
+            .eq('from_user_id', userId)
+            .eq('to_user_id', currentUser.id);
+
+        if (error) {
+            showToast('error', 'Ошибка', 'Не удалось отклонить заявку');
+            return;
+        }
+
+        showToast('info', 'Отклонено', 'Заявка отклонена');
+        await loadFriends();
+    }
+
+    async function removeFriend(id) {
+        if (!confirm('Удалить из друзей?')) return;
+
+        await supabaseClient
+            .from('friends')
+            .delete()
+            .or(`user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`)
+            .or(`user_id.eq.${id},friend_id.eq.${id}`);
+
+        showToast('info', 'Удалён', 'Пользователь удалён из друзей');
+        await loadFriends();
     }
 
     function sendFriendRequestByUsername(username) {
@@ -2749,22 +3004,6 @@
         } else {
             showToast('error', 'Ошибка', 'Пользователь не найден');
         }
-    }
-
-    function acceptFriend(id) {
-        const user = friendsList.find(f => f.id === id);
-        if (user) {
-            myFriends.push(user);
-            friendRequests = friendRequests.filter(f => f !== id);
-            renderFriends();
-            showToast('success', 'Друг добавлен', 'Теперь вы друзья!');
-        }
-    }
-
-    function declineFriend(id) {
-        friendRequests = friendRequests.filter(f => f !== id);
-        renderFriends();
-        showToast('info', 'Отклонено', 'Заявка отклонена');
     }
 
     function inviteToParty(id) {
@@ -2792,13 +3031,6 @@
         updatePartyUI();
         renderFriends();
         showToast('info', 'Удалён', 'Игрок удалён из пати');
-    }
-
-    function removeFriend(id) {
-        if (!confirm('Удалить из друзей?')) return;
-        myFriends = myFriends.filter(f => f.id !== id);
-        renderFriends();
-        showToast('info', 'Удалён', 'Пользователь удалён из друзей');
     }
 
     // ============================================================

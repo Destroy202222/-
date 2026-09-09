@@ -104,8 +104,8 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-bottom: 20px;
-            max-height: 300px;
+            margin-bottom: 16px;
+            max-height: 260px;
             overflow-y: auto;
             padding-right: 4px;
         }
@@ -121,7 +121,9 @@
             padding: 10px 14px;
             border: 1px solid #2a2a4a;
             transition: all 0.4s ease;
+            cursor: pointer;
         }
+        .modal-player:hover { border-color: #ffd700; }
         .modal-player.confirmed {
             border-color: #51cf66;
             background: rgba(81,207,102,0.08);
@@ -153,6 +155,36 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(0.9); }
         }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-actions button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .modal-actions .btn-confirm {
+            background: linear-gradient(135deg, #ffd700, #ff6b00);
+            color: #0b0b0f;
+        }
+        .modal-actions .btn-confirm:hover:not(:disabled) { transform: scale(1.02); }
+        .modal-actions .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .modal-actions .btn-confirm.confirmed {
+            background: linear-gradient(135deg, #51cf66, #2b8a3e);
+            color: #fff;
+        }
+        .modal-actions .btn-cancel-modal {
+            background: #2a2a4a;
+            color: #fff;
+        }
+        .modal-actions .btn-cancel-modal:hover { background: #3a3a5a; }
 
         /* ===== АВТОРИЗАЦИЯ ===== */
         .auth-page {
@@ -358,7 +390,6 @@
         .prize-premium { text-align: center; font-size: 13px; color: #8888aa; }
 
         .search-page-wrapper { padding-top: 8px; }
-        
         .search-header-block {
             text-align: center;
             padding: 16px 0 20px;
@@ -809,6 +840,79 @@
             color: #8888aa;
         }
         .ban-status .status-text.done { color: #51cf66; }
+
+        /* ===== ССЫЛКА НА ЛОББИ ===== */
+        .lobby-section {
+            display: none;
+            background: #14141f;
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .lobby-section.visible { display: block; }
+        .lobby-section .lobby-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .lobby-section .lobby-title i { margin-right: 8px; color: #ffd700; }
+        .lobby-section .lobby-info {
+            font-size: 12px;
+            color: #8888aa;
+            margin-bottom: 10px;
+        }
+        .lobby-input-group {
+            display: flex;
+            gap: 8px;
+        }
+        .lobby-input-group input {
+            flex: 1;
+            padding: 10px 14px;
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+        }
+        .lobby-input-group input:focus { border-color: #ffd700; }
+        .lobby-input-group input::placeholder { color: #555; }
+        .lobby-input-group button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #4dabf7, #1a7ab5);
+            color: #fff;
+            font-family: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .lobby-input-group button:hover { transform: scale(1.02); }
+        .lobby-link-display {
+            display: none;
+            margin-top: 10px;
+            padding: 12px 16px;
+            background: #1a1a2e;
+            border-radius: 10px;
+            border: 1px solid #2a2a4a;
+            word-break: break-all;
+        }
+        .lobby-link-display.visible { display: block; }
+        .lobby-link-display .link-label { font-size: 12px; color: #8888aa; margin-bottom: 4px; }
+        .lobby-link-display .link-value {
+            font-size: 13px;
+            color: #4dabf7;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .lobby-link-display .link-status {
+            font-size: 12px;
+            color: #51cf66;
+            margin-top: 4px;
+        }
 
         .screenshot-section {
             display: none;
@@ -1308,14 +1412,16 @@
     <div class="txt" id="toastText">Действие выполнено</div>
 </div>
 
-<!-- ===== МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ (БЕЗ КНОПКИ ОТМЕНЫ) ===== -->
+<!-- ===== МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ ===== -->
 <div class="modal-overlay" id="confirmModal">
     <div class="modal-box">
         <div class="modal-title">🎮 Матч <span class="highlight">найден!</span></div>
-        <div class="modal-sub">Подтверждение участия...</div>
+        <div class="modal-sub">Подтвердите участие</div>
         <div class="modal-timer" id="modalTimer">25</div>
         <div class="modal-players" id="modalPlayers"></div>
-        <!-- Кнопка отмены УБРАНА! -->
+        <div class="modal-actions">
+            <button class="btn-confirm" id="confirmBtn" onclick="handleConfirm()">✅ Подтвердить</button>
+        </div>
     </div>
 </div>
 
@@ -1413,7 +1519,6 @@
         </div>
     </div>
 
-    <!-- ===== ПОИСК МАТЧА (УБРАНА НАДПИСЬ "ИЩЕМ МАТЧ 3x3") ===== -->
     <div class="page" id="pageMatches">
         <div class="search-page-wrapper">
             <div class="search-header-block">
@@ -1490,6 +1595,23 @@
                     <span class="left">Осталось: <span id="modesLeft">7</span></span>
                     <span class="status-text" id="modesStatus">Выберите режимы</span>
                 </div>
+            </div>
+        </div>
+
+        <!-- ===== ССЫЛКА НА ЛОББИ ===== -->
+        <div class="lobby-section" id="lobbySection">
+            <div class="lobby-title"><i class="fas fa-link"></i> Ссылка на лобби Brawl Stars</div>
+            <div class="lobby-info">
+                <i class="fas fa-info-circle"></i> Капитан BLUE TEAM может добавить ссылку на лобби. Все игроки увидят её и смогут присоединиться.
+            </div>
+            <div class="lobby-input-group">
+                <input type="text" id="lobbyInput" placeholder="Введите ссылку на лобби..." />
+                <button onclick="addLobbyLink()"><i class="fas fa-plus"></i> Добавить</button>
+            </div>
+            <div class="lobby-link-display" id="lobbyLinkDisplay">
+                <div class="link-label">🔗 Ссылка на лобби:</div>
+                <div class="link-value" id="lobbyLinkValue" onclick="copyLobbyLink()"></div>
+                <div class="link-status" id="lobbyLinkStatus">✅ Ссылка активна. Нажмите на неё, чтобы присоединиться.</div>
             </div>
         </div>
 
@@ -1676,7 +1798,8 @@
     let matchPlayers = [];
     let confirmTimer = null;
     let confirmTimeLeft = 25;
-    let isAutoConfirmed = false;
+    let lobbyLink = null;
+    let isCaptain = false;
 
     let draftState = {
         gameNumber: 1,
@@ -1993,7 +2116,6 @@
         searchSeconds = 0;
         waitingConfirm = false;
         confirmedPlayers = [];
-        isAutoConfirmed = false;
 
         document.getElementById('queueBtn').style.display = 'none';
         document.getElementById('cancelBtn').style.display = 'inline-flex';
@@ -2054,18 +2176,18 @@
         const modal = document.getElementById('confirmModal');
         const container = document.getElementById('modalPlayers');
         const timerEl = document.getElementById('modalTimer');
+        const confirmBtn = document.getElementById('confirmBtn');
         
         modal.classList.add('active');
         confirmTimeLeft = 25;
         timerEl.textContent = confirmTimeLeft;
         timerEl.className = 'modal-timer';
+        confirmBtn.className = 'btn-confirm';
+        confirmBtn.textContent = '✅ Подтвердить';
+        confirmBtn.disabled = false;
         
         renderModalPlayers();
 
-        // НЕ АВТОМАТИЧЕСКИ ПОДТВЕРЖДАЕМ ЗА ПОЛЬЗОВАТЕЛЯ — он должен нажать кнопку "Подтвердить"
-        // Кнопка отмены убрана
-
-        // Запускаем таймер
         if (confirmTimer) clearInterval(confirmTimer);
         confirmTimer = setInterval(() => {
             confirmTimeLeft--;
@@ -2080,31 +2202,6 @@
         }, 1000);
     }
 
-    function handleConfirmTimeout() {
-        // Находим неподтвердивших игроков
-        const notConfirmed = matchPlayers.filter(p => !confirmedPlayers.includes(p.id) && !p.id.startsWith('bot_'));
-        
-        if (notConfirmed.length > 0) {
-            // Удаляем их из очереди
-            queue = queue.filter(p => confirmedPlayers.includes(p.id) || p.id.startsWith('bot_'));
-            // Если осталось меньше 6 - продолжаем поиск
-            if (queue.length < 6) {
-                document.getElementById('confirmModal').classList.remove('active');
-                waitingConfirm = false;
-                showToast('info', 'Поиск продолжается', `${notConfirmed.length} игроков не подтвердили участие`);
-                isSearching = true;
-                document.getElementById('searchCurrentPlayers').textContent = queue.length;
-                simulateBotSearch();
-                return;
-            }
-        }
-        
-        // Если все подтвердили или остались только боты
-        document.getElementById('confirmModal').classList.remove('active');
-        waitingConfirm = false;
-        startMatch();
-    }
-
     function renderModalPlayers() {
         const container = document.getElementById('modalPlayers');
         container.innerHTML = matchPlayers.map(p => {
@@ -2112,7 +2209,7 @@
             const isBot = p.id.startsWith('bot_');
             const isCurrentUser = p.id === currentUser.id;
             return `
-                <div class="modal-player ${isConfirmed ? 'confirmed' : ''}">
+                <div class="modal-player ${isConfirmed ? 'confirmed' : ''}" onclick="${isCurrentUser && !isConfirmed ? 'handleConfirm()' : ''}">
                     <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
                     <div class="info">
                         <div class="name">${p.username} ${isBot ? '🤖' : ''} ${isCurrentUser ? ' (Вы)' : ''}</div>
@@ -2125,37 +2222,54 @@
             `;
         }).join('');
 
-        // Проверяем, все ли подтвердили (кроме ботов)
+        // Проверяем, все ли подтвердили
         const allConfirmed = matchPlayers.every(p => confirmedPlayers.includes(p.id));
+        const confirmBtn = document.getElementById('confirmBtn');
+        
         if (allConfirmed) {
+            confirmBtn.className = 'btn-confirm confirmed';
+            confirmBtn.textContent = '✅ Все готовы!';
+            confirmBtn.disabled = true;
             clearInterval(confirmTimer);
             setTimeout(() => {
                 document.getElementById('confirmModal').classList.remove('active');
                 waitingConfirm = false;
                 startMatch();
-            }, 500);
+            }, 800);
         }
     }
 
-    function confirmMatch() {
-        // Эта функция вызывается, когда пользователь нажимает на себя
+    function handleConfirm() {
         if (!waitingConfirm) return;
-        if (!confirmedPlayers.includes(currentUser.id)) {
-            confirmedPlayers.push(currentUser.id);
-            renderModalPlayers();
+        if (confirmedPlayers.includes(currentUser.id)) {
+            showToast('info', 'Уже подтверждено', 'Вы уже подтвердили участие');
+            return;
         }
+        confirmedPlayers.push(currentUser.id);
+        renderModalPlayers();
+        showToast('success', 'Подтверждено!', 'Вы подтвердили участие в матче');
     }
 
-    // Добавляем возможность подтверждения по клику на себя в модалке
-    document.addEventListener('click', function(e) {
-        const modalPlayer = e.target.closest('.modal-player');
-        if (modalPlayer && waitingConfirm) {
-            const playerName = modalPlayer.querySelector('.name')?.textContent || '';
-            if (playerName.includes('(Вы)')) {
-                confirmMatch();
+    function handleConfirmTimeout() {
+        const notConfirmed = matchPlayers.filter(p => !confirmedPlayers.includes(p.id) && !p.id.startsWith('bot_'));
+        
+        if (notConfirmed.length > 0) {
+            queue = queue.filter(p => confirmedPlayers.includes(p.id) || p.id.startsWith('bot_'));
+            if (queue.length < 6) {
+                document.getElementById('confirmModal').classList.remove('active');
+                waitingConfirm = false;
+                showToast('info', 'Поиск продолжается', `${notConfirmed.length} игроков не подтвердили участие`);
+                isSearching = true;
+                document.getElementById('searchCurrentPlayers').textContent = queue.length;
+                simulateBotSearch();
+                return;
             }
         }
-    });
+        
+        document.getElementById('confirmModal').classList.remove('active');
+        waitingConfirm = false;
+        startMatch();
+    }
 
     function cancelSearch() {
         if (!isSearching && !waitingConfirm) return;
@@ -2191,6 +2305,9 @@
         currentMatch = { orange, blue };
         isPlayerInMatch = true;
         
+        // Определяем капитана BLUE TEAM
+        isCaptain = blue.length > 0 && blue[0].id === currentUser.id;
+        
         queue = [];
 
         document.getElementById('queueBtn').style.display = 'block';
@@ -2203,17 +2320,31 @@
         resetDraft();
 
         document.getElementById('matchResultSection').classList.remove('admin-visible');
+        document.getElementById('lobbySection').classList.remove('visible');
         document.getElementById('screenshotSection').classList.remove('visible');
         document.getElementById('matchActions').classList.remove('admin-visible');
         currentScreenshot = null;
         document.getElementById('screenshotInput').value = '';
         document.getElementById('screenshotPreview').innerHTML = '';
         document.getElementById('screenshotStatus').textContent = '';
+        document.getElementById('lobbyInput').value = '';
+        document.getElementById('lobbyLinkDisplay').classList.remove('visible');
+        lobbyLink = null;
 
         navigate('matchPage');
         renderMatchPage();
         showToast('success', 'Матч начался!', `${orange.length + blue.length} игроков в игре`);
         checkMatchResultVisibility();
+        checkLobbyVisibility();
+    }
+
+    function checkLobbyVisibility() {
+        // Показываем секцию лобби только для капитана BLUE TEAM
+        if (isCaptain && draftState.isComplete) {
+            document.getElementById('lobbySection').classList.add('visible');
+        } else {
+            document.getElementById('lobbySection').classList.remove('visible');
+        }
     }
 
     function checkMatchResultVisibility() {
@@ -2278,8 +2409,53 @@
 
         renderDraftUI();
         checkMatchResultVisibility();
+        checkLobbyVisibility();
     }
 
+    // ============================================================
+    //  ЛОББИ
+    // ============================================================
+    function addLobbyLink() {
+        const input = document.getElementById('lobbyInput');
+        const link = input.value.trim();
+        
+        if (!link) {
+            return showToast('error', 'Ошибка', 'Введите ссылку на лобби');
+        }
+        
+        if (!link.startsWith('http://') && !link.startsWith('https://')) {
+            return showToast('error', 'Ошибка', 'Ссылка должна начинаться с http:// или https://');
+        }
+        
+        lobbyLink = link;
+        input.value = '';
+        
+        const display = document.getElementById('lobbyLinkDisplay');
+        const value = document.getElementById('lobbyLinkValue');
+        display.classList.add('visible');
+        value.textContent = lobbyLink;
+        
+        showToast('success', 'Ссылка добавлена!', 'Все игроки могут присоединиться к лобби');
+    }
+
+    function copyLobbyLink() {
+        if (!lobbyLink) return;
+        navigator.clipboard.writeText(lobbyLink).then(() => {
+            showToast('success', 'Скопировано!', 'Ссылка скопирована в буфер обмена');
+        }).catch(() => {
+            const input = document.createElement('input');
+            input.value = lobbyLink;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            showToast('success', 'Скопировано!', 'Ссылка скопирована в буфер обмена');
+        });
+    }
+
+    // ============================================================
+    //  СКРИНШОТ
+    // ============================================================
     document.getElementById('screenshotUploadBtn').addEventListener('click', function() {
         const input = document.getElementById('screenshotInput');
         const file = input.files[0];
@@ -2315,6 +2491,9 @@
         reader.readAsDataURL(file);
     });
 
+    // ============================================================
+    //  ЗАСЧИТЫВАНИЕ МАТЧА
+    // ============================================================
     document.getElementById('blueWinBtn').addEventListener('click', function() {
         if (!currentMatch || !draftState.isComplete) {
             return showToast('error', 'Ошибка', 'Дождитесь завершения драфта');
@@ -2415,17 +2594,22 @@
         showToast('success', 'Матч засчитан!', `Победила команда ${winnerTeam}`);
 
         document.getElementById('matchResultSection').classList.remove('admin-visible');
+        document.getElementById('lobbySection').classList.remove('visible');
         document.getElementById('screenshotSection').classList.remove('visible');
         document.getElementById('matchActions').classList.remove('admin-visible');
         document.getElementById('endMatchBtn').disabled = true;
 
         currentMatch = null;
         isPlayerInMatch = false;
+        isCaptain = false;
         draftState.isComplete = false;
         currentScreenshot = null;
+        lobbyLink = null;
         document.getElementById('screenshotInput').value = '';
         document.getElementById('screenshotPreview').innerHTML = '';
         document.getElementById('screenshotStatus').textContent = '';
+        document.getElementById('lobbyInput').value = '';
+        document.getElementById('lobbyLinkDisplay').classList.remove('visible');
 
         navigate('matches');
         showToast('info', 'Матч завершён', 'Статистика сохранена!');
@@ -2443,11 +2627,15 @@
         
         currentMatch = null;
         isPlayerInMatch = false;
+        isCaptain = false;
         draftState.isComplete = false;
         document.getElementById('matchResultSection').classList.remove('admin-visible');
+        document.getElementById('lobbySection').classList.remove('visible');
         document.getElementById('screenshotSection').classList.remove('visible');
         document.getElementById('matchActions').classList.remove('admin-visible');
         document.getElementById('endMatchBtn').disabled = true;
+        lobbyLink = null;
+        document.getElementById('lobbyLinkDisplay').classList.remove('visible');
         
         navigate('matches');
         showToast('info', 'Матч завершён', 'Матч отменён');
@@ -2525,6 +2713,7 @@
         }
 
         checkMatchResultVisibility();
+        checkLobbyVisibility();
     }
 
     function handleModesBan(value) {
@@ -2542,6 +2731,7 @@
             renderDraftUI();
             showToast('success', 'Драфт завершён!', 'Играем режим ' + state.modeFinal);
             checkMatchResultVisibility();
+            checkLobbyVisibility();
             return;
         }
 

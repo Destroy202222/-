@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
     <style>
+        /* ===== ВСЕ СТИЛИ (ТЕ ЖЕ, ЧТО И БЫЛИ) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0b0b0f;
@@ -494,6 +495,15 @@
         .btn-queue:hover { transform: scale(1.02); }
         .btn-queue.cancel { background: #ff6b6b; color: #fff; }
         .btn-queue:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-queue.searching {
+            background: #2a2a4a;
+            color: #ffd700;
+            animation: pulseSearch 1.5s ease-in-out infinite;
+        }
+        @keyframes pulseSearch {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
 
         .party-block {
             background: #14141f;
@@ -841,7 +851,6 @@
         }
         .ban-status .status-text.done { color: #51cf66; }
 
-        /* ===== ССЫЛКА НА ЛОББИ ===== */
         .lobby-section {
             display: none;
             background: #14141f;
@@ -1519,6 +1528,7 @@
         </div>
     </div>
 
+    <!-- ===== ПОИСК МАТЧА ===== -->
     <div class="page" id="pageMatches">
         <div class="search-page-wrapper">
             <div class="search-header-block">
@@ -1557,6 +1567,7 @@
         </div>
     </div>
 
+    <!-- ===== МАТЧ ===== -->
     <div class="page match-page" id="matchPage">
         <div class="match-info-bar" id="matchInfoBar">
             <div class="info-item"><i class="fas fa-hashtag"></i> Номер игры: <span class="value highlight" id="matchGameNumber">#1</span></div>
@@ -1598,7 +1609,6 @@
             </div>
         </div>
 
-        <!-- ===== ССЫЛКА НА ЛОББИ ===== -->
         <div class="lobby-section" id="lobbySection">
             <div class="lobby-title"><i class="fas fa-link"></i> Ссылка на лобби Brawl Stars</div>
             <div class="lobby-info">
@@ -1638,6 +1648,7 @@
         </div>
     </div>
 
+    <!-- ===== ПРОФИЛЬ ===== -->
     <div class="page" id="pageProfile">
         <div class="profile-card">
             <div class="profile-header">
@@ -1707,6 +1718,7 @@
         </div>
     </div>
 
+    <!-- ===== ДРУЗЬЯ ===== -->
     <div class="page friends-page" id="pageFriends">
         <div class="friends-header">
             <h2>Друзья</h2>
@@ -1732,6 +1744,7 @@
         </div>
     </div>
 
+    <!-- ===== ТОП ===== -->
     <div class="page top-page" id="pageTop">
         <div class="top-header">
             <h2>Топ игроков</h2>
@@ -1742,6 +1755,7 @@
         </div>
     </div>
 
+    <!-- ===== КОШЕЛЁК ===== -->
     <div class="page wallet-page" id="pageWallet">
         <div class="wallet-card">
             <div class="balance" id="walletBalance">0 ₽</div>
@@ -1781,7 +1795,6 @@
     let currentUser = null;
     let queue = [];
     let currentMatch = null;
-    let botCounter = 0;
     let partyFriends = [];
     let friendsList = [];
     let friendRequests = [];
@@ -1800,6 +1813,8 @@
     let confirmTimeLeft = 25;
     let lobbyLink = null;
     let isCaptain = false;
+    let searchChannel = null;
+    let currentMatchId = null;
 
     let draftState = {
         gameNumber: 1,
@@ -1810,6 +1825,26 @@
         isComplete: false
     };
 
+    // ============================================================
+    //  ФОРМУЛА ELO
+    // ============================================================
+    function calculateEloChange(playerElo, opponentElo, K = 32) {
+        const expected = 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
+        return Math.round(K * (1 - expected));
+    }
+
+    function calculateEloChangeForMatch(winnerElo, loserElo, K = 32) {
+        const expectedWinner = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
+        const expectedLoser = 1 / (1 + Math.pow(10, (winnerElo - loserElo) / 400));
+        return {
+            winnerChange: Math.round(K * (1 - expectedWinner)),
+            loserChange: Math.round(K * (0 - expectedLoser))
+        };
+    }
+
+    // ============================================================
+    //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+    // ============================================================
     function generateCode() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let code = '';
@@ -2060,6 +2095,10 @@
         currentUser = null;
         currentMatch = null;
         isPlayerInMatch = false;
+        if (searchChannel) {
+            supabaseClient.removeChannel(searchChannel);
+            searchChannel = null;
+        }
         checkAuth();
         showToast('info', 'Выход', 'Вы вышли');
     }
@@ -2091,9 +2130,9 @@
     }
 
     // ============================================================
-    //  ПОИСК МАТЧА
+    //  РЕАЛЬНЫЙ ПОИСК МАТЧА (ЧЕРЕЗ QUEUE В SUPABASE)
     // ============================================================
-    function startSearch() {
+    async function startSearch() {
         if (isSearching) return;
         if (currentMatch) {
             navigate('matchPage');
@@ -2101,26 +2140,42 @@
         }
         if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
 
-        queue = [{ id: currentUser.id, username: currentUser.username }];
-        partyFriends.forEach(f => {
-            if (queue.length < 2) {
-                queue.push({ id: f.id, username: f.username });
-            }
-        });
-        
-        if (queue.length > 2) {
-            return showToast('error', 'Ошибка', 'В пати больше 2 человек');
+        // Проверяем, есть ли уже активный поиск
+        const { data: existingQueue } = await supabaseClient
+            .from('queue')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .eq('status', 'searching')
+            .maybeSingle();
+
+        if (existingQueue) {
+            return showToast('info', 'Уже в поиске', 'Вы уже ищете матч');
+        }
+
+        // Добавляем себя в очередь
+        const { error: queueError } = await supabaseClient
+            .from('queue')
+            .insert({
+                user_id: currentUser.id,
+                username: currentUser.username,
+                elo: currentUser.elo || 1000,
+                status: 'searching',
+                party_id: partyFriends.length > 0 ? 'party_' + Date.now() : null,
+                party_members: partyFriends.map(f => f.username),
+                created_at: new Date().toISOString()
+            });
+
+        if (queueError) {
+            showToast('error', 'Ошибка', 'Не удалось встать в очередь');
+            return;
         }
 
         isSearching = true;
         searchSeconds = 0;
-        waitingConfirm = false;
-        confirmedPlayers = [];
-
         document.getElementById('queueBtn').style.display = 'none';
         document.getElementById('cancelBtn').style.display = 'inline-flex';
         document.getElementById('searchStatus').textContent = 'Поиск';
-        document.getElementById('searchCurrentPlayers').textContent = queue.length;
+        document.getElementById('searchCurrentPlayers').textContent = '1';
         document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
 
         if (searchTimerInterval) clearInterval(searchTimerInterval);
@@ -2131,47 +2186,143 @@
             document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> ' + mins + ':' + secs;
         }, 1000);
 
-        showToast('info', 'Поиск начат', 'Ищем игроков...');
-        simulateBotSearch();
-    }
-
-    function simulateBotSearch() {
-        if (!isSearching) return;
-        const maxPlayers = 6;
-        const currentPlayers = queue.length;
-
-        if (currentPlayers < maxPlayers && isSearching) {
-            setTimeout(() => {
-                if (!isSearching) return;
-                const botName = 'Bot' + (botCounter + 1);
-                botCounter++;
-                queue.push({ id: 'bot_' + Date.now(), username: botName });
-                document.getElementById('searchCurrentPlayers').textContent = queue.length;
-                showToast('info', 'Игрок найден', botName + ' присоединился (' + queue.length + '/6)');
-
-                if (queue.length >= 6) {
-                    clearInterval(searchTimerInterval);
-                    isSearching = false;
-                    matchPlayers = queue.map(p => ({
-                        ...p,
-                        confirmed: p.id.startsWith('bot_') ? true : false
-                    }));
-                    confirmedPlayers = queue.filter(p => p.id.startsWith('bot_')).map(p => p.id);
-                    showConfirmModal();
-                } else {
-                    simulateBotSearch();
-                }
-            }, 1500 + Math.random() * 2000);
+        // Подписываемся на изменения в очереди
+        if (searchChannel) {
+            supabaseClient.removeChannel(searchChannel);
         }
+
+        searchChannel = supabaseClient
+            .channel('queue_channel')
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'queue'
+            }, async (payload) => {
+                // Обновляем количество игроков в очереди
+                const { count } = await supabaseClient
+                    .from('queue')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'searching');
+
+                document.getElementById('searchCurrentPlayers').textContent = count || 0;
+
+                // Проверяем, есть ли 6 игроков
+                if (count >= 6) {
+                    await createMatchFromQueue();
+                }
+            })
+            .subscribe();
+
+        showToast('info', 'Поиск начат', 'Ищем игроков...');
     }
 
+    async function createMatchFromQueue() {
+        if (!isSearching) return;
+
+        // Получаем 6 игроков из очереди
+        const { data: players } = await supabaseClient
+            .from('queue')
+            .select('*')
+            .eq('status', 'searching')
+            .order('created_at', { ascending: true })
+            .limit(6);
+
+        if (!players || players.length < 6) return;
+
+        // Удаляем их из очереди
+        const playerIds = players.map(p => p.id);
+        await supabaseClient
+            .from('queue')
+            .delete()
+            .in('id', playerIds);
+
+        // Создаём матч
+        const shuffled = [...players];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        const half = Math.floor(shuffled.length / 2);
+        const orange = shuffled.slice(0, half);
+        const blue = shuffled.slice(half);
+
+        const matchId = 'match_' + Date.now();
+        currentMatchId = matchId;
+
+        // Сохраняем матч
+        await supabaseClient
+            .from('active_matches')
+            .insert({
+                id: matchId,
+                orange: orange,
+                blue: blue,
+                draft_state: JSON.stringify(draftState),
+                created_at: new Date().toISOString()
+            });
+
+        // Создаём матч в локальном состоянии
+        currentMatch = { 
+            orange: orange.map(p => ({ id: p.user_id, username: p.username })), 
+            blue: blue.map(p => ({ id: p.user_id, username: p.username }))
+        };
+        isPlayerInMatch = true;
+        isCaptain = blue.length > 0 && blue[0].user_id === currentUser.id;
+
+        // Отключаем поиск
+        isSearching = false;
+        clearInterval(searchTimerInterval);
+        document.getElementById('queueBtn').style.display = 'block';
+        document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
+        document.getElementById('queueBtn').className = 'btn-queue';
+        document.getElementById('queueBtn').onclick = startSearch;
+        document.getElementById('cancelBtn').style.display = 'none';
+
+        // Показываем подтверждение
+        matchPlayers = [...currentMatch.orange, ...currentMatch.blue];
+        confirmedPlayers = [];
+        showConfirmModal();
+
+        if (searchChannel) {
+            supabaseClient.removeChannel(searchChannel);
+            searchChannel = null;
+        }
+
+        showToast('success', 'Матч найден!', 'Подтвердите участие');
+    }
+
+    async function cancelSearch() {
+        if (!isSearching) return;
+
+        // Удаляем из очереди
+        await supabaseClient
+            .from('queue')
+            .delete()
+            .eq('user_id', currentUser.id);
+
+        isSearching = false;
+        clearInterval(searchTimerInterval);
+        document.getElementById('queueBtn').style.display = 'block';
+        document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
+        document.getElementById('queueBtn').className = 'btn-queue';
+        document.getElementById('queueBtn').onclick = startSearch;
+        document.getElementById('cancelBtn').style.display = 'none';
+        document.getElementById('searchCurrentPlayers').textContent = '0';
+        document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
+
+        if (searchChannel) {
+            supabaseClient.removeChannel(searchChannel);
+            searchChannel = null;
+        }
+
+        showToast('info', 'Поиск отменён', 'Вы отменили поиск');
+    }
+
+    // ============================================================
+    //  ПОДТВЕРЖДЕНИЕ МАТЧА
+    // ============================================================
     function showConfirmModal() {
         waitingConfirm = true;
-        matchPlayers = queue.map(p => ({
-            ...p,
-            confirmed: p.id.startsWith('bot_') ? true : false
-        }));
-        confirmedPlayers = queue.filter(p => p.id.startsWith('bot_')).map(p => p.id);
+        matchPlayers = [...currentMatch.orange, ...currentMatch.blue];
 
         const modal = document.getElementById('confirmModal');
         const container = document.getElementById('modalPlayers');
@@ -2206,13 +2357,12 @@
         const container = document.getElementById('modalPlayers');
         container.innerHTML = matchPlayers.map(p => {
             const isConfirmed = confirmedPlayers.includes(p.id);
-            const isBot = p.id.startsWith('bot_');
             const isCurrentUser = p.id === currentUser.id;
             return `
                 <div class="modal-player ${isConfirmed ? 'confirmed' : ''}" onclick="${isCurrentUser && !isConfirmed ? 'handleConfirm()' : ''}">
                     <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
                     <div class="info">
-                        <div class="name">${p.username} ${isBot ? '🤖' : ''} ${isCurrentUser ? ' (Вы)' : ''}</div>
+                        <div class="name">${p.username} ${isCurrentUser ? ' (Вы)' : ''}</div>
                         <div class="status">${isConfirmed ? '✅ Готов' : '⏳ Ожидание...'}</div>
                     </div>
                     <div class="status-icon ${isConfirmed ? 'confirmed' : 'pending'}">
@@ -2222,7 +2372,6 @@
             `;
         }).join('');
 
-        // Проверяем, все ли подтвердили
         const allConfirmed = matchPlayers.every(p => confirmedPlayers.includes(p.id));
         const confirmBtn = document.getElementById('confirmBtn');
         
@@ -2234,7 +2383,7 @@
             setTimeout(() => {
                 document.getElementById('confirmModal').classList.remove('active');
                 waitingConfirm = false;
-                startMatch();
+                startMatchAfterConfirm();
             }, 800);
         }
     }
@@ -2251,70 +2400,37 @@
     }
 
     function handleConfirmTimeout() {
-        const notConfirmed = matchPlayers.filter(p => !confirmedPlayers.includes(p.id) && !p.id.startsWith('bot_'));
+        const notConfirmed = matchPlayers.filter(p => !confirmedPlayers.includes(p.id));
         
         if (notConfirmed.length > 0) {
-            queue = queue.filter(p => confirmedPlayers.includes(p.id) || p.id.startsWith('bot_'));
-            if (queue.length < 6) {
-                document.getElementById('confirmModal').classList.remove('active');
-                waitingConfirm = false;
-                showToast('info', 'Поиск продолжается', `${notConfirmed.length} игроков не подтвердили участие`);
-                isSearching = true;
-                document.getElementById('searchCurrentPlayers').textContent = queue.length;
-                simulateBotSearch();
-                return;
-            }
+            document.getElementById('confirmModal').classList.remove('active');
+            waitingConfirm = false;
+            showToast('info', 'Матч отменён', `${notConfirmed.length} игроков не подтвердили участие`);
+            
+            // Удаляем матч
+            supabaseClient
+                .from('active_matches')
+                .delete()
+                .eq('id', currentMatchId);
+            
+            currentMatch = null;
+            isPlayerInMatch = false;
+            isCaptain = false;
+            navigate('matches');
+            return;
         }
         
         document.getElementById('confirmModal').classList.remove('active');
         waitingConfirm = false;
-        startMatch();
+        startMatchAfterConfirm();
     }
 
-    function cancelSearch() {
-        if (!isSearching && !waitingConfirm) return;
-        isSearching = false;
-        waitingConfirm = false;
-        clearInterval(searchTimerInterval);
-        clearInterval(confirmTimer);
-        queue = [];
-        document.getElementById('confirmModal').classList.remove('active');
-        document.getElementById('queueBtn').style.display = 'block';
-        document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-        document.getElementById('queueBtn').className = 'btn-queue';
-        document.getElementById('queueBtn').onclick = startSearch;
-        document.getElementById('cancelBtn').style.display = 'none';
-        document.getElementById('searchCurrentPlayers').textContent = '0';
-        document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
-        document.getElementById('searchStatus').textContent = 'Поиск';
-        showToast('info', 'Поиск отменён', 'Вы отменили поиск');
-    }
-
-    // ============================================================
-    //  МАТЧ
-    // ============================================================
-    function startMatch() {
-        const shuffled = [...queue];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        const half = Math.floor(shuffled.length / 2);
-        const orange = shuffled.slice(0, half);
-        const blue = shuffled.slice(half);
-        currentMatch = { orange, blue };
-        isPlayerInMatch = true;
-        
-        // Определяем капитана BLUE TEAM
-        isCaptain = blue.length > 0 && blue[0].id === currentUser.id;
-        
-        queue = [];
-
-        document.getElementById('queueBtn').style.display = 'block';
-        document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-        document.getElementById('queueBtn').className = 'btn-queue';
-        document.getElementById('queueBtn').onclick = startSearch;
-        document.getElementById('cancelBtn').style.display = 'none';
+    function startMatchAfterConfirm() {
+        // Удаляем матч из активных
+        supabaseClient
+            .from('active_matches')
+            .delete()
+            .eq('id', currentMatchId);
 
         draftState.gameNumber = (draftState.gameNumber || 0) + 1;
         resetDraft();
@@ -2333,13 +2449,15 @@
 
         navigate('matchPage');
         renderMatchPage();
-        showToast('success', 'Матч начался!', `${orange.length + blue.length} игроков в игре`);
+        showToast('success', 'Матч начался!', `${currentMatch.orange.length + currentMatch.blue.length} игроков в игре`);
         checkMatchResultVisibility();
         checkLobbyVisibility();
     }
 
+    // ============================================================
+    //  МАТЧ
+    // ============================================================
     function checkLobbyVisibility() {
-        // Показываем секцию лобби только для капитана BLUE TEAM
         if (isCaptain && draftState.isComplete) {
             document.getElementById('lobbySection').classList.add('visible');
         } else {
@@ -2492,7 +2610,7 @@
     });
 
     // ============================================================
-    //  ЗАСЧИТЫВАНИЕ МАТЧА
+    //  ЗАСЧИТЫВАНИЕ МАТЧА С ФОРМУЛОЙ ELO
     // ============================================================
     document.getElementById('blueWinBtn').addEventListener('click', function() {
         if (!currentMatch || !draftState.isComplete) {
@@ -2521,16 +2639,52 @@
         }
 
         const map = draftState.modeFinal || 'Gem Grab';
+        
+        // Получаем игроков с их ELO
         const allPlayers = [...currentMatch.orange, ...currentMatch.blue];
-        const realPlayers = allPlayers.filter(p => !p.id.startsWith('bot_'));
-
         const orangePlayers = currentMatch.orange;
         const bluePlayers = currentMatch.blue;
         const winners = winner === 'blue' ? bluePlayers : orangePlayers;
         const losers = winner === 'blue' ? orangePlayers : bluePlayers;
 
-        for (const player of realPlayers) {
+        // Получаем ELO всех игроков
+        const playerIds = allPlayers.map(p => p.id);
+        const { data: playersData } = await supabaseClient
+            .from('users')
+            .select('id, elo')
+            .in('id', playerIds);
+
+        const eloMap = {};
+        playersData.forEach(p => {
+            eloMap[p.id] = p.elo || 1000;
+        });
+
+        // Вычисляем средний ELO для каждой команды
+        const avgWinnerElo = winners.reduce((sum, p) => sum + (eloMap[p.id] || 1000), 0) / winners.length;
+        const avgLoserElo = losers.reduce((sum, p) => sum + (eloMap[p.id] || 1000), 0) / losers.length;
+
+        // Для каждого игрока считаем изменение ELO
+        const eloChanges = {};
+        const K = 32;
+
+        for (const winnerPlayer of winners) {
+            const winnerElo = eloMap[winnerPlayer.id] || 1000;
+            const expected = 1 / (1 + Math.pow(10, (avgLoserElo - winnerElo) / 400));
+            const change = Math.round(K * (1 - expected));
+            eloChanges[winnerPlayer.id] = change;
+        }
+
+        for (const loserPlayer of losers) {
+            const loserElo = eloMap[loserPlayer.id] || 1000;
+            const expected = 1 / (1 + Math.pow(10, (avgWinnerElo - loserElo) / 400));
+            const change = Math.round(K * (0 - expected));
+            eloChanges[loserPlayer.id] = change;
+        }
+
+        // Обновляем статистику игроков
+        for (const player of allPlayers) {
             const isWin = winners.some(w => w.id === player.id);
+            const eloChange = eloChanges[player.id] || 0;
 
             try {
                 const { data: userData } = await supabaseClient
@@ -2543,7 +2697,7 @@
                     const newMatches = (userData.matches || 0) + 1;
                     const newWins = (userData.wins || 0) + (isWin ? 1 : 0);
                     const newLosses = (userData.losses || 0) + (isWin ? 0 : 1);
-                    const newElo = (userData.elo || 1000) + (isWin ? 25 : -25);
+                    const newElo = Math.max(100, (userData.elo || 1000) + eloChange);
                     const newMvp = (userData.mvp || 0) + (isWin ? 1 : 0);
 
                     await supabaseClient
@@ -2567,6 +2721,7 @@
                         username: player.username,
                         map: map,
                         result: isWin ? 'win' : 'loss',
+                        elo_change: eloChange,
                         match_date: new Date().toISOString(),
                         server_name: 'StartUp Platform',
                         screenshot: currentScreenshot || null,
@@ -2578,6 +2733,7 @@
             }
         }
 
+        // Обновляем текущего пользователя
         const { data: updatedUser } = await supabaseClient
             .from('users')
             .select('*')
@@ -2591,7 +2747,8 @@
         }
 
         const winnerTeam = winner === 'blue' ? 'BLUE TEAM' : 'ORANGE TEAM';
-        showToast('success', 'Матч засчитан!', `Победила команда ${winnerTeam}`);
+        const changes = winners.map(p => `${p.username} +${eloChanges[p.id] || 0}`).join(', ');
+        showToast('success', 'Матч засчитан!', `Победила команда ${winnerTeam}. Изменения ELO: ${changes}`);
 
         document.getElementById('matchResultSection').classList.remove('admin-visible');
         document.getElementById('lobbySection').classList.remove('visible');
@@ -2787,6 +2944,7 @@
                     <span class="date">${new Date(m.match_date).toLocaleDateString('ru-RU')}</span>
                     <span class="result ${m.result === 'win' ? 'win' : 'loss'}">
                         ${m.result === 'win' ? '🏆 Победа' : '💀 Поражение'}
+                        ${m.elo_change ? ` (${m.elo_change > 0 ? '+' : ''}${m.elo_change} ELO)` : ''}
                     </span>
                 </div>
             `).join('');
@@ -2821,7 +2979,7 @@
                 const barClass = isWin ? 'win' : 'loss';
                 
                 return `
-                    <div class="chart-bar-wrap" title="${m.map || 'Матч'} - ${isWin ? 'Победа' : 'Поражение'}">
+                    <div class="chart-bar-wrap" title="${m.map || 'Матч'} - ${isWin ? 'Победа' : 'Поражение'} ${m.elo_change ? ' (' + (m.elo_change > 0 ? '+' : '') + m.elo_change + ' ELO)' : ''}">
                         <div class="chart-bar ${barClass}" 
                              style="height: ${height}px; 
                                     ${isWin ? 'border-radius: 3px 3px 0 0; align-self: flex-end;' : 'border-radius: 0 0 3px 3px; align-self: flex-start;'}">

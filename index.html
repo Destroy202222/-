@@ -1119,6 +1119,58 @@
     }
 
     // ============================================================
+    //  ПРОВЕРКА ОЧЕРЕДИ ПРИ ЗАГРУЗКЕ
+    // ============================================================
+    async function checkQueueOnLoad() {
+        if (!currentUser) return;
+        
+        try {
+            const { data, error } = await supabaseClient
+                .from('queue')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .eq('status', 'searching')
+                .maybeSingle();
+
+            if (error) {
+                console.error('Ошибка проверки очереди:', error);
+                return;
+            }
+
+            if (data) {
+                await supabaseClient
+                    .from('queue')
+                    .delete()
+                    .eq('id', data.id);
+                console.log('🧹 Пользователь удалён из очереди при загрузке');
+            }
+
+            isSearching = false;
+            if (searchTimerInterval) {
+                clearInterval(searchTimerInterval);
+                searchTimerInterval = null;
+            }
+            if (queueUpdateInterval) {
+                clearInterval(queueUpdateInterval);
+                queueUpdateInterval = null;
+            }
+            
+            document.getElementById('queueBtn').style.display = 'block';
+            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
+            document.getElementById('queueBtn').className = 'btn-queue';
+            document.getElementById('queueBtn').onclick = startSearch;
+            document.getElementById('cancelBtn').style.display = 'none';
+            document.getElementById('searchCurrentPlayers').textContent = '0';
+            document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
+            document.getElementById('searchStatus').textContent = 'Поиск';
+
+            await updateQueueCount();
+        } catch (e) {
+            console.error('Ошибка checkQueueOnLoad:', e);
+        }
+    }
+
+    // ============================================================
     //  РЕГИСТРАЦИЯ И ВХОД
     // ============================================================
     async function registerUser() {
@@ -1280,6 +1332,9 @@
                 adminPanel.classList.remove('visible');
             }
 
+            // ПРОВЕРЯЕМ ОЧЕРЕДЬ ПРИ ЗАГРУЗКЕ
+            await checkQueueOnLoad();
+
             await loadMatchHistory();
             await renderChart();
             await renderTopPage();
@@ -1338,7 +1393,36 @@
     }
 
     // ============================================================
-    //  РЕАЛЬНЫЙ ПОИСК МАТЧА (С ИСПРАВЛЕНИЯМИ)
+    //  ОБРАБОТКА ВИДИМОСТИ СТРАНИЦЫ
+    // ============================================================
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            if (isSearching) {
+                console.log('🔄 Поиск приостановлен (страница скрыта)');
+            }
+        } else {
+            if (isSearching) {
+                console.log('🔄 Поиск возобновлён (страница активна)');
+                updateQueueCount();
+            }
+        }
+    });
+
+    window.addEventListener('beforeunload', function() {
+        if (isSearching && currentUser) {
+            supabaseClient
+                .from('queue')
+                .delete()
+                .eq('user_id', currentUser.id)
+                .eq('status', 'searching')
+                .then(() => {
+                    console.log('🧹 Пользователь удалён из очереди при закрытии');
+                });
+        }
+    });
+
+    // ============================================================
+    //  РЕАЛЬНЫЙ ПОИСК МАТЧА
     // ============================================================
     async function startSearch() {
         if (isSearching) return;
@@ -1348,7 +1432,9 @@
         }
         if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
 
-        // Проверяем, есть ли уже активный поиск
+        // Сначала проверяем и очищаем старую очередь
+        await checkQueueOnLoad();
+
         const { data: existingQueue } = await supabaseClient
             .from('queue')
             .select('*')
@@ -1357,10 +1443,12 @@
             .maybeSingle();
 
         if (existingQueue) {
-            return showToast('info', 'Уже в поиске', 'Вы уже ищете матч');
+            await supabaseClient
+                .from('queue')
+                .delete()
+                .eq('id', existingQueue.id);
         }
 
-        // Добавляем себя в очередь
         const { error: queueError } = await supabaseClient
             .from('queue')
             .insert({
@@ -1384,7 +1472,6 @@
         document.getElementById('cancelBtn').style.display = 'inline-flex';
         document.getElementById('searchStatus').textContent = 'Поиск';
 
-        // ОБНОВЛЯЕМ СЧЕТЧИК СРАЗУ
         await updateQueueCount();
 
         if (searchTimerInterval) clearInterval(searchTimerInterval);
@@ -1395,7 +1482,6 @@
             document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> ' + mins + ':' + secs;
         }, 1000);
 
-        // ПОДПИСКА НА ИЗМЕНЕНИЯ В ОЧЕРЕДИ
         if (searchChannel) {
             try {
                 await supabaseClient.removeChannel(searchChannel);
@@ -1417,7 +1503,6 @@
                 console.log('📡 Статус подписки на очередь:', status);
             });
 
-        // ПЕРИОДИЧЕСКОЕ ОБНОВЛЕНИЕ (КАЖДЫЕ 3 СЕКУНДЫ)
         if (queueUpdateInterval) clearInterval(queueUpdateInterval);
         queueUpdateInterval = setInterval(() => {
             if (isSearching) {
@@ -1433,7 +1518,6 @@
 
     async function updateQueueCount() {
         try {
-            // Получаем количество игроков в очереди
             const { count, error } = await supabaseClient
                 .from('queue')
                 .select('*', { count: 'exact', head: true })
@@ -1447,10 +1531,8 @@
             const currentCount = count || 0;
             console.log('👥 Игроков в очереди:', currentCount);
             
-            // Обновляем отображение
             document.getElementById('searchCurrentPlayers').textContent = currentCount;
             
-            // Получаем список игроков для отображения
             const { data: players } = await supabaseClient
                 .from('queue')
                 .select('username')
@@ -1464,7 +1546,6 @@
                 document.getElementById('searchStatus').textContent = 'Поиск';
             }
 
-            // Проверяем, есть ли 6 игроков
             if (currentCount >= 6 && isSearching) {
                 console.log('🎯 6 игроков собрано! Создаем матч...');
                 await createMatchFromQueue();
@@ -1477,7 +1558,6 @@
     async function createMatchFromQueue() {
         if (!isSearching) return;
 
-        // Получаем 6 игроков из очереди
         const { data: players } = await supabaseClient
             .from('queue')
             .select('*')
@@ -1492,14 +1572,12 @@
 
         console.log('✅ Найдено 6 игроков:', players.map(p => p.username));
 
-        // Удаляем их из очереди
         const ids = players.map(p => p.id);
         await supabaseClient
             .from('queue')
             .delete()
             .in('id', ids);
 
-        // Создаём матч
         const shuffled = [...players];
         for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -1512,7 +1590,6 @@
         const matchId = 'match_' + Date.now();
         currentMatchId = matchId;
 
-        // Сохраняем матч
         await supabaseClient
             .from('active_matches')
             .insert({
@@ -1524,18 +1601,15 @@
                 created_at: new Date().toISOString()
             });
 
-        // Создаём матч в локальном состоянии
         currentMatch = { 
             orange: orange.map(p => ({ id: p.user_id, username: p.username, elo: p.elo })), 
             blue: blue.map(p => ({ id: p.user_id, username: p.username, elo: p.elo }))
         };
         isPlayerInMatch = true;
         
-        // Проверяем, является ли текущий пользователь капитаном BLUE TEAM
         isCaptain = blue.length > 0 && blue[0].user_id === currentUser.id;
         console.log('👑 Капитан BLUE TEAM:', isCaptain ? currentUser.username : 'Нет');
 
-        // Отключаем поиск
         isSearching = false;
         clearInterval(searchTimerInterval);
         if (queueUpdateInterval) {
@@ -1553,7 +1627,6 @@
             searchChannel = null;
         }
 
-        // Показываем подтверждение
         matchPlayers = [...currentMatch.orange, ...currentMatch.blue];
         confirmedPlayers = [];
         showConfirmModal();
@@ -1564,7 +1637,6 @@
     async function cancelSearch() {
         if (!isSearching) return;
 
-        // Удаляем из очереди
         const { error } = await supabaseClient
             .from('queue')
             .delete()
@@ -1706,7 +1778,6 @@
     }
 
     function startMatchAfterConfirm() {
-        // Обновляем статус матча
         supabaseClient
             .from('active_matches')
             .update({ status: 'active' })
@@ -1776,7 +1847,6 @@
         const oCaptain = currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
         const bCaptain = currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
 
-        // Определяем, является ли текущий пользователь капитаном для банов
         const isOrangeCaptain = currentUser && oCaptain === currentUser.username;
         const isBlueCaptain = currentUser && bCaptain === currentUser.username;
         const canBan = isOrangeCaptain || isBlueCaptain;
@@ -1814,7 +1884,6 @@
             `;
         }).join('') || '<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
 
-        // Обновляем состояние кнопок бана (только для капитанов)
         updateBanButtons(canBan);
         renderDraftUI();
         checkMatchResultVisibility();
@@ -2051,7 +2120,6 @@
         const winners = winner === 'blue' ? bluePlayers : orangePlayers;
         const losers = winner === 'blue' ? orangePlayers : bluePlayers;
 
-        // Получаем ELO
         const playerIds = allPlayers.map(p => p.id);
         const { data: playersData } = await supabaseClient
             .from('users')
@@ -2242,7 +2310,6 @@
         const modesContainer = document.getElementById('modesBanContainer');
         const modeBtns = modesContainer.querySelectorAll('.ban-btn');
         
-        // Определяем, может ли пользователь банить
         const oCaptain = currentMatch && currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
         const bCaptain = currentMatch && currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
         const canBan = currentUser && (currentUser.username === oCaptain || currentUser.username === bCaptain);
@@ -2300,7 +2367,6 @@
         if (state.modeBanned.includes(value)) return;
         if (state.modeFinal) return;
         
-        // Проверяем, может ли пользователь банить
         const oCaptain = currentMatch && currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
         const bCaptain = currentMatch && currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
         const canBan = currentUser && (currentUser.username === oCaptain || currentUser.username === bCaptain);

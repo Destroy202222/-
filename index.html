@@ -1022,6 +1022,7 @@
     let friendRequests = [];
     let myFriends = [];
     let isSearching = false;
+    let isStartingSearch = false;
     let searchTimerInterval = null;
     let searchSeconds = 0;
     let currentScreenshot = null;
@@ -1041,6 +1042,7 @@
     let queueUpdateInterval = null;
     let matchChannel = null;
     let isConfirming = false;
+    let isCanceling = false;
 
     let draftState = {
         gameNumber: 1,
@@ -1190,6 +1192,7 @@
             }
 
             isSearching = false;
+            isStartingSearch = false;
             if (searchTimerInterval) {
                 clearInterval(searchTimerInterval);
                 searchTimerInterval = null;
@@ -1203,6 +1206,7 @@
             document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
             document.getElementById('queueBtn').className = 'btn-queue';
             document.getElementById('queueBtn').onclick = startSearch;
+            document.getElementById('queueBtn').disabled = false;
             document.getElementById('cancelBtn').style.display = 'none';
             document.getElementById('searchCurrentPlayers').textContent = '0';
             document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
@@ -1251,14 +1255,11 @@
                 }
 
                 if (match.status === 'pending') {
-                    // Матч ожидает подтверждения
                     matchPlayers = [...orange, ...blue];
                     confirmedPlayers = [];
                     showConfirmModal();
-                    // Подписываемся на изменения матча
                     subscribeToMatch(match.id);
                 } else if (match.status === 'active') {
-                    // Матч уже активен
                     navigate('matchPage');
                     renderMatchPage();
                     showToast('info', 'Активный матч', 'Вы уже в матче!');
@@ -1267,6 +1268,29 @@
         } catch (e) {
             console.error('Ошибка проверки активного матча:', e);
         }
+    }
+
+    // ============================================================
+    //  ОЧИСТКА СОСТОЯНИЯ ПОИСКА
+    // ============================================================
+    async function cleanupSearchState() {
+        if (searchTimerInterval) {
+            clearInterval(searchTimerInterval);
+            searchTimerInterval = null;
+        }
+        if (queueUpdateInterval) {
+            clearInterval(queueUpdateInterval);
+            queueUpdateInterval = null;
+        }
+        if (searchChannel) {
+            try {
+                await supabaseClient.removeChannel(searchChannel);
+            } catch (e) {}
+            searchChannel = null;
+        }
+        isSearching = false;
+        isStartingSearch = false;
+        isCanceling = false;
     }
 
     // ============================================================
@@ -1455,17 +1479,10 @@
         currentUser = null;
         currentMatch = null;
         isPlayerInMatch = false;
-        if (searchChannel) {
-            supabaseClient.removeChannel(searchChannel);
-            searchChannel = null;
-        }
+        cleanupSearchState();
         if (matchChannel) {
             supabaseClient.removeChannel(matchChannel);
             matchChannel = null;
-        }
-        if (queueUpdateInterval) {
-            clearInterval(queueUpdateInterval);
-            queueUpdateInterval = null;
         }
         checkAuth();
         showToast('info', 'Выход', 'Вы вышли');
@@ -1530,7 +1547,6 @@
                     if (newData.status === 'active') {
                         document.getElementById('confirmModal').classList.remove('active');
                         waitingConfirm = false;
-                        // Загружаем обновленный матч
                         const orange = JSON.parse(newData.orange);
                         const blue = JSON.parse(newData.blue);
                         currentMatch = { orange, blue };
@@ -1577,100 +1593,131 @@
     });
 
     // ============================================================
-    //  РЕАЛЬНЫЙ ПОИСК МАТЧА
+    //  РЕАЛЬНЫЙ ПОИСК МАТЧА (С ЗАЩИТОЙ ОТ МНОЖЕСТВЕННЫХ ВЫЗОВОВ)
     // ============================================================
     async function startSearch() {
-        if (isSearching) return;
+        // Защита от множественных вызовов
+        if (isStartingSearch || isSearching) {
+            console.log('⚠️ Поиск уже выполняется');
+            return;
+        }
         if (currentMatch) {
             navigate('matchPage');
             return showToast('info', 'Активный матч', 'Вы уже в матче!');
         }
         if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
 
-        await checkQueueOnLoad();
+        isStartingSearch = true;
+        
+        try {
+            // Отключаем кнопку сразу
+            document.getElementById('queueBtn').disabled = true;
+            document.getElementById('queueBtn').textContent = '⏳ Подождите...';
+            document.getElementById('cancelBtn').style.display = 'none';
 
-        const { data: existingQueue } = await supabaseClient
-            .from('queue')
-            .select('*')
-            .eq('user_id', currentUser.id)
-            .eq('status', 'searching')
-            .maybeSingle();
+            // Очищаем старые подписки и интервалы
+            await cleanupSearchState();
 
-        if (existingQueue) {
-            await supabaseClient
+            // Проверяем очередь
+            await checkQueueOnLoad();
+
+            const { data: existingQueue } = await supabaseClient
                 .from('queue')
-                .delete()
-                .eq('id', existingQueue.id);
-        }
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .eq('status', 'searching')
+                .maybeSingle();
 
-        const { error: queueError } = await supabaseClient
-            .from('queue')
-            .insert({
-                user_id: currentUser.id,
-                username: currentUser.username,
-                elo: currentUser.elo || 1000,
-                status: 'searching',
-                party_id: partyFriends.length > 0 ? 'party_' + Date.now() : null,
-                party_members: partyFriends.map(f => f.username).join(','),
-                created_at: new Date().toISOString()
-            });
-
-        if (queueError) {
-            showToast('error', 'Ошибка', 'Не удалось встать в очередь: ' + queueError.message);
-            return;
-        }
-
-        isSearching = true;
-        searchSeconds = 0;
-        document.getElementById('queueBtn').style.display = 'none';
-        document.getElementById('cancelBtn').style.display = 'inline-flex';
-        document.getElementById('searchStatus').textContent = 'Поиск';
-
-        await updateQueueCount();
-        await updateHomeStats();
-
-        if (searchTimerInterval) clearInterval(searchTimerInterval);
-        searchTimerInterval = setInterval(() => {
-            searchSeconds++;
-            const mins = String(Math.floor(searchSeconds / 60)).padStart(2, '0');
-            const secs = String(searchSeconds % 60).padStart(2, '0');
-            document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> ' + mins + ':' + secs;
-        }, 1000);
-
-        if (searchChannel) {
-            try {
-                await supabaseClient.removeChannel(searchChannel);
-            } catch (e) {}
-            searchChannel = null;
-        }
-
-        searchChannel = supabaseClient
-            .channel('queue_channel_' + Date.now())
-            .on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'queue'
-            }, async (payload) => {
-                console.log('🔄 Изменение в очереди:', payload);
-                await updateQueueCount();
-                await updateHomeStats();
-            })
-            .subscribe((status) => {
-                console.log('📡 Статус подписки на очередь:', status);
-            });
-
-        if (queueUpdateInterval) clearInterval(queueUpdateInterval);
-        queueUpdateInterval = setInterval(() => {
-            if (isSearching) {
-                updateQueueCount();
-                updateHomeStats();
-            } else {
-                clearInterval(queueUpdateInterval);
-                queueUpdateInterval = null;
+            if (existingQueue) {
+                await supabaseClient
+                    .from('queue')
+                    .delete()
+                    .eq('id', existingQueue.id);
             }
-        }, 3000);
 
-        showToast('info', 'Поиск начат', 'Ищем игроков...');
+            const { error: queueError } = await supabaseClient
+                .from('queue')
+                .insert({
+                    user_id: currentUser.id,
+                    username: currentUser.username,
+                    elo: currentUser.elo || 1000,
+                    status: 'searching',
+                    party_id: partyFriends.length > 0 ? 'party_' + Date.now() : null,
+                    party_members: partyFriends.map(f => f.username).join(','),
+                    created_at: new Date().toISOString()
+                });
+
+            if (queueError) {
+                showToast('error', 'Ошибка', 'Не удалось встать в очередь: ' + queueError.message);
+                isStartingSearch = false;
+                document.getElementById('queueBtn').disabled = false;
+                document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
+                document.getElementById('queueBtn').style.display = 'block';
+                return;
+            }
+
+            isSearching = true;
+            searchSeconds = 0;
+            document.getElementById('queueBtn').style.display = 'none';
+            document.getElementById('cancelBtn').style.display = 'inline-flex';
+            document.getElementById('searchStatus').textContent = 'Поиск';
+
+            await updateQueueCount();
+            await updateHomeStats();
+
+            if (searchTimerInterval) clearInterval(searchTimerInterval);
+            searchTimerInterval = setInterval(() => {
+                searchSeconds++;
+                const mins = String(Math.floor(searchSeconds / 60)).padStart(2, '0');
+                const secs = String(searchSeconds % 60).padStart(2, '0');
+                document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> ' + mins + ':' + secs;
+            }, 1000);
+
+            // Подписка на изменения
+            if (searchChannel) {
+                try {
+                    await supabaseClient.removeChannel(searchChannel);
+                } catch (e) {}
+                searchChannel = null;
+            }
+
+            searchChannel = supabaseClient
+                .channel('queue_channel_' + Date.now())
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'queue'
+                }, async (payload) => {
+                    if (isSearching) {
+                        await updateQueueCount();
+                        await updateHomeStats();
+                    }
+                })
+                .subscribe((status) => {
+                    console.log('📡 Статус подписки на очередь:', status);
+                });
+
+            if (queueUpdateInterval) clearInterval(queueUpdateInterval);
+            queueUpdateInterval = setInterval(() => {
+                if (isSearching) {
+                    updateQueueCount();
+                    updateHomeStats();
+                } else {
+                    clearInterval(queueUpdateInterval);
+                    queueUpdateInterval = null;
+                }
+            }, 3000);
+
+            showToast('info', 'Поиск начат', 'Ищем игроков...');
+        } catch (e) {
+            console.error('Ошибка startSearch:', e);
+            showToast('error', 'Ошибка', 'Произошла ошибка при поиске');
+        } finally {
+            isStartingSearch = false;
+            document.getElementById('queueBtn').disabled = false;
+            document.getElementById('queueBtn').style.display = 'block';
+            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
+        }
     }
 
     async function updateQueueCount() {
@@ -1777,6 +1824,7 @@
         document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
         document.getElementById('queueBtn').className = 'btn-queue';
         document.getElementById('queueBtn').onclick = startSearch;
+        document.getElementById('queueBtn').disabled = false;
         document.getElementById('cancelBtn').style.display = 'none';
 
         if (searchChannel) {
@@ -1784,10 +1832,8 @@
             searchChannel = null;
         }
 
-        // ПОДПИСЫВАЕМСЯ НА МАТЧ
         subscribeToMatch(matchId);
 
-        // ПОКАЗЫВАЕМ МОДАЛЬНОЕ ОКНО ВСЕМ ИГРОКАМ
         matchPlayers = [...currentMatch.orange, ...currentMatch.blue];
         confirmedPlayers = [];
         showConfirmModal();
@@ -1797,40 +1843,50 @@
     }
 
     async function cancelSearch() {
-        if (!isSearching) return;
-
-        const { error } = await supabaseClient
-            .from('queue')
-            .delete()
-            .eq('user_id', currentUser.id)
-            .eq('status', 'searching');
-
-        if (error) {
-            console.error('Ошибка удаления из очереди:', error);
+        // Защита от множественных вызовов
+        if (isCanceling) return;
+        if (!isSearching) {
+            console.log('⚠️ Поиск не активен');
+            return;
         }
 
-        isSearching = false;
-        clearInterval(searchTimerInterval);
-        if (queueUpdateInterval) {
-            clearInterval(queueUpdateInterval);
-            queueUpdateInterval = null;
-        }
-        document.getElementById('queueBtn').style.display = 'block';
-        document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-        document.getElementById('queueBtn').className = 'btn-queue';
-        document.getElementById('queueBtn').onclick = startSearch;
-        document.getElementById('cancelBtn').style.display = 'none';
-        document.getElementById('searchCurrentPlayers').textContent = '0';
-        document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
-        document.getElementById('searchStatus').textContent = 'Поиск';
+        isCanceling = true;
+        document.getElementById('cancelBtn').disabled = true;
+        document.getElementById('cancelBtn').textContent = '⏳ Отмена...';
 
-        if (searchChannel) {
-            supabaseClient.removeChannel(searchChannel);
-            searchChannel = null;
-        }
+        try {
+            const { error } = await supabaseClient
+                .from('queue')
+                .delete()
+                .eq('user_id', currentUser.id)
+                .eq('status', 'searching');
 
-        await updateHomeStats();
-        showToast('info', 'Поиск отменён', 'Вы отменили поиск');
+            if (error) {
+                console.error('Ошибка удаления из очереди:', error);
+            }
+
+            await cleanupSearchState();
+
+            document.getElementById('queueBtn').style.display = 'block';
+            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
+            document.getElementById('queueBtn').className = 'btn-queue';
+            document.getElementById('queueBtn').onclick = startSearch;
+            document.getElementById('queueBtn').disabled = false;
+            document.getElementById('cancelBtn').style.display = 'none';
+            document.getElementById('cancelBtn').disabled = false;
+            document.getElementById('cancelBtn').textContent = 'Отменить поиск';
+            document.getElementById('searchCurrentPlayers').textContent = '0';
+            document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
+            document.getElementById('searchStatus').textContent = 'Поиск';
+
+            await updateHomeStats();
+            showToast('info', 'Поиск отменён', 'Вы отменили поиск');
+        } catch (e) {
+            console.error('Ошибка cancelSearch:', e);
+            showToast('error', 'Ошибка', 'Не удалось отменить поиск');
+        } finally {
+            isCanceling = false;
+        }
     }
 
     // ============================================================
@@ -1871,7 +1927,6 @@
             }
         }, 1000);
 
-        // Обновляем кнопку поиска
         document.getElementById('matchNavLabel').textContent = 'Матч';
         document.querySelector('#matchNavBtn i').className = 'fas fa-gamepad';
     }
@@ -1907,7 +1962,6 @@
                 document.getElementById('confirmModal').classList.remove('active');
                 waitingConfirm = false;
                 isConfirming = false;
-                // Обновляем статус матча на active
                 supabaseClient
                     .from('active_matches')
                     .update({ status: 'active' })
@@ -2685,7 +2739,6 @@
         if (!currentUser) return;
 
         try {
-            // Загружаем друзей
             const { data: friendsData } = await supabaseClient
                 .from('friends')
                 .select('friend_id')
@@ -2703,7 +2756,6 @@
                 myFriends = [];
             }
 
-            // Загружаем входящие заявки
             const { data: requestsData } = await supabaseClient
                 .from('friend_requests')
                 .select('from_user_id')
@@ -2722,7 +2774,6 @@
                 friendRequests = [];
             }
 
-            // Загружаем всех остальных пользователей для поиска
             const { data: allUsers } = await supabaseClient
                 .from('users')
                 .select('id, username, isadmin, elo')

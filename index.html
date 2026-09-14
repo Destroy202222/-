@@ -1,3515 +1,452 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>StartUp Platform</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-    </script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #0b0b0f;
-            color: #fff;
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-            padding-bottom: 70px;
-            min-height: 100vh;
-            line-height: 1.5;
-        }
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: #1a1a2e;
-            border: 1px solid rgba(255,215,0,0.2);
-            border-radius: 16px;
-            padding: 16px 24px;
-            max-width: 400px;
-            width: 90%;
-            z-index: 9999;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
-            opacity: 0;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-            backdrop-filter: blur(12px);
-        }
-        .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .toast .ttl { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-        .toast .ttl.success { color: #51cf66; }
-        .toast .ttl.error { color: #ff6b6b; }
-        .toast .ttl.info { color: #4dabf7; }
-        .toast .txt { font-size: 13px; color: #b0b0c0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>START COIN · профиль</title>
+  <style>
+    /* ===== RESET & БАЗА ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(16px);
-            z-index: 9998;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-box {
-            background: #14141f;
-            border: 1px solid rgba(255,215,0,0.15);
-            border-radius: 28px;
-            padding: 32px 28px;
-            max-width: 440px;
-            width: 100%;
-            animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
-        }
-        @keyframes modalIn {
-            from { transform: scale(0.85) translateY(20px); opacity: 0; }
-            to { transform: scale(1) translateY(0); opacity: 1; }
-        }
-        .modal-box .modal-title { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 2px; }
-        .modal-box .modal-title .highlight { color: #ffd700; }
-        .modal-box .modal-sub { text-align: center; color: #8888aa; font-size: 13px; margin-bottom: 6px; }
-        .modal-box .modal-timer {
-            text-align: center;
-            font-size: 42px;
-            font-weight: 900;
-            color: #ffd700;
-            margin: 8px 0 16px;
-            font-variant-numeric: tabular-nums;
-        }
-        .modal-box .modal-timer.warning { color: #ff6b6b; animation: pulseTimer 0.5s ease-in-out infinite; }
-        @keyframes pulseTimer { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .modal-players {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 16px;
-            max-height: 260px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-        .modal-players::-webkit-scrollbar { width: 3px; }
-        .modal-players::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
-        .modal-players::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 10px; }
-        .modal-player {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #1a1a2e;
-            border-radius: 14px;
-            padding: 10px 14px;
-            border: 1px solid #2a2a4a;
-            transition: all 0.4s ease;
-            cursor: pointer;
-        }
-        .modal-player:hover { border-color: #ffd700; }
-        .modal-player.confirmed { border-color: #51cf66; background: rgba(81,207,102,0.08); box-shadow: 0 0 20px rgba(81,207,102,0.05); }
-        .modal-player .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-            color: #0b0b0f;
-            flex-shrink: 0;
-        }
-        .modal-player .info { flex: 1; }
-        .modal-player .info .name { font-weight: 600; font-size: 14px; }
-        .modal-player .info .status { font-size: 12px; color: #666; }
-        .modal-player .status-icon { font-size: 22px; transition: all 0.3s ease; }
-        .modal-player .status-icon.confirmed { color: #51cf66; }
-        .modal-player .status-icon.pending { color: #ffd700; animation: pulseIcon 1s ease-in-out infinite; }
-        @keyframes pulseIcon { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.9); } }
-        .modal-actions { display: flex; gap: 10px; }
-        .modal-actions button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            font-family: inherit;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .modal-actions .btn-confirm {
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            color: #0b0b0f;
-        }
-        .modal-actions .btn-confirm:hover:not(:disabled) { transform: scale(1.02); }
-        .modal-actions .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-        .modal-actions .btn-confirm.confirmed { background: linear-gradient(135deg, #51cf66, #2b8a3e); color: #fff; }
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 20%, #0b0e1a, #05070c 90%);
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      color: #eef3fc;
+    }
 
-        .auth-page {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-            background: radial-gradient(ellipse at 50% 0%, #1a1a2e 0%, #0b0b0f 70%);
-        }
-        .auth-box {
-            background: #14141f;
-            border-radius: 24px;
-            padding: 40px 32px;
-            max-width: 420px;
-            width: 100%;
-            border: 1px solid #2a2a4a;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
-        }
-        .auth-logo { text-align: center; margin-bottom: 32px; }
-        .auth-logo .icon { font-size: 48px; display: block; margin-bottom: 8px; }
-        .auth-logo h1 { font-size: 28px; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ff6b00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .auth-logo .sub { color: #8888aa; font-size: 13px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase; }
-        .auth-tabs { display: flex; gap: 8px; margin-bottom: 24px; background: #1a1a2e; border-radius: 12px; padding: 4px; }
-        .auth-tabs .tab {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            color: #8888aa;
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .auth-tabs .tab.active { background: #2a2a4a; color: #fff; }
-        .auth-tabs .tab i { margin-right: 6px; }
-        .auth-form { display: none; }
-        .auth-form.active { display: block; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #b0b0c0; margin-bottom: 6px; }
-        .input-wrap {
-            display: flex;
-            align-items: center;
-            background: #1a1a2e;
-            border-radius: 12px;
-            padding: 0 14px;
-            border: 1px solid #2a2a4a;
-            transition: border-color 0.3s ease;
-        }
-        .input-wrap:focus-within { border-color: #ffd700; }
-        .input-wrap i { color: #666; font-size: 14px; margin-right: 10px; }
-        .input-wrap input {
-            background: transparent;
-            border: none;
-            padding: 12px 0;
-            color: #fff;
-            font-family: inherit;
-            font-size: 14px;
-            width: 100%;
-            outline: none;
-        }
-        .input-wrap input::placeholder { color: #555; }
-        .btn-auth {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            color: #0b0b0f;
-            font-family: inherit;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            margin-top: 8px;
-        }
-        .btn-auth:hover { transform: scale(1.02); }
-        .btn-auth i { margin-right: 8px; }
-        .auth-message { margin-top: 12px; font-size: 13px; text-align: center; min-height: 20px; }
-        .auth-message.show { padding: 8px; border-radius: 8px; }
-        .auth-message.error { color: #ff6b6b; background: rgba(255,107,107,0.1); }
-        .auth-message.success { color: #51cf66; background: rgba(81,207,102,0.1); }
-        .auth-message.info { color: #4dabf7; background: rgba(77,171,247,0.1); }
-        .auth-footer { margin-top: 16px; text-align: center; font-size: 13px; color: #666; }
-        .auth-footer a { color: #ffd700; cursor: pointer; text-decoration: none; font-weight: 600; }
-        .auth-footer a:hover { text-decoration: underline; }
+    /* ===== КАРТОЧКА ===== */
+    .card {
+      max-width: 880px;
+      width: 100%;
+      background: rgba(18, 25, 40, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(80, 150, 255, 0.15);
+      border-radius: 48px;
+      padding: 2.5rem 2.25rem;
+      box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(0, 220, 180, 0.08) inset;
+      transition: box-shadow 0.3s ease;
+    }
 
-        .main-wrapper { display: none; max-width: 480px; margin: 0 auto; padding: 0 16px; }
-        .header { padding: 20px 0 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .header .logo { cursor: pointer; }
-        .header .logo h1 { font-size: 22px; font-weight: 800; letter-spacing: 1px; background: linear-gradient(135deg, #ffffff, #8888aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header .logo .sub { font-size: 11px; color: #555; letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; -webkit-text-fill-color: #555; }
+    .card:hover {
+      box-shadow: 0 40px 60px -18px #00b8a0, 0 0 0 1px rgba(0, 255, 200, 0.2) inset;
+    }
 
-        .page { display: none; padding-bottom: 20px; }
-        .page.active { display: block; }
+    /* ===== ВЕРХНЯЯ ПАНЕЛЬ: АВАТАР + НИК ===== */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 2.2rem;
+      flex-wrap: wrap;
+    }
 
-        .home-hero { margin-top: 8px; }
-        .hero-badge { display: inline-block; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.2); padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; color: #ffd700; letter-spacing: 1px; text-transform: uppercase; }
-        .hero-title { font-size: 24px; font-weight: 800; line-height: 1.2; margin: 16px 0 20px; }
-        .hero-title span { color: #ffd700; }
-        .hero-stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .hero-stat { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; text-align: center; }
-        .hero-stat .number { font-size: 28px; font-weight: 900; color: #ffd700; }
-        .hero-stat .label { font-size: 12px; color: #8888aa; margin-top: 4px; }
-        .hero-actions { display: flex; gap: 12px; margin-bottom: 24px; }
-        .btn-hero { flex: 1; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease; }
-        .btn-hero:hover { transform: scale(1.02); }
-        .btn-hero.outline { background: transparent; border: 1px solid #2a2a4a; color: #fff; }
-        .prize-block { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 20px; }
-        .prize-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-        .prize-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .prize-item { padding: 12px 8px; border-radius: 12px; text-align: center; background: #1a1a2e; }
-        .prize-item.gold { border: 1px solid #ffd700; background: rgba(255,215,0,0.05); }
-        .prize-item.silver { border: 1px solid #c0c0c0; background: rgba(192,192,192,0.05); }
-        .prize-item.bronze { border: 1px solid #cd7f32; background: rgba(205,127,50,0.05); }
-        .prize-item .place { font-size: 11px; color: #8888aa; }
-        .prize-item .reward { font-size: 16px; font-weight: 700; margin-top: 4px; }
-        .prize-item.gold .reward { color: #ffd700; }
-        .prize-item.silver .reward { color: #c0c0c0; }
-        .prize-item.bronze .reward { color: #cd7f32; }
-        .prize-premium { text-align: center; font-size: 13px; color: #8888aa; }
+    .avatar {
+      width: 76px;
+      height: 76px;
+      border-radius: 32px;
+      background: linear-gradient(145deg, #1e2b4a, #0f172a);
+      border: 2px solid rgba(0, 255, 210, 0.4);
+      box-shadow: 0 0 20px rgba(0, 255, 200, 0.25), 0 10px 20px -6px #00000080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: #b7f0e0;
+      text-shadow: 0 0 12px #00ffe0;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+      position: relative;
+    }
 
-        .search-page-wrapper { padding-top: 8px; }
-        .search-header-block { text-align: center; padding: 16px 0 20px; }
-        .search-header-block .search-title { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #ffd700, #ff6b00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .search-header-block .search-sub { color: #666; font-size: 13px; margin-top: 4px; }
-        .search-main-block {
-            background: #14141f;
-            border: 1px solid #2a2a4a;
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 16px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .search-main-block::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(ellipse at center, rgba(255,215,0,0.03) 0%, transparent 70%);
-            pointer-events: none;
-        }
-        .search-main-block .search-status { font-size: 13px; font-weight: 600; color: #ffd700; margin-bottom: 4px; letter-spacing: 2px; }
-        .search-main-block .search-mode { font-size: 32px; font-weight: 900; margin-bottom: 2px; }
-        .search-main-block .search-sub-mode { color: #8888aa; font-size: 13px; margin-bottom: 16px; }
-        .search-players { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 36px; font-weight: 900; margin: 12px 0; }
-        .search-players .current { color: #ffd700; }
-        .search-players .total { color: #444; }
-        .search-players .slash { color: #444; font-size: 28px; }
-        .search-timer { color: #666; font-size: 14px; margin-bottom: 16px; font-variant-numeric: tabular-nums; }
-        .search-timer i { margin-right: 6px; color: #ffd700; }
-        .search-note { background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.1); border-radius: 12px; padding: 12px; font-size: 12px; color: #8888aa; margin-bottom: 16px; }
-        .search-note i { color: #ffd700; margin-right: 6px; }
-        .btn-queue {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            color: #0b0b0f;
-            font-family: inherit;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .btn-queue:hover { transform: scale(1.02); }
-        .btn-queue.cancel { background: #ff6b6b; color: #fff; }
-        .btn-queue:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    /* CSS-эмодзи для аватарки (стилизованный «глаз» / игрок) — без юникода */
+    .avatar::before {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 44px;
+      background: radial-gradient(circle at 30% 30%, #b0fff0, #1e7b6b);
+      border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+      box-shadow: 0 0 18px #00e6c4, 0 0 8px #affff0 inset;
+      transform: rotate(-5deg);
+    }
 
-        .party-block { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
-        .party-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #8888aa; }
-        .party-title i { margin-right: 8px; color: #ffd700; }
-        .party-members { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0; min-height: 40px; }
-        .party-member { display: inline-flex; align-items: center; gap: 6px; background: #1a1a2e; padding: 6px 12px; border-radius: 20px; font-size: 13px; border: 1px solid #2a2a4a; }
-        .party-member .avatar-small { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #0b0b0f; }
-        .party-member .remove { color: #ff6b6b; cursor: pointer; font-size: 14px; font-weight: 700; }
-        .party-member .remove:hover { color: #ff4444; }
-        .party-empty { color: #555; font-size: 13px; }
-        .party-feature { font-size: 11px; color: #555; margin-top: 8px; padding: 8px 12px; background: #1a1a2e; border-radius: 8px; }
-        .party-feature i { margin-right: 6px; color: #ffd700; }
+    /* «зрачок» — тёмный эллипс */
+    .avatar::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 24px;
+      background: radial-gradient(circle at 40% 40%, #0b1a2a, #03070c);
+      border-radius: 50%;
+      top: 32px;
+      left: 30px;
+      box-shadow: 0 0 12px #000000, 0 0 6px #1a3a4a inset;
+      transform: rotate(8deg);
+    }
 
-        .match-page { padding-top: 8px; }
-        .match-info-bar { display: flex; flex-wrap: wrap; gap: 12px; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
-        .info-item { font-size: 13px; color: #8888aa; }
-        .info-item .value { color: #fff; font-weight: 600; }
-        .info-item .value.highlight { color: #ffd700; }
-        .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        .team-block { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; }
-        .team-block.blue { border-color: #4dabf7; }
-        .team-block.orange { border-color: #ff922b; }
-        .team-name { font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 12px; letter-spacing: 1px; }
-        .team-block.blue .team-name { color: #4dabf7; }
-        .team-block.orange .team-name { color: #ff922b; }
-        .team-players { display: flex; flex-direction: column; gap: 8px; }
-        .player-card { display: flex; align-items: center; gap: 10px; background: #1a1a2e; border-radius: 10px; padding: 8px 12px; }
-        .player-card .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #0b0b0f; flex-shrink: 0; }
-        .player-card .info { flex: 1; }
-        .player-card .info .name { font-size: 13px; font-weight: 600; }
-        .player-card .captain-badge { font-size: 10px; color: #ffd700; padding: 2px 8px; background: rgba(255,215,0,0.1); border-radius: 10px; }
+    .nickname {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff, #b0e6ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 20px rgba(0, 255, 220, 0.5);
+      border-right: 4px solid #00ffc3;
+      padding-right: 1rem;
+    }
 
-        .bans-container { display: grid; gap: 16px; margin-bottom: 16px; }
-        .ban-section { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; }
-        .ban-header { margin-bottom: 12px; }
-        .ban-title { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 700; }
-        .ban-title i { margin-right: 6px; color: #ffd700; }
-        .ban-title .turn { font-size: 12px; font-weight: 400; color: #8888aa; }
-        .ban-title .turn span { color: #ffd700; font-weight: 600; }
-        .ban-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
-        .ban-btn {
-            padding: 6px 14px;
-            border: 1px solid #2a2a4a;
-            border-radius: 10px;
-            background: #1a1a2e;
-            color: #fff;
-            font-family: inherit;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .ban-btn:hover { border-color: #ffd700; }
-        .ban-btn.banned { display: none; }
-        .ban-btn.selected { border-color: #ffd700; background: rgba(255,215,0,0.1); color: #ffd700; }
-        .ban-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .ban-btn:disabled:hover { border-color: #2a2a4a; }
-        .ban-status { display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; color: #8888aa; }
-        .ban-status .status-text.done { color: #51cf66; }
+    /* ===== БАЛАНС START COIN ===== */
+    .balance-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 40, 35, 0.5);
+      border-radius: 100px;
+      padding: 0.9rem 1.8rem 0.9rem 1.5rem;
+      margin-bottom: 2.5rem;
+      border: 1px solid rgba(0, 255, 200, 0.3);
+      box-shadow: 0 0 30px rgba(0, 255, 200, 0.1), inset 0 0 20px #00ffc308;
+    }
 
-        .lobby-section {
-            display: none;
-            background: #14141f;
-            border: 1px solid #2a2a4a;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-        .lobby-section.visible { display: block; }
-        .lobby-section .lobby-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-        .lobby-section .lobby-title i { margin-right: 8px; color: #ffd700; }
-        .lobby-section .lobby-info { font-size: 12px; color: #8888aa; margin-bottom: 10px; }
-        .lobby-input-group { display: flex; gap: 8px; }
-        .lobby-input-group input { flex: 1; padding: 10px 14px; background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px; color: #fff; font-family: inherit; font-size: 13px; outline: none; }
-        .lobby-input-group input:focus { border-color: #ffd700; }
-        .lobby-input-group input::placeholder { color: #555; }
-        .lobby-input-group button { padding: 10px 16px; border: none; border-radius: 10px; background: linear-gradient(135deg, #4dabf7, #1a7ab5); color: #fff; font-family: inherit; font-weight: 700; cursor: pointer; transition: transform 0.2s ease; }
-        .lobby-input-group button:hover { transform: scale(1.02); }
-        .lobby-link-display { display: none; margin-top: 10px; padding: 12px 16px; background: #1a1a2e; border-radius: 10px; border: 1px solid #2a2a4a; word-break: break-all; }
-        .lobby-link-display.visible { display: block; }
-        .lobby-link-display .link-label { font-size: 12px; color: #8888aa; margin-bottom: 4px; }
-        .lobby-link-display .link-value { font-size: 13px; color: #4dabf7; text-decoration: underline; cursor: pointer; }
-        .lobby-link-display .link-status { font-size: 12px; color: #51cf66; margin-top: 4px; }
+    .balance-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 1rem;
+      color: #a0d6d0;
+    }
 
-        .screenshot-section { display: none; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
-        .screenshot-section.visible { display: block; }
-        .screenshot-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
-        .screenshot-title i { margin-right: 6px; color: #ffd700; }
-        .screenshot-input-group { display: flex; gap: 8px; margin-bottom: 12px; }
-        .screenshot-input-group input[type="file"] { flex: 1; padding: 8px; background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px; color: #fff; font-family: inherit; font-size: 12px; }
-        .screenshot-btn { padding: 8px 16px; border: none; border-radius: 10px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-weight: 700; cursor: pointer; }
-        .screenshot-preview { margin: 8px 0; max-height: 200px; overflow: hidden; border-radius: 10px; }
-        .screenshot-preview img { width: 100%; height: auto; max-height: 200px; object-fit: cover; }
-        .screenshot-status { font-size: 13px; color: #8888aa; }
+    /* CSS-эмодзи монеты «start coin» — полностью нарисованная */
+    .coin-css {
+      width: 36px;
+      height: 36px;
+      background: radial-gradient(circle at 30% 30%, #ffe484, #c99b0c);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px #f0c000, 0 6px 0 #8b6f00, 0 8px 12px #00000070;
+      position: relative;
+      transform: rotate(5deg);
+      transition: transform 0.15s;
+    }
 
-        .match-result-section { display: none; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
-        .match-result-section.admin-visible { display: block; }
-        .result-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
-        .result-title i { margin-right: 6px; color: #ffd700; }
-        .result-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .result-btn { padding: 12px; border: none; border-radius: 10px; font-family: inherit; font-weight: 700; cursor: pointer; transition: transform 0.2s ease; }
-        .result-btn:hover { transform: scale(1.02); }
-        .result-btn.blue-win { background: #4dabf7; color: #fff; }
-        .result-btn.orange-win { background: #ff922b; color: #fff; }
-        .match-actions { display: none; margin-top: 8px; }
-        .match-actions.admin-visible { display: block; }
-        .btn-end { width: 100%; padding: 12px; border: none; border-radius: 12px; background: #ff6b6b; color: #fff; font-family: inherit; font-weight: 700; cursor: pointer; transition: transform 0.2s ease; }
-        .btn-end:hover:not(:disabled) { transform: scale(1.02); }
-        .btn-end:disabled { opacity: 0.5; cursor: not-allowed; }
+    /* блик и внутренняя звезда */
+    .coin-css::before {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(circle at 30% 30%, #fff8d0, #ffdb4d);
+      border-radius: 50%;
+      top: 6px;
+      left: 6px;
+      box-shadow: 0 0 12px #ffffffb0;
+    }
 
-        .profile-card { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 20px; }
-        .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-        .profile-avatar {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 900;
-            color: #0b0b0f;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-info .username { font-size: 20px; font-weight: 800; }
-        .profile-info .details { font-size: 12px; color: #8888aa; margin-top: 4px; }
-        .profile-info .details span { margin-right: 12px; }
-        .admin-badge { display: none; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.2); padding: 2px 10px; border-radius: 12px; color: #ffd700; font-size: 11px; font-weight: 600; }
-        .admin-badge.visible { display: inline-block; }
-        .profile-stats { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-        .stat-item { background: #1a1a2e; border-radius: 12px; padding: 12px 8px; text-align: center; }
-        .stat-item .value { font-size: 20px; font-weight: 900; color: #ffd700; }
-        .stat-item .label { font-size: 10px; color: #8888aa; margin-top: 2px; }
-        .profile-actions { display: flex; gap: 8px; margin-bottom: 16px; }
-        .btn-action { flex: 1; padding: 10px; border: none; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; transition: transform 0.2s ease; }
-        .btn-action:hover { transform: scale(1.02); }
-        .btn-action.edit { background: #2a2a4a; color: #fff; }
-        .btn-action.logout { background: #ff6b6b; color: #fff; }
+    /* вторая часть — "S" из start, звёздочка */
+    .coin-css::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #2f1f00;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      top: 11px;
+      left: 12px;
+      filter: drop-shadow(0 0 4px #ffd966);
+      opacity: 0.9;
+      transform: rotate(10deg);
+    }
 
-        .profile-admin-panel {
-            display: none;
-            background: #1a1a2e;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-        .profile-admin-panel.visible { display: block; }
-        .admin-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #ffd700; }
-        .admin-title i { margin-right: 6px; }
-        .admin-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #2a2a4a; }
-        .admin-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .section-title { font-size: 13px; font-weight: 600; color: #8888aa; margin-bottom: 8px; }
-        .admin-input-group { display: flex; gap: 8px; }
-        .admin-input-group input { flex: 1; padding: 8px 12px; background: #0b0b0f; border: 1px solid #2a2a4a; border-radius: 8px; color: #fff; font-family: inherit; font-size: 13px; outline: none; }
-        .admin-input-group input:focus { border-color: #ffd700; }
-        .admin-btn { padding: 8px 16px; border: none; border-radius: 8px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-weight: 700; cursor: pointer; }
-        .admin-status { font-size: 13px; margin-top: 6px; }
-        .admin-status.show { padding: 6px 10px; border-radius: 6px; }
-        .admin-status.error { color: #ff6b6b; background: rgba(255,107,107,0.1); }
-        .admin-status.success { color: #51cf66; background: rgba(81,207,102,0.1); }
-        .admin-list { display: flex; flex-wrap: wrap; gap: 8px; }
-        .admin-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: #0b0b0f; border: 1px solid #2a2a4a; border-radius: 16px; font-size: 13px; }
-        .admin-tag .remove { color: #ff6b6b; cursor: pointer; font-weight: 700; margin-left: 4px; }
-        .admin-tag .remove:hover { color: #ff4444; }
-        .admin-empty { color: #555; font-size: 13px; padding: 4px 0; }
+    .balance-value {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff8e0;
+      text-shadow: 0 0 12px #ffd966, 0 0 30px #ffb80080;
+    }
 
-        .admin-matches-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid #2a2a4a; }
-        .admin-matches-section .section-title { font-size: 13px; font-weight: 600; color: #8888aa; margin-bottom: 8px; }
-        .admin-match-item { display: flex; justify-content: space-between; align-items: center; background: #1a1a2e; border-radius: 10px; padding: 10px 14px; margin-bottom: 6px; border: 1px solid #2a2a4a; cursor: pointer; transition: all 0.2s ease; }
-        .admin-match-item:hover { border-color: #ffd700; background: rgba(255,215,0,0.05); }
-        .admin-match-item .match-info { font-size: 12px; }
-        .admin-match-item .match-info .match-id { color: #8888aa; }
-        .admin-match-item .match-info .match-players { color: #fff; font-weight: 600; }
-        .admin-match-item .match-status { font-size: 11px; padding: 4px 12px; border-radius: 12px; font-weight: 600; }
-        .admin-match-item .match-status.pending { background: rgba(255,215,0,0.2); color: #ffd700; }
-        .admin-match-item .match-status.active { background: rgba(77,171,247,0.2); color: #4dabf7; }
+    .balance-value .coin-css {
+      width: 42px;
+      height: 42px;
+    }
 
-        .promo-section { display: flex; flex-direction: column; gap: 8px; }
-        .promo-input-group { display: flex; flex-wrap: wrap; gap: 8px; }
-        .promo-input-group input { flex: 1; min-width: 60px; padding: 8px 12px; background: #0b0b0f; border: 1px solid #2a2a4a; border-radius: 8px; color: #fff; font-family: inherit; font-size: 13px; outline: none; }
-        .promo-input-group input:focus { border-color: #ffd700; }
-        .promo-btn { padding: 8px 16px; border: none; border-radius: 8px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-weight: 700; cursor: pointer; }
-        .promo-status { font-size: 13px; color: #8888aa; }
+    .balance-value .coin-css::before {
+      width: 16px;
+      height: 16px;
+      top: 7px;
+      left: 7px;
+    }
 
-        .match-dynamics { margin-bottom: 16px; }
-        .match-dynamics .title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-        .match-dynamics .title i { margin-right: 6px; color: #ffd700; }
-        .chart-container { display: flex; align-items: flex-end; gap: 4px; height: 60px; padding: 8px; background: #1a1a2e; border-radius: 10px; min-height: 60px; }
-        .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
-        .chart-bar { width: 100%; min-height: 4px; transition: height 0.3s ease; }
-        .chart-bar.win { background: #51cf66; }
-        .chart-bar.loss { background: #ff6b6b; }
-        .bar-label { font-size: 8px; color: #666; margin-top: 2px; }
-        .match-history .title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-        .match-history .title i { margin-right: 6px; color: #ffd700; }
-        .match-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #1a1a2e; border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
-        .match-item .map { color: #8888aa; }
-        .match-item .date { color: #666; font-size: 11px; }
-        .match-item .result.win { color: #51cf66; font-weight: 600; }
-        .match-item .result.loss { color: #ff6b6b; font-weight: 600; }
+    .balance-value .coin-css::after {
+      width: 14px;
+      height: 14px;
+      top: 13px;
+      left: 14px;
+    }
 
-        .friends-page { padding-top: 8px; }
-        .friends-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .friends-header h2 { font-size: 20px; font-weight: 800; }
-        .friends-header .count { color: #8888aa; font-size: 13px; }
-        .friends-tabs { display: flex; gap: 4px; background: #14141f; border-radius: 12px; padding: 4px; margin-bottom: 16px; }
-        .friends-tabs .tab { flex: 1; padding: 8px; border: none; background: transparent; color: #8888aa; font-family: inherit; font-size: 12px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; }
-        .friends-tabs .tab.active { background: #2a2a4a; color: #fff; }
-        .friends-search { display: flex; gap: 8px; margin-bottom: 16px; }
-        .friends-search input { flex: 1; padding: 10px 14px; background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px; color: #fff; font-family: inherit; font-size: 14px; outline: none; }
-        .friends-search input:focus { border-color: #ffd700; }
-        .friends-search input::placeholder { color: #555; }
-        .friends-search button { padding: 10px 16px; border: none; border-radius: 10px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-weight: 700; cursor: pointer; }
-        .friends-list { display: flex; flex-direction: column; gap: 8px; }
-        .friend-item { display: flex; align-items: center; gap: 12px; background: #14141f; border: 1px solid #2a2a4a; border-radius: 12px; padding: 12px 16px; }
-        .friend-item .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #0b0b0f; flex-shrink: 0; overflow: hidden; }
-        .friend-item .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .friend-item .info { flex: 1; }
-        .friend-item .info .name { font-weight: 600; font-size: 14px; }
-        .friend-item .info .status { font-size: 12px; color: #8888aa; }
-        .friend-item .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-        .friend-item .status-badge.friend { background: rgba(81,207,102,0.2); color: #51cf66; }
-        .friend-item .status-badge.request { background: rgba(255,215,0,0.2); color: #ffd700; }
-        .friend-item .status-badge.none { background: rgba(255,107,107,0.2); color: #ff6b6b; }
-        .friend-item .friend-actions { display: flex; gap: 6px; }
-        .friend-item .friend-actions button { padding: 6px 12px; border: none; border-radius: 8px; font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-        .friend-item .friend-actions .btn-invite { background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; }
-        .friend-item .friend-actions .btn-invite:hover { transform: scale(1.05); }
-        .friend-item .friend-actions .btn-remove { background: #2a2a4a; color: #ff6b6b; }
-        .friend-item .friend-actions .btn-remove:hover { background: #3a3a5a; }
-        .friend-item .friend-actions .btn-add { background: #4dabf7; color: #fff; }
-        .friend-item .friend-actions .btn-add:hover { transform: scale(1.05); }
-        .friend-item .friend-actions .btn-accept { background: #51cf66; color: #fff; }
-        .friend-item .friend-actions .btn-accept:hover { transform: scale(1.05); }
-        .friend-item .friend-actions .btn-decline { background: #ff6b6b; color: #fff; }
-        .friend-item .friend-actions .btn-decline:hover { transform: scale(1.05); }
-        .friends-empty { text-align: center; padding: 40px 20px; color: #555; }
-        .friends-empty i { font-size: 40px; margin-bottom: 12px; display: block; color: #2a2a4a; }
+    /* ===== СТАТИСТИКА ПРОФИЛЯ (УБИЙСТВА/СМЕРТИ/АССИСТЫ/AVG) ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.9rem;
+      margin-bottom: 2.3rem;
+    }
 
-        .top-page { padding-top: 8px; }
-        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .top-header h2 { font-size: 20px; font-weight: 800; }
-        .top-header .user-rank { background: #14141f; border: 1px solid #2a2a4a; border-radius: 12px; padding: 6px 16px; font-size: 14px; font-weight: 700; color: #ffd700; }
-        .top-list { display: flex; flex-direction: column; gap: 8px; }
-        .top-item { display: flex; align-items: center; gap: 12px; background: #14141f; border: 1px solid #2a2a4a; border-radius: 12px; padding: 12px 16px; }
-        .top-item .rank { font-size: 16px; font-weight: 800; min-width: 36px; color: #666; }
-        .top-item .rank.gold { color: #ffd700; }
-        .top-item .rank.silver { color: #c0c0c0; }
-        .top-item .rank.bronze { color: #cd7f32; }
-        .top-item .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #0b0b0f; flex-shrink: 0; overflow: hidden; }
-        .top-item .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .top-item .info { flex: 1; }
-        .top-item .info .name { font-weight: 600; font-size: 14px; }
-        .top-item .info .stats { font-size: 12px; color: #8888aa; }
-        .top-item .elo { font-weight: 800; font-size: 16px; color: #ffd700; }
-        .top-item .elo .elo-label { font-size: 10px; color: #666; font-weight: 400; display: block; text-align: right; }
+    .stat-item {
+      background: rgba(8, 20, 30, 0.7);
+      backdrop-filter: blur(4px);
+      border-radius: 24px;
+      padding: 1.2rem 0.5rem;
+      text-align: center;
+      border: 1px solid rgba(0, 180, 255, 0.2);
+      transition: all 0.2s;
+      box-shadow: 0 10px 20px -10px #000000;
+    }
 
-        .wallet-page { padding-top: 8px; }
-        .wallet-card { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 16px; }
-        .wallet-card .balance { font-size: 36px; font-weight: 900; color: #ffd700; }
-        .wallet-card .label { color: #8888aa; font-size: 13px; margin-top: 4px; }
-        .wallet-promo { display: flex; gap: 8px; }
-        .wallet-promo input { flex: 1; padding: 10px 14px; background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px; color: #fff; font-family: inherit; font-size: 14px; outline: none; text-transform: uppercase; }
-        .wallet-promo input:focus { border-color: #ffd700; }
-        .wallet-promo button { padding: 10px 20px; border: none; border-radius: 10px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-weight: 700; cursor: pointer; }
+    .stat-item:hover {
+      border-color: #00ccb0;
+      box-shadow: 0 0 20px #00ccb030;
+      transform: translateY(-2px);
+    }
 
-        .placeholder { text-align: center; padding: 60px 20px; color: #555; }
-        .placeholder i { font-size: 48px; margin-bottom: 16px; display: block; color: #2a2a4a; }
-        .placeholder h2 { font-size: 18px; font-weight: 700; color: #8888aa; }
+    .stat-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 500;
+      color: #8aaac0;
+      margin-bottom: 0.5rem;
+    }
 
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: 480px;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 8px 12px;
-            background: rgba(20,20,31,0.95);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            z-index: 100;
-        }
-        .bottom-nav .item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: transparent;
-            border: none;
-            color: #555;
-            font-family: inherit;
-            font-size: 10px;
-            cursor: pointer;
-            padding: 4px 8px;
-            transition: color 0.2s ease;
-            gap: 2px;
-            position: relative;
-        }
-        .bottom-nav .item i { font-size: 20px; }
-        .bottom-nav .item.active { color: #ffd700; }
-        .bottom-nav .item span { font-weight: 500; }
-        .bottom-nav .item .badge {
-            position: absolute;
-            top: 0;
-            right: -4px;
-            background: #ff6b6b;
-            color: #fff;
-            font-size: 9px;
-            font-weight: 700;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.1;
+      color: #e2f0ff;
+      text-shadow: 0 0 18px #3f9eff80;
+    }
 
-        @media (max-width: 480px) {
-            .auth-box { padding: 24px 20px; }
-            .hero-title { font-size: 20px; }
-            .profile-stats { grid-template-columns: 1fr 1fr; }
-            .match-grid { grid-template-columns: 1fr; }
-            .result-buttons { grid-template-columns: 1fr; }
-            .prize-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    /* ===== ПОБЕДЫ / ПОРАЖЕНИЯ ===== */
+    .win-loss-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 0.8rem;
+    }
+
+    .wl-block {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.9rem;
+      padding: 1rem 1.5rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(8px);
+      border: 1px solid;
+      transition: 0.15s;
+      box-shadow: 0 8px 20px -8px #000000;
+    }
+
+    .wl-block.wins {
+      background: linear-gradient(145deg, #0b3b2e, #0a281f);
+      border-color: #00e6a0;
+      color: #aaffdd;
+      text-shadow: 0 0 15px #00ffaa;
+      box-shadow: 0 0 30px #00ffaa30, 0 8px 20px -6px black;
+    }
+
+    .wl-block.losses {
+      background: linear-gradient(145deg, #4a101a, #2a0a10);
+      border-color: #ff4d6d;
+      color: #ffc0cb;
+      text-shadow: 0 0 15px #ff3b5c;
+      box-shadow: 0 0 30px #ff3b5c30, 0 8px 20px -6px black;
+    }
+
+    .wl-block.wins:hover {
+      background: #0f4f3a;
+      box-shadow: 0 0 40px #00ffaa60;
+    }
+
+    .wl-block.losses:hover {
+      background: #611425;
+      box-shadow: 0 0 40px #ff3b5c70;
+    }
+
+    .wl-label {
+      font-weight: 400;
+      font-size: 1.1rem;
+      opacity: 0.9;
+      letter-spacing: 0.1em;
+    }
+
+    /* CSS-эмодзи для победы (галочка/меч) и поражения (крест/череп) — без юникода */
+    .wl-icon {
+      display: inline-flex;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* победа — стилизованный "V" / галочка */
+    .wl-icon.win-icon::before {
+      content: "";
+      width: 24px;
+      height: 24px;
+      background: #00ffb3;
+      clip-path: polygon(0% 40%, 40% 80%, 100% 10%, 90% 0%, 40% 60%, 10% 30%);
+      filter: drop-shadow(0 0 8px #00ffb3);
+      transform: scale(1.2);
+    }
+
+    /* поражение — стилизованный крест */
+    .wl-icon.loss-icon::before {
+      content: "";
+      width: 26px;
+      height: 26px;
+      background: #ff3b5c;
+      clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+      position: absolute;
+      filter: drop-shadow(0 0 8px #ff3b5c);
+      border-radius: 4px;
+    }
+
+    .wl-icon.loss-icon::after {
+      content: "";
+      width: 6px;
+      height: 24px;
+      background: #1a0408;
+      position: absolute;
+      border-radius: 3px;
+      transform: rotate(45deg);
+      box-shadow: 0 0 8px #ff3b5c;
+    }
+
+    /* альтернативный крест внутри */
+    .wl-icon.loss-icon::before {
+      background: #ff3b5c;
+      clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+    }
+
+    /* ===== ДОПОЛНИТЕЛЬНО: тонкие настройки ===== */
+    .subnote {
+      margin-top: 1.8rem;
+      display: flex;
+      justify-content: center;
+      opacity: 0.6;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #7d9bb5;
+      border-top: 1px solid #1f3545;
+      padding-top: 1.2rem;
+    }
+
+    /* адаптив */
+    @media (max-width: 580px) {
+      .card { padding: 1.8rem 1.2rem; border-radius: 32px; }
+      .avatar { width: 64px; height: 64px; }
+      .avatar::after { width: 14px; height: 20px; top: 28px; left: 25px; }
+      .nickname { font-size: 1.8rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .balance-value { font-size: 1.6rem; }
+      .balance-value .coin-css { width: 34px; height: 34px; }
+      .balance-value .coin-css::before { width: 12px; height: 12px; top: 6px; left: 6px; }
+      .balance-value .coin-css::after { width: 10px; height: 10px; top: 11px; left: 11px; }
+      .wl-block { font-size: 1.2rem; padding: 0.8rem 1rem; }
+      .wl-icon { width: 28px; height: 28px; }
+    }
+
+    @media (max-width: 400px) {
+      .stats-grid { gap: 0.5rem; }
+      .stat-value { font-size: 1.8rem; }
+      .nickname { font-size: 1.5rem; }
+    }
+  </style>
 </head>
 <body>
-
-<div class="toast" id="toast">
-    <div class="ttl" id="toastTitle">Успешно</div>
-    <div class="txt" id="toastText">Действие выполнено</div>
-</div>
-
-<div class="modal-overlay" id="confirmModal">
-    <div class="modal-box">
-        <div class="modal-title">🎮 Матч <span class="highlight">найден!</span></div>
-        <div class="modal-sub">Подтвердите участие</div>
-        <div class="modal-timer" id="modalTimer">25</div>
-        <div class="modal-players" id="modalPlayers"></div>
-        <div class="modal-actions">
-            <button class="btn-confirm" id="confirmBtn" onclick="handleConfirm()">✅ Подтвердить</button>
-        </div>
-    </div>
-</div>
-
-<div class="auth-page" id="authPage">
-    <div class="auth-box">
-        <div class="auth-logo">
-            <span class="icon">🚀</span>
-            <h1>StartUp Platform</h1>
-            <div class="sub">Competitive Platform</div>
-        </div>
-        <div class="auth-tabs">
-            <button class="tab active" id="tabLogin"><i class="fas fa-sign-in-alt"></i> Вход</button>
-            <button class="tab" id="tabRegister"><i class="fas fa-user-plus"></i> Регистрация</button>
-        </div>
-        <div class="auth-form active" id="loginForm">
-            <div class="form-group">
-                <label>Никнейм</label>
-                <div class="input-wrap">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="loginUsername" placeholder="Введите никнейм" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Пароль</label>
-                <div class="input-wrap">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="loginPassword" placeholder="Введите пароль" />
-                </div>
-            </div>
-            <button class="btn-auth" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Войти</button>
-            <div class="auth-message" id="loginMessage"></div>
-            <div class="auth-footer">Нет аккаунта? <a id="switchToRegister">Зарегистрироваться</a></div>
-        </div>
-        <div class="auth-form" id="registerForm">
-            <div class="form-group">
-                <label>Никнейм <span style="color:#ff6b6b;">*</span></label>
-                <div class="input-wrap">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="regUsername" placeholder="Придумайте никнейм" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Пароль <span style="color:#ff6b6b;">*</span></label>
-                <div class="input-wrap">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="regPassword" placeholder="Минимум 8 символов" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Подтверждение пароля <span style="color:#ff6b6b;">*</span></label>
-                <div class="input-wrap">
-                    <i class="fas fa-check-circle"></i>
-                    <input type="password" id="regPasswordConfirm" placeholder="Повторите пароль" />
-                </div>
-            </div>
-            <button class="btn-auth" id="registerBtn"><i class="fas fa-user-plus"></i> Создать аккаунт</button>
-            <div class="auth-message" id="registerMessage"></div>
-            <div class="auth-footer">Уже есть аккаунт? <a id="switchToLogin">Войти</a></div>
-        </div>
-    </div>
-</div>
-
-<div class="main-wrapper" id="mainSite" style="display:none;">
-    <header class="header">
-        <div class="logo" onclick="navigate('home')">
-            <h1>StartUp Platform</h1>
-            <div class="sub">Competitive Gaming</div>
-        </div>
-    </header>
-
-    <div class="page active" id="pageHome">
-        <div class="home-hero">
-            <div class="hero-badge">КИБЕРСПОРТИВНАЯ ПЛАТФОРМА ПО BRAWL STARS</div>
-            <div class="hero-title">Проверь свой <span>скилл</span>, поднимай <span>уровень</span> и играй против сильнейших.</div>
-            <div class="hero-stats-row">
-                <div class="hero-stat">
-                    <div class="number" id="activePlayersHome">0</div>
-                    <div class="label">В поиске</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="number" id="inMatchPlayersHome">0</div>
-                    <div class="label">В матче</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="number" id="totalMatchesHome">0</div>
-                    <div class="label">Сыграно матчей</div>
-                </div>
-            </div>
-            <div class="hero-actions">
-                <button class="btn-hero" onclick="navigate('matches')"><i class="fas fa-search"></i> Поиск матча</button>
-                <button class="btn-hero outline" onclick="navigate('profile')"><i class="fas fa-user"></i> Профиль</button>
-            </div>
-            <div class="prize-block">
-                <div class="prize-title">🏆 Призовой фонд — 10 000 ₽</div>
-                <div class="prize-grid">
-                    <div class="prize-item gold"><div class="place">🥇 1 место</div><div class="reward">5 000 ₽</div></div>
-                    <div class="prize-item silver"><div class="place">🥈 2 место</div><div class="reward">3 000 ₽</div></div>
-                    <div class="prize-item bronze"><div class="place">🥉 3 место</div><div class="reward">2 000 ₽</div></div>
-                </div>
-                <div class="prize-premium"><strong>4-15 место</strong> — Premium статус</div>
-            </div>
-        </div>
+  <div class="card">
+    <!-- Верх: аватар + ник (как в Telegram) -->
+    <div class="profile-header">
+      <div class="avatar" aria-label="аватар профиля"></div>
+      <div class="nickname">@cyber_vortex</div>
     </div>
 
-    <div class="page" id="pageMatches">
-        <div class="search-page-wrapper">
-            <div class="search-header-block">
-                <div class="search-title">Поиск</div>
-                <div class="search-sub">3×3 режим · рейтинг</div>
-            </div>
-            <div class="search-main-block" id="searchMainBlock">
-                <div class="search-status" id="searchStatus">Поиск</div>
-                <div class="search-mode" id="searchMode">3×3</div>
-                <div class="search-sub-mode" id="searchSubMode">рейтинг · 12</div>
-                <div class="search-players">
-                    <span class="current" id="searchCurrentPlayers">0</span>
-                    <span class="slash">/</span>
-                    <span class="total" id="searchTotalPlayers">6</span>
-                </div>
-                <div class="search-timer" id="searchTimerDisplay"><i class="fas fa-clock"></i> 00:00</div>
-                <div class="search-note">
-                    <i class="fas fa-info-circle"></i> Пати попадёт в одну команду. Не закрывайте приложение — подтверждение придёт здесь.
-                </div>
-                <button class="btn-queue" id="queueBtn" onclick="startSearch()"><i class="fas fa-search"></i> Начать поиск</button>
-                <button class="btn-queue cancel" id="cancelBtn" onclick="cancelSearch()" style="display:none;"><i class="fas fa-times"></i> Отменить поиск</button>
-            </div>
-            <div class="party-block">
-                <div class="party-title"><i class="fas fa-users"></i> Пати <span id="partyCount">0/2</span></div>
-                <div class="party-members" id="partyMembers"><span class="party-empty">Нет участников</span></div>
-                <div class="party-feature"><i class="fas fa-info-circle"></i> Приглашайте друзей из списка друзей (макс. 2 человека)</div>
-            </div>
-        </div>
+    <!-- Баланс Start Coin -->
+    <div class="balance-section">
+      <div class="balance-label">
+        <span class="coin-css" aria-hidden="true"></span>
+        <span>START COIN</span>
+      </div>
+      <div class="balance-value">
+        <span class="coin-css" aria-hidden="true"></span>
+        12 480
+      </div>
     </div>
 
-    <div class="page match-page" id="matchPage">
-        <div class="match-info-bar" id="matchInfoBar">
-            <div class="info-item"><i class="fas fa-hashtag"></i> Номер игры: <span class="value highlight" id="matchGameNumber">#1</span></div>
-            <div class="info-item"><i class="fas fa-gamepad"></i> Режим: <span class="value" id="matchSelectedMode">—</span></div>
-        </div>
-        <div class="match-grid" id="matchGrid">
-            <div class="team-block blue" id="teamBlockBlue">
-                <div class="team-name">BLUE TEAM</div>
-                <div class="team-players" id="teamBluePlayers"></div>
-            </div>
-            <div class="team-block orange" id="teamBlockOrange">
-                <div class="team-name">ORANGE TEAM</div>
-                <div class="team-players" id="teamOrangePlayers"></div>
-            </div>
-        </div>
-        <div class="bans-container" id="bansContainer">
-            <div class="ban-section modes-section" id="modesBanSection">
-                <div class="ban-header">
-                    <div class="ban-title">
-                        <i class="fas fa-map-marked-alt"></i> Бан режимов
-                        <span class="turn">Ход: <span id="modesTurnName">Капитан 1</span></span>
-                    </div>
-                </div>
-                <div class="ban-buttons" id="modesBanContainer">
-                    <button class="ban-btn mode-btn" data-value="Gem Grab">💎 Gem Grab</button>
-                    <button class="ban-btn mode-btn" data-value="Brawl Ball">⚽ Brawl Ball</button>
-                    <button class="ban-btn mode-btn" data-value="Knockout">🥊 Knockout</button>
-                    <button class="ban-btn mode-btn" data-value="Heist">💰 Heist</button>
-                    <button class="ban-btn mode-btn" data-value="Bounty">🎯 Bounty</button>
-                    <button class="ban-btn mode-btn" data-value="Hot Zone">🔥 Hot Zone</button>
-                    <button class="ban-btn mode-btn" data-value="Siege">🏰 Siege</button>
-                </div>
-                <div class="ban-status">
-                    <span class="left">Осталось: <span id="modesLeft">7</span></span>
-                    <span class="status-text" id="modesStatus">Выберите режимы</span>
-                </div>
-            </div>
-        </div>
-        <div class="lobby-section" id="lobbySection">
-            <div class="lobby-title"><i class="fas fa-link"></i> Ссылка на лобби Brawl Stars</div>
-            <div class="lobby-info"><i class="fas fa-info-circle"></i> Капитан BLUE TEAM может добавить ссылку на лобби. Все игроки увидят её и смогут присоединиться.</div>
-            <div class="lobby-input-group">
-                <input type="text" id="lobbyInput" placeholder="Введите ссылку на лобби..." />
-                <button onclick="addLobbyLink()"><i class="fas fa-plus"></i> Добавить</button>
-            </div>
-            <div class="lobby-link-display" id="lobbyLinkDisplay">
-                <div class="link-label">🔗 Ссылка на лобби:</div>
-                <div class="link-value" id="lobbyLinkValue" onclick="copyLobbyLink()"></div>
-                <div class="link-status">✅ Ссылка активна. Нажмите на неё, чтобы присоединиться.</div>
-            </div>
-        </div>
-        <div class="screenshot-section" id="screenshotSection">
-            <div class="screenshot-title"><i class="fas fa-camera"></i> Прикрепить скриншот результата</div>
-            <div class="screenshot-input-group">
-                <input type="file" id="screenshotInput" accept="image/*" />
-                <button class="screenshot-btn" id="screenshotUploadBtn"><i class="fas fa-upload"></i> Загрузить</button>
-            </div>
-            <div class="screenshot-preview" id="screenshotPreview"></div>
-            <div class="screenshot-status" id="screenshotStatus"></div>
-        </div>
-        <div class="match-result-section" id="matchResultSection">
-            <div class="result-title"><i class="fas fa-trophy"></i> Засчитать матч</div>
-            <div class="result-buttons">
-                <button class="result-btn blue-win" id="blueWinBtn"><i class="fas fa-flag"></i> Победа BLUE</button>
-                <button class="result-btn orange-win" id="orangeWinBtn"><i class="fas fa-flag"></i> Победа ORANGE</button>
-            </div>
-        </div>
-        <div class="match-actions" id="matchActions">
-            <button class="btn-end" id="endMatchBtn" onclick="endMatch()" disabled><i class="fas fa-times"></i> Закончить матч</button>
-        </div>
+    <!-- Статистика: убийства, смерти, ассисты, avg -->
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Убийства</div>
+        <div class="stat-value">2 341</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Смерти</div>
+        <div class="stat-value">1 208</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Ассисты</div>
+        <div class="stat-value">847</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">AVG</div>
+        <div class="stat-value">1.94</div>
+      </div>
     </div>
 
-    <div class="page" id="pageProfile">
-        <div class="profile-card">
-            <div class="profile-header">
-                <div class="profile-avatar" id="avatar">?</div>
-                <div class="profile-info">
-                    <div class="username" id="pName">Игрок</div>
-                    <div class="details">
-                        <span><i class="fas fa-calendar-alt"></i> Дата регистрации: <span id="pReg">—</span></span>
-                        <span class="admin-badge" id="adminBadge"><i class="fas fa-user-shield"></i> Администратор</span>
-                    </div>
-                </div>
-            </div>
-            <div class="profile-stats">
-                <div class="stat-item"><div class="value" id="pWr">0%</div><div class="label">Винрейт</div></div>
-                <div class="stat-item"><div class="value" id="pMatches">0</div><div class="label">Матчей</div></div>
-                <div class="stat-item"><div class="value" id="pMvp">0</div><div class="label">MVP</div></div>
-                <div class="stat-item"><div class="value" id="pElo">1000</div><div class="label">ELO</div></div>
-            </div>
-            <div class="profile-actions">
-                <button class="btn-action edit" onclick="showToast('info', 'Редактирование', 'Функция редактирования профиля')"><i class="fas fa-edit"></i> Редактировать</button>
-                <button class="btn-action logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
-            </div>
-            <div class="profile-admin-panel" id="profileAdminPanel">
-                <div class="admin-title"><i class="fas fa-user-shield"></i> Админ-панель</div>
-                <div class="admin-section">
-                    <div class="section-title">Добавить администратора</div>
-                    <div class="admin-input-group">
-                        <input type="text" id="adminAddInput" placeholder="Введите никнейм" />
-                        <button class="admin-btn" id="adminAddBtn"><i class="fas fa-user-plus"></i> Добавить</button>
-                    </div>
-                    <div class="admin-status" id="adminAddStatus"></div>
-                </div>
-                <div class="admin-section">
-                    <div class="section-title">Список администраторов</div>
-                    <div class="admin-list" id="adminList"><div class="admin-empty">Загрузка...</div></div>
-                </div>
-                <div class="admin-section">
-                    <div class="section-title">Создать промокод</div>
-                    <div class="promo-section">
-                        <div class="promo-input-group">
-                            <input type="text" id="promoCodeInput" placeholder="Код" maxlength="20" />
-                            <input type="number" id="promoAmountInput" placeholder="Сумма ₽" min="1" style="max-width:80px;" />
-                            <input type="number" id="promoUsesInput" placeholder="Акт" min="1" value="1" style="max-width:60px;" />
-                            <button class="promo-btn" id="createPromoBtn"><i class="fas fa-plus"></i> Создать</button>
-                        </div>
-                        <div class="promo-status" id="promoStatus"></div>
-                    </div>
-                </div>
-                <div class="admin-section">
-                    <div class="section-title">Список промокодов</div>
-                    <div class="admin-list" id="promoList"><div class="admin-empty">Нет промокодов</div></div>
-                </div>
-                <div class="admin-matches-section">
-                    <div class="section-title"><i class="fas fa-gamepad"></i> Не завершённые матчи</div>
-                    <div id="adminMatchesList"><div class="admin-empty">Нет активных матчей</div></div>
-                </div>
-            </div>
-            <div class="match-dynamics">
-                <div class="title"><i class="fas fa-chart-bar"></i> Динамика матчей (последние 10)</div>
-                <div class="chart-container" id="chartContainer"><div style="color:#666; text-align:center; width:100%; padding:10px 0;">Нет данных</div></div>
-            </div>
-            <div class="match-history">
-                <div class="title"><i class="fas fa-history"></i> История матчей</div>
-                <div id="matchHistoryList"><div style="color:#666; text-align:center; padding:8px 0;">Нет сыгранных матчей</div></div>
-            </div>
-        </div>
+    <!-- Победы / Поражения -->
+    <div class="win-loss-row">
+      <div class="wl-block wins">
+        <span class="wl-icon win-icon" aria-hidden="true"></span>
+        <span class="wl-label">ПОБЕДЫ</span>
+        <span>1 024</span>
+      </div>
+      <div class="wl-block losses">
+        <span class="wl-icon loss-icon" aria-hidden="true"></span>
+        <span class="wl-label">ПОРАЖЕНИЯ</span>
+        <span>672</span>
+      </div>
     </div>
 
-    <div class="page friends-page" id="pageFriends">
-        <div class="friends-header">
-            <h2>Друзья</h2>
-            <span class="count" id="friendsCount">0 друзей</span>
-        </div>
-        <div class="friends-tabs">
-            <button class="tab active" data-tab="friends" onclick="switchFriendsTab('friends')">Все</button>
-            <button class="tab" data-tab="requests" onclick="switchFriendsTab('requests')">Заявки</button>
-        </div>
-        <div class="friends-search">
-            <input type="text" id="friendSearchInput" placeholder="Поиск по никнейму..." />
-            <button onclick="searchFriends()"><i class="fas fa-search"></i></button>
-        </div>
-        <div class="friends-list" id="friendsListContainer">
-            <div class="friends-empty">
-                <i class="fas fa-user-friends"></i>
-                <p>У вас пока нет друзей</p>
-                <span style="font-size:12px;color:#666;">Ищите игроков по никнейму и отправляйте заявки</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="page top-page" id="pageTop">
-        <div class="top-header">
-            <h2>Топ игроков</h2>
-            <div class="user-rank" id="userRank">#0</div>
-        </div>
-        <div class="top-list" id="topList">
-            <div class="friends-empty"><i class="fas fa-trophy"></i> Загрузка...</div>
-        </div>
-    </div>
-
-    <div class="page wallet-page" id="pageWallet">
-        <div class="wallet-card">
-            <div class="balance" id="walletBalance">0 ₽</div>
-            <div class="label">Текущий баланс</div>
-        </div>
-        <div class="wallet-promo">
-            <input type="text" id="promoInput" placeholder="Введите промокод" />
-            <button onclick="applyPromo()"><i class="fas fa-gift"></i> Активировать</button>
-        </div>
-        <div style="margin-top:16px;color:#666;font-size:12px;text-align:center;">
-            <i class="fas fa-info-circle"></i> Введите промокод для пополнения баланса
-        </div>
-    </div>
-
-    <div class="page" id="pageShop"><div class="placeholder"><i class="fas fa-store"></i><h2>Магазин</h2><p style="color:#666;font-size:13px;">Скоро здесь появятся товары</p></div></div>
-
-    <nav class="bottom-nav">
-        <button class="item" data-page="profile" onclick="navigate('profile')"><i class="fas fa-user"></i><span>Профиль</span></button>
-        <button class="item" data-page="shop" onclick="navigate('shop')"><i class="fas fa-store"></i><span>Шоп</span></button>
-        <button class="item" data-page="friends" onclick="navigate('friends')"><i class="fas fa-user-friends"></i><span>Друзья</span></button>
-        <button class="item active" id="matchNavBtn" data-page="matches" onclick="navigate('matches')">
-            <i class="fas fa-search"></i><span id="matchNavLabel">Поиск</span>
-        </button>
-        <button class="item" data-page="top" onclick="navigate('top')"><i class="fas fa-trophy"></i><span>Топ</span></button>
-        <button class="item" data-page="wallet" onclick="navigate('wallet')"><i class="fas fa-wallet"></i><span>Кошелёк</span></button>
-    </nav>
-</div>
-
-<script>
-    // ============================================================
-    //  SUPABASE
-    // ============================================================
-    const SUPABASE_URL = 'https://tgjltbpmuczfkikvmmde.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    let currentUser = null;
-    let currentMatch = null;
-    let partyFriends = [];
-    let friendsList = [];
-    let friendRequests = [];
-    let myFriends = [];
-    let isSearching = false;
-    let isStartingSearch = false;
-    let searchTimerInterval = null;
-    let searchSeconds = 0;
-    let currentScreenshot = null;
-    let isPlayerInMatch = false;
-    let friendsTab = 'friends';
-    let waitingConfirm = false;
-    let confirmedPlayers = [];
-    let matchPlayers = [];
-    let confirmTimer = null;
-    let confirmTimeLeft = 25;
-    let lobbyLink = null;
-    let isCaptain = false;
-    let searchChannel = null;
-    let currentMatchId = null;
-    let adminMatches = [];
-    let selectedAdminMatch = null;
-    let queueUpdateInterval = null;
-    let matchChannel = null;
-    let isConfirming = false;
-    let isCanceling = false;
-
-    let draftState = {
-        gameNumber: 1,
-        modeOptions: ['Gem Grab', 'Brawl Ball', 'Knockout', 'Heist', 'Bounty', 'Hot Zone', 'Siege'],
-        modeBanned: [],
-        modeFinal: null,
-        currentCaptain: 0,
-        isComplete: false
-    };
-
-    // ============================================================
-    //  ФОРМУЛА ELO
-    // ============================================================
-    function calculateEloChange(winnerElo, loserElo, K = 32) {
-        const expectedWinner = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
-        return {
-            winnerChange: Math.round(K * (1 - expectedWinner)),
-            loserChange: Math.round(K * (0 - (1 / (1 + Math.pow(10, (winnerElo - loserElo) / 400)))))
-        };
-    }
-
-    // ============================================================
-    //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-    // ============================================================
-    function generateCode() {
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let code = '';
-        for (let i = 0; i < 6; i++) {
-            code += letters[Math.floor(Math.random() * letters.length)];
-        }
-        return code;
-    }
-
-    function showToast(type, title, text) {
-        const toast = document.getElementById('toast');
-        const ttl = document.getElementById('toastTitle');
-        const txt = document.getElementById('toastText');
-        ttl.className = 'ttl ' + type;
-        ttl.textContent = title;
-        txt.textContent = text;
-        toast.classList.add('visible');
-        clearTimeout(toast._t);
-        toast._t = setTimeout(() => toast.classList.remove('visible'), 4000);
-    }
-
-    function saveSession(user) {
-        try {
-            localStorage.setItem('brawl_user_id', user.id);
-            localStorage.setItem('brawl_username', user.username);
-        } catch (e) {}
-    }
-
-    function clearSession() {
-        localStorage.removeItem('brawl_user_id');
-        localStorage.removeItem('brawl_username');
-    }
-
-    function getSession() {
-        try {
-            const id = localStorage.getItem('brawl_user_id');
-            const username = localStorage.getItem('brawl_username');
-            if (id && username) return { id, username };
-        } catch (e) {}
-        return null;
-    }
-
-    function switchAuthTab(tab) {
-        document.querySelectorAll('.auth-tabs .tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-        if (tab === 'login') {
-            document.getElementById('tabLogin').classList.add('active');
-            document.getElementById('loginForm').classList.add('active');
-        } else {
-            document.getElementById('tabRegister').classList.add('active');
-            document.getElementById('registerForm').classList.add('active');
-        }
-        document.getElementById('loginMessage').className = 'auth-message';
-        document.getElementById('loginMessage').textContent = '';
-        document.getElementById('registerMessage').className = 'auth-message';
-        document.getElementById('registerMessage').textContent = '';
-    }
-
-    // ============================================================
-    //  ОБНОВЛЕНИЕ СТАТИСТИКИ НА ГЛАВНОЙ
-    // ============================================================
-    async function updateHomeStats() {
-        try {
-            const { count: queueCount } = await supabaseClient
-                .from('queue')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'searching');
-
-            const { data: activeMatches } = await supabaseClient
-                .from('active_matches')
-                .select('orange, blue')
-                .in('status', ['pending', 'active']);
-
-            let inMatchPlayers = 0;
-            if (activeMatches) {
-                activeMatches.forEach(match => {
-                    try {
-                        const orange = JSON.parse(match.orange);
-                        const blue = JSON.parse(match.blue);
-                        inMatchPlayers += orange.length + blue.length;
-                    } catch (e) {}
-                });
-            }
-
-            const { count: historyCount } = await supabaseClient
-                .from('match_history')
-                .select('*', { count: 'exact', head: true });
-
-            document.getElementById('activePlayersHome').textContent = queueCount || 0;
-            document.getElementById('inMatchPlayersHome').textContent = inMatchPlayers || 0;
-            document.getElementById('totalMatchesHome').textContent = historyCount || 0;
-
-        } catch (e) {
-            console.error('Ошибка обновления статистики:', e);
-        }
-    }
-
-    // ============================================================
-    //  ПРОВЕРКА ОЧЕРЕДИ ПРИ ЗАГРУЗКЕ
-    // ============================================================
-    async function checkQueueOnLoad() {
-        if (!currentUser) return;
-        
-        try {
-            const { data, error } = await supabaseClient
-                .from('queue')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .eq('status', 'searching')
-                .maybeSingle();
-
-            if (error) {
-                console.error('Ошибка проверки очереди:', error);
-                return;
-            }
-
-            if (data) {
-                await supabaseClient
-                    .from('queue')
-                    .delete()
-                    .eq('id', data.id);
-                console.log('🧹 Пользователь удалён из очереди при загрузке');
-            }
-
-            isSearching = false;
-            isStartingSearch = false;
-            if (searchTimerInterval) {
-                clearInterval(searchTimerInterval);
-                searchTimerInterval = null;
-            }
-            if (queueUpdateInterval) {
-                clearInterval(queueUpdateInterval);
-                queueUpdateInterval = null;
-            }
-            
-            document.getElementById('queueBtn').style.display = 'block';
-            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-            document.getElementById('queueBtn').className = 'btn-queue';
-            document.getElementById('queueBtn').onclick = startSearch;
-            document.getElementById('queueBtn').disabled = false;
-            document.getElementById('cancelBtn').style.display = 'none';
-            document.getElementById('searchCurrentPlayers').textContent = '0';
-            document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
-            document.getElementById('searchStatus').textContent = 'Поиск';
-
-            await updateQueueCount();
-        } catch (e) {
-            console.error('Ошибка checkQueueOnLoad:', e);
-        }
-    }
-
-    // ============================================================
-    //  ПРОВЕРКА АКТИВНОГО МАТЧА ПРИ ЗАГРУЗКЕ
-    // ============================================================
-    async function checkActiveMatchOnLoad() {
-        if (!currentUser) return;
-
-        try {
-            const { data, error } = await supabaseClient
-                .from('active_matches')
-                .select('*')
-                .in('status', ['pending', 'active'])
-                .order('created_at', { ascending: false })
-                .limit(1);
-
-            if (error || !data || data.length === 0) {
-                return;
-            }
-
-            const match = data[0];
-            const orange = JSON.parse(match.orange);
-            const blue = JSON.parse(match.blue);
-            
-            const isInMatch = orange.some(p => p.id === currentUser.id) || 
-                              blue.some(p => p.id === currentUser.id);
-
-            if (isInMatch) {
-                console.log('✅ Найден активный матч при загрузке');
-                currentMatch = { orange, blue };
-                isPlayerInMatch = true;
-                currentMatchId = match.id;
-                isCaptain = blue.length > 0 && blue[0].id === currentUser.id;
-                
-                if (match.draft_state) {
-                    draftState = JSON.parse(match.draft_state);
-                }
-
-                if (match.status === 'pending') {
-                    matchPlayers = [...orange, ...blue];
-                    confirmedPlayers = [];
-                    showConfirmModal();
-                    subscribeToMatch(match.id);
-                } else if (match.status === 'active') {
-                    navigate('matchPage');
-                    renderMatchPage();
-                    showToast('info', 'Активный матч', 'Вы уже в матче!');
-                }
-            }
-        } catch (e) {
-            console.error('Ошибка проверки активного матча:', e);
-        }
-    }
-
-    // ============================================================
-    //  ОЧИСТКА СОСТОЯНИЯ ПОИСКА
-    // ============================================================
-    async function cleanupSearchState() {
-        if (searchTimerInterval) {
-            clearInterval(searchTimerInterval);
-            searchTimerInterval = null;
-        }
-        if (queueUpdateInterval) {
-            clearInterval(queueUpdateInterval);
-            queueUpdateInterval = null;
-        }
-        if (searchChannel) {
-            try {
-                await supabaseClient.removeChannel(searchChannel);
-            } catch (e) {}
-            searchChannel = null;
-        }
-        isSearching = false;
-        isStartingSearch = false;
-        isCanceling = false;
-    }
-
-    // ============================================================
-    //  РЕГИСТРАЦИЯ И ВХОД
-    // ============================================================
-    async function registerUser() {
-        const username = document.getElementById('regUsername').value.trim();
-        const password = document.getElementById('regPassword').value;
-        const confirm = document.getElementById('regPasswordConfirm').value;
-        const messageEl = document.getElementById('registerMessage');
-
-        if (!username || !password || !confirm) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Заполните все поля';
-            return;
-        }
-        if (password !== confirm) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Пароли не совпадают';
-            return;
-        }
-        if (password.length < 8) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Пароль минимум 8 символов';
-            return;
-        }
-
-        messageEl.className = 'auth-message show info';
-        messageEl.textContent = '⏳ Проверка...';
-
-        try {
-            const { data: existing } = await supabaseClient
-                .from('users')
-                .select('username')
-                .eq('username', username)
-                .maybeSingle();
-
-            if (existing) {
-                messageEl.className = 'auth-message show error';
-                messageEl.textContent = '❌ Никнейм занят';
-                return;
-            }
-
-            const partyCode = generateCode();
-            const userId = 'user_' + Date.now().toString();
-
-            const newUser = {
-                id: userId,
-                username: username,
-                password: password,
-                partycode: partyCode
-            };
-
-            const { data, error } = await supabaseClient
-                .from('users')
-                .insert([newUser])
-                .select()
-                .single();
-
-            if (error) {
-                console.error('Ошибка регистрации:', error);
-                messageEl.className = 'auth-message show error';
-                messageEl.textContent = '❌ Ошибка: ' + error.message;
-                return;
-            }
-
-            currentUser = data;
-            saveSession(data);
-            messageEl.className = 'auth-message show success';
-            messageEl.textContent = '✅ Аккаунт создан! Добро пожаловать, ' + username;
-            setTimeout(() => checkAuth(), 1000);
-        } catch (e) {
-            console.error('Ошибка:', e);
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Ошибка сервера: ' + e.message;
-        }
-    }
-
-    async function loginUser() {
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        const messageEl = document.getElementById('loginMessage');
-
-        if (!username || !password) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Заполните все поля';
-            return;
-        }
-
-        messageEl.className = 'auth-message show info';
-        messageEl.textContent = '⏳ Поиск...';
-
-        try {
-            const { data, error } = await supabaseClient
-                .from('users')
-                .select('*')
-                .eq('username', username)
-                .eq('password', password)
-                .maybeSingle();
-
-            if (error) {
-                messageEl.className = 'auth-message show error';
-                messageEl.textContent = '❌ Ошибка сервера';
-                return;
-            }
-
-            if (!data) {
-                messageEl.className = 'auth-message show error';
-                messageEl.textContent = '❌ Неверный никнейм или пароль';
-                return;
-            }
-
-            currentUser = data;
-            saveSession(data);
-            messageEl.className = 'auth-message show success';
-            messageEl.textContent = '✅ Добро пожаловать, ' + username;
-            await checkAuth();
-        } catch (e) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Ошибка сервера';
-        }
-    }
-
-    // ============================================================
-    //  ПРОВЕРКА АВТОРИЗАЦИИ
-    // ============================================================
-    async function checkAuth() {
-        if (currentUser) {
-            document.getElementById('authPage').style.display = 'none';
-            document.getElementById('mainSite').style.display = 'block';
-            
-            document.getElementById('pName').textContent = currentUser.username;
-            document.getElementById('avatar').textContent = currentUser.username.charAt(0).toUpperCase();
-            
-            if (currentUser.registered) {
-                const regDate = new Date(currentUser.registered).toLocaleDateString('ru-RU');
-                document.getElementById('pReg').textContent = regDate;
-            }
-
-            const matches = currentUser.matches || 0;
-            const wins = currentUser.wins || 0;
-            const winrate = matches > 0 ? Math.round((wins / matches) * 100) : 0;
-            document.getElementById('pWr').textContent = winrate + '%';
-            document.getElementById('pMatches').textContent = matches;
-            document.getElementById('pMvp').textContent = currentUser.mvp || 0;
-            document.getElementById('pElo').textContent = currentUser.elo || 1000;
-            document.getElementById('walletBalance').textContent = (currentUser.balance || 0) + ' ₽';
-
-            const isAdmin = currentUser.isadmin === true;
-            
-            const adminBadge = document.getElementById('adminBadge');
-            const adminPanel = document.getElementById('profileAdminPanel');
-            
-            if (isAdmin) {
-                adminBadge.classList.add('visible');
-                adminPanel.classList.add('visible');
-                await renderAdminList();
-                await renderPromoList();
-                await loadAdminMatches();
-            } else {
-                adminBadge.classList.remove('visible');
-                adminPanel.classList.remove('visible');
-            }
-
-            await checkQueueOnLoad();
-            await checkActiveMatchOnLoad();
-
-            await loadMatchHistory();
-            await renderChart();
-            await renderTopPage();
-            await loadFriends();
-            await updateHomeStats();
-
-            updatePartyUI();
-            navigate('home');
-            showToast('success', 'Добро пожаловать!', currentUser.username);
-        } else {
-            document.getElementById('authPage').style.display = 'flex';
-            document.getElementById('mainSite').style.display = 'none';
-        }
-    }
-
-    function handleLogout() {
-        if (!confirm('Выйти из аккаунта?')) return;
-        clearSession();
-        currentUser = null;
-        currentMatch = null;
-        isPlayerInMatch = false;
-        cleanupSearchState();
-        if (matchChannel) {
-            supabaseClient.removeChannel(matchChannel);
-            matchChannel = null;
-        }
-        checkAuth();
-        showToast('info', 'Выход', 'Вы вышли');
-    }
-
-    // ============================================================
-    //  НАВИГАЦИЯ
-    // ============================================================
-    const pages = {
-        home: 'pageHome',
-        profile: 'pageProfile',
-        shop: 'pageShop',
-        friends: 'pageFriends',
-        matches: 'pageMatches',
-        top: 'pageTop',
-        wallet: 'pageWallet',
-        matchPage: 'matchPage'
-    };
-
-    function navigate(page) {
-        if (page === 'matches' && isPlayerInMatch && currentMatch) {
-            page = 'matchPage';
-        }
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pages[page]).classList.add('active');
-        document.querySelectorAll('.bottom-nav .item').forEach(b => b.classList.remove('active'));
-        document.querySelector(`.bottom-nav .item[data-page="${page}"]`)?.classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // ============================================================
-    //  ПОДПИСКА НА ИЗМЕНЕНИЯ МАТЧА
-    // ============================================================
-    function subscribeToMatch(matchId) {
-        if (matchChannel) {
-            supabaseClient.removeChannel(matchChannel);
-            matchChannel = null;
-        }
-
-        matchChannel = supabaseClient
-            .channel('match_channel_' + matchId)
-            .on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'active_matches',
-                filter: `id=eq.${matchId}`
-            }, async (payload) => {
-                console.log('🔄 Изменение в матче:', payload);
-                
-                if (payload.eventType === 'DELETE') {
-                    document.getElementById('confirmModal').classList.remove('active');
-                    waitingConfirm = false;
-                    currentMatch = null;
-                    isPlayerInMatch = false;
-                    showToast('info', 'Матч отменён', 'Кто-то не подтвердил участие');
-                    navigate('matches');
-                    return;
-                }
-
-                if (payload.eventType === 'UPDATE') {
-                    const newData = payload.new;
-                    if (newData.status === 'active') {
-                        document.getElementById('confirmModal').classList.remove('active');
-                        waitingConfirm = false;
-                        const orange = JSON.parse(newData.orange);
-                        const blue = JSON.parse(newData.blue);
-                        currentMatch = { orange, blue };
-                        if (newData.draft_state) {
-                            draftState = JSON.parse(newData.draft_state);
-                        }
-                        startMatchAfterConfirm();
-                    }
-                }
-            })
-            .subscribe((status) => {
-                console.log('📡 Статус подписки на матч:', status);
-            });
-    }
-
-    // ============================================================
-    //  ОБРАБОТКА ВИДИМОСТИ СТРАНИЦЫ
-    // ============================================================
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            if (isSearching) {
-                console.log('🔄 Поиск приостановлен (страница скрыта)');
-            }
-        } else {
-            if (isSearching) {
-                console.log('🔄 Поиск возобновлён (страница активна)');
-                updateQueueCount();
-            }
-            updateHomeStats();
-        }
-    });
-
-    window.addEventListener('beforeunload', function() {
-        if (isSearching && currentUser) {
-            supabaseClient
-                .from('queue')
-                .delete()
-                .eq('user_id', currentUser.id)
-                .eq('status', 'searching')
-                .then(() => {
-                    console.log('🧹 Пользователь удалён из очереди при закрытии');
-                });
-        }
-    });
-
-    // ============================================================
-    //  РЕАЛЬНЫЙ ПОИСК МАТЧА (С ЗАЩИТОЙ ОТ МНОЖЕСТВЕННЫХ ВЫЗОВОВ)
-    // ============================================================
-    async function startSearch() {
-        // Защита от множественных вызовов
-        if (isStartingSearch || isSearching) {
-            console.log('⚠️ Поиск уже выполняется');
-            return;
-        }
-        if (currentMatch) {
-            navigate('matchPage');
-            return showToast('info', 'Активный матч', 'Вы уже в матче!');
-        }
-        if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
-
-        isStartingSearch = true;
-        
-        try {
-            // Отключаем кнопку сразу
-            document.getElementById('queueBtn').disabled = true;
-            document.getElementById('queueBtn').textContent = '⏳ Подождите...';
-            document.getElementById('cancelBtn').style.display = 'none';
-
-            // Очищаем старые подписки и интервалы
-            await cleanupSearchState();
-
-            // Проверяем очередь
-            await checkQueueOnLoad();
-
-            const { data: existingQueue } = await supabaseClient
-                .from('queue')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .eq('status', 'searching')
-                .maybeSingle();
-
-            if (existingQueue) {
-                await supabaseClient
-                    .from('queue')
-                    .delete()
-                    .eq('id', existingQueue.id);
-            }
-
-            const { error: queueError } = await supabaseClient
-                .from('queue')
-                .insert({
-                    user_id: currentUser.id,
-                    username: currentUser.username,
-                    elo: currentUser.elo || 1000,
-                    status: 'searching',
-                    party_id: partyFriends.length > 0 ? 'party_' + Date.now() : null,
-                    party_members: partyFriends.map(f => f.username).join(','),
-                    created_at: new Date().toISOString()
-                });
-
-            if (queueError) {
-                showToast('error', 'Ошибка', 'Не удалось встать в очередь: ' + queueError.message);
-                isStartingSearch = false;
-                document.getElementById('queueBtn').disabled = false;
-                document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-                document.getElementById('queueBtn').style.display = 'block';
-                return;
-            }
-
-            isSearching = true;
-            searchSeconds = 0;
-            document.getElementById('queueBtn').style.display = 'none';
-            document.getElementById('cancelBtn').style.display = 'inline-flex';
-            document.getElementById('searchStatus').textContent = 'Поиск';
-
-            await updateQueueCount();
-            await updateHomeStats();
-
-            if (searchTimerInterval) clearInterval(searchTimerInterval);
-            searchTimerInterval = setInterval(() => {
-                searchSeconds++;
-                const mins = String(Math.floor(searchSeconds / 60)).padStart(2, '0');
-                const secs = String(searchSeconds % 60).padStart(2, '0');
-                document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> ' + mins + ':' + secs;
-            }, 1000);
-
-            // Подписка на изменения
-            if (searchChannel) {
-                try {
-                    await supabaseClient.removeChannel(searchChannel);
-                } catch (e) {}
-                searchChannel = null;
-            }
-
-            searchChannel = supabaseClient
-                .channel('queue_channel_' + Date.now())
-                .on('postgres_changes', {
-                    event: '*',
-                    schema: 'public',
-                    table: 'queue'
-                }, async (payload) => {
-                    if (isSearching) {
-                        await updateQueueCount();
-                        await updateHomeStats();
-                    }
-                })
-                .subscribe((status) => {
-                    console.log('📡 Статус подписки на очередь:', status);
-                });
-
-            if (queueUpdateInterval) clearInterval(queueUpdateInterval);
-            queueUpdateInterval = setInterval(() => {
-                if (isSearching) {
-                    updateQueueCount();
-                    updateHomeStats();
-                } else {
-                    clearInterval(queueUpdateInterval);
-                    queueUpdateInterval = null;
-                }
-            }, 3000);
-
-            showToast('info', 'Поиск начат', 'Ищем игроков...');
-        } catch (e) {
-            console.error('Ошибка startSearch:', e);
-            showToast('error', 'Ошибка', 'Произошла ошибка при поиске');
-        } finally {
-            isStartingSearch = false;
-            document.getElementById('queueBtn').disabled = false;
-            document.getElementById('queueBtn').style.display = 'block';
-            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-        }
-    }
-
-    async function updateQueueCount() {
-        try {
-            const { count, error } = await supabaseClient
-                .from('queue')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'searching');
-
-            if (error) {
-                console.error('Ошибка подсчета очереди:', error);
-                return;
-            }
-
-            const currentCount = count || 0;
-            console.log('👥 Игроков в очереди:', currentCount);
-            
-            document.getElementById('searchCurrentPlayers').textContent = currentCount;
-            
-            const { data: players } = await supabaseClient
-                .from('queue')
-                .select('username')
-                .eq('status', 'searching')
-                .limit(6);
-            
-            if (players && players.length > 0) {
-                const names = players.map(p => p.username).join(', ');
-                document.getElementById('searchStatus').textContent = 'Поиск (' + names + ')';
-            } else {
-                document.getElementById('searchStatus').textContent = 'Поиск';
-            }
-
-            if (currentCount >= 6 && isSearching) {
-                console.log('🎯 6 игроков собрано! Создаем матч...');
-                await createMatchFromQueue();
-            }
-        } catch (e) {
-            console.error('Ошибка updateQueueCount:', e);
-        }
-    }
-
-    async function createMatchFromQueue() {
-        if (!isSearching) return;
-
-        const { data: players } = await supabaseClient
-            .from('queue')
-            .select('*')
-            .eq('status', 'searching')
-            .order('created_at', { ascending: true })
-            .limit(6);
-
-        if (!players || players.length < 6) {
-            console.log('❌ Недостаточно игроков для матча');
-            return;
-        }
-
-        console.log('✅ Найдено 6 игроков:', players.map(p => p.username));
-
-        const ids = players.map(p => p.id);
-        await supabaseClient
-            .from('queue')
-            .delete()
-            .in('id', ids);
-
-        const shuffled = [...players];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        const half = Math.floor(shuffled.length / 2);
-        const orange = shuffled.slice(0, half);
-        const blue = shuffled.slice(half);
-
-        const matchId = 'match_' + Date.now();
-        currentMatchId = matchId;
-
-        await supabaseClient
-            .from('active_matches')
-            .insert({
-                id: matchId,
-                orange: JSON.stringify(orange.map(p => ({ id: p.user_id, username: p.username, elo: p.elo }))),
-                blue: JSON.stringify(blue.map(p => ({ id: p.user_id, username: p.username, elo: p.elo }))),
-                draft_state: JSON.stringify(draftState),
-                status: 'pending',
-                created_at: new Date().toISOString()
-            });
-
-        currentMatch = { 
-            orange: orange.map(p => ({ id: p.user_id, username: p.username, elo: p.elo })), 
-            blue: blue.map(p => ({ id: p.user_id, username: p.username, elo: p.elo }))
-        };
-        isPlayerInMatch = true;
-        
-        isCaptain = blue.length > 0 && blue[0].user_id === currentUser.id;
-        console.log('👑 Капитан BLUE TEAM:', isCaptain ? currentUser.username : 'Нет');
-
-        isSearching = false;
-        clearInterval(searchTimerInterval);
-        if (queueUpdateInterval) {
-            clearInterval(queueUpdateInterval);
-            queueUpdateInterval = null;
-        }
-        document.getElementById('queueBtn').style.display = 'block';
-        document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-        document.getElementById('queueBtn').className = 'btn-queue';
-        document.getElementById('queueBtn').onclick = startSearch;
-        document.getElementById('queueBtn').disabled = false;
-        document.getElementById('cancelBtn').style.display = 'none';
-
-        if (searchChannel) {
-            supabaseClient.removeChannel(searchChannel);
-            searchChannel = null;
-        }
-
-        subscribeToMatch(matchId);
-
-        matchPlayers = [...currentMatch.orange, ...currentMatch.blue];
-        confirmedPlayers = [];
-        showConfirmModal();
-
-        showToast('success', 'Матч найден!', 'Подтвердите участие');
-        await updateHomeStats();
-    }
-
-    async function cancelSearch() {
-        // Защита от множественных вызовов
-        if (isCanceling) return;
-        if (!isSearching) {
-            console.log('⚠️ Поиск не активен');
-            return;
-        }
-
-        isCanceling = true;
-        document.getElementById('cancelBtn').disabled = true;
-        document.getElementById('cancelBtn').textContent = '⏳ Отмена...';
-
-        try {
-            const { error } = await supabaseClient
-                .from('queue')
-                .delete()
-                .eq('user_id', currentUser.id)
-                .eq('status', 'searching');
-
-            if (error) {
-                console.error('Ошибка удаления из очереди:', error);
-            }
-
-            await cleanupSearchState();
-
-            document.getElementById('queueBtn').style.display = 'block';
-            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-            document.getElementById('queueBtn').className = 'btn-queue';
-            document.getElementById('queueBtn').onclick = startSearch;
-            document.getElementById('queueBtn').disabled = false;
-            document.getElementById('cancelBtn').style.display = 'none';
-            document.getElementById('cancelBtn').disabled = false;
-            document.getElementById('cancelBtn').textContent = 'Отменить поиск';
-            document.getElementById('searchCurrentPlayers').textContent = '0';
-            document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
-            document.getElementById('searchStatus').textContent = 'Поиск';
-
-            await updateHomeStats();
-            showToast('info', 'Поиск отменён', 'Вы отменили поиск');
-        } catch (e) {
-            console.error('Ошибка cancelSearch:', e);
-            showToast('error', 'Ошибка', 'Не удалось отменить поиск');
-        } finally {
-            isCanceling = false;
-        }
-    }
-
-    // ============================================================
-    //  ПОДТВЕРЖДЕНИЕ МАТЧА
-    // ============================================================
-    function showConfirmModal() {
-        if (isConfirming) return;
-        isConfirming = true;
-        
-        waitingConfirm = true;
-        matchPlayers = [...currentMatch.orange, ...currentMatch.blue];
-
-        const modal = document.getElementById('confirmModal');
-        const container = document.getElementById('modalPlayers');
-        const timerEl = document.getElementById('modalTimer');
-        const confirmBtn = document.getElementById('confirmBtn');
-        
-        modal.classList.add('active');
-        confirmTimeLeft = 25;
-        timerEl.textContent = confirmTimeLeft;
-        timerEl.className = 'modal-timer';
-        confirmBtn.className = 'btn-confirm';
-        confirmBtn.textContent = '✅ Подтвердить';
-        confirmBtn.disabled = false;
-        
-        renderModalPlayers();
-
-        if (confirmTimer) clearInterval(confirmTimer);
-        confirmTimer = setInterval(() => {
-            confirmTimeLeft--;
-            timerEl.textContent = confirmTimeLeft;
-            if (confirmTimeLeft <= 5) {
-                timerEl.className = 'modal-timer warning';
-            }
-            if (confirmTimeLeft <= 0) {
-                clearInterval(confirmTimer);
-                handleConfirmTimeout();
-            }
-        }, 1000);
-
-        document.getElementById('matchNavLabel').textContent = 'Матч';
-        document.querySelector('#matchNavBtn i').className = 'fas fa-gamepad';
-    }
-
-    function renderModalPlayers() {
-        const container = document.getElementById('modalPlayers');
-        container.innerHTML = matchPlayers.map(p => {
-            const isConfirmed = confirmedPlayers.includes(p.id);
-            const isCurrentUser = p.id === currentUser.id;
-            return `
-                <div class="modal-player ${isConfirmed ? 'confirmed' : ''}" onclick="${isCurrentUser && !isConfirmed ? 'handleConfirm()' : ''}">
-                    <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
-                    <div class="info">
-                        <div class="name">${p.username} ${isCurrentUser ? ' (Вы)' : ''}</div>
-                        <div class="status">${isConfirmed ? '✅ Готов' : '⏳ Ожидание...'}</div>
-                    </div>
-                    <div class="status-icon ${isConfirmed ? 'confirmed' : 'pending'}">
-                        ${isConfirmed ? '✅' : '⏳'}
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        const allConfirmed = matchPlayers.every(p => confirmedPlayers.includes(p.id));
-        const confirmBtn = document.getElementById('confirmBtn');
-        
-        if (allConfirmed) {
-            confirmBtn.className = 'btn-confirm confirmed';
-            confirmBtn.textContent = '✅ Все готовы!';
-            confirmBtn.disabled = true;
-            clearInterval(confirmTimer);
-            setTimeout(() => {
-                document.getElementById('confirmModal').classList.remove('active');
-                waitingConfirm = false;
-                isConfirming = false;
-                supabaseClient
-                    .from('active_matches')
-                    .update({ status: 'active' })
-                    .eq('id', currentMatchId)
-                    .then(() => {
-                        startMatchAfterConfirm();
-                    });
-            }, 800);
-        }
-    }
-
-    function handleConfirm() {
-        if (!waitingConfirm) return;
-        if (confirmedPlayers.includes(currentUser.id)) {
-            showToast('info', 'Уже подтверждено', 'Вы уже подтвердили участие');
-            return;
-        }
-        confirmedPlayers.push(currentUser.id);
-        renderModalPlayers();
-        showToast('success', 'Подтверждено!', 'Вы подтвердили участие в матче');
-    }
-
-    function handleConfirmTimeout() {
-        const notConfirmed = matchPlayers.filter(p => !confirmedPlayers.includes(p.id));
-        
-        if (notConfirmed.length > 0) {
-            document.getElementById('confirmModal').classList.remove('active');
-            waitingConfirm = false;
-            isConfirming = false;
-            showToast('info', 'Матч отменён', `${notConfirmed.length} игроков не подтвердили участие`);
-            
-            supabaseClient
-                .from('active_matches')
-                .delete()
-                .eq('id', currentMatchId);
-            
-            currentMatch = null;
-            isPlayerInMatch = false;
-            isCaptain = false;
-            document.getElementById('matchNavLabel').textContent = 'Поиск';
-            document.querySelector('#matchNavBtn i').className = 'fas fa-search';
-            navigate('matches');
-            return;
-        }
-        
-        document.getElementById('confirmModal').classList.remove('active');
-        waitingConfirm = false;
-        isConfirming = false;
-        startMatchAfterConfirm();
-    }
-
-    function startMatchAfterConfirm() {
-        if (!currentMatch) return;
-
-        draftState.gameNumber = (draftState.gameNumber || 0) + 1;
-        resetDraft();
-
-        document.getElementById('matchResultSection').classList.remove('admin-visible');
-        document.getElementById('lobbySection').classList.remove('visible');
-        document.getElementById('screenshotSection').classList.remove('visible');
-        document.getElementById('matchActions').classList.remove('admin-visible');
-        currentScreenshot = null;
-        document.getElementById('screenshotInput').value = '';
-        document.getElementById('screenshotPreview').innerHTML = '';
-        document.getElementById('screenshotStatus').textContent = '';
-        document.getElementById('lobbyInput').value = '';
-        document.getElementById('lobbyLinkDisplay').classList.remove('visible');
-        lobbyLink = null;
-
-        navigate('matchPage');
-        renderMatchPage();
-        showToast('success', 'Матч начался!', `${currentMatch.orange.length + currentMatch.blue.length} игроков в игре`);
-        checkMatchResultVisibility();
-        checkLobbyVisibility();
-        updateHomeStats();
-        document.getElementById('matchNavLabel').textContent = 'Матч';
-        document.querySelector('#matchNavBtn i').className = 'fas fa-gamepad';
-        
-        if (currentUser?.isadmin) {
-            loadAdminMatches();
-        }
-    }
-
-    // ============================================================
-    //  МАТЧ
-    // ============================================================
-    function checkLobbyVisibility() {
-        if (isCaptain && draftState.isComplete) {
-            document.getElementById('lobbySection').classList.add('visible');
-        } else {
-            document.getElementById('lobbySection').classList.remove('visible');
-        }
-    }
-
-    function checkMatchResultVisibility() {
-        const isAdmin = currentUser?.isadmin === true;
-        const isPlayer = isPlayerInMatch;
-        
-        if (draftState.isComplete && isPlayer) {
-            document.getElementById('screenshotSection').classList.add('visible');
-        } else {
-            document.getElementById('screenshotSection').classList.remove('visible');
-        }
-        
-        if (draftState.isComplete && isAdmin) {
-            document.getElementById('matchResultSection').classList.add('admin-visible');
-            document.getElementById('matchActions').classList.add('admin-visible');
-            document.getElementById('endMatchBtn').disabled = false;
-        } else {
-            document.getElementById('matchResultSection').classList.remove('admin-visible');
-            document.getElementById('matchActions').classList.remove('admin-visible');
-            document.getElementById('endMatchBtn').disabled = true;
-        }
-    }
-
-    function renderMatchPage() {
-        if (!currentMatch) return;
-
-        const oCaptain = currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
-        const bCaptain = currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
-
-        const isOrangeCaptain = currentUser && oCaptain === currentUser.username;
-        const isBlueCaptain = currentUser && bCaptain === currentUser.username;
-        const canBan = isOrangeCaptain || isBlueCaptain;
-
-        const sortedOrange = [...currentMatch.orange].sort((a, b) => {
-            if (a.username === oCaptain) return -1;
-            if (b.username === oCaptain) return 1;
-            return 0;
-        });
-        const sortedBlue = [...currentMatch.blue].sort((a, b) => {
-            if (a.username === bCaptain) return -1;
-            if (b.username === bCaptain) return 1;
-            return 0;
-        });
-
-        document.getElementById('teamOrangePlayers').innerHTML = sortedOrange.map(p => {
-            const isCaptain = p.username === oCaptain;
-            return `
-                <div class="player-card">
-                    <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
-                    <div class="info"><span class="name">${p.username}</span></div>
-                    ${isCaptain ? `<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>` : ''}
-                </div>
-            `;
-        }).join('') || '<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
-
-        document.getElementById('teamBluePlayers').innerHTML = sortedBlue.map(p => {
-            const isCaptain = p.username === bCaptain;
-            return `
-                <div class="player-card">
-                    <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
-                    <div class="info"><span class="name">${p.username}</span></div>
-                    ${isCaptain ? `<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>` : ''}
-                </div>
-            `;
-        }).join('') || '<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
-
-        updateBanButtons(canBan);
-        renderDraftUI();
-        checkMatchResultVisibility();
-        checkLobbyVisibility();
-    }
-
-    function updateBanButtons(canBan) {
-        const buttons = document.querySelectorAll('#modesBanContainer .ban-btn');
-        buttons.forEach(btn => {
-            if (!draftState.isComplete && !draftState.modeFinal) {
-                btn.disabled = !canBan;
-                btn.style.opacity = canBan ? '1' : '0.4';
-                btn.style.cursor = canBan ? 'pointer' : 'not-allowed';
-            }
-        });
-    }
-
-    // ============================================================
-    //  ЛОББИ
-    // ============================================================
-    function addLobbyLink() {
-        const input = document.getElementById('lobbyInput');
-        const link = input.value.trim();
-        
-        if (!link) {
-            return showToast('error', 'Ошибка', 'Введите ссылку на лобби');
-        }
-        
-        if (!link.startsWith('http://') && !link.startsWith('https://')) {
-            return showToast('error', 'Ошибка', 'Ссылка должна начинаться с http:// или https://');
-        }
-        
-        lobbyLink = link;
-        input.value = '';
-        
-        const display = document.getElementById('lobbyLinkDisplay');
-        const value = document.getElementById('lobbyLinkValue');
-        display.classList.add('visible');
-        value.textContent = lobbyLink;
-        
-        showToast('success', 'Ссылка добавлена!', 'Все игроки могут присоединиться к лобби');
-    }
-
-    function copyLobbyLink() {
-        if (!lobbyLink) return;
-        navigator.clipboard.writeText(lobbyLink).then(() => {
-            showToast('success', 'Скопировано!', 'Ссылка скопирована в буфер обмена');
-        }).catch(() => {
-            const input = document.createElement('input');
-            input.value = lobbyLink;
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-            showToast('success', 'Скопировано!', 'Ссылка скопирована в буфер обмена');
-        });
-    }
-
-    // ============================================================
-    //  АДМИН-МЕНЕДЖЕР МАТЧЕЙ
-    // ============================================================
-    async function loadAdminMatches() {
-        if (!currentUser?.isadmin) return;
-
-        try {
-            const { data, error } = await supabaseClient
-                .from('active_matches')
-                .select('*')
-                .in('status', ['pending', 'active'])
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-
-            adminMatches = data || [];
-            renderAdminMatches();
-        } catch (e) {
-            console.error('Ошибка загрузки матчей:', e);
-        }
-    }
-
-    function renderAdminMatches() {
-        const container = document.getElementById('adminMatchesList');
-        
-        if (adminMatches.length === 0) {
-            container.innerHTML = '<div class="admin-empty">Нет активных матчей</div>';
-            return;
-        }
-
-        container.innerHTML = adminMatches.map(match => {
-            let players = [];
-            try {
-                const orange = JSON.parse(match.orange);
-                const blue = JSON.parse(match.blue);
-                players = [...orange, ...blue];
-            } catch (e) {
-                players = [];
-            }
-            
-            const playerNames = players.map(p => p.username).join(', ');
-            const statusText = match.status === 'pending' ? 'Ожидает' : 'В процессе';
-            const statusClass = match.status === 'pending' ? 'pending' : 'active';
-
-            return `
-                <div class="admin-match-item" onclick="openAdminMatch('${match.id}')">
-                    <div class="match-info">
-                        <div class="match-id">#${match.id.substring(0, 8)}</div>
-                        <div class="match-players">${playerNames || 'Нет игроков'}</div>
-                    </div>
-                    <span class="match-status ${statusClass}">${statusText}</span>
-                </div>
-            `;
-        }).join('');
-    }
-
-    async function openAdminMatch(matchId) {
-        if (!currentUser?.isadmin) return;
-
-        try {
-            const { data, error } = await supabaseClient
-                .from('active_matches')
-                .select('*')
-                .eq('id', matchId)
-                .single();
-
-            if (error) throw error;
-
-            selectedAdminMatch = data;
-            
-            const orange = JSON.parse(data.orange);
-            const blue = JSON.parse(data.blue);
-            
-            currentMatch = { orange, blue };
-            isPlayerInMatch = true;
-            isCaptain = false;
-            
-            if (data.draft_state) {
-                draftState = JSON.parse(data.draft_state);
-            } else {
-                draftState = {
-                    gameNumber: 1,
-                    modeOptions: ['Gem Grab', 'Brawl Ball', 'Knockout', 'Heist', 'Bounty', 'Hot Zone', 'Siege'],
-                    modeBanned: [],
-                    modeFinal: null,
-                    currentCaptain: 0,
-                    isComplete: false
-                };
-            }
-
-            document.getElementById('matchResultSection').classList.add('admin-visible');
-            document.getElementById('matchActions').classList.add('admin-visible');
-            document.getElementById('endMatchBtn').disabled = false;
-            document.getElementById('screenshotSection').classList.add('visible');
-
-            navigate('matchPage');
-            renderMatchPage();
-            showToast('success', 'Матч загружен', 'Вы можете засчитать результат');
-
-        } catch (e) {
-            showToast('error', 'Ошибка', 'Не удалось загрузить матч');
-        }
-    }
-
-    // ============================================================
-    //  СКРИНШОТ
-    // ============================================================
-    document.getElementById('screenshotUploadBtn').addEventListener('click', function() {
-        const input = document.getElementById('screenshotInput');
-        const file = input.files[0];
-        const statusEl = document.getElementById('screenshotStatus');
-
-        if (!file) {
-            statusEl.textContent = '❌ Выберите файл';
-            statusEl.style.color = '#ff6b6b';
-            return;
-        }
-
-        if (!file.type.startsWith('image/')) {
-            statusEl.textContent = '❌ Только изображения';
-            statusEl.style.color = '#ff6b6b';
-            return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            statusEl.textContent = '❌ Файл больше 5MB';
-            statusEl.style.color = '#ff6b6b';
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            currentScreenshot = e.target.result;
-            const preview = document.getElementById('screenshotPreview');
-            preview.innerHTML = `<img src="${currentScreenshot}" alt="Скриншот" />`;
-            statusEl.textContent = '✅ Скриншот загружен!';
-            statusEl.style.color = '#51cf66';
-            showToast('success', 'Скриншот загружен', 'Ожидайте решения администратора');
-        };
-        reader.readAsDataURL(file);
-    });
-
-    // ============================================================
-    //  ЗАСЧИТЫВАНИЕ МАТЧА
-    // ============================================================
-    document.getElementById('blueWinBtn').addEventListener('click', function() {
-        if (!currentMatch || !draftState.isComplete) {
-            return showToast('error', 'Ошибка', 'Дождитесь завершения драфта');
-        }
-        if (!currentUser?.isadmin) {
-            return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
-        }
-        finishMatch('blue');
-    });
-
-    document.getElementById('orangeWinBtn').addEventListener('click', function() {
-        if (!currentMatch || !draftState.isComplete) {
-            return showToast('error', 'Ошибка', 'Дождитесь завершения драфта');
-        }
-        if (!currentUser?.isadmin) {
-            return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
-        }
-        finishMatch('orange');
-    });
-
-    async function finishMatch(winner) {
-        if (!currentMatch || !currentUser) return;
-        if (!currentUser.isadmin) {
-            return showToast('error', 'Доступ запрещён', 'Только администраторы могут засчитывать матчи');
-        }
-
-        const map = draftState.modeFinal || 'Gem Grab';
-        const allPlayers = [...currentMatch.orange, ...currentMatch.blue];
-        const orangePlayers = currentMatch.orange;
-        const bluePlayers = currentMatch.blue;
-        const winners = winner === 'blue' ? bluePlayers : orangePlayers;
-        const losers = winner === 'blue' ? orangePlayers : bluePlayers;
-
-        const playerIds = allPlayers.map(p => p.id);
-        const { data: playersData } = await supabaseClient
-            .from('users')
-            .select('id, elo')
-            .in('id', playerIds);
-
-        const eloMap = {};
-        playersData.forEach(p => {
-            eloMap[p.id] = p.elo || 1000;
-        });
-
-        const avgWinnerElo = winners.reduce((sum, p) => sum + (eloMap[p.id] || 1000), 0) / winners.length;
-        const avgLoserElo = losers.reduce((sum, p) => sum + (eloMap[p.id] || 1000), 0) / losers.length;
-
-        const K = 32;
-        const eloChanges = {};
-
-        for (const winnerPlayer of winners) {
-            const winnerElo = eloMap[winnerPlayer.id] || 1000;
-            const expected = 1 / (1 + Math.pow(10, (avgLoserElo - winnerElo) / 400));
-            eloChanges[winnerPlayer.id] = Math.round(K * (1 - expected));
-        }
-
-        for (const loserPlayer of losers) {
-            const loserElo = eloMap[loserPlayer.id] || 1000;
-            const expected = 1 / (1 + Math.pow(10, (avgWinnerElo - loserElo) / 400));
-            eloChanges[loserPlayer.id] = Math.round(K * (0 - expected));
-        }
-
-        for (const player of allPlayers) {
-            const isWin = winners.some(w => w.id === player.id);
-            const eloChange = eloChanges[player.id] || 0;
-
-            try {
-                const { data: userData } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .eq('id', player.id)
-                    .single();
-
-                if (userData) {
-                    const newMatches = (userData.matches || 0) + 1;
-                    const newWins = (userData.wins || 0) + (isWin ? 1 : 0);
-                    const newLosses = (userData.losses || 0) + (isWin ? 0 : 1);
-                    const newElo = Math.max(100, (userData.elo || 1000) + eloChange);
-                    const newMvp = (userData.mvp || 0) + (isWin ? 1 : 0);
-
-                    await supabaseClient
-                        .from('users')
-                        .update({
-                            matches: newMatches,
-                            wins: newWins,
-                            losses: newLosses,
-                            elo: newElo,
-                            mvp: newMvp,
-                            lastlogin: new Date().toISOString()
-                        })
-                        .eq('id', player.id);
-                }
-
-                await supabaseClient
-                    .from('match_history')
-                    .insert([{
-                        id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 4),
-                        user_id: player.id,
-                        username: player.username,
-                        map: map,
-                        result: isWin ? 'win' : 'loss',
-                        elo_change: eloChange,
-                        match_date: new Date().toISOString(),
-                        server_name: 'StartUp Platform',
-                        screenshot: currentScreenshot || null,
-                        created_at: new Date().toISOString()
-                    }]);
-
-            } catch (e) {
-                console.error('Ошибка сохранения статистики для', player.username, e);
-            }
-        }
-
-        if (currentMatchId) {
-            await supabaseClient
-                .from('active_matches')
-                .delete()
-                .eq('id', currentMatchId);
-        }
-
-        const { data: updatedUser } = await supabaseClient
-            .from('users')
-            .select('*')
-            .eq('id', currentUser.id)
-            .single();
-
-        if (updatedUser) {
-            currentUser = updatedUser;
-            saveSession(updatedUser);
-            await updateProfile();
-        }
-
-        const winnerTeam = winner === 'blue' ? 'BLUE TEAM' : 'ORANGE TEAM';
-        const changes = winners.map(p => `${p.username} +${eloChanges[p.id] || 0}`).join(', ');
-        showToast('success', 'Матч засчитан!', `Победила команда ${winnerTeam}. Изменения ELO: ${changes}`);
-
-        document.getElementById('matchResultSection').classList.remove('admin-visible');
-        document.getElementById('lobbySection').classList.remove('visible');
-        document.getElementById('screenshotSection').classList.remove('visible');
-        document.getElementById('matchActions').classList.remove('admin-visible');
-        document.getElementById('endMatchBtn').disabled = true;
-
-        currentMatch = null;
-        isPlayerInMatch = false;
-        isCaptain = false;
-        selectedAdminMatch = null;
-        draftState.isComplete = false;
-        currentScreenshot = null;
-        lobbyLink = null;
-        document.getElementById('screenshotInput').value = '';
-        document.getElementById('screenshotPreview').innerHTML = '';
-        document.getElementById('screenshotStatus').textContent = '';
-        document.getElementById('lobbyInput').value = '';
-        document.getElementById('lobbyLinkDisplay').classList.remove('visible');
-
-        await loadAdminMatches();
-        await updateHomeStats();
-        document.getElementById('matchNavLabel').textContent = 'Поиск';
-        document.querySelector('#matchNavBtn i').className = 'fas fa-search';
-        navigate('matches');
-        showToast('info', 'Матч завершён', 'Статистика сохранена!');
-    }
-
-    function endMatch() {
-        if (!currentMatch) return;
-        if (!draftState.isComplete) {
-            return showToast('info', 'Дождитесь драфта', 'Сначала завершите выбор режима');
-        }
-        if (!currentUser?.isadmin) {
-            return showToast('error', 'Доступ запрещён', 'Только администраторы могут завершить матч');
-        }
-        if (!confirm('Завершить матч без засчитывания?')) return;
-        
-        currentMatch = null;
-        isPlayerInMatch = false;
-        isCaptain = false;
-        selectedAdminMatch = null;
-        draftState.isComplete = false;
-        document.getElementById('matchResultSection').classList.remove('admin-visible');
-        document.getElementById('lobbySection').classList.remove('visible');
-        document.getElementById('screenshotSection').classList.remove('visible');
-        document.getElementById('matchActions').classList.remove('admin-visible');
-        document.getElementById('endMatchBtn').disabled = true;
-        lobbyLink = null;
-        document.getElementById('lobbyLinkDisplay').classList.remove('visible');
-        
-        if (currentUser?.isadmin) {
-            loadAdminMatches();
-        }
-        
-        updateHomeStats();
-        document.getElementById('matchNavLabel').textContent = 'Поиск';
-        document.querySelector('#matchNavBtn i').className = 'fas fa-search';
-        navigate('matches');
-        showToast('info', 'Матч завершён', 'Матч отменён');
-    }
-
-    // ============================================================
-    //  ДРАФТ (ТОЛЬКО ДЛЯ КАПИТАНОВ)
-    // ============================================================
-    function resetDraft() {
-        draftState = {
-            gameNumber: draftState.gameNumber,
-            modeOptions: ['Gem Grab', 'Brawl Ball', 'Knockout', 'Heist', 'Bounty', 'Hot Zone', 'Siege'],
-            modeBanned: [],
-            modeFinal: null,
-            currentCaptain: 0,
-            isComplete: false
-        };
-        renderDraftUI();
-    }
-
-    function getCaptainName(index) {
-        if (!currentMatch) return 'Капитан ' + (index + 1);
-        const captains = [];
-        if (currentMatch.orange.length > 0) captains.push(currentMatch.orange[0].username);
-        if (currentMatch.blue.length > 0) captains.push(currentMatch.blue[0].username);
-        return captains[index] || 'Капитан ' + (index + 1);
-    }
-
-    function renderDraftUI() {
-        const state = draftState;
-
-        document.getElementById('matchGameNumber').textContent = '#' + state.gameNumber;
-        document.getElementById('matchSelectedMode').textContent = state.modeFinal || '—';
-
-        const modesContainer = document.getElementById('modesBanContainer');
-        const modeBtns = modesContainer.querySelectorAll('.ban-btn');
-        
-        const oCaptain = currentMatch && currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
-        const bCaptain = currentMatch && currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
-        const canBan = currentUser && (currentUser.username === oCaptain || currentUser.username === bCaptain);
-        
-        modeBtns.forEach(btn => {
-            const val = btn.dataset.value;
-            if (state.modeBanned.includes(val)) {
-                btn.classList.add('banned');
-                btn.style.display = 'none';
-            } else if (state.modeFinal === val) {
-                btn.classList.add('selected');
-                btn.disabled = true;
-            } else if (state.isComplete) {
-                btn.disabled = true;
-            } else {
-                btn.classList.remove('banned', 'selected');
-                btn.style.display = '';
-                btn.disabled = !canBan;
-                btn.style.opacity = canBan ? '1' : '0.4';
-                btn.style.cursor = canBan ? 'pointer' : 'not-allowed';
-            }
-        });
-
-        const availableModes = state.modeOptions.filter(v => !state.modeBanned.includes(v) && v !== state.modeFinal);
-        document.getElementById('modesLeft').textContent = availableModes.length;
-
-        const modesStatus = document.getElementById('modesStatus');
-        if (state.modeFinal) {
-            modesStatus.textContent = '✅ ' + state.modeFinal;
-            modesStatus.className = 'status-text done';
-        } else if (!state.isComplete) {
-            const captainName = getCaptainName(state.currentCaptain);
-            modesStatus.textContent = 'Ход: ' + captainName + (canBan ? ' (Вы)' : '');
-            modesStatus.className = 'status-text';
-        } else {
-            modesStatus.textContent = 'Ожидание...';
-            modesStatus.className = 'status-text';
-        }
-        document.getElementById('modesTurnName').textContent = !state.isComplete ? getCaptainName(state.currentCaptain) : '—';
-
-        const bansContainer = document.getElementById('bansContainer');
-        if (state.isComplete) {
-            bansContainer.style.display = 'none';
-        } else {
-            bansContainer.style.display = 'grid';
-        }
-
-        checkMatchResultVisibility();
-        checkLobbyVisibility();
-    }
-
-    function handleModesBan(value) {
-        const state = draftState;
-        if (state.isComplete) return;
-        if (state.modeBanned.includes(value)) return;
-        if (state.modeFinal) return;
-        
-        const oCaptain = currentMatch && currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
-        const bCaptain = currentMatch && currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
-        const canBan = currentUser && (currentUser.username === oCaptain || currentUser.username === bCaptain);
-        
-        if (!canBan) {
-            showToast('error', 'Доступ запрещён', 'Только капитаны могут банить карты');
-            return;
-        }
-
-        state.modeBanned.push(value);
-
-        const available = state.modeOptions.filter(v => !state.modeBanned.includes(v));
-        if (available.length === 1) {
-            state.modeFinal = available[0];
-            state.isComplete = true;
-            renderDraftUI();
-            showToast('success', 'Драфт завершён!', 'Играем режим ' + state.modeFinal);
-            checkMatchResultVisibility();
-            checkLobbyVisibility();
-            return;
-        }
-
-        state.currentCaptain = state.currentCaptain === 0 ? 1 : 0;
-        renderDraftUI();
-    }
-
-    // ============================================================
-    //  ПРОФИЛЬ
-    // ============================================================
-    async function updateProfile() {
-        if (!currentUser) return;
-        
-        const matches = currentUser.matches || 0;
-        const wins = currentUser.wins || 0;
-        const winrate = matches > 0 ? Math.round((wins / matches) * 100) : 0;
-        
-        document.getElementById('pWr').textContent = winrate + '%';
-        document.getElementById('pMatches').textContent = matches;
-        document.getElementById('pMvp').textContent = currentUser.mvp || 0;
-        document.getElementById('pElo').textContent = currentUser.elo || 1000;
-        document.getElementById('walletBalance').textContent = (currentUser.balance || 0) + ' ₽';
-
-        await loadMatchHistory();
-        await renderChart();
-    }
-
-    // ============================================================
-    //  ИСТОРИЯ МАТЧЕЙ
-    // ============================================================
-    async function loadMatchHistory() {
-        if (!currentUser) return;
-        
-        try {
-            const { data, error } = await supabaseClient
-                .from('match_history')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .order('match_date', { ascending: false })
-                .limit(20);
-
-            if (error) throw error;
-
-            const container = document.getElementById('matchHistoryList');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div style="color:#666; text-align:center; padding:8px 0;">Нет сыгранных матчей</div>';
-                return;
-            }
-
-            container.innerHTML = data.map(m => `
-                <div class="match-item">
-                    <span class="map"><i class="fas fa-gamepad"></i> ${m.map || 'Неизвестная карта'}</span>
-                    <span class="date">${new Date(m.match_date).toLocaleDateString('ru-RU')}</span>
-                    <span class="result ${m.result === 'win' ? 'win' : 'loss'}">
-                        ${m.result === 'win' ? '🏆 Победа' : '💀 Поражение'}
-                        ${m.elo_change ? ` (${m.elo_change > 0 ? '+' : ''}${m.elo_change} ELO)` : ''}
-                    </span>
-                </div>
-            `).join('');
-        } catch (e) {
-            console.error('Ошибка загрузки истории:', e);
-        }
-    }
-
-    // ============================================================
-    //  ДИНАМИКА МАТЧЕЙ
-    // ============================================================
-    async function renderChart() {
-        try {
-            const { data, error } = await supabaseClient
-                .from('match_history')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .order('match_date', { ascending: false })
-                .limit(10);
-
-            if (error || !data || data.length === 0) {
-                document.getElementById('chartContainer').innerHTML = '<div style="color:#666; text-align:center; width:100%; padding:10px 0;">Нет данных</div>';
-                return;
-            }
-
-            const container = document.getElementById('chartContainer');
-            const lastMatches = data.slice(0, 10).reverse();
-            const height = 40;
-
-            container.innerHTML = lastMatches.map((m, index) => {
-                const isWin = m.result === 'win';
-                const barClass = isWin ? 'win' : 'loss';
-                
-                return `
-                    <div class="chart-bar-wrap" title="${m.map || 'Матч'} - ${isWin ? 'Победа' : 'Поражение'} ${m.elo_change ? ' (' + (m.elo_change > 0 ? '+' : '') + m.elo_change + ' ELO)' : ''}">
-                        <div class="chart-bar ${barClass}" 
-                             style="height: ${height}px; 
-                                    ${isWin ? 'border-radius: 3px 3px 0 0; align-self: flex-end;' : 'border-radius: 0 0 3px 3px; align-self: flex-start;'}">
-                        </div>
-                        <span class="bar-label">${index + 1}</span>
-                    </div>
-                `;
-            }).join('');
-        } catch (e) {
-            console.error('renderChart error:', e);
-        }
-    }
-
-    // ============================================================
-    //  ДРУЗЬЯ (С БД)
-    // ============================================================
-    async function loadFriends() {
-        if (!currentUser) return;
-
-        try {
-            const { data: friendsData } = await supabaseClient
-                .from('friends')
-                .select('friend_id')
-                .eq('user_id', currentUser.id);
-
-            const friendIds = friendsData ? friendsData.map(f => f.friend_id) : [];
-            
-            if (friendIds.length > 0) {
-                const { data: usersData } = await supabaseClient
-                    .from('users')
-                    .select('id, username, isadmin, elo')
-                    .in('id', friendIds);
-                myFriends = usersData || [];
-            } else {
-                myFriends = [];
-            }
-
-            const { data: requestsData } = await supabaseClient
-                .from('friend_requests')
-                .select('from_user_id')
-                .eq('to_user_id', currentUser.id)
-                .eq('status', 'pending');
-
-            const requestIds = requestsData ? requestsData.map(r => r.from_user_id) : [];
-            
-            if (requestIds.length > 0) {
-                const { data: usersData } = await supabaseClient
-                    .from('users')
-                    .select('id, username, isadmin, elo')
-                    .in('id', requestIds);
-                friendRequests = usersData || [];
-            } else {
-                friendRequests = [];
-            }
-
-            const { data: allUsers } = await supabaseClient
-                .from('users')
-                .select('id, username, isadmin, elo')
-                .neq('id', currentUser.id);
-
-            friendsList = allUsers || [];
-
-            renderFriends();
-        } catch (e) {
-            console.error('Ошибка загрузки друзей:', e);
-        }
-    }
-
-    function renderFriends() {
-        const container = document.getElementById('friendsListContainer');
-        const count = document.getElementById('friendsCount');
-        
-        let filtered = [];
-        let isRequests = false;
-        
-        if (friendsTab === 'friends') {
-            filtered = myFriends;
-        } else if (friendsTab === 'requests') {
-            isRequests = true;
-            filtered = friendRequests;
-        }
-        
-        const friendsCount = myFriends.length;
-        count.textContent = friendsCount + ' друзей';
-
-        if (filtered.length === 0) {
-            container.innerHTML = `
-                <div class="friends-empty">
-                    <i class="fas fa-user-friends"></i>
-                    <p>${isRequests ? 'Нет заявок в друзья' : 'У вас пока нет друзей'}</p>
-                    <span style="font-size:12px;color:#666;">Ищите игроков по никнейму и отправляйте заявки</span>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = filtered.map(f => {
-            const isFriend = myFriends.some(m => m.id === f.id);
-            const isRequest = friendRequests.some(r => r.id === f.id);
-            const inParty = partyFriends.some(p => p.id === f.id);
-            
-            let statusClass = 'none';
-            let statusText = 'Не в друзьях';
-            let actions = '';
-            
-            if (isRequest && !isFriend) {
-                statusClass = 'request';
-                statusText = 'Заявка';
-                actions = `
-                    <button class="btn-accept" onclick="acceptFriend('${f.id}')"><i class="fas fa-check"></i></button>
-                    <button class="btn-decline" onclick="declineFriend('${f.id}')"><i class="fas fa-times"></i></button>
-                `;
-            } else if (isFriend) {
-                statusClass = 'friend';
-                statusText = 'Друг';
-                if (inParty) {
-                    actions = `
-                        <button class="btn-remove" onclick="removeFromParty('${f.id}')"><i class="fas fa-user-minus"></i></button>
-                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
-                    `;
-                } else {
-                    actions = `
-                        <button class="btn-invite" onclick="inviteToParty('${f.id}')"><i class="fas fa-user-plus"></i> Пригласить</button>
-                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
-                    `;
-                }
-            } else {
-                actions = `
-                    <button class="btn-add" onclick="sendFriendRequest('${f.id}')"><i class="fas fa-user-plus"></i> Добавить</button>
-                `;
-            }
-            
-            return `
-                <div class="friend-item">
-                    <div class="avatar">${f.username.charAt(0).toUpperCase()}</div>
-                    <div class="info">
-                        <div class="name">${f.username} ${f.isadmin ? '👑' : ''}</div>
-                        <div class="status">ELO: ${f.elo || 1000}</div>
-                    </div>
-                    <span class="status-badge ${statusClass}">${statusText}</span>
-                    <div class="friend-actions">${actions}</div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    function switchFriendsTab(tab) {
-        friendsTab = tab;
-        document.querySelectorAll('.friends-tabs .tab').forEach(t => t.classList.remove('active'));
-        document.querySelector(`.friends-tabs .tab[data-tab="${tab}"]`)?.classList.add('active');
-        renderFriends();
-    }
-
-    function searchFriends() {
-        const query = document.getElementById('friendSearchInput').value.toLowerCase();
-        if (!query) {
-            renderFriends();
-            return;
-        }
-        
-        const container = document.getElementById('friendsListContainer');
-        const filtered = friendsList.filter(f => f.username.toLowerCase().includes(query));
-        
-        if (filtered.length === 0) {
-            container.innerHTML = `
-                <div class="friends-empty">
-                    <i class="fas fa-search"></i>
-                    <p>Никто не найден</p>
-                    <button style="margin-top:12px;padding:8px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#ffd700,#ff6b00);color:#0b0b0f;font-weight:700;cursor:pointer;" onclick="sendFriendRequestByUsername('${query}')">
-                        <i class="fas fa-user-plus"></i> Отправить заявку
-                    </button>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = filtered.map(f => {
-            const isFriend = myFriends.some(m => m.id === f.id);
-            const isRequest = friendRequests.some(r => r.id === f.id);
-            const inParty = partyFriends.some(p => p.id === f.id);
-            
-            let statusClass = 'none';
-            let statusText = 'Не в друзьях';
-            let actions = '';
-            
-            if (isRequest && !isFriend) {
-                statusClass = 'request';
-                statusText = 'Заявка';
-                actions = `
-                    <button class="btn-accept" onclick="acceptFriend('${f.id}')"><i class="fas fa-check"></i></button>
-                    <button class="btn-decline" onclick="declineFriend('${f.id}')"><i class="fas fa-times"></i></button>
-                `;
-            } else if (isFriend) {
-                statusClass = 'friend';
-                statusText = 'Друг';
-                if (inParty) {
-                    actions = `
-                        <button class="btn-remove" onclick="removeFromParty('${f.id}')"><i class="fas fa-user-minus"></i></button>
-                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
-                    `;
-                } else {
-                    actions = `
-                        <button class="btn-invite" onclick="inviteToParty('${f.id}')"><i class="fas fa-user-plus"></i> Пригласить</button>
-                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>
-                    `;
-                }
-            } else {
-                actions = `
-                    <button class="btn-add" onclick="sendFriendRequest('${f.id}')"><i class="fas fa-user-plus"></i> Добавить</button>
-                `;
-            }
-            
-            return `
-                <div class="friend-item">
-                    <div class="avatar">${f.username.charAt(0).toUpperCase()}</div>
-                    <div class="info">
-                        <div class="name">${f.username} ${f.isadmin ? '👑' : ''}</div>
-                        <div class="status">ELO: ${f.elo || 1000}</div>
-                    </div>
-                    <span class="status-badge ${statusClass}">${statusText}</span>
-                    <div class="friend-actions">${actions}</div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    async function sendFriendRequest(userId) {
-        if (!currentUser) return;
-
-        const { data: existing } = await supabaseClient
-            .from('friend_requests')
-            .select('*')
-            .eq('from_user_id', currentUser.id)
-            .eq('to_user_id', userId)
-            .maybeSingle();
-
-        if (existing) {
-            if (existing.status === 'pending') {
-                return showToast('info', 'Уже отправлено', 'Заявка уже была отправлена');
-            }
-            if (existing.status === 'accepted') {
-                return showToast('info', 'Уже друг', 'Этот пользователь уже в друзьях');
-            }
-        }
-
-        const { data: isFriend } = await supabaseClient
-            .from('friends')
-            .select('*')
-            .or(`user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`)
-            .or(`user_id.eq.${userId},friend_id.eq.${userId}`)
-            .maybeSingle();
-
-        if (isFriend) {
-            return showToast('info', 'Уже друг', 'Этот пользователь уже в друзьях');
-        }
-
-        const { error } = await supabaseClient
-            .from('friend_requests')
-            .insert({
-                from_user_id: currentUser.id,
-                to_user_id: userId,
-                status: 'pending'
-            });
-
-        if (error) {
-            showToast('error', 'Ошибка', 'Не удалось отправить заявку: ' + error.message);
-            return;
-        }
-
-        showToast('success', 'Заявка отправлена', 'Пользователь получит уведомление');
-        await loadFriends();
-    }
-
-    async function acceptFriend(userId) {
-        if (!currentUser) return;
-
-        const { error: updateError } = await supabaseClient
-            .from('friend_requests')
-            .update({ status: 'accepted' })
-            .eq('from_user_id', userId)
-            .eq('to_user_id', currentUser.id);
-
-        if (updateError) {
-            showToast('error', 'Ошибка', 'Не удалось принять заявку');
-            return;
-        }
-
-        await supabaseClient
-            .from('friends')
-            .insert([
-                { user_id: currentUser.id, friend_id: userId },
-                { user_id: userId, friend_id: currentUser.id }
-            ]);
-
-        showToast('success', 'Друг добавлен', 'Теперь вы друзья!');
-        await loadFriends();
-    }
-
-    async function declineFriend(userId) {
-        if (!currentUser) return;
-
-        const { error } = await supabaseClient
-            .from('friend_requests')
-            .update({ status: 'declined' })
-            .eq('from_user_id', userId)
-            .eq('to_user_id', currentUser.id);
-
-        if (error) {
-            showToast('error', 'Ошибка', 'Не удалось отклонить заявку');
-            return;
-        }
-
-        showToast('info', 'Отклонено', 'Заявка отклонена');
-        await loadFriends();
-    }
-
-    async function removeFriend(id) {
-        if (!confirm('Удалить из друзей?')) return;
-
-        await supabaseClient
-            .from('friends')
-            .delete()
-            .or(`user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`)
-            .or(`user_id.eq.${id},friend_id.eq.${id}`);
-
-        showToast('info', 'Удалён', 'Пользователь удалён из друзей');
-        await loadFriends();
-    }
-
-    function sendFriendRequestByUsername(username) {
-        const user = friendsList.find(f => f.username.toLowerCase() === username.toLowerCase());
-        if (user) {
-            sendFriendRequest(user.id);
-        } else {
-            showToast('error', 'Ошибка', 'Пользователь не найден');
-        }
-    }
-
-    function inviteToParty(id) {
-        const friend = myFriends.find(f => f.id === id);
-        if (!friend) {
-            return showToast('error', 'Ошибка', 'Этот пользователь не в друзьях');
-        }
-        
-        if (partyFriends.some(p => p.id === id)) {
-            return showToast('info', 'Уже в пати', 'Этот игрок уже в вашей пати');
-        }
-        
-        if (partyFriends.length >= 2) {
-            return showToast('error', 'Ошибка', 'Максимум 2 человека в пати');
-        }
-        
-        partyFriends.push({ id: friend.id, username: friend.username });
-        updatePartyUI();
-        renderFriends();
-        showToast('success', 'Приглашён!', friend.username + ' добавлен в пати');
-    }
-
-    function removeFromParty(id) {
-        partyFriends = partyFriends.filter(f => f.id !== id);
-        updatePartyUI();
-        renderFriends();
-        showToast('info', 'Удалён', 'Игрок удалён из пати');
-    }
-
-    // ============================================================
-    //  ТОП
-    // ============================================================
-    async function renderTopPage() {
-        try {
-            const { data: users, error } = await supabaseClient
-                .from('users')
-                .select('*')
-                .order('elo', { ascending: false })
-                .limit(10);
-
-            if (error) throw error;
-
-            const container = document.getElementById('topList');
-            
-            const userRank = users.findIndex(u => u.id === currentUser?.id) + 1;
-            document.getElementById('userRank').textContent = '#' + (userRank || 0);
-
-            if (!users || users.length === 0) {
-                container.innerHTML = `<div class="friends-empty"><i class="fas fa-trophy"></i> Нет данных</div>`;
-                return;
-            }
-
-            container.innerHTML = users.map((u, i) => {
-                const initial = u.username.charAt(0).toUpperCase();
-                const rankNum = i + 1;
-                let rankClass = '';
-                if (rankNum === 1) rankClass = 'gold';
-                else if (rankNum === 2) rankClass = 'silver';
-                else if (rankNum === 3) rankClass = 'bronze';
-
-                const winrate = u.matches > 0 ? Math.round((u.wins / u.matches) * 100) : 0;
-
-                return `
-                    <div class="top-item">
-                        <div class="rank ${rankClass}">#${rankNum}</div>
-                        <div class="avatar">${initial}</div>
-                        <div class="info">
-                            <div class="name">${u.username} ${u.isadmin ? '👑' : ''}</div>
-                            <div class="stats">${u.matches || 0} матчей | ${winrate}% побед</div>
-                        </div>
-                        <div class="elo">${u.elo || 1000}<span class="elo-label">ELO</span></div>
-                    </div>
-                `;
-            }).join('');
-        } catch (e) {
-            console.error('renderTopPage error:', e);
-        }
-    }
-
-    // ============================================================
-    //  АДМИН-ПАНЕЛЬ
-    // ============================================================
-    async function renderAdminList() {
-        try {
-            const { data: admins, error } = await supabaseClient
-                .from('users')
-                .select('id, username, isadmin')
-                .eq('isadmin', true);
-
-            if (error) throw error;
-
-            const container = document.getElementById('adminList');
-            if (!admins || admins.length === 0) {
-                container.innerHTML = '<div class="admin-empty">Нет администраторов</div>';
-                return;
-            }
-
-            container.innerHTML = admins.map(admin => `
-                <span class="admin-tag">
-                    ${admin.username}
-                    ${admin.username !== 'Destro' && currentUser?.username === 'Destro' ? 
-                        `<span class="remove" onclick="removeAdmin('${admin.id}')">&times;</span>` : 
-                        '<span style="color:#ffd700;font-size:10px;">👑</span>'
-                    }
-                </span>
-            `).join('');
-        } catch (e) {
-            console.error('renderAdminList error:', e);
-        }
-    }
-
-    async function addAdmin() {
-        if (!currentUser?.isadmin) {
-            showToast('error', 'Доступ запрещён', 'Только администраторы могут управлять админами');
-            return;
-        }
-
-        const username = document.getElementById('adminAddInput').value.trim();
-        const statusEl = document.getElementById('adminAddStatus');
-
-        if (!username) {
-            statusEl.className = 'admin-status show error';
-            statusEl.textContent = '❌ Введите никнейм';
-            return;
-        }
-
-        try {
-            const { data: user, error } = await supabaseClient
-                .from('users')
-                .select('id, isadmin')
-                .eq('username', username)
-                .maybeSingle();
-
-            if (error || !user) {
-                statusEl.className = 'admin-status show error';
-                statusEl.textContent = '❌ Пользователь не найден';
-                return;
-            }
-
-            if (user.isadmin) {
-                statusEl.className = 'admin-status show error';
-                statusEl.textContent = '❌ Этот пользователь уже администратор';
-                return;
-            }
-
-            const { error: updateError } = await supabaseClient
-                .from('users')
-                .update({ isadmin: true })
-                .eq('id', user.id);
-
-            if (updateError) {
-                statusEl.className = 'admin-status show error';
-                statusEl.textContent = '❌ Ошибка: ' + updateError.message;
-                return;
-            }
-
-            statusEl.className = 'admin-status show success';
-            statusEl.textContent = '✅ ' + username + ' теперь администратор!';
-            document.getElementById('adminAddInput').value = '';
-            renderAdminList();
-        } catch (e) {
-            statusEl.className = 'admin-status show error';
-            statusEl.textContent = '❌ Ошибка: ' + e.message;
-        }
-    }
-
-    async function removeAdmin(userId) {
-        if (!currentUser?.isadmin) {
-            showToast('error', 'Доступ запрещён', 'Только администраторы могут управлять админами');
-            return;
-        }
-
-        if (!confirm('Удалить этого администратора?')) return;
-
-        try {
-            const { error } = await supabaseClient
-                .from('users')
-                .update({ isadmin: false })
-                .eq('id', userId);
-
-            if (error) {
-                showToast('error', 'Ошибка', error.message);
-                return;
-            }
-
-            showToast('success', 'Готово', 'Администратор удалён');
-            renderAdminList();
-        } catch (e) {
-            showToast('error', 'Ошибка', e.message);
-        }
-    }
-
-    // ============================================================
-    //  ПРОМОКОДЫ
-    // ============================================================
-    async function renderPromoList() {
-        try {
-            const { data, error } = await supabaseClient
-                .from('promocodes')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-
-            const container = document.getElementById('promoList');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="admin-empty">Нет промокодов</div>';
-                return;
-            }
-
-            container.innerHTML = data.map(p => `
-                <span class="admin-tag" style="${p.used_count >= p.max_uses ? 'opacity:0.5;' : ''}">
-                    ${p.code} — ${p.amount} ₽ (${p.used_count}/${p.max_uses})
-                    ${p.used_count >= p.max_uses ? '✅ Использован' : '🟢 Активен'}
-                    ${p.used_count < p.max_uses && currentUser?.isadmin ? 
-                        `<span class="remove" onclick="deletePromo('${p.id}')">&times;</span>` : ''
-                    }
-                </span>
-            `).join('');
-        } catch (e) {
-            console.error('renderPromoList error:', e);
-        }
-    }
-
-    async function createPromo() {
-        if (!currentUser?.isadmin) {
-            showToast('error', 'Доступ запрещён', 'Только администраторы могут создавать промокоды');
-            return;
-        }
-
-        const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
-        const amount = parseInt(document.getElementById('promoAmountInput').value);
-        const maxUses = parseInt(document.getElementById('promoUsesInput').value) || 1;
-        const statusEl = document.getElementById('promoStatus');
-
-        if (!code) {
-            statusEl.textContent = '❌ Введите промокод';
-            statusEl.style.color = '#ff6b6b';
-            return;
-        }
-        if (!amount || amount < 1) {
-            statusEl.textContent = '❌ Введите сумму (минимум 1 ₽)';
-            statusEl.style.color = '#ff6b6b';
-            return;
-        }
-        if (!maxUses || maxUses < 1) {
-            statusEl.textContent = '❌ Введите количество активаций';
-            statusEl.style.color = '#ff6b6b';
-            return;
-        }
-
-        try {
-            const { data, error } = await supabaseClient
-                .from('promocodes')
-                .insert([{
-                    code: code,
-                    amount: amount,
-                    max_uses: maxUses,
-                    used_count: 0,
-                    created_by: currentUser.username
-                }])
-                .select()
-                .single();
-
-            if (error) {
-                if (error.code === '23505') {
-                    statusEl.textContent = '❌ Промокод уже существует';
-                } else {
-                    statusEl.textContent = '❌ ' + error.message;
-                }
-                statusEl.style.color = '#ff6b6b';
-                return;
-            }
-
-            statusEl.textContent = '✅ Промокод ' + code + ' создан на ' + amount + ' ₽ (' + maxUses + ' активаций)!';
-            statusEl.style.color = '#51cf66';
-            document.getElementById('promoCodeInput').value = '';
-            document.getElementById('promoAmountInput').value = '';
-            document.getElementById('promoUsesInput').value = '1';
-            renderPromoList();
-        } catch (e) {
-            statusEl.textContent = '❌ Ошибка: ' + e.message;
-            statusEl.style.color = '#ff6b6b';
-        }
-    }
-
-    async function deletePromo(id) {
-        if (!confirm('Удалить промокод?')) return;
-        
-        try {
-            const { error } = await supabaseClient
-                .from('promocodes')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                showToast('error', 'Ошибка', error.message);
-                return;
-            }
-
-            showToast('success', 'Готово', 'Промокод удалён');
-            renderPromoList();
-        } catch (e) {
-            showToast('error', 'Ошибка', e.message);
-        }
-    }
-
-    // ============================================================
-    //  ПРОМОКОД В КОШЕЛЬКЕ
-    // ============================================================
-    async function applyPromo() {
-        const input = document.getElementById('promoInput');
-        const code = input.value.trim().toUpperCase();
-        if (!code) return showToast('error', 'Ошибка', 'Введите промокод');
-        if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
-
-        try {
-            const { data, error } = await supabaseClient
-                .from('promocodes')
-                .select('*')
-                .eq('code', code)
-                .single();
-
-            if (error || !data) {
-                showToast('error', 'Ошибка', 'Промокод не найден');
-                return;
-            }
-
-            if (data.used_count >= data.max_uses) {
-                showToast('error', 'Ошибка', 'Промокод уже использован');
-                return;
-            }
-
-            const { error: updateError } = await supabaseClient
-                .from('promocodes')
-                .update({ used_count: data.used_count + 1 })
-                .eq('id', data.id);
-
-            if (updateError) {
-                showToast('error', 'Ошибка', updateError.message);
-                return;
-            }
-
-            const newBalance = (currentUser.balance || 0) + data.amount;
-            
-            const { error: balanceError } = await supabaseClient
-                .from('users')
-                .update({ balance: newBalance })
-                .eq('id', currentUser.id);
-
-            if (balanceError) {
-                showToast('error', 'Ошибка', balanceError.message);
-                return;
-            }
-
-            currentUser.balance = newBalance;
-            saveSession(currentUser);
-            document.getElementById('walletBalance').textContent = newBalance + ' ₽';
-
-            showToast('success', 'Промокод применён!', 'Вы получили ' + data.amount + ' ₽. Баланс: ' + newBalance + ' ₽');
-            input.value = '';
-            renderPromoList();
-        } catch (e) {
-            showToast('error', 'Ошибка', e.message);
-        }
-    }
-
-    // ============================================================
-    //  ПАТИ
-    // ============================================================
-    function updatePartyUI() {
-        document.getElementById('partyCount').textContent = partyFriends.length + '/2';
-        renderPartyMembers();
-    }
-
-    function renderPartyMembers() {
-        const container = document.getElementById('partyMembers');
-        if (partyFriends.length === 0) {
-            container.innerHTML = '<span class="party-empty">Нет участников</span>';
-            return;
-        }
-        container.innerHTML = partyFriends.map(f => `
-            <span class="party-member">
-                <span class="avatar-small">${f.username.charAt(0).toUpperCase()}</span>
-                ${f.username}
-                <span class="remove" onclick="removeFromParty('${f.id}')">&times;</span>
-            </span>
-        `).join('');
-    }
-
-    // ============================================================
-    //  ПОДКЛЮЧЕНИЕ ОБРАБОТЧИКОВ
-    // ============================================================
-    document.addEventListener('DOMContentLoaded', async function() {
-        document.getElementById('tabLogin').addEventListener('click', function() {
-            switchAuthTab('login');
-        });
-        document.getElementById('tabRegister').addEventListener('click', function() {
-            switchAuthTab('register');
-        });
-
-        document.getElementById('switchToRegister').addEventListener('click', function(e) {
-            e.preventDefault();
-            switchAuthTab('register');
-        });
-        document.getElementById('switchToLogin').addEventListener('click', function(e) {
-            e.preventDefault();
-            switchAuthTab('login');
-        });
-
-        document.getElementById('loginBtn').addEventListener('click', loginUser);
-        document.getElementById('registerBtn').addEventListener('click', registerUser);
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const loginForm = document.getElementById('loginForm');
-                const registerForm = document.getElementById('registerForm');
-                if (loginForm.classList.contains('active')) loginUser();
-                else if (registerForm.classList.contains('active')) registerUser();
-            }
-        });
-
-        document.getElementById('adminAddBtn').addEventListener('click', addAdmin);
-        document.getElementById('createPromoBtn').addEventListener('click', createPromo);
-
-        document.getElementById('modesBanContainer').addEventListener('click', function(e) {
-            const btn = e.target.closest('.ban-btn');
-            if (!btn) return;
-            if (btn.classList.contains('banned') || btn.classList.contains('selected')) return;
-            const value = btn.dataset.value;
-            handleModesBan(value);
-        });
-
-        document.getElementById('promoInput')?.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') applyPromo();
-        });
-
-        const session = getSession();
-        if (session) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .eq('id', session.id)
-                    .eq('username', session.username)
-                    .maybeSingle();
-
-                if (!error && data) {
-                    currentUser = data;
-                }
-            } catch (e) {}
-        }
-
-        await checkAuth();
-    });
-</script>
+    <!-- декоративная подпись (без эмодзи) -->
+    <div class="subnote">start coin · profile</div>
+  </div>
 </body>
 </html>

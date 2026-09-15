@@ -40,7 +40,7 @@
       top: 0;
       left: 0;
       right: 0;
-      bottom: 110px;
+      bottom: 108px;
       overflow-y: auto;
       overflow-x: hidden;
       display: flex;
@@ -378,7 +378,7 @@
     }
 
     /* ============================================================
-       НИЖНЯЯ НАВИГАЦИЯ — ТОЛЬКО ЦЕНТРАЛЬНЫЙ КРУЖОК
+       НИЖНЯЯ НАВИГАЦИЯ — ФИКСИРОВАННАЯ, НЕПРОЗРАЧНАЯ, С 3 ПУНКТАМИ
        ============================================================ */
     .bottom-nav {
       position: fixed;
@@ -386,32 +386,153 @@
       right: 0;
       bottom: 0;
       z-index: 999;
-      height: 110px;
+      height: 108px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      pointer-events: none;
+      justify-content: space-between;
+      padding: 0 1.4rem;
+
+      /* НЕПРОЗРАЧНЫЙ ФОН */
+      background:
+        linear-gradient(180deg, rgba(24, 13, 4, 0.98) 0%, rgba(12, 7, 2, 1) 100%);
+
+      border-top: 1px solid rgba(255, 140, 0, 0.40);
+
+      box-shadow:
+        0 -14px 45px -12px rgba(255, 110, 0, 0.42),
+        0 -1px 0 rgba(255, 180, 90, 0.12) inset,
+        inset 0 1px 0 rgba(255, 200, 120, 0.10);
     }
 
-    /* мягкое затемнение снизу под кнопкой */
+    /* декоративная оранжевая полоска-подсветка сверху */
     .bottom-nav::before {
       content: "";
       position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 90px;
-      background: linear-gradient(180deg, transparent 0%, rgba(10, 6, 2, 0.55) 55%, rgba(8, 5, 2, 0.92) 100%);
-      pointer-events: none;
-      z-index: -1;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ff8a00, transparent);
+      filter: blur(0.5px);
+      opacity: 0.85;
+    }
+
+    /* ===== БОКОВЫЕ ПУНКТЫ (Профиль, Магазин) ===== */
+    .nav-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      color: #a3621d;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      transition: color 0.25s ease, transform 0.25s ease;
+      padding: 0.4rem;
+      user-select: none;
+      position: relative;
+    }
+
+    .nav-side:hover {
+      color: #ffa84d;
+    }
+
+    .nav-side.active {
+      color: #ff9d33;
+    }
+
+    /* Иконки боковых пунктов */
+    .nav-side .side-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(160deg, rgba(45, 24, 8, 0.95), rgba(18, 10, 3, 0.95));
+      border: 1.5px solid rgba(255, 140, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-side.active .side-icon {
+      border-color: #ff8a00;
+      box-shadow:
+        0 0 0 2px rgba(255, 140, 0, 0.35),
+        0 0 22px rgba(255, 140, 0, 0.75),
+        inset 0 0 14px rgba(255, 140, 0, 0.28);
+    }
+
+    /* Иконка «Профиль» — человек */
+    .icon-profile::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      background: currentColor;
+      border-radius: 50%;
+      position: absolute;
+      top: 9px;
+      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
+    }
+
+    .icon-profile::after {
+      content: "";
+      width: 20px;
+      height: 11px;
+      background: currentColor;
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      position: absolute;
+      bottom: 9px;
+      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
+    }
+
+    /* Иконка «Магазин» — сумка */
+    .icon-shop::before {
+      content: "";
+      position: absolute;
+      width: 21px;
+      height: 15px;
+      background: currentColor;
+      border-radius: 4px 4px 6px 6px;
+      top: 18px;
+      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
+    }
+
+    .icon-shop::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 8px;
+      border: 2.5px solid currentColor;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      top: 10px;
     }
 
     /* ===== ЦЕНТРАЛЬНАЯ КНОПКА «ИГРЫ» ===== */
-    .center-btn {
-      pointer-events: auto;
+    .nav-center-wrap {
+      flex: 0 0 auto;
+      width: 96px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: relative;
-      width: 82px;
-      height: 82px;
+      height: 100%;
+    }
+
+    .center-btn {
+      position: absolute;
+      top: -34px;
+      width: 84px;
+      height: 84px;
       border-radius: 50%;
       border: none;
       cursor: pointer;
@@ -421,42 +542,34 @@
       background: radial-gradient(circle at 32% 26%, #ffc46b 0%, #ff9500 38%, #d85500 72%, #a33700 100%);
 
       box-shadow:
-        0 0 0 5px rgba(255, 140, 0, 0.18),
-        0 0 0 7px rgba(255, 140, 0, 0.08),
+        0 0 0 5px rgba(255, 140, 0, 0.20),
+        0 0 0 8px rgba(255, 140, 0, 0.08),
         0 0 44px rgba(255, 130, 0, 0.85),
         0 14px 28px -8px #000,
-        inset 0 3px 12px rgba(255, 240, 190, 0.5),
+        inset 0 3px 12px rgba(255, 240, 190, 0.55),
         inset 0 -8px 18px rgba(120, 40, 0, 0.6);
 
       transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-
-      /* лёгкое парение */
-      transform: translateY(-6px);
+      z-index: 3;
     }
 
-    /* пульсирующее кольцо вокруг кнопки */
+    /* пульсирующее кольцо */
     .center-btn::before {
       content: "";
       position: absolute;
       inset: -14px;
       border-radius: 50%;
-      border: 2px solid rgba(255, 150, 30, 0.35);
+      border: 2px solid rgba(255, 150, 30, 0.38);
       animation: pulse 2.4s ease-in-out infinite;
       pointer-events: none;
     }
 
     @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 0.55;
-      }
-      50% {
-        transform: scale(1.12);
-        opacity: 0;
-      }
+      0%, 100% { transform: scale(1); opacity: 0.55; }
+      50%      { transform: scale(1.14); opacity: 0; }
     }
 
     /* блик сверху */
@@ -474,17 +587,17 @@
 
     .center-btn:hover {
       box-shadow:
-        0 0 0 5px rgba(255, 160, 40, 0.28),
-        0 0 0 7px rgba(255, 160, 40, 0.14),
+        0 0 0 5px rgba(255, 160, 40, 0.30),
+        0 0 0 8px rgba(255, 160, 40, 0.14),
         0 0 60px rgba(255, 150, 20, 1),
         0 16px 32px -8px #000,
-        inset 0 3px 14px rgba(255, 245, 200, 0.6),
+        inset 0 3px 14px rgba(255, 245, 200, 0.65),
         inset 0 -8px 20px rgba(120, 40, 0, 0.6);
-      transform: translateY(-9px) scale(1.03);
+      transform: scale(1.04);
     }
 
     .center-btn:active {
-      transform: translateY(-3px) scale(0.97);
+      transform: scale(0.97);
     }
 
     /* ===== CSS-ЭМОДЗИ «ИГРЫ» — геймпад ===== */
@@ -496,7 +609,6 @@
       filter: drop-shadow(0 2px 4px rgba(60, 20, 0, 0.7));
     }
 
-    /* корпус геймпада — верх */
     .game-icon .gp-body {
       position: absolute;
       width: 44px;
@@ -511,7 +623,6 @@
         inset 0 -2px 4px rgba(0, 0, 0, 0.9);
     }
 
-    /* корпус — нижние рукоятки */
     .game-icon .gp-body::after {
       content: "";
       position: absolute;
@@ -525,7 +636,6 @@
       box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.95);
     }
 
-    /* D-pad (крестовина) */
     .game-icon .gp-dpad {
       position: absolute;
       width: 12px;
@@ -543,7 +653,6 @@
       z-index: 3;
     }
 
-    /* кнопки A/B/X/Y */
     .game-icon .gp-btn {
       position: absolute;
       width: 6px;
@@ -561,7 +670,6 @@
     .game-icon .gp-btn.b3 { transform: translate(-50%, -50%) translate(14px, 5px); }
     .game-icon .gp-btn.b4 { transform: translate(-50%, -50%) translate(9px, -1px); }
 
-    /* активное состояние */
     .center-btn.active {
       box-shadow:
         0 0 0 5px rgba(255, 180, 60, 0.45),
@@ -590,7 +698,10 @@
       .loss-icon::after { width: 22px; height: 5px; top: 12px; left: 3px; }
       .project-title { font-size: 0.8rem; letter-spacing: 0.3em; }
 
-      .center-btn { width: 74px; height: 74px; }
+      .bottom-nav { height: 100px; padding: 0 1rem; }
+      .nav-side .side-icon { width: 38px; height: 38px; }
+      .nav-center-wrap { width: 84px; }
+      .center-btn { width: 76px; height: 76px; top: -30px; }
       .game-icon { width: 42px; height: 42px; }
       .game-icon .gp-body { width: 38px; height: 20px; }
       .game-icon .gp-body::after { width: 42px; height: 14px; bottom: -11px; }
@@ -608,7 +719,17 @@
       .balance-section { padding: 0.8rem 1.2rem; max-width: 320px; }
       .wl-label { display: none; }
 
-      .center-btn { width: 68px; height: 68px; }
+      .bottom-nav { height: 94px; padding: 0 0.8rem; }
+      .nav-side { font-size: 0.6rem; letter-spacing: 0.1em; }
+      .nav-side .side-icon { width: 34px; height: 34px; }
+      .nav-center-wrap { width: 76px; }
+      .center-btn { width: 70px; height: 70px; top: -28px; }
+
+      .icon-profile::before { width: 9px; height: 9px; top: 8px; }
+      .icon-profile::after { width: 17px; height: 9px; bottom: 8px; }
+      .icon-shop::before { width: 18px; height: 13px; top: 15px; }
+      .icon-shop::after { width: 11px; height: 7px; top: 9px; }
+
       .game-icon { width: 38px; height: 38px; }
       .game-icon .gp-body { width: 34px; height: 18px; }
       .game-icon .gp-body::after { width: 38px; height: 13px; bottom: -10px; }
@@ -675,18 +796,35 @@
     </div>
   </div>
 
-  <!-- ===== НИЖНЯЯ НАВИГАЦИЯ — ТОЛЬКО ЦЕНТРАЛЬНЫЙ КРУЖОК ===== -->
+  <!-- ===== НИЖНЯЯ НАВИГАЦИЯ: 3 ПУНКТА, ПЛОТНЫЙ ФОН ===== -->
   <nav class="bottom-nav">
-    <button class="center-btn active" type="button" data-tab="games" aria-label="Игры">
-      <span class="game-icon" aria-hidden="true">
-        <span class="gp-body"></span>
-        <span class="gp-dpad"></span>
-        <span class="gp-btn b1"></span>
-        <span class="gp-btn b2"></span>
-        <span class="gp-btn b3"></span>
-        <span class="gp-btn b4"></span>
-      </span>
+
+    <!-- Профиль (главное меню) -->
+    <button class="nav-side active" type="button" data-tab="profile">
+      <span class="side-icon icon-profile" aria-hidden="true"></span>
+      <span>Профиль</span>
     </button>
+
+    <!-- ИГРЫ (центр, крупный кружок) -->
+    <div class="nav-center-wrap">
+      <button class="center-btn" type="button" data-tab="games" aria-label="Игры">
+        <span class="game-icon" aria-hidden="true">
+          <span class="gp-body"></span>
+          <span class="gp-dpad"></span>
+          <span class="gp-btn b1"></span>
+          <span class="gp-btn b2"></span>
+          <span class="gp-btn b3"></span>
+          <span class="gp-btn b4"></span>
+        </span>
+      </button>
+    </div>
+
+    <!-- Магазин -->
+    <button class="nav-side" type="button" data-tab="shop">
+      <span class="side-icon icon-shop" aria-hidden="true"></span>
+      <span>Магазин</span>
+    </button>
+
   </nav>
 
   <script>
@@ -746,10 +884,21 @@
         }
       }
 
-      // ===== ЦЕНТРАЛЬНАЯ КНОПКА =====
+      // ===== НАВИГАЦИЯ =====
+      const sideItems = document.querySelectorAll('.nav-side');
       const centerBtn = document.querySelector('.center-btn');
+
+      sideItems.forEach((item) => {
+        item.addEventListener('click', () => {
+          sideItems.forEach((i) => i.classList.remove('active'));
+          centerBtn.classList.remove('active');
+          item.classList.add('active');
+        });
+      });
+
       centerBtn.addEventListener('click', () => {
-        centerBtn.classList.toggle('active');
+        sideItems.forEach((i) => i.classList.remove('active'));
+        centerBtn.classList.add('active');
       });
     })();
   </script>

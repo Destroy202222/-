@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>START COIN · профиль</title>
+  <title>STARTUP PLATFORM · профиль</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     /* ===== RESET ===== */
@@ -42,7 +42,7 @@
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 130, 0, 0.35);
       border-radius: 40px;
-      padding: 2.5rem 2.25rem;
+      padding: 2.2rem 2.25rem 1.6rem 2.25rem;
       box-shadow:
         0 0 0 1px rgba(255, 160, 40, 0.08) inset,
         0 30px 70px -25px #000,
@@ -62,17 +62,32 @@
       pointer-events: none;
     }
 
+    /* ===== НАЗВАНИЕ ПРОЕКТА СВЕРХУ ===== */
+    .project-title {
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: #ff8a00;
+      text-shadow: 0 0 18px rgba(255, 140, 0, 0.75);
+      margin-bottom: 1.8rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid rgba(255, 130, 0, 0.18);
+      position: relative;
+      z-index: 1;
+    }
+
     /* ===== ШАПКА: АВАТАР + НИК ===== */
     .profile-header {
       display: flex;
       align-items: center;
       gap: 1.2rem;
-      margin-bottom: 2.2rem;
+      margin-bottom: 2rem;
       position: relative;
       z-index: 1;
     }
 
-    /* Аватар из Telegram */
     .avatar {
       width: 80px;
       height: 80px;
@@ -98,7 +113,6 @@
       display: block;
     }
 
-    /* Заглушка, если фото нет */
     .avatar .avatar-fallback {
       width: 100%;
       height: 100%;
@@ -113,7 +127,6 @@
       text-transform: uppercase;
     }
 
-    /* Никнейм */
     .nickname {
       font-size: 2.1rem;
       font-weight: 800;
@@ -131,16 +144,16 @@
       text-shadow: 0 0 14px rgba(255, 140, 0, 0.9);
     }
 
-    /* ===== БАЛАНС ПО ЦЕНТРУ ===== */
+    /* ===== БАЛАНС: ЛОГОТИП СЛЕВА, ЦИФРА СПРАВА ===== */
     .balance-section {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.6rem;
+      gap: 0.7rem;
       background: linear-gradient(135deg, rgba(40, 20, 5, 0.9), rgba(20, 10, 3, 0.9));
       border-radius: 100px;
       padding: 0.9rem 2rem;
-      margin: 0 auto 2.2rem auto;
+      margin: 0 auto 2rem auto;
       max-width: 420px;
       width: 100%;
       border: 1px solid rgba(255, 140, 0, 0.45);
@@ -151,7 +164,7 @@
       z-index: 1;
     }
 
-    /* ===== CSS-ЛОГОТИП START COIN (уменьшен) ===== */
+    /* ===== CSS-ЛОГОТИП START COIN ===== */
     .coin-css {
       width: 28px;
       height: 28px;
@@ -170,7 +183,6 @@
       vertical-align: middle;
     }
 
-    /* блик */
     .coin-css::before {
       content: "";
       position: absolute;
@@ -183,7 +195,6 @@
       filter: blur(0.5px);
     }
 
-    /* символ «S» */
     .coin-css::after {
       content: "";
       width: 12px;
@@ -198,7 +209,6 @@
       opacity: 0.9;
     }
 
-    /* Значение баланса — того же размера, что и монета по высоте */
     .balance-value {
       font-size: 2.2rem;
       font-weight: 800;
@@ -215,7 +225,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 0.9rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.8rem;
       position: relative;
       z-index: 1;
     }
@@ -261,6 +271,7 @@
     .win-loss-row {
       display: flex;
       gap: 1rem;
+      margin-bottom: 2rem;
       position: relative;
       z-index: 1;
     }
@@ -376,24 +387,207 @@
       box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
     }
 
-    /* ===== ПОДПИСЬ ===== */
-    .subnote {
-      margin-top: 2rem;
+    /* ===== НИЖНЯЯ НАВИГАЦИЯ ===== */
+    .bottom-nav {
       display: flex;
-      justify-content: center;
-      font-size: 0.72rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: #a55e1e;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding-top: 1.4rem;
       border-top: 1px solid rgba(255, 130, 0, 0.18);
-      padding-top: 1.3rem;
       position: relative;
       z-index: 1;
     }
 
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      color: #b26a1f;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      transition: all 0.25s ease;
+      padding: 0.4rem 0.2rem;
+      user-select: none;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      color: #ff9d33;
+      text-shadow: 0 0 14px rgba(255, 140, 0, 0.9);
+    }
+
+    .nav-item.active .nav-icon {
+      box-shadow:
+        0 0 0 2px #ff8a00,
+        0 0 22px rgba(255, 140, 0, 0.75),
+        inset 0 0 14px rgba(255, 140, 0, 0.25);
+      border-color: #ff8a00;
+    }
+
+    .nav-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(160deg, rgba(40, 20, 5, 0.9), rgba(15, 8, 2, 0.9));
+      border: 1.5px solid rgba(255, 140, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.25s ease;
+    }
+
+    /* Иконка «Профиль» — силуэт человека */
+    .icon-profile::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      background: #ff9d33;
+      border-radius: 50%;
+      position: absolute;
+      top: 9px;
+      box-shadow: 0 0 10px rgba(255, 140, 0, 0.9);
+    }
+
+    .icon-profile::after {
+      content: "";
+      width: 22px;
+      height: 12px;
+      background: #ff9d33;
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      position: absolute;
+      bottom: 9px;
+      box-shadow: 0 0 10px rgba(255, 140, 0, 0.9);
+    }
+
+    /* Центральная кнопка «ИГРЫ» — крупнее и в кружочке */
+    .nav-item.nav-center {
+      flex: 0 0 auto;
+      margin-top: -1.6rem;
+    }
+
+    .nav-center .nav-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #ffb347 0%, #ff8a00 45%, #b13a00 100%);
+      border: 3px solid #ffd08a;
+      box-shadow:
+        0 0 0 4px rgba(255, 140, 0, 0.22),
+        0 0 38px rgba(255, 130, 0, 0.75),
+        0 12px 24px -8px #000,
+        inset 0 0 22px rgba(255, 220, 150, 0.25);
+    }
+
+    .nav-center .nav-icon:hover {
+      box-shadow:
+        0 0 0 4px rgba(255, 160, 40, 0.35),
+        0 0 55px rgba(255, 150, 20, 0.95),
+        0 12px 28px -8px #000,
+        inset 0 0 26px rgba(255, 230, 170, 0.35);
+    }
+
+    .nav-center:hover {
+      color: #ffb347;
+    }
+
+    /* CSS-эмодзи ИГРЫ — геймпад */
+    .icon-games::before {
+      content: "";
+      position: absolute;
+      width: 34px;
+      height: 20px;
+      background: #2a1400;
+      border-radius: 12px 12px 14px 14px / 10px 10px 16px 16px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow:
+        0 0 12px rgba(255, 210, 130, 0.7),
+        inset 0 0 6px rgba(255, 160, 40, 0.4);
+    }
+
+    /* «крестовина» (D-pad) */
+    .icon-games::after {
+      content: "";
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      background: #ffb347;
+      clip-path: polygon(
+        35% 0%, 65% 0%, 65% 35%, 100% 35%, 100% 65%,
+        65% 65%, 65% 100%, 35% 100%, 35% 65%,
+        0% 65%, 0% 35%, 35% 35%
+      );
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translateX(-9px);
+      box-shadow: 0 0 8px rgba(255, 180, 60, 0.9);
+    }
+
+    /* кнопки справа (2 «кнопки» геймпада) */
+    .nav-center .nav-icon::before {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: #ffb347;
+      border-radius: 50%;
+      right: 11px;
+      top: 22px;
+      box-shadow: 0 0 8px rgba(255, 180, 60, 0.9);
+      z-index: 2;
+    }
+
+    .nav-center .nav-icon::after {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: #ffb347;
+      border-radius: 50%;
+      right: 16px;
+      top: 28px;
+      box-shadow: 0 0 8px rgba(255, 180, 60, 0.9);
+      z-index: 2;
+    }
+
+    /* Иконка «Магазин» — мешок/сумка */
+    .icon-shop::before {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 18px;
+      background: #ff9d33;
+      border-radius: 4px 4px 6px 6px;
+      top: 18px;
+      box-shadow: 0 0 10px rgba(255, 140, 0, 0.85);
+    }
+
+    .icon-shop::after {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 8px;
+      border: 2.5px solid #ff9d33;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      top: 11px;
+      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
+    }
+
     /* ===== АДАПТИВ ===== */
     @media (max-width: 640px) {
-      .card { padding: 1.8rem 1.3rem; border-radius: 30px; }
+      .card { padding: 1.6rem 1.3rem 1.2rem 1.3rem; border-radius: 30px; }
       .avatar { width: 66px; height: 66px; }
       .nickname { font-size: 1.7rem; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -406,6 +600,12 @@
       .win-icon::after { top: 9px; left: 7px; }
       .loss-icon::before { width: 22px; height: 22px; top: 3px; left: 3px; }
       .loss-icon::after { width: 22px; height: 5px; top: 12px; left: 3px; }
+      .project-title { font-size: 0.8rem; letter-spacing: 0.3em; }
+      .nav-icon { width: 40px; height: 40px; }
+      .nav-center .nav-icon { width: 60px; height: 60px; }
+      .icon-games::before { width: 28px; height: 17px; }
+      .nav-center .nav-icon::before { right: 10px; top: 19px; }
+      .nav-center .nav-icon::after { right: 14px; top: 25px; }
     }
 
     @media (max-width: 420px) {
@@ -414,11 +614,22 @@
       .nickname { font-size: 1.4rem; }
       .balance-section { padding: 0.8rem 1.2rem; max-width: 320px; }
       .wl-label { display: none; }
+      .nav-item { font-size: 0.62rem; letter-spacing: 0.08em; }
+      .nav-icon { width: 36px; height: 36px; }
+      .nav-center .nav-icon { width: 56px; height: 56px; }
+      .icon-profile::before { width: 10px; height: 10px; top: 8px; }
+      .icon-profile::after { width: 18px; height: 10px; bottom: 8px; }
+      .icon-games::before { width: 26px; height: 15px; }
+      .icon-shop::before { width: 20px; height: 15px; top: 15px; }
+      .icon-shop::after { width: 12px; height: 7px; top: 9px; }
     }
   </style>
 </head>
 <body>
   <div class="card">
+
+    <!-- ===== НАЗВАНИЕ ПРОЕКТА ===== -->
+    <div class="project-title">STARTUP PLATFORM</div>
 
     <!-- ===== ШАПКА: АВАТАР + НИК ИЗ TELEGRAM ===== -->
     <div class="profile-header">
@@ -428,7 +639,7 @@
       <div class="nickname" id="nickname"><span class="at">@</span>loading</div>
     </div>
 
-    <!-- ===== БАЛАНС ПО ЦЕНТРУ ===== -->
+    <!-- ===== БАЛАНС: ЛОГОТИП СЛЕВА, ЦИФРА СПРАВА ===== -->
     <div class="balance-section">
       <span class="coin-css" aria-hidden="true"></span>
       <span class="balance-value">0</span>
@@ -468,15 +679,32 @@
       </div>
     </div>
 
-    <!-- ===== ПОДПИСЬ ===== -->
-    <div class="subnote">START COIN · PROFILE</div>
+    <!-- ===== НИЖНЯЯ НАВИГАЦИЯ ===== -->
+    <div class="bottom-nav">
+      <!-- Профиль (главное меню) -->
+      <button class="nav-item active" type="button" data-tab="profile">
+        <span class="nav-icon icon-profile" aria-hidden="true"></span>
+        <span>Профиль</span>
+      </button>
+
+      <!-- Центральная кнопка ИГРЫ -->
+      <button class="nav-item nav-center" type="button" data-tab="games">
+        <span class="nav-icon icon-games" aria-hidden="true"></span>
+        <span>Игры</span>
+      </button>
+
+      <!-- Магазин -->
+      <button class="nav-item" type="button" data-tab="shop">
+        <span class="nav-icon icon-shop" aria-hidden="true"></span>
+        <span>Магазин</span>
+      </button>
+    </div>
   </div>
 
   <script>
     (function () {
       const tg = window.Telegram && window.Telegram.WebApp;
 
-      // Сообщаем Telegram, что приложение готово
       if (tg) {
         tg.ready();
         tg.expand();
@@ -486,7 +714,6 @@
       const fallbackEl = document.getElementById('avatarFallback');
       const nicknameEl = document.getElementById('nickname');
 
-      // Пытаемся получить данные пользователя
       let user = null;
       try {
         if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -496,47 +723,49 @@
         console.warn('Не удалось получить user из Telegram WebApp', e);
       }
 
-      // Если данных нет — показываем заглушку
       if (!user) {
         nicknameEl.innerHTML = '<span class="at">@</span>guest';
         fallbackEl.textContent = '?';
-        return;
-      }
-
-      // ===== Никнейм =====
-      const username = user.username;
-      const firstName = user.first_name || '';
-
-      if (username) {
-        nicknameEl.innerHTML = '<span class="at">@</span>' + username;
-      } else if (firstName) {
-        nicknameEl.textContent = firstName;
       } else {
-        nicknameEl.innerHTML = '<span class="at">@</span>user';
-      }
+        const username = user.username;
+        const firstName = user.first_name || '';
 
-      // ===== Аватар =====
-      const photoUrl = user.photo_url;
+        if (username) {
+          nicknameEl.innerHTML = '<span class="at">@</span>' + username;
+        } else if (firstName) {
+          nicknameEl.textContent = firstName;
+        } else {
+          nicknameEl.innerHTML = '<span class="at">@</span>user';
+        }
 
-      if (photoUrl) {
-        const img = document.createElement('img');
-        img.src = photoUrl;
-        img.alt = 'avatar';
-        img.onload = () => {
-          // Убираем заглушку, вставляем картинку
-          avatarEl.innerHTML = '';
-          avatarEl.appendChild(img);
-        };
-        img.onerror = () => {
-          // Если фото не загрузилось — оставляем букву
+        const photoUrl = user.photo_url;
+
+        if (photoUrl) {
+          const img = document.createElement('img');
+          img.src = photoUrl;
+          img.alt = 'avatar';
+          img.onload = () => {
+            avatarEl.innerHTML = '';
+            avatarEl.appendChild(img);
+          };
+          img.onerror = () => {
+            const letter = (firstName || username || '?').trim().charAt(0);
+            fallbackEl.textContent = letter || '?';
+          };
+        } else {
           const letter = (firstName || username || '?').trim().charAt(0);
           fallbackEl.textContent = letter || '?';
-        };
-      } else {
-        // Нет фото — используем первую букву имени/ника
-        const letter = (firstName || username || '?').trim().charAt(0);
-        fallbackEl.textContent = letter || '?';
+        }
       }
+
+      // ===== НАВИГАЦИЯ: переключение активного таба =====
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach((item) => {
+        item.addEventListener('click', () => {
+          navItems.forEach((i) => i.classList.remove('active'));
+          item.classList.add('active');
+        });
+      });
     })();
   </script>
 </body>

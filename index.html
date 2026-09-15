@@ -13,7 +13,7 @@
       box-sizing: border-box;
     }
 
-    /* ===== ФОН: чёрно-оранжевый с сеткой и свечением ===== */
+    /* ===== ФОН ===== */
     body {
       min-height: 100vh;
       background-color: #0a0705;
@@ -29,7 +29,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 1.5rem 1.5rem 7rem 1.5rem;
       color: #ffeadb;
     }
 
@@ -42,7 +42,7 @@
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 130, 0, 0.35);
       border-radius: 40px;
-      padding: 2.2rem 2.25rem 1.6rem 2.25rem;
+      padding: 2.2rem 2.25rem 2rem 2.25rem;
       box-shadow:
         0 0 0 1px rgba(255, 160, 40, 0.08) inset,
         0 30px 70px -25px #000,
@@ -62,7 +62,7 @@
       pointer-events: none;
     }
 
-    /* ===== НАЗВАНИЕ ПРОЕКТА СВЕРХУ ===== */
+    /* ===== НАЗВАНИЕ ПРОЕКТА ===== */
     .project-title {
       text-align: center;
       font-size: 0.95rem;
@@ -78,7 +78,7 @@
       z-index: 1;
     }
 
-    /* ===== ШАПКА: АВАТАР + НИК ===== */
+    /* ===== ШАПКА ===== */
     .profile-header {
       display: flex;
       align-items: center;
@@ -144,7 +144,7 @@
       text-shadow: 0 0 14px rgba(255, 140, 0, 0.9);
     }
 
-    /* ===== БАЛАНС: ЛОГОТИП СЛЕВА, ЦИФРА СПРАВА ===== */
+    /* ===== БАЛАНС ===== */
     .balance-section {
       display: flex;
       align-items: center;
@@ -164,7 +164,6 @@
       z-index: 1;
     }
 
-    /* ===== CSS-ЛОГОТИП START COIN ===== */
     .coin-css {
       width: 28px;
       height: 28px;
@@ -271,7 +270,6 @@
     .win-loss-row {
       display: flex;
       gap: 1rem;
-      margin-bottom: 2rem;
       position: relative;
       z-index: 1;
     }
@@ -332,7 +330,6 @@
       opacity: 0.95;
     }
 
-    /* ===== ИКОНКИ ПОБЕД / ПОРАЖЕНИЙ ===== */
     .wl-icon {
       width: 34px;
       height: 34px;
@@ -387,207 +384,317 @@
       box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
     }
 
-    /* ===== НИЖНЯЯ НАВИГАЦИЯ ===== */
+    /* ===== ФИКСИРОВАННАЯ НИЖНЯЯ НАВИГАЦИЯ ===== */
     .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 1.2rem;
+      transform: translateX(-50%);
+      width: calc(100% - 3rem);
+      max-width: 640px;
+      z-index: 100;
+
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: space-between;
-      gap: 0.5rem;
-      padding-top: 1.4rem;
-      border-top: 1px solid rgba(255, 130, 0, 0.18);
-      position: relative;
-      z-index: 1;
+      gap: 0.4rem;
+
+      padding: 0.7rem 1.1rem;
+      background: rgba(14, 9, 4, 0.88);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+
+      border: 1px solid rgba(255, 140, 0, 0.38);
+      border-radius: 100px;
+
+      box-shadow:
+        0 -6px 30px -8px rgba(255, 110, 0, 0.35),
+        0 20px 45px -20px #000,
+        inset 0 1px 0 rgba(255, 180, 90, 0.15);
     }
 
+    /* ===== ПУНКТ НАВИГАЦИИ ===== */
     .nav-item {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.35rem;
       cursor: pointer;
-      color: #b26a1f;
-      font-size: 0.72rem;
+      color: #a3621d;
+      font-size: 0.66rem;
       font-weight: 700;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      transition: all 0.25s ease;
-      padding: 0.4rem 0.2rem;
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0.3rem 0.2rem;
       user-select: none;
       background: transparent;
       border: none;
       font-family: inherit;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .nav-item:hover,
+    .nav-item:hover {
+      color: #ffa84d;
+    }
+
     .nav-item.active {
       color: #ff9d33;
       text-shadow: 0 0 14px rgba(255, 140, 0, 0.9);
     }
 
-    .nav-item.active .nav-icon {
-      box-shadow:
-        0 0 0 2px #ff8a00,
-        0 0 22px rgba(255, 140, 0, 0.75),
-        inset 0 0 14px rgba(255, 140, 0, 0.25);
-      border-color: #ff8a00;
-    }
-
+    /* ===== ИКОНКА ===== */
     .nav-icon {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      background: linear-gradient(160deg, rgba(40, 20, 5, 0.9), rgba(15, 8, 2, 0.9));
-      border: 1.5px solid rgba(255, 140, 0, 0.45);
+      background: linear-gradient(160deg, rgba(40, 20, 5, 0.95), rgba(15, 8, 2, 0.95));
+      border: 1.5px solid rgba(255, 140, 0, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
-      transition: all 0.25s ease;
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Иконка «Профиль» — силуэт человека */
+    .nav-item.active .nav-icon {
+      border-color: #ff8a00;
+      box-shadow:
+        0 0 0 2px rgba(255, 140, 0, 0.35),
+        0 0 22px rgba(255, 140, 0, 0.75),
+        inset 0 0 14px rgba(255, 140, 0, 0.28);
+      transform: translateY(-2px);
+    }
+
+    .nav-item:hover .nav-icon {
+      border-color: rgba(255, 160, 40, 0.8);
+    }
+
+    /* ===== ИКОНКА «ПРОФИЛЬ» ===== */
     .icon-profile::before {
       content: "";
-      width: 12px;
-      height: 12px;
-      background: #ff9d33;
+      width: 11px;
+      height: 11px;
+      background: currentColor;
       border-radius: 50%;
       position: absolute;
       top: 9px;
-      box-shadow: 0 0 10px rgba(255, 140, 0, 0.9);
+      transition: all 0.28s;
+      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
     }
 
     .icon-profile::after {
       content: "";
-      width: 22px;
-      height: 12px;
-      background: #ff9d33;
+      width: 20px;
+      height: 11px;
+      background: currentColor;
       border-radius: 50% 50% 0 0 / 100% 100% 0 0;
       position: absolute;
-      bottom: 9px;
-      box-shadow: 0 0 10px rgba(255, 140, 0, 0.9);
+      bottom: 10px;
+      transition: all 0.28s;
+      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
     }
 
-    /* Центральная кнопка «ИГРЫ» — крупнее и в кружочке */
-    .nav-item.nav-center {
-      flex: 0 0 auto;
-      margin-top: -1.6rem;
-    }
-
-    .nav-center .nav-icon {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 32% 28%, #ffb347 0%, #ff8a00 45%, #b13a00 100%);
-      border: 3px solid #ffd08a;
-      box-shadow:
-        0 0 0 4px rgba(255, 140, 0, 0.22),
-        0 0 38px rgba(255, 130, 0, 0.75),
-        0 12px 24px -8px #000,
-        inset 0 0 22px rgba(255, 220, 150, 0.25);
-    }
-
-    .nav-center .nav-icon:hover {
-      box-shadow:
-        0 0 0 4px rgba(255, 160, 40, 0.35),
-        0 0 55px rgba(255, 150, 20, 0.95),
-        0 12px 28px -8px #000,
-        inset 0 0 26px rgba(255, 230, 170, 0.35);
-    }
-
-    .nav-center:hover {
-      color: #ffb347;
-    }
-
-    /* CSS-эмодзи ИГРЫ — геймпад */
-    .icon-games::before {
-      content: "";
-      position: absolute;
-      width: 34px;
-      height: 20px;
-      background: #2a1400;
-      border-radius: 12px 12px 14px 14px / 10px 10px 16px 16px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow:
-        0 0 12px rgba(255, 210, 130, 0.7),
-        inset 0 0 6px rgba(255, 160, 40, 0.4);
-    }
-
-    /* «крестовина» (D-pad) */
-    .icon-games::after {
-      content: "";
-      position: absolute;
-      width: 9px;
-      height: 9px;
-      background: #ffb347;
-      clip-path: polygon(
-        35% 0%, 65% 0%, 65% 35%, 100% 35%, 100% 65%,
-        65% 65%, 65% 100%, 35% 100%, 35% 65%,
-        0% 65%, 0% 35%, 35% 35%
-      );
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) translateX(-9px);
-      box-shadow: 0 0 8px rgba(255, 180, 60, 0.9);
-    }
-
-    /* кнопки справа (2 «кнопки» геймпада) */
-    .nav-center .nav-icon::before {
-      content: "";
-      position: absolute;
-      width: 5px;
-      height: 5px;
-      background: #ffb347;
-      border-radius: 50%;
-      right: 11px;
-      top: 22px;
-      box-shadow: 0 0 8px rgba(255, 180, 60, 0.9);
-      z-index: 2;
-    }
-
-    .nav-center .nav-icon::after {
-      content: "";
-      position: absolute;
-      width: 5px;
-      height: 5px;
-      background: #ffb347;
-      border-radius: 50%;
-      right: 16px;
-      top: 28px;
-      box-shadow: 0 0 8px rgba(255, 180, 60, 0.9);
-      z-index: 2;
-    }
-
-    /* Иконка «Магазин» — мешок/сумка */
+    /* ===== ИКОНКА «МАГАЗИН» ===== */
     .icon-shop::before {
       content: "";
       position: absolute;
-      width: 24px;
-      height: 18px;
-      background: #ff9d33;
+      width: 22px;
+      height: 16px;
+      background: currentColor;
       border-radius: 4px 4px 6px 6px;
       top: 18px;
-      box-shadow: 0 0 10px rgba(255, 140, 0, 0.85);
+      transition: all 0.28s;
+      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
     }
 
     .icon-shop::after {
       content: "";
       position: absolute;
-      width: 14px;
+      width: 13px;
       height: 8px;
-      border: 2.5px solid #ff9d33;
+      border: 2.5px solid currentColor;
       border-bottom: none;
       border-radius: 8px 8px 0 0;
-      top: 11px;
-      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
+      top: 10px;
+      transition: all 0.28s;
+    }
+
+    /* ===== ЦЕНТРАЛЬНАЯ КНОПКА «ИГРЫ» ===== */
+    .nav-item.nav-center {
+      flex: 0 0 auto;
+      padding: 0;
+    }
+
+    .nav-center .nav-icon {
+      width: 64px;
+      height: 64px;
+      margin-top: -26px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #ffb347 0%, #ff8a00 45%, #b13a00 100%);
+      border: 3px solid #ffd08a;
+      box-shadow:
+        0 0 0 4px rgba(255, 140, 0, 0.22),
+        0 0 38px rgba(255, 130, 0, 0.85),
+        0 12px 24px -8px #000,
+        inset 0 0 22px rgba(255, 220, 150, 0.28);
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      color: #2a1400; /* цвет для CSS-эмодзи внутри */
+    }
+
+    .nav-center .nav-icon:hover {
+      box-shadow:
+        0 0 0 4px rgba(255, 160, 40, 0.38),
+        0 0 55px rgba(255, 150, 20, 1),
+        0 12px 28px -8px #000,
+        inset 0 0 26px rgba(255, 230, 170, 0.4);
+      transform: translateY(-3px);
+    }
+
+    .nav-center.active .nav-icon {
+      box-shadow:
+        0 0 0 4px rgba(255, 180, 60, 0.5),
+        0 0 60px rgba(255, 160, 30, 1),
+        0 12px 28px -8px #000,
+        inset 0 0 30px rgba(255, 240, 190, 0.45);
+    }
+
+    .nav-center .nav-label {
+      margin-top: 0.3rem;
+    }
+
+    /* ===== CSS-ЭМОДЗИ «ИГРЫ» — полноценный геймпад ===== */
+    .icon-games {
+      /* корпус геймпада */
+    }
+
+    /* Верхняя часть корпуса */
+    .icon-games::before {
+      content: "";
+      position: absolute;
+      width: 40px;
+      height: 22px;
+      background: #2a1400;
+      border-radius: 14px 14px 8px 8px / 12px 12px 6px 6px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow:
+        0 0 12px rgba(255, 210, 130, 0.65),
+        inset 0 0 8px rgba(255, 160, 40, 0.35);
+    }
+
+    /* Нижняя часть корпуса (рукоятки) */
+    .icon-games::after {
+      content: "";
+      position: absolute;
+      width: 42px;
+      height: 15px;
+      background: #2a1400;
+      border-radius: 6px 6px 16px 16px / 4px 4px 14px 14px;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow:
+        0 0 10px rgba(255, 200, 100, 0.5),
+        inset 0 0 6px rgba(255, 160, 40, 0.3);
+    }
+
+    /* D-pad (крестовина слева) — через отдельный псевдо-элемент обёртки */
+    .icon-games-dpad {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      background: #ffb347;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translate(-13px, -1px);
+      clip-path: polygon(
+        35% 0%, 65% 0%, 65% 35%, 100% 35%, 100% 65%,
+        65% 65%, 65% 100%, 35% 100%, 35% 65%,
+        0% 65%, 0% 35%, 35% 35%
+      );
+      box-shadow: 0 0 8px rgba(255, 180, 60, 0.95);
+      z-index: 2;
+      border-radius: 1px;
+    }
+
+    /* Кнопки справа (A/B/X/Y) */
+    .icon-games-buttons {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translate(12px, -1px);
+      width: 12px;
+      height: 12px;
+      z-index: 2;
+    }
+
+    .icon-games-buttons::before {
+      content: "";
+      position: absolute;
+      width: 4.5px;
+      height: 4.5px;
+      background: #ffb347;
+      border-radius: 50%;
+      top: 0;
+      left: 0;
+      box-shadow: 0 0 7px rgba(255, 180, 60, 0.95);
+    }
+
+    .icon-games-buttons::after {
+      content: "";
+      position: absolute;
+      width: 4.5px;
+      height: 4.5px;
+      background: #ffb347;
+      border-radius: 50%;
+      bottom: 0;
+      right: 0;
+      box-shadow: 0 0 7px rgba(255, 180, 60, 0.95);
+    }
+
+    /* дополнительные «кнопки» через вложенный span */
+    .icon-games-extra {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translate(12px, -1px);
+      width: 12px;
+      height: 12px;
+      z-index: 2;
+    }
+
+    .icon-games-extra::before {
+      content: "";
+      position: absolute;
+      width: 4.5px;
+      height: 4.5px;
+      background: #ffb347;
+      border-radius: 50%;
+      top: 0;
+      right: 0;
+      box-shadow: 0 0 7px rgba(255, 180, 60, 0.95);
+    }
+
+    .icon-games-extra::after {
+      content: "";
+      position: absolute;
+      width: 4.5px;
+      height: 4.5px;
+      background: #ffb347;
+      border-radius: 50%;
+      bottom: 0;
+      left: 0;
+      box-shadow: 0 0 7px rgba(255, 180, 60, 0.95);
     }
 
     /* ===== АДАПТИВ ===== */
     @media (max-width: 640px) {
-      .card { padding: 1.6rem 1.3rem 1.2rem 1.3rem; border-radius: 30px; }
+      body { padding: 1.2rem 1rem 6.5rem 1rem; }
+      .card { padding: 1.6rem 1.3rem 1.6rem 1.3rem; border-radius: 30px; }
       .avatar { width: 66px; height: 66px; }
       .nickname { font-size: 1.7rem; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -601,11 +708,20 @@
       .loss-icon::before { width: 22px; height: 22px; top: 3px; left: 3px; }
       .loss-icon::after { width: 22px; height: 5px; top: 12px; left: 3px; }
       .project-title { font-size: 0.8rem; letter-spacing: 0.3em; }
-      .nav-icon { width: 40px; height: 40px; }
-      .nav-center .nav-icon { width: 60px; height: 60px; }
-      .icon-games::before { width: 28px; height: 17px; }
-      .nav-center .nav-icon::before { right: 10px; top: 19px; }
-      .nav-center .nav-icon::after { right: 14px; top: 25px; }
+
+      .bottom-nav {
+        width: calc(100% - 2rem);
+        padding: 0.6rem 0.9rem;
+        bottom: 1rem;
+      }
+
+      .nav-icon { width: 38px; height: 38px; }
+      .nav-center .nav-icon { width: 58px; height: 58px; margin-top: -22px; }
+      .icon-games::before { width: 36px; height: 20px; }
+      .icon-games::after { width: 38px; height: 13px; bottom: 11px; }
+      .icon-games-dpad { transform: translate(-50%, -50%) translate(-12px, -1px); }
+      .icon-games-buttons,
+      .icon-games-extra { transform: translate(-50%, -50%) translate(11px, -1px); }
     }
 
     @media (max-width: 420px) {
@@ -614,14 +730,22 @@
       .nickname { font-size: 1.4rem; }
       .balance-section { padding: 0.8rem 1.2rem; max-width: 320px; }
       .wl-label { display: none; }
-      .nav-item { font-size: 0.62rem; letter-spacing: 0.08em; }
-      .nav-icon { width: 36px; height: 36px; }
-      .nav-center .nav-icon { width: 56px; height: 56px; }
-      .icon-profile::before { width: 10px; height: 10px; top: 8px; }
-      .icon-profile::after { width: 18px; height: 10px; bottom: 8px; }
-      .icon-games::before { width: 26px; height: 15px; }
-      .icon-shop::before { width: 20px; height: 15px; top: 15px; }
-      .icon-shop::after { width: 12px; height: 7px; top: 9px; }
+
+      .bottom-nav { padding: 0.55rem 0.7rem; }
+      .nav-item { font-size: 0.58rem; letter-spacing: 0.1em; }
+      .nav-icon { width: 34px; height: 34px; }
+      .nav-center .nav-icon { width: 54px; height: 54px; margin-top: -20px; }
+
+      .icon-profile::before { width: 9px; height: 9px; top: 8px; }
+      .icon-profile::after { width: 17px; height: 9px; bottom: 8px; }
+      .icon-shop::before { width: 19px; height: 14px; top: 15px; }
+      .icon-shop::after { width: 11px; height: 7px; top: 9px; }
+
+      .icon-games::before { width: 32px; height: 18px; }
+      .icon-games::after { width: 34px; height: 12px; bottom: 10px; }
+      .icon-games-dpad { width: 8px; height: 8px; transform: translate(-50%, -50%) translate(-11px, -1px); }
+      .icon-games-buttons,
+      .icon-games-extra { width: 11px; height: 11px; transform: translate(-50%, -50%) translate(10px, -1px); }
     }
   </style>
 </head>
@@ -631,7 +755,7 @@
     <!-- ===== НАЗВАНИЕ ПРОЕКТА ===== -->
     <div class="project-title">STARTUP PLATFORM</div>
 
-    <!-- ===== ШАПКА: АВАТАР + НИК ИЗ TELEGRAM ===== -->
+    <!-- ===== ШАПКА ===== -->
     <div class="profile-header">
       <div class="avatar" id="avatar">
         <div class="avatar-fallback" id="avatarFallback">?</div>
@@ -639,7 +763,7 @@
       <div class="nickname" id="nickname"><span class="at">@</span>loading</div>
     </div>
 
-    <!-- ===== БАЛАНС: ЛОГОТИП СЛЕВА, ЦИФРА СПРАВА ===== -->
+    <!-- ===== БАЛАНС ===== -->
     <div class="balance-section">
       <span class="coin-css" aria-hidden="true"></span>
       <span class="balance-value">0</span>
@@ -678,28 +802,32 @@
         <span>0</span>
       </div>
     </div>
-
-    <!-- ===== НИЖНЯЯ НАВИГАЦИЯ ===== -->
-    <div class="bottom-nav">
-      <!-- Профиль (главное меню) -->
-      <button class="nav-item active" type="button" data-tab="profile">
-        <span class="nav-icon icon-profile" aria-hidden="true"></span>
-        <span>Профиль</span>
-      </button>
-
-      <!-- Центральная кнопка ИГРЫ -->
-      <button class="nav-item nav-center" type="button" data-tab="games">
-        <span class="nav-icon icon-games" aria-hidden="true"></span>
-        <span>Игры</span>
-      </button>
-
-      <!-- Магазин -->
-      <button class="nav-item" type="button" data-tab="shop">
-        <span class="nav-icon icon-shop" aria-hidden="true"></span>
-        <span>Магазин</span>
-      </button>
-    </div>
   </div>
+
+  <!-- ===== ФИКСИРОВАННАЯ НИЖНЯЯ НАВИГАЦИЯ ===== -->
+  <nav class="bottom-nav">
+    <!-- Профиль -->
+    <button class="nav-item active" type="button" data-tab="profile">
+      <span class="nav-icon icon-profile" aria-hidden="true"></span>
+      <span class="nav-label">Профиль</span>
+    </button>
+
+    <!-- ИГРЫ (центр) -->
+    <button class="nav-item nav-center" type="button" data-tab="games">
+      <span class="nav-icon icon-games" aria-hidden="true">
+        <span class="icon-games-dpad"></span>
+        <span class="icon-games-buttons"></span>
+        <span class="icon-games-extra"></span>
+      </span>
+      <span class="nav-label">Игры</span>
+    </button>
+
+    <!-- Магазин -->
+    <button class="nav-item" type="button" data-tab="shop">
+      <span class="nav-icon icon-shop" aria-hidden="true"></span>
+      <span class="nav-label">Магазин</span>
+    </button>
+  </nav>
 
   <script>
     (function () {
@@ -758,7 +886,7 @@
         }
       }
 
-      // ===== НАВИГАЦИЯ: переключение активного таба =====
+      // ===== НАВИГАЦИЯ =====
       const navItems = document.querySelectorAll('.nav-item');
       navItems.forEach((item) => {
         item.addEventListener('click', () => {

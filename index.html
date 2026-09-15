@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0a0d12">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <title>CyberBet — Standoff 2</title>
 <style>
   :root{
     --bg:#0e1116;
+    --bg-grid:rgba(255,255,255,0.035);
     --card:#161b22;
-    --card2:#1c222c;
     --line:#232a35;
     --accent:#ffd400;
     --green:#22c55e;
@@ -28,23 +27,49 @@
   }
 
   html,body{
-    background:var(--bg);
-    color:var(--text);
     min-height:100vh;
+    color:var(--text);
     overscroll-behavior-y:none;
     -webkit-text-size-adjust:100%;
     text-size-adjust:100%;
-  }
-
-  /* Запрет выделения текста как в приложении */
-  body{
     user-select:none;
     -webkit-user-select:none;
   }
 
+  /* ===== КЛЕТЧАТЫЙ ФОН ===== */
+  body{
+    background-color:var(--bg);
+    background-image:
+      /* вертикальные линии */
+      repeating-linear-gradient(
+        to right,
+        var(--bg-grid) 0,
+        var(--bg-grid) 1px,
+        transparent 1px,
+        transparent 32px
+      ),
+      /* горизонтальные линии */
+      repeating-linear-gradient(
+        to bottom,
+        var(--bg-grid) 0,
+        var(--bg-grid) 1px,
+        transparent 1px,
+        transparent 32px
+      ),
+      /* лёгкое свечение сверху */
+      radial-gradient(
+        ellipse 120% 60% at 50% -10%,
+        rgba(255,212,0,0.08),
+        transparent 70%
+      );
+    background-attachment:fixed, fixed, fixed;
+  }
+
   /* ===== HEADER ===== */
   header{
-    background:#0a0d12;
+    background:rgba(10,13,18,0.92);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
     border-bottom:1px solid var(--line);
     padding:12px 16px;
     padding-top:calc(12px + env(safe-area-inset-top, 0px));
@@ -62,14 +87,68 @@
   .icon-btn{
     width:38px;height:38px;border-radius:10px;
     background:var(--card);border:1px solid var(--line);
-    color:var(--text);display:flex;align-items:center;justify-content:center;
-    cursor:pointer;font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    position:relative;
   }
   .btn-login{
     padding:9px 16px;border-radius:10px;
     background:var(--accent);color:#000;
     border:none;font-weight:700;font-size:13px;
     cursor:pointer;
+  }
+
+  /* ===== CSS-ИКОНКИ (жёлтые) ===== */
+  .ico-css{
+    display:inline-block;
+    position:relative;
+    color:var(--accent);
+  }
+
+  /* Лупа */
+  .ico-search{
+    width:16px;height:16px;
+    border:2px solid var(--accent);
+    border-radius:50%;
+  }
+  .ico-search::after{
+    content:'';
+    position:absolute;
+    width:7px;height:2px;
+    background:var(--accent);
+    border-radius:2px;
+    right:-6px;bottom:-2px;
+    transform:rotate(45deg);
+    transform-origin:left center;
+  }
+
+  /* Корзина */
+  .ico-cart{
+    width:18px;height:14px;
+    border:2px solid var(--accent);
+    border-top:none;
+    border-radius:0 0 4px 4px;
+    position:relative;
+    margin-top:4px;
+  }
+  .ico-cart::before{
+    content:'';
+    position:absolute;
+    top:-8px;left:50%;
+    transform:translateX(-50%);
+    width:12px;height:8px;
+    border:2px solid var(--accent);
+    border-bottom:none;
+    border-radius:8px 8px 0 0;
+  }
+  .ico-cart::after{
+    content:'';
+    position:absolute;
+    bottom:-6px;left:2px;
+    width:4px;height:4px;
+    background:var(--accent);
+    border-radius:50%;
+    box-shadow:10px 0 0 var(--accent);
   }
 
   /* ===== HERO ===== */
@@ -83,7 +162,7 @@
     padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;
   }
 
-  /* ===== FILTERS (горизонтальный скролл) ===== */
+  /* ===== FILTERS ===== */
   .filters{
     display:flex;gap:8px;padding:12px 16px;
     overflow-x:auto;
@@ -183,15 +262,15 @@
   .odd:active{background:#1f2630}
   .odd .label{font-size:10px;color:var(--muted);margin-bottom:3px}
   .odd .val{font-size:15px;font-weight:700;color:var(--green)}
-  .odd.selected{
-    background:rgba(255,212,0,.1);
-  }
+  .odd.selected{background:rgba(255,212,0,.1)}
   .odd.selected .val{color:var(--accent)}
 
   /* ===== BOTTOM NAV ===== */
   .bottom-nav{
     position:fixed;left:0;right:0;bottom:0;
-    background:#0a0d12;
+    background:rgba(10,13,18,0.92);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
     border-top:1px solid var(--line);
     display:grid;grid-template-columns:repeat(4,1fr);
     padding:8px 0;
@@ -199,27 +278,93 @@
     z-index:30;
   }
   .nav-item{
-    display:flex;flex-direction:column;align-items:center;gap:3px;
+    display:flex;flex-direction:column;align-items:center;gap:5px;
     color:var(--muted);text-decoration:none;
     font-size:10px;font-weight:600;
     padding:4px 0;
     cursor:pointer;
   }
-  .nav-item .ico{font-size:18px;line-height:1}
+  .nav-item .ico-css{color:currentColor}
   .nav-item.active{color:var(--accent)}
 
-  /* ===== CART BADGE ===== */
+  /* Иконки нижней навигации — 20x20, рисуем через border/bg */
+  .nav-ico{
+    width:18px;height:18px;
+    display:block;
+    position:relative;
+    color:inherit;
+  }
+
+  /* Линия — три горизонтальные полосы */
+  .nav-ico.line::before{
+    content:'';position:absolute;left:0;top:3px;
+    width:18px;height:2px;background:currentColor;border-radius:2px;
+    box-shadow:0 5px 0 currentColor, 0 10px 0 currentColor;
+  }
+
+  /* Live — точка в круге */
+  .nav-ico.live::before{
+    content:'';position:absolute;
+    left:1px;top:1px;width:16px;height:16px;
+    border:2px solid currentColor;border-radius:50%;
+  }
+  .nav-ico.live::after{
+    content:'';position:absolute;
+    left:7px;top:7px;width:4px;height:4px;
+    background:currentColor;border-radius:50%;
+  }
+
+  /* Игры — геймпад: прямоугольник с ушками */
+  .nav-ico.games::before{
+    content:'';position:absolute;
+    left:0;top:5px;width:18px;height:10px;
+    border:2px solid currentColor;border-radius:6px;
+  }
+  .nav-ico.games::after{
+    content:'';position:absolute;
+    left:5px;top:2px;
+    width:3px;height:3px;background:currentColor;border-radius:50%;
+    box-shadow:8px 0 0 currentColor;
+  }
+
+  /* Профиль — голова + плечи */
+  .nav-ico.user::before{
+    content:'';position:absolute;
+    left:5px;top:0;width:8px;height:8px;
+    border:2px solid currentColor;border-radius:50%;
+  }
+  .nav-ico.user::after{
+    content:'';position:absolute;
+    left:1px;top:10px;width:16px;height:8px;
+    border:2px solid currentColor;border-bottom:none;
+    border-radius:10px 10px 0 0;
+  }
+
+  /* ===== CART FAB ===== */
   .cart-fab{
     position:fixed;
     right:16px;
     bottom:calc(76px + var(--safe-bottom));
-    width:52px;height:52px;border-radius:50%;
-    background:var(--accent);color:#000;
+    width:54px;height:54px;border-radius:50%;
+    background:var(--accent);
     display:flex;align-items:center;justify-content:center;
-    font-size:22px;
     box-shadow:0 8px 24px rgba(255,212,0,.35);
     cursor:pointer;
     z-index:25;
+  }
+  .cart-fab .ico-css{
+    color:#000;
+    transform:scale(1.05);
+  }
+  .cart-fab .ico-cart{
+    border-color:#000;
+  }
+  .cart-fab .ico-cart::before{
+    border-color:#000;
+  }
+  .cart-fab .ico-cart::after{
+    background:#000;
+    box-shadow:10px 0 0 #000;
   }
   .cart-badge{
     position:absolute;top:-4px;right:-4px;
@@ -230,11 +375,6 @@
     padding:0 5px;
     border:2px solid var(--bg);
   }
-
-  /* ===== Утилиты ===== */
-  @media (hover:hover){
-    .odd:hover{background:#1f2630}
-  }
 </style>
 </head>
 <body>
@@ -242,7 +382,9 @@
 <header>
   <div class="logo">CYBER<span>BET</span></div>
   <div class="header-actions">
-    <button class="icon-btn" aria-label="Поиск">🔍</button>
+    <button class="icon-btn" aria-label="Поиск">
+      <span class="ico-css ico-search"></span>
+    </button>
     <button class="btn-login">Вход</button>
   </div>
 </header>
@@ -329,19 +471,26 @@
 </div>
 
 <div class="cart-fab" id="cartFab">
-  🛒
+  <span class="ico-css ico-cart"></span>
   <span class="cart-badge" id="cartBadge" style="display:none">0</span>
 </div>
 
 <nav class="bottom-nav">
-  <a class="nav-item active"><span class="ico">📊</span>Линия</a>
-  <a class="nav-item"><span class="ico">🔴</span>Live</a>
-  <a class="nav-item"><span class="ico">🎮</span>Игры</a>
-  <a class="nav-item"><span class="ico">👤</span>Профиль</a>
+  <a class="nav-item active">
+    <span class="nav-ico line"></span>Линия
+  </a>
+  <a class="nav-item">
+    <span class="nav-ico live"></span>Live
+  </a>
+  <a class="nav-item">
+    <span class="nav-ico games"></span>Игры
+  </a>
+  <a class="nav-item">
+    <span class="nav-ico user"></span>Профиль
+  </a>
 </nav>
 
 <script>
-  // Фильтры
   document.querySelectorAll('.chip').forEach(chip=>{
     chip.addEventListener('click',()=>{
       document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
@@ -349,37 +498,32 @@
     });
   });
 
-  // Выбор коэффициента + корзина
   const badge = document.getElementById('cartBadge');
   let count = 0;
 
   document.querySelectorAll('.odd').forEach(odd=>{
     odd.addEventListener('click',()=>{
-      const wasSelected = odd.classList.contains('selected');
+      const was = odd.classList.contains('selected');
       odd.classList.toggle('selected');
-      count += wasSelected ? -1 : 1;
+      count += was ? -1 : 1;
       if(count < 0) count = 0;
       badge.textContent = count;
       badge.style.display = count > 0 ? 'flex' : 'none';
     });
   });
 
-  // Запрет двойного тапа для зума на iOS Safari
+  // Запрет зума — все фронты
   let lastTouch = 0;
   document.addEventListener('touchend', e => {
     const now = Date.now();
-    if (now - lastTouch <= 300){
-      e.preventDefault();
-    }
+    if (now - lastTouch <= 300) e.preventDefault();
     lastTouch = now;
   }, { passive:false });
 
-  // Запрет pinch-zoom жеста
-  document.addEventListener('gesturestart', e => e.preventDefault());
-  document.addEventListener('gesturechange', e => e.preventDefault());
-  document.addEventListener('gestureend', e => e.preventDefault());
+  ['gesturestart','gesturechange','gestureend'].forEach(evt=>{
+    document.addEventListener(evt, e => e.preventDefault());
+  });
 
-  // Запрет ctrl+wheel зума на десктопе (для превью)
   document.addEventListener('wheel', e => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive:false });

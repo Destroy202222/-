@@ -2,106 +2,238 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>CyberBet — линия на Standoff 2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0d12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>CyberBet — Standoff 2</title>
 <style>
   :root{
     --bg:#0e1116;
     --card:#161b22;
+    --card2:#1c222c;
     --line:#232a35;
     --accent:#ffd400;
     --green:#22c55e;
+    --red:#ef4444;
     --text:#e6edf3;
     --muted:#8b949e;
+    --safe-bottom:env(safe-area-inset-bottom, 0px);
   }
-  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Roboto,Arial,sans-serif}
-  body{background:var(--bg);color:var(--text);min-height:100vh}
 
+  *{
+    box-sizing:border-box;
+    margin:0;padding:0;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  html,body{
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    overscroll-behavior-y:none;
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
+  }
+
+  /* Запрет выделения текста как в приложении */
+  body{
+    user-select:none;
+    -webkit-user-select:none;
+  }
+
+  /* ===== HEADER ===== */
   header{
     background:#0a0d12;
     border-bottom:1px solid var(--line);
-    padding:14px 24px;
-    display:flex;align-items:center;gap:28px;
-    position:sticky;top:0;z-index:10;
+    padding:12px 16px;
+    padding-top:calc(12px + env(safe-area-inset-top, 0px));
+    display:flex;align-items:center;gap:12px;
+    position:sticky;top:0;z-index:20;
   }
   .logo{
-    font-weight:800;font-size:22px;letter-spacing:1px;
+    font-weight:800;font-size:19px;letter-spacing:1px;
     color:var(--accent);
   }
   .logo span{color:var(--text)}
-  nav{display:flex;gap:22px;font-size:14px}
-  nav a{color:var(--muted);text-decoration:none;transition:.2s}
-  nav a:hover,nav a.active{color:var(--accent)}
-  .auth{margin-left:auto;display:flex;gap:10px}
-  .btn{
-    padding:8px 16px;border-radius:6px;border:none;cursor:pointer;
-    font-weight:600;font-size:14px;
+  .header-actions{
+    margin-left:auto;display:flex;gap:8px;align-items:center;
   }
-  .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-  .btn-primary{background:var(--accent);color:#000}
+  .icon-btn{
+    width:38px;height:38px;border-radius:10px;
+    background:var(--card);border:1px solid var(--line);
+    color:var(--text);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:16px;
+  }
+  .btn-login{
+    padding:9px 16px;border-radius:10px;
+    background:var(--accent);color:#000;
+    border:none;font-weight:700;font-size:13px;
+    cursor:pointer;
+  }
 
+  /* ===== HERO ===== */
   .hero{
-    padding:28px 24px 8px;
-    display:flex;align-items:center;gap:14px;
+    padding:16px 16px 4px;
+    display:flex;align-items:center;gap:10px;
   }
-  .hero h1{font-size:24px}
+  .hero h1{font-size:20px;font-weight:700}
   .tag{
     background:rgba(34,197,94,.15);color:var(--green);
-    padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;
+    padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;
   }
 
+  /* ===== FILTERS (горизонтальный скролл) ===== */
   .filters{
-    display:flex;gap:8px;padding:16px 24px;flex-wrap:wrap;
+    display:flex;gap:8px;padding:12px 16px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
   }
+  .filters::-webkit-scrollbar{display:none}
   .chip{
-    padding:7px 14px;border-radius:20px;background:var(--card);
-    border:1px solid var(--line);color:var(--muted);
-    font-size:13px;cursor:pointer;transition:.2s;
+    flex:0 0 auto;
+    padding:8px 14px;border-radius:20px;
+    background:var(--card);border:1px solid var(--line);
+    color:var(--muted);font-size:13px;font-weight:600;
+    cursor:pointer;transition:.15s;
   }
-  .chip:hover{color:var(--text)}
-  .chip.active{background:var(--accent);color:#000;border-color:var(--accent)}
+  .chip.active{
+    background:var(--accent);color:#000;border-color:var(--accent);
+  }
 
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(420px,1fr));
-    gap:14px;padding:8px 24px 40px;
+  /* ===== MATCHES ===== */
+  .list{
+    display:flex;flex-direction:column;
+    gap:12px;
+    padding:4px 16px 100px;
   }
 
   .match{
     background:var(--card);
     border:1px solid var(--line);
-    border-radius:10px;
+    border-radius:14px;
     overflow:hidden;
+    animation:fadeIn .35s ease both;
   }
+  @keyframes fadeIn{
+    from{opacity:0;transform:translateY(6px)}
+    to{opacity:1;transform:none}
+  }
+
   .match-head{
     display:flex;justify-content:space-between;align-items:center;
-    padding:12px 14px;border-bottom:1px solid var(--line);
-    font-size:12px;color:var(--muted);
+    padding:11px 14px;
+    border-bottom:1px solid var(--line);
+    font-size:11px;color:var(--muted);
+    gap:8px;
   }
-  .live{color:#ef4444;font-weight:700;display:flex;align-items:center;gap:6px}
-  .live::before{content:'';width:7px;height:7px;border-radius:50%;background:#ef4444;
-    animation:pulse 1.2s infinite}
-  @keyframes pulse{50%{opacity:.3}}
+  .match-head .tour{
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .live{
+    color:var(--red);font-weight:700;
+    display:flex;align-items:center;gap:5px;
+    flex:0 0 auto;
+  }
+  .live::before{
+    content:'';width:6px;height:6px;border-radius:50%;
+    background:var(--red);
+    animation:pulse 1.2s infinite;
+  }
+  @keyframes pulse{50%{opacity:.25}}
 
-  .teams{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
-  .team{display:flex;justify-content:space-between;font-size:15px;font-weight:600}
-  .team .score{color:var(--accent)}
+  .teams{
+    padding:12px 14px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .team{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:15px;font-weight:600;
+  }
+  .team .name{
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    padding-right:8px;
+  }
+  .team .score{
+    color:var(--accent);font-weight:700;
+    flex:0 0 auto;
+  }
+  .team.win .name{color:var(--accent)}
 
   .odds{
-    display:grid;grid-template-columns:1fr 1fr 1fr;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
     border-top:1px solid var(--line);
   }
   .odd{
-    padding:12px 8px;text-align:center;cursor:pointer;
-    border-right:1px solid var(--line);transition:.15s;
+    padding:12px 6px;
+    text-align:center;
+    cursor:pointer;
+    border-right:1px solid var(--line);
+    transition:background .15s;
+    background:transparent;
+    color:inherit;
+    border-top:none;border-bottom:none;border-left:none;
+    font-family:inherit;
+    min-height:52px;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
   }
   .odd:last-child{border-right:none}
-  .odd:hover{background:#1f2630}
-  .odd .label{font-size:11px;color:var(--muted);margin-bottom:3px}
+  .odd:active{background:#1f2630}
+  .odd .label{font-size:10px;color:var(--muted);margin-bottom:3px}
   .odd .val{font-size:15px;font-weight:700;color:var(--green)}
+  .odd.selected{
+    background:rgba(255,212,0,.1);
+  }
+  .odd.selected .val{color:var(--accent)}
 
-  footer{
-    text-align:center;padding:20px;color:var(--muted);font-size:12px;
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav{
+    position:fixed;left:0;right:0;bottom:0;
+    background:#0a0d12;
     border-top:1px solid var(--line);
+    display:grid;grid-template-columns:repeat(4,1fr);
+    padding:8px 0;
+    padding-bottom:calc(8px + var(--safe-bottom));
+    z-index:30;
+  }
+  .nav-item{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    color:var(--muted);text-decoration:none;
+    font-size:10px;font-weight:600;
+    padding:4px 0;
+    cursor:pointer;
+  }
+  .nav-item .ico{font-size:18px;line-height:1}
+  .nav-item.active{color:var(--accent)}
+
+  /* ===== CART BADGE ===== */
+  .cart-fab{
+    position:fixed;
+    right:16px;
+    bottom:calc(76px + var(--safe-bottom));
+    width:52px;height:52px;border-radius:50%;
+    background:var(--accent);color:#000;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+    box-shadow:0 8px 24px rgba(255,212,0,.35);
+    cursor:pointer;
+    z-index:25;
+  }
+  .cart-badge{
+    position:absolute;top:-4px;right:-4px;
+    background:var(--red);color:#fff;
+    font-size:11px;font-weight:700;
+    min-width:20px;height:20px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    padding:0 5px;
+    border:2px solid var(--bg);
+  }
+
+  /* ===== Утилиты ===== */
+  @media (hover:hover){
+    .odd:hover{background:#1f2630}
   }
 </style>
 </head>
@@ -109,21 +241,15 @@
 
 <header>
   <div class="logo">CYBER<span>BET</span></div>
-  <nav>
-    <a href="#" class="active">Линия</a>
-    <a href="#">Live</a>
-    <a href="#">Киберспорт</a>
-    <a href="#">Промо</a>
-  </nav>
-  <div class="auth">
-    <button class="btn btn-ghost">Вход</button>
-    <button class="btn btn-primary">Регистрация</button>
+  <div class="header-actions">
+    <button class="icon-btn" aria-label="Поиск">🔍</button>
+    <button class="btn-login">Вход</button>
   </div>
 </header>
 
 <section class="hero">
   <h1>Standoff 2</h1>
-  <span class="tag">12 матчей сегодня</span>
+  <span class="tag">12 матчей</span>
 </section>
 
 <div class="filters">
@@ -134,77 +260,130 @@
   <div class="chip">Турниры</div>
 </div>
 
-<div class="grid">
+<div class="list">
 
   <div class="match">
     <div class="match-head">
-      <span>ESL Snapdragon • Bo3</span>
+      <span class="tour">ESL Snapdragon • Bo3</span>
       <span class="live">LIVE 1:0</span>
     </div>
     <div class="teams">
-      <div class="team"><span>Team Spirit</span><span class="score">13</span></div>
-      <div class="team"><span>NAVI Junior</span><span class="score">8</span></div>
+      <div class="team win"><span class="name">Team Spirit</span><span class="score">13</span></div>
+      <div class="team"><span class="name">NAVI Junior</span><span class="score">8</span></div>
     </div>
     <div class="odds">
-      <div class="odd"><div class="label">П1</div><div class="val">1.42</div></div>
-      <div class="odd"><div class="label">Ничья</div><div class="val">8.50</div></div>
-      <div class="odd"><div class="label">П2</div><div class="val">2.90</div></div>
+      <button class="odd"><div class="label">П1</div><div class="val">1.42</div></button>
+      <button class="odd"><div class="label">Ничья</div><div class="val">8.50</div></button>
+      <button class="odd"><div class="label">П2</div><div class="val">2.90</div></button>
     </div>
   </div>
 
   <div class="match">
     <div class="match-head">
-      <span>Cyber League • Bo1</span>
+      <span class="tour">Cyber League • Bo1</span>
       <span>Сегодня 21:00</span>
     </div>
     <div class="teams">
-      <div class="team"><span>Virtus.pro</span><span class="score">—</span></div>
-      <div class="team"><span>Faze Clan</span><span class="score">—</span></div>
+      <div class="team"><span class="name">Virtus.pro</span><span class="score">—</span></div>
+      <div class="team"><span class="name">Faze Clan</span><span class="score">—</span></div>
     </div>
     <div class="odds">
-      <div class="odd"><div class="label">П1</div><div class="val">1.85</div></div>
-      <div class="odd"><div class="label">Ничья</div><div class="val">7.20</div></div>
-      <div class="odd"><div class="label">П2</div><div class="val">1.95</div></div>
+      <button class="odd"><div class="label">П1</div><div class="val">1.85</div></button>
+      <button class="odd"><div class="label">Ничья</div><div class="val">7.20</div></button>
+      <button class="odd"><div class="label">П2</div><div class="val">1.95</div></button>
     </div>
   </div>
 
   <div class="match">
     <div class="match-head">
-      <span>Weekend Cup • Bo3</span>
+      <span class="tour">Weekend Cup • Bo3</span>
       <span>Завтра 18:30</span>
     </div>
     <div class="teams">
-      <div class="team"><span>G2 Esports</span><span class="score">—</span></div>
-      <div class="team"><span>Astralis</span><span class="score">—</span></div>
+      <div class="team"><span class="name">G2 Esports</span><span class="score">—</span></div>
+      <div class="team"><span class="name">Astralis</span><span class="score">—</span></div>
     </div>
     <div class="odds">
-      <div class="odd"><div class="label">П1</div><div class="val">1.60</div></div>
-      <div class="odd"><div class="label">Ничья</div><div class="val">6.80</div></div>
-      <div class="odd"><div class="label">П2</div><div class="val">2.35</div></div>
+      <button class="odd"><div class="label">П1</div><div class="val">1.60</div></button>
+      <button class="odd"><div class="label">Ничья</div><div class="val">6.80</div></button>
+      <button class="odd"><div class="label">П2</div><div class="val">2.35</div></button>
     </div>
   </div>
 
   <div class="match">
     <div class="match-head">
-      <span>Open Qualifier • Bo1</span>
+      <span class="tour">Open Qualifier • Bo1</span>
       <span>Сегодня 23:15</span>
     </div>
     <div class="teams">
-      <div class="team"><span>Team Liquid</span><span class="score">—</span></div>
-      <div class="team"><span>Fnatic</span><span class="score">—</span></div>
+      <div class="team"><span class="name">Team Liquid</span><span class="score">—</span></div>
+      <div class="team"><span class="name">Fnatic</span><span class="score">—</span></div>
     </div>
     <div class="odds">
-      <div class="odd"><div class="label">П1</div><div class="val">1.70</div></div>
-      <div class="odd"><div class="label">Ничья</div><div class="val">7.00</div></div>
-      <div class="odd"><div class="label">П2</div><div class="val">2.15</div></div>
+      <button class="odd"><div class="label">П1</div><div class="val">1.70</div></button>
+      <button class="odd"><div class="label">Ничья</div><div class="val">7.00</div></button>
+      <button class="odd"><div class="label">П2</div><div class="val">2.15</div></button>
     </div>
   </div>
 
 </div>
 
-<footer>
-  © 2025 CyberBet — демонстрационный макет. Не является букмекерской конторой.
-</footer>
+<div class="cart-fab" id="cartFab">
+  🛒
+  <span class="cart-badge" id="cartBadge" style="display:none">0</span>
+</div>
+
+<nav class="bottom-nav">
+  <a class="nav-item active"><span class="ico">📊</span>Линия</a>
+  <a class="nav-item"><span class="ico">🔴</span>Live</a>
+  <a class="nav-item"><span class="ico">🎮</span>Игры</a>
+  <a class="nav-item"><span class="ico">👤</span>Профиль</a>
+</nav>
+
+<script>
+  // Фильтры
+  document.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+
+  // Выбор коэффициента + корзина
+  const badge = document.getElementById('cartBadge');
+  let count = 0;
+
+  document.querySelectorAll('.odd').forEach(odd=>{
+    odd.addEventListener('click',()=>{
+      const wasSelected = odd.classList.contains('selected');
+      odd.classList.toggle('selected');
+      count += wasSelected ? -1 : 1;
+      if(count < 0) count = 0;
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'flex' : 'none';
+    });
+  });
+
+  // Запрет двойного тапа для зума на iOS Safari
+  let lastTouch = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastTouch <= 300){
+      e.preventDefault();
+    }
+    lastTouch = now;
+  }, { passive:false });
+
+  // Запрет pinch-zoom жеста
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  document.addEventListener('gesturechange', e => e.preventDefault());
+  document.addEventListener('gestureend', e => e.preventDefault());
+
+  // Запрет ctrl+wheel зума на десктопе (для превью)
+  document.addEventListener('wheel', e => {
+    if (e.ctrlKey) e.preventDefault();
+  }, { passive:false });
+</script>
 
 </body>
 </html>

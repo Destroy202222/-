@@ -10,6 +10,7 @@
     --bg:#0e1116;
     --bg-grid:rgba(255,255,255,0.035);
     --card:#161b22;
+    --card2:#1c222c;
     --line:#232a35;
     --accent:#ffd400;
     --green:#22c55e;
@@ -36,32 +37,12 @@
     -webkit-user-select:none;
   }
 
-  /* ===== КЛЕТЧАТЫЙ ФОН ===== */
   body{
     background-color:var(--bg);
     background-image:
-      /* вертикальные линии */
-      repeating-linear-gradient(
-        to right,
-        var(--bg-grid) 0,
-        var(--bg-grid) 1px,
-        transparent 1px,
-        transparent 32px
-      ),
-      /* горизонтальные линии */
-      repeating-linear-gradient(
-        to bottom,
-        var(--bg-grid) 0,
-        var(--bg-grid) 1px,
-        transparent 1px,
-        transparent 32px
-      ),
-      /* лёгкое свечение сверху */
-      radial-gradient(
-        ellipse 120% 60% at 50% -10%,
-        rgba(255,212,0,0.08),
-        transparent 70%
-      );
+      repeating-linear-gradient(to right, var(--bg-grid) 0, var(--bg-grid) 1px, transparent 1px, transparent 32px),
+      repeating-linear-gradient(to bottom, var(--bg-grid) 0, var(--bg-grid) 1px, transparent 1px, transparent 32px),
+      radial-gradient(ellipse 120% 60% at 50% -10%, rgba(255,212,0,0.08), transparent 70%);
     background-attachment:fixed, fixed, fixed;
   }
 
@@ -92,68 +73,68 @@
     position:relative;
   }
   .btn-login{
-    padding:9px 16px;border-radius:10px;
+    padding:9px 14px;border-radius:10px;
     background:var(--accent);color:#000;
     border:none;font-weight:700;font-size:13px;
     cursor:pointer;
   }
 
-  /* ===== CSS-ИКОНКИ (жёлтые) ===== */
-  .ico-css{
-    display:inline-block;
-    position:relative;
-    color:var(--accent);
-  }
+  /* ===== CSS-ИКОНКИ ===== */
+  .ico-css{display:inline-block;position:relative;color:var(--accent)}
 
-  /* Лупа */
-  .ico-search{
-    width:16px;height:16px;
-    border:2px solid var(--accent);
-    border-radius:50%;
-  }
+  .ico-search{width:16px;height:16px;border:2px solid var(--accent);border-radius:50%}
   .ico-search::after{
-    content:'';
-    position:absolute;
-    width:7px;height:2px;
-    background:var(--accent);
-    border-radius:2px;
-    right:-6px;bottom:-2px;
-    transform:rotate(45deg);
-    transform-origin:left center;
+    content:'';position:absolute;width:7px;height:2px;background:var(--accent);
+    border-radius:2px;right:-6px;bottom:-2px;transform:rotate(45deg);transform-origin:left center;
   }
 
-  /* Корзина */
   .ico-cart{
-    width:18px;height:14px;
-    border:2px solid var(--accent);
-    border-top:none;
-    border-radius:0 0 4px 4px;
-    position:relative;
-    margin-top:4px;
+    width:18px;height:14px;border:2px solid var(--accent);border-top:none;
+    border-radius:0 0 4px 4px;position:relative;margin-top:4px;
   }
   .ico-cart::before{
-    content:'';
-    position:absolute;
-    top:-8px;left:50%;
-    transform:translateX(-50%);
-    width:12px;height:8px;
-    border:2px solid var(--accent);
-    border-bottom:none;
+    content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+    width:12px;height:8px;border:2px solid var(--accent);border-bottom:none;
     border-radius:8px 8px 0 0;
   }
   .ico-cart::after{
-    content:'';
-    position:absolute;
-    bottom:-6px;left:2px;
-    width:4px;height:4px;
-    background:var(--accent);
-    border-radius:50%;
-    box-shadow:10px 0 0 var(--accent);
+    content:'';position:absolute;bottom:-6px;left:2px;width:4px;height:4px;
+    background:var(--accent);border-radius:50%;box-shadow:10px 0 0 var(--accent);
+  }
+
+  /* ===== BALANCE ===== */
+  .balance-card{
+    margin:16px;
+    padding:16px;
+    background:linear-gradient(135deg, #1a1f28 0%, #12161c 100%);
+    border:1px solid var(--line);
+    border-radius:14px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:relative;
+    overflow:hidden;
+  }
+  .balance-card::before{
+    content:'';position:absolute;right:-40px;top:-40px;
+    width:120px;height:120px;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,212,0,0.15), transparent 70%);
+  }
+  .balance-info{position:relative;z-index:1}
+  .balance-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+  .balance-value{
+    font-size:28px;font-weight:800;color:var(--accent);
+    margin-top:4px;font-variant-numeric:tabular-nums;
+  }
+  .balance-value.danger{color:var(--red)}
+  .topup-btn{
+    position:relative;z-index:1;
+    padding:10px 16px;border-radius:10px;
+    background:var(--accent);color:#000;border:none;
+    font-weight:700;font-size:13px;cursor:pointer;
   }
 
   /* ===== HERO ===== */
   .hero{
-    padding:16px 16px 4px;
+    padding:8px 16px 4px;
     display:flex;align-items:center;gap:10px;
   }
   .hero h1{font-size:20px;font-weight:700}
@@ -165,27 +146,31 @@
   /* ===== FILTERS ===== */
   .filters{
     display:flex;gap:8px;padding:12px 16px;
-    overflow-x:auto;
-    scrollbar-width:none;
-    -webkit-overflow-scrolling:touch;
+    overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
   }
   .filters::-webkit-scrollbar{display:none}
   .chip{
-    flex:0 0 auto;
-    padding:8px 14px;border-radius:20px;
+    flex:0 0 auto;padding:8px 14px;border-radius:20px;
     background:var(--card);border:1px solid var(--line);
     color:var(--muted);font-size:13px;font-weight:600;
     cursor:pointer;transition:.15s;
   }
-  .chip.active{
-    background:var(--accent);color:#000;border-color:var(--accent);
-  }
+  .chip.active{background:var(--accent);color:#000;border-color:var(--accent)}
 
   /* ===== MATCHES ===== */
   .list{
-    display:flex;flex-direction:column;
-    gap:12px;
+    display:flex;flex-direction:column;gap:12px;
     padding:4px 16px 100px;
+  }
+
+  .empty{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--muted);
+    font-size:14px;
+  }
+  .empty .big{
+    font-size:16px;color:var(--text);font-weight:600;margin-bottom:8px;
   }
 
   .match{
@@ -195,67 +180,38 @@
     overflow:hidden;
     animation:fadeIn .35s ease both;
   }
-  @keyframes fadeIn{
-    from{opacity:0;transform:translateY(6px)}
-    to{opacity:1;transform:none}
-  }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
   .match-head{
     display:flex;justify-content:space-between;align-items:center;
-    padding:11px 14px;
-    border-bottom:1px solid var(--line);
-    font-size:11px;color:var(--muted);
-    gap:8px;
+    padding:11px 14px;border-bottom:1px solid var(--line);
+    font-size:11px;color:var(--muted);gap:8px;
   }
-  .match-head .tour{
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  }
+  .match-head .tour{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .live{
-    color:var(--red);font-weight:700;
-    display:flex;align-items:center;gap:5px;
-    flex:0 0 auto;
+    color:var(--red);font-weight:700;display:flex;align-items:center;gap:5px;flex:0 0 auto;
   }
   .live::before{
     content:'';width:6px;height:6px;border-radius:50%;
-    background:var(--red);
-    animation:pulse 1.2s infinite;
+    background:var(--red);animation:pulse 1.2s infinite;
   }
   @keyframes pulse{50%{opacity:.25}}
 
-  .teams{
-    padding:12px 14px;
-    display:flex;flex-direction:column;gap:10px;
-  }
-  .team{
-    display:flex;justify-content:space-between;align-items:center;
-    font-size:15px;font-weight:600;
-  }
-  .team .name{
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    padding-right:8px;
-  }
-  .team .score{
-    color:var(--accent);font-weight:700;
-    flex:0 0 auto;
-  }
-  .team.win .name{color:var(--accent)}
+  .teams{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+  .team{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600}
+  .team .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px}
+  .team .score{color:var(--accent);font-weight:700;flex:0 0 auto}
 
   .odds{
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
+    display:grid;grid-template-columns:1fr 1fr 1fr;
     border-top:1px solid var(--line);
   }
   .odd{
-    padding:12px 6px;
-    text-align:center;
-    cursor:pointer;
-    border-right:1px solid var(--line);
-    transition:background .15s;
-    background:transparent;
-    color:inherit;
+    padding:12px 6px;text-align:center;cursor:pointer;
+    border-right:1px solid var(--line);transition:background .15s;
+    background:transparent;color:inherit;
     border-top:none;border-bottom:none;border-left:none;
-    font-family:inherit;
-    min-height:52px;
+    font-family:inherit;min-height:52px;
     display:flex;flex-direction:column;justify-content:center;align-items:center;
   }
   .odd:last-child{border-right:none}
@@ -269,112 +225,254 @@
   .bottom-nav{
     position:fixed;left:0;right:0;bottom:0;
     background:rgba(10,13,18,0.92);
-    backdrop-filter:blur(12px);
-    -webkit-backdrop-filter:blur(12px);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
     border-top:1px solid var(--line);
     display:grid;grid-template-columns:repeat(4,1fr);
-    padding:8px 0;
-    padding-bottom:calc(8px + var(--safe-bottom));
+    padding:8px 0;padding-bottom:calc(8px + var(--safe-bottom));
     z-index:30;
   }
   .nav-item{
     display:flex;flex-direction:column;align-items:center;gap:5px;
-    color:var(--muted);text-decoration:none;
-    font-size:10px;font-weight:600;
-    padding:4px 0;
-    cursor:pointer;
+    color:var(--muted);text-decoration:none;font-size:10px;font-weight:600;
+    padding:4px 0;cursor:pointer;
   }
-  .nav-item .ico-css{color:currentColor}
   .nav-item.active{color:var(--accent)}
 
-  /* Иконки нижней навигации — 20x20, рисуем через border/bg */
-  .nav-ico{
-    width:18px;height:18px;
-    display:block;
-    position:relative;
-    color:inherit;
-  }
-
-  /* Линия — три горизонтальные полосы */
+  .nav-ico{width:18px;height:18px;display:block;position:relative;color:inherit}
   .nav-ico.line::before{
-    content:'';position:absolute;left:0;top:3px;
-    width:18px;height:2px;background:currentColor;border-radius:2px;
+    content:'';position:absolute;left:0;top:3px;width:18px;height:2px;
+    background:currentColor;border-radius:2px;
     box-shadow:0 5px 0 currentColor, 0 10px 0 currentColor;
   }
-
-  /* Live — точка в круге */
   .nav-ico.live::before{
-    content:'';position:absolute;
-    left:1px;top:1px;width:16px;height:16px;
+    content:'';position:absolute;left:1px;top:1px;width:16px;height:16px;
     border:2px solid currentColor;border-radius:50%;
   }
   .nav-ico.live::after{
-    content:'';position:absolute;
-    left:7px;top:7px;width:4px;height:4px;
+    content:'';position:absolute;left:7px;top:7px;width:4px;height:4px;
     background:currentColor;border-radius:50%;
   }
-
-  /* Игры — геймпад: прямоугольник с ушками */
   .nav-ico.games::before{
-    content:'';position:absolute;
-    left:0;top:5px;width:18px;height:10px;
+    content:'';position:absolute;left:0;top:5px;width:18px;height:10px;
     border:2px solid currentColor;border-radius:6px;
   }
   .nav-ico.games::after{
-    content:'';position:absolute;
-    left:5px;top:2px;
-    width:3px;height:3px;background:currentColor;border-radius:50%;
-    box-shadow:8px 0 0 currentColor;
+    content:'';position:absolute;left:5px;top:2px;width:3px;height:3px;
+    background:currentColor;border-radius:50%;box-shadow:8px 0 0 currentColor;
   }
-
-  /* Профиль — голова + плечи */
   .nav-ico.user::before{
-    content:'';position:absolute;
-    left:5px;top:0;width:8px;height:8px;
+    content:'';position:absolute;left:5px;top:0;width:8px;height:8px;
     border:2px solid currentColor;border-radius:50%;
   }
   .nav-ico.user::after{
-    content:'';position:absolute;
-    left:1px;top:10px;width:16px;height:8px;
-    border:2px solid currentColor;border-bottom:none;
-    border-radius:10px 10px 0 0;
+    content:'';position:absolute;left:1px;top:10px;width:16px;height:8px;
+    border:2px solid currentColor;border-bottom:none;border-radius:10px 10px 0 0;
+  }
+  .nav-ico.admin::before{
+    content:'';position:absolute;left:0;top:0;width:18px;height:18px;
+    border:2px solid currentColor;border-radius:50%;
+  }
+  .nav-ico.admin::after{
+    content:'';position:absolute;left:5px;top:5px;width:8px;height:8px;
+    border:2px solid currentColor;border-radius:50%;
   }
 
   /* ===== CART FAB ===== */
   .cart-fab{
-    position:fixed;
-    right:16px;
-    bottom:calc(76px + var(--safe-bottom));
+    position:fixed;right:16px;bottom:calc(76px + var(--safe-bottom));
     width:54px;height:54px;border-radius:50%;
     background:var(--accent);
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 8px 24px rgba(255,212,0,.35);
-    cursor:pointer;
-    z-index:25;
+    cursor:pointer;z-index:25;
   }
-  .cart-fab .ico-css{
-    color:#000;
-    transform:scale(1.05);
-  }
-  .cart-fab .ico-cart{
-    border-color:#000;
-  }
-  .cart-fab .ico-cart::before{
-    border-color:#000;
-  }
-  .cart-fab .ico-cart::after{
-    background:#000;
-    box-shadow:10px 0 0 #000;
-  }
+  .cart-fab .ico-cart{border-color:#000}
+  .cart-fab .ico-cart::before{border-color:#000}
+  .cart-fab .ico-cart::after{background:#000;box-shadow:10px 0 0 #000}
   .cart-badge{
     position:absolute;top:-4px;right:-4px;
-    background:var(--red);color:#fff;
-    font-size:11px;font-weight:700;
+    background:var(--red);color:#fff;font-size:11px;font-weight:700;
     min-width:20px;height:20px;border-radius:10px;
     display:flex;align-items:center;justify-content:center;
-    padding:0 5px;
-    border:2px solid var(--bg);
+    padding:0 5px;border:2px solid var(--bg);
   }
+
+  /* ===== MODALS ===== */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(0,0,0,0.7);
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    z-index:100;
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    animation:fadeIn .2s ease;
+  }
+  .overlay.show{display:flex}
+
+  .sheet{
+    background:var(--card);
+    width:100%;
+    max-width:520px;
+    border-radius:20px 20px 0 0;
+    padding:20px 20px calc(20px + var(--safe-bottom));
+    max-height:90vh;
+    overflow-y:auto;
+    animation:slideUp .3s ease;
+    border-top:1px solid var(--line);
+  }
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+  .sheet-head{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:16px;
+  }
+  .sheet-head h2{font-size:18px;font-weight:700}
+  .close-btn{
+    width:32px;height:32px;border-radius:10px;
+    background:var(--card2);border:1px solid var(--line);
+    color:var(--muted);font-size:18px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:400;line-height:1;
+  }
+
+  .field{
+    margin-bottom:14px;
+  }
+  .field label{
+    display:block;font-size:11px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.5px;font-weight:600;
+    margin-bottom:6px;
+  }
+  .field input{
+    width:100%;
+    padding:12px 14px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:10px;
+    color:var(--text);
+    font-size:15px;
+    font-family:inherit;
+    outline:none;
+    transition:border-color .15s;
+  }
+  .field input:focus{border-color:var(--accent)}
+
+  .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+  .submit-btn{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    background:var(--accent);
+    color:#000;
+    border:none;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .submit-btn:active{opacity:.85}
+
+  .danger-btn{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    background:transparent;
+    color:var(--red);
+    border:1px solid rgba(239,68,68,0.4);
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    margin-top:8px;
+  }
+
+  /* ===== ADMIN LIST ===== */
+  .admin-item{
+    display:flex;align-items:center;gap:12px;
+    padding:12px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:10px;
+    margin-bottom:10px;
+  }
+  .admin-item-info{flex:1;min-width:0}
+  .admin-item-title{
+    font-size:14px;font-weight:600;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .admin-item-sub{
+    font-size:11px;color:var(--muted);margin-top:2px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .del-btn{
+    flex:0 0 auto;
+    width:34px;height:34px;border-radius:10px;
+    background:rgba(239,68,68,0.1);
+    border:1px solid rgba(239,68,68,0.3);
+    color:var(--red);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:700;
+  }
+
+  /* ===== TOAST ===== */
+  .toast{
+    position:fixed;
+    left:50%;bottom:calc(90px + var(--safe-bottom));
+    transform:translateX(-50%) translateY(20px);
+    background:var(--card2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:12px 18px;
+    border-radius:12px;
+    font-size:13px;font-weight:600;
+    z-index:200;
+    opacity:0;
+    pointer-events:none;
+    transition:all .25s ease;
+    white-space:nowrap;
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.success{border-color:rgba(34,197,94,0.4)}
+  .toast.error{border-color:rgba(239,68,68,0.4)}
+
+  /* ===== BET PANEL ===== */
+  .bet-summary{
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px;
+    margin-bottom:14px;
+  }
+  .bet-row{
+    display:flex;justify-content:space-between;
+    font-size:13px;padding:4px 0;
+  }
+  .bet-row .k{color:var(--muted)}
+  .bet-row .v{font-weight:600}
+  .bet-row.total{
+    border-top:1px solid var(--line);
+    margin-top:8px;padding-top:10px;
+    font-size:15px;
+  }
+  .bet-row.total .v{color:var(--accent);font-size:18px}
+
+  .amount-quick{
+    display:flex;gap:6px;margin-top:8px;
+  }
+  .amount-quick button{
+    flex:1;
+    padding:8px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    color:var(--text);
+    font-size:13px;font-weight:600;
+    cursor:pointer;
+  }
+  .amount-quick button:active{background:var(--card2)}
 </style>
 </head>
 <body>
@@ -382,152 +480,325 @@
 <header>
   <div class="logo">CYBER<span>BET</span></div>
   <div class="header-actions">
-    <button class="icon-btn" aria-label="Поиск">
+    <button class="icon-btn" id="searchBtn" aria-label="Поиск">
       <span class="ico-css ico-search"></span>
     </button>
-    <button class="btn-login">Вход</button>
+    <button class="btn-login" id="loginBtn">Вход</button>
   </div>
 </header>
 
+<!-- Баланс -->
+<div class="balance-card">
+  <div class="balance-info">
+    <div class="balance-label">Баланс</div>
+    <div class="balance-value" id="balanceValue">500 ₽</div>
+  </div>
+  <button class="topup-btn" id="topupBtn">Пополнить</button>
+</div>
+
+<!-- Заголовок -->
 <section class="hero">
   <h1>Standoff 2</h1>
-  <span class="tag">12 матчей</span>
+  <span class="tag" id="matchCount">0 матчей</span>
 </section>
 
+<!-- Фильтры -->
 <div class="filters">
-  <div class="chip active">Все</div>
-  <div class="chip">Live</div>
-  <div class="chip">Сегодня</div>
-  <div class="chip">Завтра</div>
-  <div class="chip">Турниры</div>
+  <div class="chip active" data-filter="all">Все</div>
+  <div class="chip" data-filter="live">Live</div>
+  <div class="chip" data-filter="today">Сегодня</div>
+  <div class="chip" data-filter="tomorrow">Завтра</div>
 </div>
 
-<div class="list">
+<!-- Список матчей -->
+<div class="list" id="matchList"></div>
 
-  <div class="match">
-    <div class="match-head">
-      <span class="tour">ESL Snapdragon • Bo3</span>
-      <span class="live">LIVE 1:0</span>
-    </div>
-    <div class="teams">
-      <div class="team win"><span class="name">Team Spirit</span><span class="score">13</span></div>
-      <div class="team"><span class="name">NAVI Junior</span><span class="score">8</span></div>
-    </div>
-    <div class="odds">
-      <button class="odd"><div class="label">П1</div><div class="val">1.42</div></button>
-      <button class="odd"><div class="label">Ничья</div><div class="val">8.50</div></button>
-      <button class="odd"><div class="label">П2</div><div class="val">2.90</div></button>
-    </div>
-  </div>
-
-  <div class="match">
-    <div class="match-head">
-      <span class="tour">Cyber League • Bo1</span>
-      <span>Сегодня 21:00</span>
-    </div>
-    <div class="teams">
-      <div class="team"><span class="name">Virtus.pro</span><span class="score">—</span></div>
-      <div class="team"><span class="name">Faze Clan</span><span class="score">—</span></div>
-    </div>
-    <div class="odds">
-      <button class="odd"><div class="label">П1</div><div class="val">1.85</div></button>
-      <button class="odd"><div class="label">Ничья</div><div class="val">7.20</div></button>
-      <button class="odd"><div class="label">П2</div><div class="val">1.95</div></button>
-    </div>
-  </div>
-
-  <div class="match">
-    <div class="match-head">
-      <span class="tour">Weekend Cup • Bo3</span>
-      <span>Завтра 18:30</span>
-    </div>
-    <div class="teams">
-      <div class="team"><span class="name">G2 Esports</span><span class="score">—</span></div>
-      <div class="team"><span class="name">Astralis</span><span class="score">—</span></div>
-    </div>
-    <div class="odds">
-      <button class="odd"><div class="label">П1</div><div class="val">1.60</div></button>
-      <button class="odd"><div class="label">Ничья</div><div class="val">6.80</div></button>
-      <button class="odd"><div class="label">П2</div><div class="val">2.35</div></button>
-    </div>
-  </div>
-
-  <div class="match">
-    <div class="match-head">
-      <span class="tour">Open Qualifier • Bo1</span>
-      <span>Сегодня 23:15</span>
-    </div>
-    <div class="teams">
-      <div class="team"><span class="name">Team Liquid</span><span class="score">—</span></div>
-      <div class="team"><span class="name">Fnatic</span><span class="score">—</span></div>
-    </div>
-    <div class="odds">
-      <button class="odd"><div class="label">П1</div><div class="val">1.70</div></button>
-      <button class="odd"><div class="label">Ничья</div><div class="val">7.00</div></button>
-      <button class="odd"><div class="label">П2</div><div class="val">2.15</div></button>
-    </div>
-  </div>
-
-</div>
-
+<!-- Кнопка корзины -->
 <div class="cart-fab" id="cartFab">
   <span class="ico-css ico-cart"></span>
   <span class="cart-badge" id="cartBadge" style="display:none">0</span>
 </div>
 
+<!-- Нижняя навигация -->
 <nav class="bottom-nav">
-  <a class="nav-item active">
+  <a class="nav-item active" data-tab="line">
     <span class="nav-ico line"></span>Линия
   </a>
-  <a class="nav-item">
+  <a class="nav-item" data-tab="live">
     <span class="nav-ico live"></span>Live
   </a>
-  <a class="nav-item">
-    <span class="nav-ico games"></span>Игры
+  <a class="nav-item" data-tab="admin">
+    <span class="nav-ico admin"></span>Админ
   </a>
-  <a class="nav-item">
+  <a class="nav-item" data-tab="profile">
     <span class="nav-ico user"></span>Профиль
   </a>
 </nav>
 
+<!-- ===== МОДАЛКА: АДМИНКА ===== -->
+<div class="overlay" id="adminOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>Админ-панель</h2>
+      <button class="close-btn" data-close>×</button>
+    </div>
+
+    <div class="field">
+      <label>Турнир</label>
+      <input type="text" id="fTour" placeholder="ESL Snapdragon • Bo3">
+    </div>
+
+    <div class="field">
+      <label>Команда 1</label>
+      <input type="text" id="fTeam1" placeholder="Team Spirit">
+    </div>
+
+    <div class="field">
+      <label>Команда 2</label>
+      <input type="text" id="fTeam2" placeholder="NAVI Junior">
+    </div>
+
+    <div class="field">
+      <label>Время / статус</label>
+      <input type="text" id="fTime" placeholder="Сегодня 21:00">
+    </div>
+
+    <div class="field">
+      <label>Коэффициенты</label>
+      <div class="row">
+        <input type="number" step="0.01" min="1" id="fK1" placeholder="П1" value="1.85">
+        <input type="number" step="0.01" min="1" id="fKX" placeholder="X" value="7.00">
+        <input type="number" step="0.01" min="1" id="fK2" placeholder="П2" value="1.95">
+      </div>
+    </div>
+
+    <button class="submit-btn" id="addMatchBtn">+ Добавить матч</button>
+
+    <div style="margin-top:24px">
+      <div class="sheet-head" style="margin-bottom:12px">
+        <h2 style="font-size:14px">Существующие матчи</h2>
+      </div>
+      <div id="adminList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== МОДАЛКА: СТАВКА ===== -->
+<div class="overlay" id="betOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>Ставка</h2>
+      <button class="close-btn" data-close>×</button>
+    </div>
+
+    <div class="bet-summary">
+      <div class="bet-row">
+        <span class="k">Матч</span>
+        <span class="v" id="betMatch">—</span>
+      </div>
+      <div class="bet-row">
+        <span class="k">Ставка</span>
+        <span class="v" id="betChoice">—</span>
+      </div>
+      <div class="bet-row">
+        <span class="k">Коэффициент</span>
+        <span class="v" id="betCoef" style="color:var(--accent)">—</span>
+      </div>
+      <div class="bet-row total">
+        <span class="k">Возможный выигрыш</span>
+        <span class="v" id="betWin">0 ₽</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Сумма ставки</label>
+      <input type="number" id="betAmount" placeholder="100" value="100" min="10" step="10">
+      <div class="amount-quick">
+        <button data-amount="50">50</button>
+        <button data-amount="100">100</button>
+        <button data-amount="250">250</button>
+        <button data-amount="500">500</button>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="placeBetBtn">Сделать ставку</button>
+  </div>
+</div>
+
+<!-- ===== МОДАЛКА: ПОИСК ===== -->
+<div class="overlay" id="searchOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>Поиск матчей</h2>
+      <button class="close-btn" data-close>×</button>
+    </div>
+    <div class="field">
+      <input type="text" id="searchInput" placeholder="Название команды или турнира..." autofocus>
+    </div>
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<!-- ===== МОДАЛКА: ВХОД ===== -->
+<div class="overlay" id="loginOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>Вход</h2>
+      <button class="close-btn" data-close>×</button>
+    </div>
+    <div class="field">
+      <label>Логин</label>
+      <input type="text" id="loginUser" placeholder="username">
+    </div>
+    <div class="field">
+      <label>Пароль</label>
+      <input type="password" id="loginPass" placeholder="••••••••">
+    </div>
+    <button class="submit-btn" id="doLoginBtn">Войти</button>
+  </div>
+</div>
+
+<!-- ===== МОДАЛКА: ПОПОЛНЕНИЕ ===== -->
+<div class="overlay" id="topupOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>Пополнение</h2>
+      <button class="close-btn" data-close>×</button>
+    </div>
+    <div class="field">
+      <label>Сумма</label>
+      <input type="number" id="topupAmount" placeholder="1000" value="1000" step="100">
+      <div class="amount-quick">
+        <button data-topup="500">500 ₽</button>
+        <button data-topup="1000">1000 ₽</button>
+        <button data-topup="5000">5000 ₽</button>
+      </div>
+    </div>
+    <button class="submit-btn" id="doTopupBtn">Пополнить</button>
+  </div>
+</div>
+
+<!-- ===== МОДАЛКА: ПРОФИЛЬ ===== -->
+<div class="overlay" id="profileOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>Профиль</h2>
+      <button class="close-btn" data-close>×</button>
+    </div>
+    <div class="bet-summary">
+      <div class="bet-row">
+        <span class="k">Игрок</span>
+        <span class="v">Гость</span>
+      </div>
+      <div class="bet-row">
+        <span class="k">Баланс</span>
+        <span class="v" id="profileBalance" style="color:var(--accent)">500 ₽</span>
+      </div>
+      <div class="bet-row">
+        <span class="k">Активных ставок</span>
+        <span class="v" id="profileBets">0</span>
+      </div>
+    </div>
+    <button class="danger-btn" id="resetBtn">Сбросить всё (очистить матчи и баланс)</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <script>
-  document.querySelectorAll('.chip').forEach(chip=>{
-    chip.addEventListener('click',()=>{
-      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-      chip.classList.add('active');
-    });
+/* ============ СОСТОЯНИЕ ============ */
+const STORAGE_KEY = 'cyberbet_state_v1';
+
+let state = {
+  balance: 500,
+  matches: [],
+  betsCount: 0
+};
+
+// Загрузка из localStorage
+try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    state = Object.assign(state, parsed);
+  }
+} catch(e){}
+
+function save(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* ============ DOM ============ */
+const $ = id => document.getElementById(id);
+const matchList = $('matchList');
+const adminList = $('adminList');
+const balanceValue = $('balanceValue');
+const profileBalance = $('profileBalance');
+const cartBadge = $('cartBadge');
+const matchCount = $('matchCount');
+
+let currentFilter = 'all';
+let currentBet = null; // {matchId, choice, coef}
+
+/* ============ TOAST ============ */
+let toastTimer;
+function toast(msg, type='success'){
+  const el = $('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ el.className = 'toast ' + type; }, 2200);
+}
+
+/* ============ ФОРМАТ ============ */
+function fmtMoney(n){
+  return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽';
+}
+
+/* ============ РЕНДЕР ============ */
+function renderBalance(){
+  balanceValue.textContent = fmtMoney(state.balance);
+  balanceValue.classList.toggle('danger', state.balance <= 0);
+  profileBalance.textContent = fmtMoney(state.balance);
+  $('profileBets').textContent = state.betsCount;
+}
+
+function renderMatches(){
+  const filtered = state.matches.filter(m=>{
+    if (currentFilter === 'all') return true;
+    if (currentFilter === 'live') return m.isLive;
+    if (currentFilter === 'today') return !m.isLive && /сегодня/i.test(m.time);
+    if (currentFilter === 'tomorrow') return /завтра/i.test(m.time);
+    return true;
   });
 
-  const badge = document.getElementById('cartBadge');
-  let count = 0;
+  matchCount.textContent = state.matches.length + ' ' + plural(state.matches.length, ['матч','матча','матчей']);
 
-  document.querySelectorAll('.odd').forEach(odd=>{
-    odd.addEventListener('click',()=>{
-      const was = odd.classList.contains('selected');
-      odd.classList.toggle('selected');
-      count += was ? -1 : 1;
-      if(count < 0) count = 0;
-      badge.textContent = count;
-      badge.style.display = count > 0 ? 'flex' : 'none';
-    });
-  });
+  if (filtered.length === 0){
+    matchList.innerHTML = `
+      <div class="empty">
+        <div class="big">Пока нет матчей</div>
+        <div>Открой «Админ» внизу, чтобы добавить первый матч</div>
+      </div>`;
+    return;
+  }
 
-  // Запрет зума — все фронты
-  let lastTouch = 0;
-  document.addEventListener('touchend', e => {
-    const now = Date.now();
-    if (now - lastTouch <= 300) e.preventDefault();
-    lastTouch = now;
-  }, { passive:false });
-
-  ['gesturestart','gesturechange','gestureend'].forEach(evt=>{
-    document.addEventListener(evt, e => e.preventDefault());
-  });
-
-  document.addEventListener('wheel', e => {
-    if (e.ctrlKey) e.preventDefault();
-  }, { passive:false });
-</script>
-
-</body>
-</html>
+  matchList.innerHTML = filtered.map(m=>`
+    <div class="match" data-id="${m.id}">
+      <div class="match-head">
+        <span class="tour">${escapeHtml(m.tour || 'Матч')}</span>
+        ${m.isLive
+          ? `<span class="live">LIVE</span>`
+          : `<span>${escapeHtml(m.time || '')}</span>`}
+      </div>
+      <div class="teams">
+        <div class="team"><span class="name">${escapeHtml(m.team1)}</span><span class="score">—</span></div>
+        <div class="team"><span class="name">${escapeHtml(m.team2)}</span><span class="score">—</span></div>
+      </div>
+      <div class="odds">
+        <button class="odd" data-choice="П1" data-coef="${m.k1}">
+          <div class="label">П1</div><div class="val">${m.k1.toFixed(2)}</div>
+        </button>
+        <button class="odd" data-choice="Ничья" data-coef="${m.kx}">
+          <div class="label">Ничья</div><div class="val">${m.kx.toFixed(2)}

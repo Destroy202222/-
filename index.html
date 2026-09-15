@@ -34,18 +34,18 @@
       color: #ffeadb;
     }
 
-    /* ===== ОБЛАСТЬ КОНТЕНТА (скроллится) ===== */
+    /* ===== ОБЛАСТЬ КОНТЕНТА ===== */
     .app-scroll {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      bottom: 96px;
+      bottom: 110px;
       overflow-y: auto;
       overflow-x: hidden;
       display: flex;
       justify-content: center;
-      padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+      padding: 1.5rem;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -79,7 +79,7 @@
       pointer-events: none;
     }
 
-    /* ===== НАЗВАНИЕ ПРОЕКТА ===== */
+    /* ===== НАЗВАНИЕ ===== */
     .project-title {
       text-align: center;
       font-size: 0.95rem;
@@ -139,7 +139,6 @@
       font-size: 2rem;
       font-weight: 800;
       color: #3a1400;
-      text-shadow: 0 0 10px rgba(255, 220, 150, 0.6);
       background: linear-gradient(145deg, #ff8a00, #d64f00);
       text-transform: uppercase;
     }
@@ -379,7 +378,7 @@
     }
 
     /* ============================================================
-       ФИКСИРОВАННАЯ НИЖНЯЯ НАВИГАЦИЯ (position: fixed, не скроллится)
+       НИЖНЯЯ НАВИГАЦИЯ — ТОЛЬКО ЦЕНТРАЛЬНЫЙ КРУЖОК
        ============================================================ */
     .bottom-nav {
       position: fixed;
@@ -387,231 +386,195 @@
       right: 0;
       bottom: 0;
       z-index: 999;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-
-      height: 96px;
-      padding: 0 0.5rem;
-
-      background: linear-gradient(180deg, rgba(14, 9, 4, 0.92), rgba(10, 6, 2, 0.98));
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-
-      border-top: 1px solid rgba(255, 140, 0, 0.30);
-      box-shadow:
-        0 -10px 40px -10px rgba(255, 110, 0, 0.35),
-        0 -2px 0 rgba(255, 180, 90, 0.08) inset;
-    }
-
-    /* ===== ПУНКТ НАВИГАЦИИ ===== */
-    .nav-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      cursor: pointer;
-      color: #a3621d;
-      font-size: 0.66rem;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      transition: color 0.25s ease, transform 0.25s ease;
-      padding: 0.3rem 0.2rem;
-      user-select: none;
-      background: transparent;
-      border: none;
-      font-family: inherit;
-      position: relative;
-    }
-
-    .nav-item.active {
-      color: #ff9d33;
-    }
-
-    .nav-item:hover {
-      color: #ffa84d;
-    }
-
-    /* ===== ИКОНКА ===== */
-    .nav-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(160deg, rgba(40, 20, 5, 0.95), rgba(15, 8, 2, 0.95));
-      border: 1.5px solid rgba(255, 140, 0, 0.35);
+      height: 110px;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
     }
 
-    .nav-item.active .nav-icon {
-      border-color: #ff8a00;
-      box-shadow:
-        0 0 0 2px rgba(255, 140, 0, 0.35),
-        0 0 22px rgba(255, 140, 0, 0.75),
-        inset 0 0 14px rgba(255, 140, 0, 0.28);
-    }
-
-    /* ===== ИКОНКА «ПРОФИЛЬ» ===== */
-    .icon-profile::before {
-      content: "";
-      width: 11px;
-      height: 11px;
-      background: currentColor;
-      border-radius: 50%;
-      position: absolute;
-      top: 10px;
-      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
-    }
-
-    .icon-profile::after {
-      content: "";
-      width: 20px;
-      height: 11px;
-      background: currentColor;
-      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-      position: absolute;
-      bottom: 10px;
-      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
-    }
-
-    /* ===== ИКОНКА «МАГАЗИН» ===== */
-    .icon-shop::before {
+    /* мягкое затемнение снизу под кнопкой */
+    .bottom-nav::before {
       content: "";
       position: absolute;
-      width: 22px;
-      height: 16px;
-      background: currentColor;
-      border-radius: 4px 4px 6px 6px;
-      top: 19px;
-      box-shadow: 0 0 8px rgba(255, 140, 0, 0.7);
-    }
-
-    .icon-shop::after {
-      content: "";
-      position: absolute;
-      width: 13px;
-      height: 8px;
-      border: 2.5px solid currentColor;
-      border-bottom: none;
-      border-radius: 8px 8px 0 0;
-      top: 11px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 90px;
+      background: linear-gradient(180deg, transparent 0%, rgba(10, 6, 2, 0.55) 55%, rgba(8, 5, 2, 0.92) 100%);
+      pointer-events: none;
+      z-index: -1;
     }
 
     /* ===== ЦЕНТРАЛЬНАЯ КНОПКА «ИГРЫ» ===== */
-    .nav-item.nav-center {
-      flex: 0 0 auto;
-      padding: 0;
-      margin-top: -32px;
-    }
-
-    .nav-center .nav-icon {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 32% 28%, #ffb347 0%, #ff8a00 45%, #b13a00 100%);
-      border: 3px solid #ffd08a;
-      box-shadow:
-        0 0 0 4px rgba(255, 140, 0, 0.22),
-        0 0 38px rgba(255, 130, 0, 0.85),
-        0 12px 24px -8px #000,
-        inset 0 0 22px rgba(255, 220, 150, 0.28);
-      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .nav-center.active .nav-icon {
-      box-shadow:
-        0 0 0 4px rgba(255, 180, 60, 0.5),
-        0 0 60px rgba(255, 160, 30, 1),
-        0 12px 28px -8px #000,
-        inset 0 0 30px rgba(255, 240, 190, 0.45);
-    }
-
-    /* ============================================================
-       CSS-ЭМОДЗИ «ИГРЫ» — детальный геймпад (без юникода)
-       ============================================================ */
-    .icon-games {
+    .center-btn {
+      pointer-events: auto;
       position: relative;
-    }
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0;
 
-    /* Корпус геймпада — верхняя часть */
-    .icon-games .game-body {
-      position: absolute;
-      width: 42px;
-      height: 24px;
-      background: linear-gradient(180deg, #341a00, #1a0d00);
-      border-radius: 14px 14px 6px 6px / 12px 12px 4px 4px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -55%);
+      background: radial-gradient(circle at 32% 26%, #ffc46b 0%, #ff9500 38%, #d85500 72%, #a33700 100%);
+
       box-shadow:
-        0 0 14px rgba(255, 200, 120, 0.55),
-        inset 0 2px 4px rgba(255, 180, 70, 0.25),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.8);
-      z-index: 1;
+        0 0 0 5px rgba(255, 140, 0, 0.18),
+        0 0 0 7px rgba(255, 140, 0, 0.08),
+        0 0 44px rgba(255, 130, 0, 0.85),
+        0 14px 28px -8px #000,
+        inset 0 3px 12px rgba(255, 240, 190, 0.5),
+        inset 0 -8px 18px rgba(120, 40, 0, 0.6);
+
+      transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      /* лёгкое парение */
+      transform: translateY(-6px);
     }
 
-    /* Нижняя часть корпуса — «рукоятки» */
-    .icon-games .game-body::after {
+    /* пульсирующее кольцо вокруг кнопки */
+    .center-btn::before {
       content: "";
       position: absolute;
-      width: 46px;
-      height: 18px;
-      background: linear-gradient(180deg, #2a1400, #150a00);
-      border-radius: 4px 4px 20px 20px / 3px 3px 18px 18px;
-      bottom: -14px;
-      left: 50%;
-      transform: translateX(-50%);
+      inset: -14px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 150, 30, 0.35);
+      animation: pulse 2.4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.55;
+      }
+      50% {
+        transform: scale(1.12);
+        opacity: 0;
+      }
+    }
+
+    /* блик сверху */
+    .center-btn::after {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 20%;
+      width: 44%;
+      height: 30%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.55), transparent 70%);
+      pointer-events: none;
+    }
+
+    .center-btn:hover {
       box-shadow:
-        0 0 10px rgba(255, 180, 90, 0.4),
+        0 0 0 5px rgba(255, 160, 40, 0.28),
+        0 0 0 7px rgba(255, 160, 40, 0.14),
+        0 0 60px rgba(255, 150, 20, 1),
+        0 16px 32px -8px #000,
+        inset 0 3px 14px rgba(255, 245, 200, 0.6),
+        inset 0 -8px 20px rgba(120, 40, 0, 0.6);
+      transform: translateY(-9px) scale(1.03);
+    }
+
+    .center-btn:active {
+      transform: translateY(-3px) scale(0.97);
+    }
+
+    /* ===== CSS-ЭМОДЗИ «ИГРЫ» — геймпад ===== */
+    .game-icon {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      z-index: 2;
+      filter: drop-shadow(0 2px 4px rgba(60, 20, 0, 0.7));
+    }
+
+    /* корпус геймпада — верх */
+    .game-icon .gp-body {
+      position: absolute;
+      width: 44px;
+      height: 22px;
+      background: linear-gradient(180deg, #2b1500, #150900);
+      border-radius: 14px 14px 5px 5px / 12px 12px 4px 4px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -60%);
+      box-shadow:
+        inset 0 2px 3px rgba(255, 190, 90, 0.35),
         inset 0 -2px 4px rgba(0, 0, 0, 0.9);
     }
 
-    /* D-pad (крестовина) слева */
-    .icon-games .game-dpad {
+    /* корпус — нижние рукоятки */
+    .game-icon .gp-body::after {
+      content: "";
       position: absolute;
-      width: 11px;
-      height: 11px;
-      background: linear-gradient(145deg, #ffd280, #ff9d33);
+      width: 48px;
+      height: 16px;
+      background: linear-gradient(180deg, #221000, #0e0600);
+      border-radius: 3px 3px 22px 22px / 3px 3px 20px 20px;
+      bottom: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.95);
+    }
+
+    /* D-pad (крестовина) */
+    .game-icon .gp-dpad {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: linear-gradient(145deg, #ffe0a0, #ffab3d);
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) translate(-13px, -1px);
+      transform: translate(-50%, -50%) translate(-13px, -2px);
       clip-path: polygon(
         35% 0%, 65% 0%, 65% 35%, 100% 35%, 100% 65%,
         65% 65%, 65% 100%, 35% 100%, 35% 65%,
         0% 65%, 0% 35%, 35% 35%
       );
-      box-shadow: 0 0 8px rgba(255, 190, 70, 1);
+      box-shadow: 0 0 9px rgba(255, 200, 80, 1);
       z-index: 3;
     }
 
-    /* Кнопки A/B/X/Y справа — 4 точки */
-    .icon-games .game-btn {
+    /* кнопки A/B/X/Y */
+    .game-icon .gp-btn {
       position: absolute;
-      width: 5px;
-      height: 5px;
-      background: radial-gradient(circle at 30% 30%, #ffe6a8, #ff9d33);
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle at 30% 30%, #fff3cf, #ffab3d);
       border-radius: 50%;
       top: 50%;
       left: 50%;
-      box-shadow: 0 0 7px rgba(255, 190, 70, 1);
+      box-shadow: 0 0 8px rgba(255, 200, 80, 1);
       z-index: 3;
     }
 
-    .icon-games .game-btn.b1 { transform: translate(-50%, -50%) translate(13px, -6px); }
-    .icon-games .game-btn.b2 { transform: translate(-50%, -50%) translate(18px, -1px); }
-    .icon-games .game-btn.b3 { transform: translate(-50%, -50%) translate(13px, 4px); }
-    .icon-games .game-btn.b4 { transform: translate(-50%, -50%) translate(8px, -1px); }
+    .game-icon .gp-btn.b1 { transform: translate(-50%, -50%) translate(14px, -7px); }
+    .game-icon .gp-btn.b2 { transform: translate(-50%, -50%) translate(19px, -1px); }
+    .game-icon .gp-btn.b3 { transform: translate(-50%, -50%) translate(14px, 5px); }
+    .game-icon .gp-btn.b4 { transform: translate(-50%, -50%) translate(9px, -1px); }
+
+    /* активное состояние */
+    .center-btn.active {
+      box-shadow:
+        0 0 0 5px rgba(255, 180, 60, 0.45),
+        0 0 0 8px rgba(255, 180, 60, 0.18),
+        0 0 70px rgba(255, 170, 30, 1),
+        0 16px 32px -8px #000,
+        inset 0 3px 16px rgba(255, 250, 220, 0.7),
+        inset 0 -8px 20px rgba(120, 40, 0, 0.6);
+    }
 
     /* ===== АДАПТИВ ===== */
     @media (max-width: 640px) {
-      .app-scroll { padding: 1.2rem 1rem; bottom: 88px; }
+      .app-scroll { padding: 1.2rem 1rem; bottom: 100px; }
       .card { padding: 1.6rem 1.3rem; border-radius: 30px; }
       .avatar { width: 66px; height: 66px; }
       .nickname { font-size: 1.7rem; }
@@ -627,18 +590,15 @@
       .loss-icon::after { width: 22px; height: 5px; top: 12px; left: 3px; }
       .project-title { font-size: 0.8rem; letter-spacing: 0.3em; }
 
-      .bottom-nav { height: 88px; }
-      .nav-icon { width: 40px; height: 40px; }
-      .nav-center .nav-icon { width: 60px; height: 60px; }
-      .nav-item.nav-center { margin-top: -26px; }
-
-      .icon-games .game-body { width: 38px; height: 22px; }
-      .icon-games .game-body::after { width: 42px; height: 16px; bottom: -12px; }
-      .icon-games .game-dpad { transform: translate(-50%, -50%) translate(-12px, -1px); }
-      .icon-games .game-btn.b1 { transform: translate(-50%, -50%) translate(12px, -5px); }
-      .icon-games .game-btn.b2 { transform: translate(-50%, -50%) translate(16px, -1px); }
-      .icon-games .game-btn.b3 { transform: translate(-50%, -50%) translate(12px, 4px); }
-      .icon-games .game-btn.b4 { transform: translate(-50%, -50%) translate(7px, -1px); }
+      .center-btn { width: 74px; height: 74px; }
+      .game-icon { width: 42px; height: 42px; }
+      .game-icon .gp-body { width: 38px; height: 20px; }
+      .game-icon .gp-body::after { width: 42px; height: 14px; bottom: -11px; }
+      .game-icon .gp-dpad { transform: translate(-50%, -50%) translate(-11px, -2px); }
+      .game-icon .gp-btn.b1 { transform: translate(-50%, -50%) translate(12px, -6px); }
+      .game-icon .gp-btn.b2 { transform: translate(-50%, -50%) translate(16px, -1px); }
+      .game-icon .gp-btn.b3 { transform: translate(-50%, -50%) translate(12px, 4px); }
+      .game-icon .gp-btn.b4 { transform: translate(-50%, -50%) translate(8px, -1px); }
     }
 
     @media (max-width: 420px) {
@@ -648,31 +608,22 @@
       .balance-section { padding: 0.8rem 1.2rem; max-width: 320px; }
       .wl-label { display: none; }
 
-      .bottom-nav { height: 84px; }
-      .nav-item { font-size: 0.58rem; letter-spacing: 0.1em; }
-      .nav-icon { width: 36px; height: 36px; }
-      .nav-center .nav-icon { width: 56px; height: 56px; }
-      .nav-item.nav-center { margin-top: -22px; }
-
-      .icon-profile::before { width: 9px; height: 9px; top: 9px; }
-      .icon-profile::after { width: 17px; height: 9px; bottom: 9px; }
-      .icon-shop::before { width: 19px; height: 14px; top: 16px; }
-      .icon-shop::after { width: 11px; height: 7px; top: 10px; }
-
-      .icon-games .game-body { width: 34px; height: 20px; }
-      .icon-games .game-body::after { width: 38px; height: 15px; bottom: -11px; }
-      .icon-games .game-dpad { width: 10px; height: 10px; transform: translate(-50%, -50%) translate(-11px, -1px); }
-      .icon-games .game-btn { width: 4.5px; height: 4.5px; }
-      .icon-games .game-btn.b1 { transform: translate(-50%, -50%) translate(11px, -5px); }
-      .icon-games .game-btn.b2 { transform: translate(-50%, -50%) translate(15px, -1px); }
-      .icon-games .game-btn.b3 { transform: translate(-50%, -50%) translate(11px, 4px); }
-      .icon-games .game-btn.b4 { transform: translate(-50%, -50%) translate(7px, -1px); }
+      .center-btn { width: 68px; height: 68px; }
+      .game-icon { width: 38px; height: 38px; }
+      .game-icon .gp-body { width: 34px; height: 18px; }
+      .game-icon .gp-body::after { width: 38px; height: 13px; bottom: -10px; }
+      .game-icon .gp-dpad { width: 11px; height: 11px; transform: translate(-50%, -50%) translate(-10px, -2px); }
+      .game-icon .gp-btn { width: 5px; height: 5px; }
+      .game-icon .gp-btn.b1 { transform: translate(-50%, -50%) translate(11px, -5px); }
+      .game-icon .gp-btn.b2 { transform: translate(-50%, -50%) translate(14px, -1px); }
+      .game-icon .gp-btn.b3 { transform: translate(-50%, -50%) translate(11px, 4px); }
+      .game-icon .gp-btn.b4 { transform: translate(-50%, -50%) translate(7px, -1px); }
     }
   </style>
 </head>
 <body>
 
-  <!-- ===== СКРОЛЛЯЩАЯСЯ ОБЛАСТЬ КОНТЕНТА ===== -->
+  <!-- ===== КОНТЕНТ ===== -->
   <div class="app-scroll">
     <div class="card">
 
@@ -724,31 +675,17 @@
     </div>
   </div>
 
-  <!-- ===== ФИКСИРОВАННАЯ НИЖНЯЯ НАВИГАЦИЯ ===== -->
+  <!-- ===== НИЖНЯЯ НАВИГАЦИЯ — ТОЛЬКО ЦЕНТРАЛЬНЫЙ КРУЖОК ===== -->
   <nav class="bottom-nav">
-    <!-- Профиль -->
-    <button class="nav-item active" type="button" data-tab="profile">
-      <span class="nav-icon icon-profile" aria-hidden="true"></span>
-      <span class="nav-label">Профиль</span>
-    </button>
-
-    <!-- ИГРЫ (центр) -->
-    <button class="nav-item nav-center" type="button" data-tab="games">
-      <span class="nav-icon icon-games" aria-hidden="true">
-        <span class="game-body"></span>
-        <span class="game-dpad"></span>
-        <span class="game-btn b1"></span>
-        <span class="game-btn b2"></span>
-        <span class="game-btn b3"></span>
-        <span class="game-btn b4"></span>
+    <button class="center-btn active" type="button" data-tab="games" aria-label="Игры">
+      <span class="game-icon" aria-hidden="true">
+        <span class="gp-body"></span>
+        <span class="gp-dpad"></span>
+        <span class="gp-btn b1"></span>
+        <span class="gp-btn b2"></span>
+        <span class="gp-btn b3"></span>
+        <span class="gp-btn b4"></span>
       </span>
-      <span class="nav-label">Игры</span>
-    </button>
-
-    <!-- Магазин -->
-    <button class="nav-item" type="button" data-tab="shop">
-      <span class="nav-icon icon-shop" aria-hidden="true"></span>
-      <span class="nav-label">Магазин</span>
     </button>
   </nav>
 
@@ -809,13 +746,10 @@
         }
       }
 
-      // ===== НАВИГАЦИЯ =====
-      const navItems = document.querySelectorAll('.nav-item');
-      navItems.forEach((item) => {
-        item.addEventListener('click', () => {
-          navItems.forEach((i) => i.classList.remove('active'));
-          item.classList.add('active');
-        });
+      // ===== ЦЕНТРАЛЬНАЯ КНОПКА =====
+      const centerBtn = document.querySelector('.center-btn');
+      centerBtn.addEventListener('click', () => {
+        centerBtn.classList.toggle('active');
       });
     })();
   </script>

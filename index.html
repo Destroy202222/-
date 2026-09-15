@@ -669,4 +669,305 @@
         '</div>' +
         '<div class="odds">' +
           '<button type="button" class="odd" data-choice="П1" data-coef="' + m.k1 + '"><div class="label">П1</div><div class="val">' + Number(m.k1).toFixed(2) + '</div></button>' +
-          '<button type="button" class="odd" data-choice="Ничья" data-coef="' + m.kx + '"><div class="label">Ничья</div><div class="val
+          '<button type="button" class="odd" data-choice="Ничья" data-coef="' + m.kx + '"><div class="label">Ничья</div><div class="val">' + Number(m.kx).toFixed(2) + '</div></button>' +
+          '<button type="button" class="odd" data-choice="П2" data-coef="' + m.k2 + '"><div class="label">П2</div><div class="val">' + Number(m.k2).toFixed(2) + '</div></button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    // Навешиваем обработчики на кнопки коэффициентов
+    $('matchList').querySelectorAll('.odd').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var matchEl = btn.closest('.match');
+        var matchId = Number(matchEl.getAttribute('data-id'));
+        var choice = btn.getAttribute('data-choice');
+        var coef = Number(btn.getAttribute('data-coef'));
+        openBet(matchId, choice, coef);
+      });
+    });
+  }
+
+  function renderAdminList(){
+    if (state.matches.length === 0){
+      $('adminList').innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px">Матчей пока нет</div>';
+      return;
+    }
+    $('adminList').innerHTML = state.matches.map(function(m){
+      return '' +
+      '<div class="admin-item">' +
+        '<div class="admin-item-info">' +
+          '<div class="admin-item-title">' + escapeHtml(m.team1) + ' — ' + escapeHtml(m.team2) + '</div>' +
+          '<div class="admin-item-sub">' + escapeHtml(m.tour || '—') + ' • ' + escapeHtml(m.time || '—') + ' • ' +
+            Number(m.k1).toFixed(2) + ' / ' + Number(m.kx).toFixed(2) + ' / ' + Number(m.k2).toFixed(2) +
+          '</div>' +
+        '</div>' +
+        '<button type="button" class="del-btn" data-del="' + m.id + '">×</button>' +
+      '</div>';
+    }).join('');
+
+    $('adminList').querySelectorAll('[data-del]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = Number(btn.getAttribute('data-del'));
+        deleteMatch(id);
+      });
+    });
+  }
+
+  function renderAll(){
+    renderBalance();
+    renderMatches();
+    renderAdminList();
+    save();
+  }
+
+  /* ============ ДОБАВЛЕНИЕ МАТЧА ============ */
+  $('addMatchBtn').addEventListener('click', function   (){
+    var tour  = $('fTour').value.trim();
+    var t1    = $('fTeam1').value.trim();
+    var t2    = $('fTeam2').value.trim();
+    var time  = $('fTime').value.trim();
+    var k1    = parseFloat($('fK1').value);
+ var kx    = parseFloat($('fKX').value);
+    var k2    = parseFloat($('fK2').value);
+
+    if (!t1 || !t2){
+      toast('Введи названия обеих команд', 'error');
+      return;
+    }
+    if (!(k1 > 1) || !(kx > 1) || !(k2 > 1)){
+      toast('Коэффициенты должны быть больше 1', 'error');
+      return;
+    }
+
+    var isLive = /live|лайв/i.test(time);
+
+    state.matches.unshift({
+      id: state.nextId++,
+      tour: tour || 'Матч',
+      team1: t1,
+      team2: t2,
+      time: time || 'Сегодня',
+      k1: k1,
+      kx: kx,
+      k2: k2,
+      isLive: isLive
+    });
+
+    $('fTour').value = '';
+    $('fTeam1').value = '';
+    $('fTeam2').value = '';
+    $('fTime').value = '';
+
+    renderAll();
+    toast('Матч добавлен', 'success');
+  });
+
+  /* ============ УДАЛЕНИЕ МАТЧА ============ */
+  function deleteMatch(id){
+    state.matches = state.matches.filter(function(m){ return m.id !== id; });
+    renderAll();
+    toast('Матч удалён', 'success');
+  }
+
+  /* ============ СТАВКА ============ */
+  var currentBet = null;
+
+  function openBet(matchId, choice, coef){
+    var m = state.matches.find(function(x){ return x.id === matchId; });
+    if (!m) return;
+    currentBet = { matchId: matchId, choice: choice, coef: coef };
+    $('betMatch').textContent = m.team1 + ' — ' + m.team2;
+    $('betChoice').textContent = choice;
+    $('betCoef').textContent = coef.toFixed(2);
+    $('betAmount').value = 100;
+    updateBetWin();
+    openModal('betOverlay');
+  }
+
+  function updateBetWin(){
+    if (!currentBet) return;
+    var amount = parseFloat($('betAmount').value) || 0;
+    var win = amount * currentBet.coef;
+    $('betWin').textContent = fmtMoney(win);
+  }
+
+  $('betAmount').addEventListener('input', updateBetWin);
+
+  document.querySelectorAll('[data-amount]').forEach(function(b){
+    b.addEventListener('click', function(){
+      $('betAmount').value = b.getAttribute('data-amount');
+      updateBetWin();
+    });
+  });
+
+  $('placeBetBtn').addEventListener('click', function(){
+    if (!currentBet){
+      toast('Сначала выбери коэффициент', 'error');
+      return;
+    }
+    var amount = parseFloat($('betAmount').value) || 0;
+    if (amount < 10){
+      toast('Минимальная ставка — 10 ₽', 'error');
+      return;
+    }
+    if (amount > state.balance){
+      toast('Недостаточно средств', 'error');
+      return;
+    }
+    state.balance -= amount;
+    state.betsCount += 1;
+
+    var coef = currentBet.coef;
+    var win = amount * coef;
+
+    closeModal('betOverlay');
+    renderAll();
+
+    // Через небольшую задержку "выплачиваем" выигрыш (демо-режим)
+    setTimeout(function(){
+      state.balance += win;
+      renderAll();
+      toast('Выигрыш +' + fmtMoney(win), 'success');
+    }, 1200);
+
+    currentBet = null;
+  });
+
+  /* ============ ФИЛЬТРЫ ============ */
+  document.querySelectorAll('.chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      currentFilter = chip.getAttribute('data-filter');
+      renderMatches();
+    });
+  });
+
+  /* ============ НИЖНЯЯ НАВИГАЦИЯ ============ */
+  document.querySelectorAll('.nav-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      var tab = item.getAttribute('data-tab');
+
+      document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+      item.classList.add('active');
+
+      if (tab === 'admin') openModal('adminOverlay');
+      else if (tab === 'profile') openModal('profileOverlay');
+      else if (tab === 'live'){
+        currentFilter = 'live';
+        document.querySelectorAll('.chip').forEach(function(c){
+          c.classList.toggle('active', c.getAttribute('data-filter') === 'live');
+        });
+        renderMatches();
+      } else {
+        currentFilter = 'all';
+        document.querySelectorAll('.chip').forEach(function(c){
+          c.classList.toggle('active', c.getAttribute('data-filter') === 'all');
+        });
+        renderMatches();
+      }
+    });
+  });
+
+  /* ============ КОРЗИНА ============ */
+  $('cartFab').addEventListener('click', function(){
+    if (state.matches.length === 0){
+      toast('Сначала добавь матчи в админке', 'error');
+      return;
+    }
+    toast('Выбери коэффициент и сделай ставку', 'success');
+  });
+
+  /* ============ ПОИСК ============ */
+  $('searchBtn').addEventListener('click', function(){
+    $('searchInput').value = '';
+    $('searchResults').innerHTML = '';
+    openModal('searchOverlay');
+    setTimeout(function(){ $('searchInput').focus(); }, 300);
+  });
+
+  $('searchInput').addEventListener('input', function(){
+    var q = $('searchInput').value.trim().toLowerCase();
+    if (!q){
+      $('searchResults').innerHTML = '';
+      return;
+    }
+    var found = state.matches.filter(function(m){
+      return (m.team1 + ' ' + m.team2 + ' ' + (m.tour || '')).toLowerCase().indexOf(q) !== -1;
+    });
+    if (found.length === 0){
+      $('searchResults').innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px">Ничего не найдено</div>';
+      return;
+    }
+    $('searchResults').innerHTML = found.map(function(m){
+      return '<div class="admin-item"><div class="admin-item-info">' +
+        '<div class="admin-item-title">' + escapeHtml(m.team1) + ' — ' + escapeHtml(m.team2) + '</div>' +
+        '<div class="admin-item-sub">' + escapeHtml(m.tour || '—') + ' • ' + escapeHtml(m.time || '—') + '</div>' +
+      '</div></div>';
+    }).join('');
+  });
+
+  /* ============ ВХОД ============ */
+  $('loginBtn').addEventListener('click', function(){ openModal('loginOverlay'); });
+
+  $('doLoginBtn').addEventListener('click', function(){
+    var u = $('loginUser').value.trim();
+    if (!u){ toast('Введи логин', 'error'); return; }
+    closeModal('loginOverlay');
+    toast('Добро пожаловать, ' + u, 'success');
+  });
+
+  /* ============ ПОПОЛНЕНИЕ ============ */
+  $('topupBtn').addEventListener('click', function(){
+    $('topupAmount').value = 1000;
+    openModal('topupOverlay');
+  });
+
+  document.querySelectorAll('[data-topup]').forEach(function(b){
+    b.addEventListener('click', function(){
+      $('topupAmount').value = b.getAttribute('data-topup');
+    });
+  });
+
+  $('doTopupBtn').addEventListener('click', function(){
+    var amount = parseFloat($('topupAmount').value) || 0;
+    if (amount <= 0){ toast('Введи сумму', 'error'); return; }
+    state.balance += amount;
+    renderAll();
+    closeModal('topupOverlay');
+    toast('Пополнено на ' + fmtMoney(amount), 'success');
+  });
+
+  /* ============ СБРОС ============ */
+  $('resetBtn').addEventListener('click', function(){
+    if (!confirm('Сбросить всё: матчи и баланс?')) return;
+    state = { balance: 500, matches: [], betsCount: 0, nextId: 1 };
+    renderAll();
+    closeAllModals();
+    toast('Всё сброшено. Баланс: 500 ₽', 'success');
+  });
+
+  /* ============ ЗАПРЕТ ЗУМА ============ */
+  var lastTouch = 0;
+  document.addEventListener('touchend', function(e){
+    var now = Date.now();
+    if (now - lastTouch <= 300) e.preventDefault();
+    lastTouch = now;
+  }, { passive:false });
+
+  ['gesturestart','gesturechange','gestureend'].forEach(function(evt){
+    document.addEventListener(evt, function(e){ e.preventDefault(); });
+  });
+
+  document.addEventListener('wheel', function(e){
+    if (e.ctrlKey) e.preventDefault();
+  }, { passive:false });
+
+  /* ============ СТАРТ ============ */
+  renderAll();
+
+})();
+</script>
+
+</body>
+</html>

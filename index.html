@@ -491,12 +491,12 @@
                 <div class="search-status" id="searchStatus">Поиск</div>
                 <div class="search-mode" id="searchMode">3×3</div>
                 <div class="search-sub-mode" id="searchSubMode">рейтинг · 12</div>
-                <div class="search-players">
+                <div class="search-players" id="searchPlayersBlock" style="display:none;">
                     <span class="current" id="searchCurrentPlayers">0</span>
                     <span class="slash">/</span>
                     <span class="total" id="searchTotalPlayers">6</span>
                 </div>
-                <div class="search-timer" id="searchTimerDisplay"><i class="fas fa-clock"></i> 00:00</div>
+                <div class="search-timer" id="searchTimerDisplay" style="display:none;"><i class="fas fa-clock"></i> 00:00</div>
                 <div class="search-note">
                     <i class="fas fa-info-circle"></i> Пати попадёт в одну команду. Не закрывайте приложение — подтверждение придёт здесь.
                 </div>
@@ -620,7 +620,7 @@
             </div>
 
             <div class="match-dynamics">
-                <div class="title"><i class="fas fa-chart-bar"></i> Динамика матчей (последние 10)</div>
+                <div class="title" style="font-size:14px;font-weight:700;margin-bottom:8px;"><i class="fas fa-chart-bar"></i> Динамика матчей (последние 10)</div>
                 <div class="chart-container" id="chartContainer" style="display:flex;align-items:flex-end;gap:4px;height:60px;padding:8px;background:#1a1a2e;border-radius:10px;min-height:60px;"><div style="color:#666; text-align:center; width:100%; padding:10px 0;">Нет данных</div></div>
             </div>
             <div class="match-history">
@@ -720,6 +720,7 @@
     let heartbeatInterval = null;
     let isConfirming = false;
     let heartbeatFailCount = 0;
+    let searchCountdownTimer = null;
 
     let adminTab = 'matches';
     let adminMatches = [];
@@ -1310,11 +1311,7 @@
             if (searchTimerInterval) clearInterval(searchTimerInterval);
             if (queueUpdateInterval) { clearInterval(queueUpdateInterval); queueUpdateInterval = null; }
             if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
-            document.getElementById('queueBtn').style.display = 'block';
-            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-            document.getElementById('queueBtn').className = 'btn-queue';
-            document.getElementById('queueBtn').onclick = startSearch;
-            document.getElementById('queueBtn').disabled = false;
+            document.getElementById('queueBtn').style.display = 'none';
             document.getElementById('cancelBtn').style.display = 'none';
             if (searchChannel) { supabaseClient.removeChannel(searchChannel); searchChannel = null; }
             matchPlayers = [...orange, ...blue];
@@ -1344,6 +1341,7 @@
                     startSearchTimer();
                 }
             }
+            updateSearchVisibility();
             await updateQueueCount();
         } catch (e) {}
     }
@@ -1380,21 +1378,72 @@
         if (searchTimerInterval) { clearInterval(searchTimerInterval); searchTimerInterval = null; }
         if (queueUpdateInterval) { clearInterval(queueUpdateInterval); queueUpdateInterval = null; }
         if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
+        if (searchCountdownTimer) { clearInterval(searchCountdownTimer); searchCountdownTimer = null; }
         if (searchChannel) { try { await supabaseClient.removeChannel(searchChannel); } catch (e) {} searchChannel = null; }
         isSearching = false; isStartingSearch = false; isCanceling = false;
     }
 
+    // ============================================================
+    //  УПРАВЛЕНИЕ ВИДИМОСТЬЮ ЭЛЕМЕНТОВ ПОИСКА
+    // ============================================================
+    function updateSearchVisibility() {
+        const playersBlock = document.getElementById('searchPlayersBlock');
+        const timerBlock = document.getElementById('searchTimerDisplay');
+        const queueBtn = document.getElementById('queueBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        if (isSearching) {
+            // В поиске: показываем счётчик + таймер + отмена, скрываем "Начать"
+            playersBlock.style.display = 'flex';
+            timerBlock.style.display = 'block';
+            queueBtn.style.display = 'none';
+            cancelBtn.style.display = 'inline-flex';
+            cancelBtn.disabled = false;
+            cancelBtn.textContent = 'Отменить поиск';
+        } else {
+            // Не в поиске: скрываем счётчик + таймер, показываем только "Начать"
+            playersBlock.style.display = 'none';
+            timerBlock.style.display = 'none';
+            queueBtn.style.display = 'block';
+            queueBtn.disabled = false;
+            queueBtn.innerHTML = '<i class="fas fa-search"></i> Начать поиск';
+            cancelBtn.style.display = 'none';
+        }
+    }
+
+    // ============================================================
+    //  ПОИСК С ЗАДЕРЖКОЙ 3 СЕКУНДЫ
+    // ============================================================
     async function startSearch() {
         if (isStartingSearch || isSearching) return;
         if (currentMatch) { navigate('matchPage'); return showToast('info', 'Активный матч', 'Вы уже в матче!'); }
         if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
 
         isStartingSearch = true;
+        const btn = document.getElementById('queueBtn');
+        btn.disabled = true;
+
+        // Обратный отсчёт 3 секунды
+        let countdown = 3;
+        btn.innerHTML = `<i class="fas fa-hourglass-half"></i> Поиск через ${countdown}...`;
+
+        if (searchCountdownTimer) clearInterval(searchCountdownTimer);
+        searchCountdownTimer = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                btn.innerHTML = `<i class="fas fa-hourglass-half"></i> Поиск через ${countdown}...`;
+            }
+        }, 1000);
+
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        clearInterval(searchCountdownTimer);
+        searchCountdownTimer = null;
+
+        if (!isStartingSearch) return;
+
         try {
-            document.getElementById('queueBtn').disabled = true;
-            document.getElementById('queueBtn').textContent = '⏳ Подождите...';
-            document.getElementById('cancelBtn').style.display = 'none';
             await cleanupSearchState();
+            isStartingSearch = true;
 
             const { data: dq } = await supabaseClient.from('queue').select('id').eq('user_id', currentUser.id).eq('status', 'searching');
             if (dq && dq.length > 0) await supabaseClient.from('queue').delete().in('id', dq.map(q => q.id));
@@ -1409,17 +1458,13 @@
             if (qErr) {
                 showToast('error', 'Ошибка', 'Не удалось встать: ' + qErr.message);
                 isStartingSearch = false;
-                document.getElementById('queueBtn').disabled = false;
-                document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-                document.getElementById('queueBtn').style.display = 'block';
+                updateSearchVisibility();
                 return;
             }
 
             isSearching = true;
             searchSeconds = 0;
-            document.getElementById('queueBtn').style.display = 'none';
-            document.getElementById('cancelBtn').style.display = 'inline-flex';
-            document.getElementById('searchStatus').textContent = 'Поиск';
+            updateSearchVisibility();
             await updateQueueCount();
             await updateHomeStats();
             startSearchTimer();
@@ -1436,46 +1481,61 @@
             showToast('error', 'Ошибка', e.message);
         } finally {
             isStartingSearch = false;
-            document.getElementById('queueBtn').disabled = false;
-            document.getElementById('queueBtn').style.display = 'block';
-            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
         }
     }
 
     async function updateQueueCount() {
+        if (!isSearching) return;
         try {
             await checkAndCleanDuplicates();
             const { count } = await supabaseClient.from('queue').select('*', { count: 'exact', head: true }).eq('status', 'searching');
             const cnt = count || 0;
             document.getElementById('searchCurrentPlayers').textContent = cnt;
-            const { data: players } = await supabaseClient.from('queue').select('username').eq('status', 'searching').limit(6);
-            if (players && players.length > 0) document.getElementById('searchStatus').textContent = 'Поиск (' + players.map(p => p.username).join(', ') + ')';
-            else document.getElementById('searchStatus').textContent = 'Поиск';
+            document.getElementById('searchStatus').textContent = 'Поиск';
         } catch (e) {}
     }
 
+    // ============================================================
+    //  ОТМЕНА С ЗАДЕРЖКОЙ 3 СЕКУНДЫ
+    // ============================================================
     async function cancelSearch() {
         if (isCanceling || !isSearching) return;
         isCanceling = true;
-        document.getElementById('cancelBtn').disabled = true;
-        document.getElementById('cancelBtn').textContent = '⏳ Отмена...';
+
+        const cancelBtn = document.getElementById('cancelBtn');
+        cancelBtn.disabled = true;
+
+        let countdown = 3;
+        cancelBtn.innerHTML = `<i class="fas fa-hourglass-half"></i> Отмена ${countdown}...`;
+
+        if (searchCountdownTimer) clearInterval(searchCountdownTimer);
+        searchCountdownTimer = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                cancelBtn.innerHTML = `<i class="fas fa-hourglass-half"></i> Отмена ${countdown}...`;
+            }
+        }, 1000);
+
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        clearInterval(searchCountdownTimer);
+        searchCountdownTimer = null;
+
+        if (!isCanceling) return;
+
         try {
             await supabaseClient.from('queue').delete().eq('user_id', currentUser.id).eq('status', 'searching');
+            isSearching = false;
             await cleanupSearchState();
-            document.getElementById('queueBtn').style.display = 'block';
-            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-            document.getElementById('queueBtn').className = 'btn-queue';
-            document.getElementById('queueBtn').onclick = startSearch;
-            document.getElementById('queueBtn').disabled = false;
-            document.getElementById('cancelBtn').style.display = 'none';
-            document.getElementById('cancelBtn').disabled = false;
-            document.getElementById('cancelBtn').textContent = 'Отменить поиск';
+            updateSearchVisibility();
             document.getElementById('searchCurrentPlayers').textContent = '0';
             document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
             await updateHomeStats();
             showToast('info', 'Поиск отменён', '');
-        } catch (e) { showToast('error', 'Ошибка', e.message); }
-        finally { isCanceling = false; }
+        } catch (e) {
+            showToast('error', 'Ошибка', e.message);
+        } finally {
+            isCanceling = false;
+        }
     }
 
     function startSearchTimer() {
@@ -1940,12 +2000,12 @@
         }
         const { error } = await supabaseClient.from('friend_requests').insert({ from_user_id: currentUser.id, to_user_id: uid, status: 'pending' });
         if (error) return showToast('error', 'Ошибка', error.message);
-        showToast('success', 'Заявка отправлена', '');
-        await loadFriends();
+        showToast('successFriends', 'Заявка отправлена', '');
+       .find await loadFriends();
     }
 
-    async function acceptFriend(uid) {
-        await supabaseClient.from('friend_requests').update({ status: 'accepted' }).eq('from_user_id', uid).eq('to_user_id', currentUser.id);
+    async function accept(fFriend(uid) {
+        await supabaseClient =>.from('friend_requests').update({ status f: 'accepted' }).eq('from_user_id', uid).eq('to_user_id', currentUser.id);
         await supabaseClient.from('friends').insert([{ user_id: currentUser.id, friend_id: uid }, { user_id: uid, friend_id: currentUser.id }]);
         showToast('success', 'Друг добавлен', '');
         await loadFriends();
@@ -1964,7 +2024,7 @@
     }
 
     function inviteToParty(id) {
-        const fr = myFriends.find(f => f.id === id);
+        const fr = my.id === id);
         if (!fr) return;
         if (partyFriends.some(p => p.id === id)) return showToast('info', 'Уже в пати', '');
         if (partyFriends.length >= 2) return showToast('error', 'Ошибка', 'Максимум 2');

@@ -8,122 +8,35 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #0b0b0f;
-            color: #fff;
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-            padding-bottom: 70px;
-            min-height: 100vh;
-            line-height: 1.5;
-        }
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: #1a1a2e;
-            border: 1px solid rgba(255,215,0,0.2);
-            border-radius: 16px;
-            padding: 16px 24px;
-            max-width: 400px;
-            width: 90%;
-            z-index: 9999;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
-            opacity: 0;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-            backdrop-filter: blur(12px);
-        }
+        body { background: #0b0b0f; color: #fff; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; padding-bottom: 70px; min-height: 100vh; line-height: 1.5; }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #1a1a2e; border: 1px solid rgba(255,215,0,0.2); border-radius: 16px; padding: 16px 24px; max-width: 400px; width: 90%; z-index: 9999; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease; opacity: 0; box-shadow: 0 20px 60px rgba(0,0,0,0.8); backdrop-filter: blur(12px); }
         .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
         .toast .ttl { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
         .toast .ttl.success { color: #51cf66; }
         .toast .ttl.error { color: #ff6b6b; }
         .toast .ttl.info { color: #4dabf7; }
         .toast .txt { font-size: 13px; color: #b0b0c0; }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(16px);
-            z-index: 9998;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(16px); z-index: 9998; display: none; align-items: center; justify-content: center; padding: 20px; }
         .modal-overlay.active { display: flex; }
-        .modal-box {
-            background: #14141f;
-            border: 1px solid rgba(255,215,0,0.15);
-            border-radius: 28px;
-            padding: 32px 28px;
-            max-width: 440px;
-            width: 100%;
-            animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
-        }
-        @keyframes modalIn {
-            from { transform: scale(0.85) translateY(20px); opacity: 0; }
-            to { transform: scale(1) translateY(0); opacity: 1; }
-        }
+        .modal-box { background: #14141f; border: 1px solid rgba(255,215,0,0.15); border-radius: 28px; padding: 32px 28px; max-width: 440px; width: 100%; animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 40px 80px rgba(0,0,0,0.6); }
+        @keyframes modalIn { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-box .modal-title { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 2px; }
         .modal-box .modal-title .highlight { color: #ffd700; }
         .modal-box .modal-sub { text-align: center; color: #8888aa; font-size: 13px; margin-bottom: 6px; }
-        .modal-box .modal-timer {
-            text-align: center;
-            font-size: 42px;
-            font-weight: 900;
-            color: #ffd700;
-            margin: 8px 0 16px;
-            font-variant-numeric: tabular-nums;
-        }
+        .modal-box .modal-timer { text-align: center; font-size: 42px; font-weight: 900; color: #ffd700; margin: 8px 0 16px; font-variant-numeric: tabular-nums; }
         .modal-box .modal-timer.warning { color: #ff6b6b; animation: pulseTimer 0.5s ease-in-out infinite; }
         @keyframes pulseTimer { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .modal-players {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 16px;
-            max-height: 260px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
+        .modal-players { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; max-height: 260px; overflow-y: auto; padding-right: 4px; }
         .modal-players::-webkit-scrollbar { width: 3px; }
         .modal-players::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
         .modal-players::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 10px; }
-        .modal-player {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #1a1a2e;
-            border-radius: 14px;
-            padding: 10px 14px;
-            border: 1px solid #2a2a4a;
-            transition: all 0.4s ease;
-            cursor: pointer;
-        }
+        .modal-player { display: flex; align-items: center; gap: 12px; background: #1a1a2e; border-radius: 14px; padding: 10px 14px; border: 1px solid #2a2a4a; transition: all 0.4s ease; cursor: pointer; }
         .modal-player:hover { border-color: #ffd700; }
         .modal-player.confirmed { border-color: #51cf66; background: rgba(81,207,102,0.08); box-shadow: 0 0 20px rgba(81,207,102,0.05); }
-        .modal-player .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-            color: #0b0b0f;
-            flex-shrink: 0;
-        }
+        .modal-player .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #0b0b0f; flex-shrink: 0; }
         .modal-player .info { flex: 1; }
         .modal-player .info .name { font-weight: 600; font-size: 14px; }
         .modal-player .info .status { font-size: 12px; color: #666; }
@@ -132,102 +45,31 @@
         .modal-player .status-icon.pending { color: #ffd700; animation: pulseIcon 1s ease-in-out infinite; }
         @keyframes pulseIcon { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.9); } }
         .modal-actions { display: flex; gap: 10px; }
-        .modal-actions button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            font-family: inherit;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .modal-actions .btn-confirm {
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            color: #0b0b0f;
-        }
+        .modal-actions button { flex: 1; padding: 14px; border: none; border-radius: 14px; font-family: inherit; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s ease; }
+        .modal-actions .btn-confirm { background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; }
         .modal-actions .btn-confirm:hover:not(:disabled) { transform: scale(1.02); }
         .modal-actions .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         .modal-actions .btn-confirm.confirmed { background: linear-gradient(135deg, #51cf66, #2b8a3e); color: #fff; }
-
-        .auth-page {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-            background: radial-gradient(ellipse at 50% 0%, #1a1a2e 0%, #0b0b0f 70%);
-        }
-        .auth-box {
-            background: #14141f;
-            border-radius: 24px;
-            padding: 40px 32px;
-            max-width: 420px;
-            width: 100%;
-            border: 1px solid #2a2a4a;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
-        }
+        .auth-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: radial-gradient(ellipse at 50% 0%, #1a1a2e 0%, #0b0b0f 70%); }
+        .auth-box { background: #14141f; border-radius: 24px; padding: 40px 32px; max-width: 420px; width: 100%; border: 1px solid #2a2a4a; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
         .auth-logo { text-align: center; margin-bottom: 32px; }
         .auth-logo .icon { font-size: 48px; display: block; margin-bottom: 8px; }
         .auth-logo h1 { font-size: 28px; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ff6b00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .auth-logo .sub { color: #8888aa; font-size: 13px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase; }
         .auth-tabs { display: flex; gap: 8px; margin-bottom: 24px; background: #1a1a2e; border-radius: 12px; padding: 4px; }
-        .auth-tabs .tab {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            color: #8888aa;
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+        .auth-tabs .tab { flex: 1; padding: 10px; border: none; background: transparent; color: #8888aa; font-family: inherit; font-size: 13px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; }
         .auth-tabs .tab.active { background: #2a2a4a; color: #fff; }
         .auth-tabs .tab i { margin-right: 6px; }
         .auth-form { display: none; }
         .auth-form.active { display: block; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: #b0b0c0; margin-bottom: 6px; }
-        .input-wrap {
-            display: flex;
-            align-items: center;
-            background: #1a1a2e;
-            border-radius: 12px;
-            padding: 0 14px;
-            border: 1px solid #2a2a4a;
-            transition: border-color 0.3s ease;
-        }
+        .input-wrap { display: flex; align-items: center; background: #1a1a2e; border-radius: 12px; padding: 0 14px; border: 1px solid #2a2a4a; transition: border-color 0.3s ease; }
         .input-wrap:focus-within { border-color: #ffd700; }
         .input-wrap i { color: #666; font-size: 14px; margin-right: 10px; }
-        .input-wrap input {
-            background: transparent;
-            border: none;
-            padding: 12px 0;
-            color: #fff;
-            font-family: inherit;
-            font-size: 14px;
-            width: 100%;
-            outline: none;
-        }
+        .input-wrap input { background: transparent; border: none; padding: 12px 0; color: #fff; font-family: inherit; font-size: 14px; width: 100%; outline: none; }
         .input-wrap input::placeholder { color: #555; }
-        .btn-auth {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            color: #0b0b0f;
-            font-family: inherit;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            margin-top: 8px;
-        }
+        .btn-auth { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease; margin-top: 8px; }
         .btn-auth:hover { transform: scale(1.02); }
         .btn-auth i { margin-right: 8px; }
         .auth-message { margin-top: 12px; font-size: 13px; text-align: center; min-height: 20px; }
@@ -238,17 +80,13 @@
         .auth-footer { margin-top: 16px; text-align: center; font-size: 13px; color: #666; }
         .auth-footer a { color: #ffd700; cursor: pointer; text-decoration: none; font-weight: 600; }
         .auth-footer a:hover { text-decoration: underline; }
-
         .main-wrapper { display: none; max-width: 480px; margin: 0 auto; padding: 0 16px; }
         .header { padding: 20px 0 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .header .logo { cursor: pointer; }
         .header .logo h1 { font-size: 22px; font-weight: 800; letter-spacing: 1px; background: linear-gradient(135deg, #ffffff, #8888aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .header .logo .sub { font-size: 11px; color: #555; letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; -webkit-text-fill-color: #555; }
-
         .page { display: none; padding-bottom: 20px; }
         .page.active { display: block; }
-
-        /* ===== ГЛАВНАЯ ===== */
         .home-hero { margin-top: 8px; }
         .hero-badge { display: inline-block; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.2); padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; color: #ffd700; letter-spacing: 1px; text-transform: uppercase; }
         .hero-title { font-size: 24px; font-weight: 800; line-height: 1.2; margin: 16px 0 20px; }
@@ -274,32 +112,12 @@
         .prize-item.silver .reward { color: #c0c0c0; }
         .prize-item.bronze .reward { color: #cd7f32; }
         .prize-premium { text-align: center; font-size: 13px; color: #8888aa; }
-
-        /* ===== ПОИСК ===== */
         .search-page-wrapper { padding-top: 8px; }
         .search-header-block { text-align: center; padding: 16px 0 20px; }
         .search-header-block .search-title { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #ffd700, #ff6b00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .search-header-block .search-sub { color: #666; font-size: 13px; margin-top: 4px; }
-        .search-main-block {
-            background: #14141f;
-            border: 1px solid #2a2a4a;
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 16px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .search-main-block::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(ellipse at center, rgba(255,215,0,0.03) 0%, transparent 70%);
-            pointer-events: none;
-        }
+        .search-main-block { background: #14141f; border: 1px solid #2a2a4a; border-radius: 20px; padding: 24px; margin-bottom: 16px; text-align: center; position: relative; overflow: hidden; }
+        .search-main-block::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at center, rgba(255,215,0,0.03) 0%, transparent 70%); pointer-events: none; }
         .search-main-block .search-status { font-size: 13px; font-weight: 600; color: #ffd700; margin-bottom: 4px; letter-spacing: 2px; }
         .search-main-block .search-mode { font-size: 32px; font-weight: 900; margin-bottom: 2px; }
         .search-main-block .search-sub-mode { color: #8888aa; font-size: 13px; margin-bottom: 16px; }
@@ -311,24 +129,10 @@
         .search-timer i { margin-right: 6px; color: #ffd700; }
         .search-note { background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.1); border-radius: 12px; padding: 12px; font-size: 12px; color: #8888aa; margin-bottom: 16px; }
         .search-note i { color: #ffd700; margin-right: 6px; }
-        .btn-queue {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            color: #0b0b0f;
-            font-family: inherit;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
+        .btn-queue { width: 100%; padding: 14px; border: none; border-radius: 14px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; position: relative; }
         .btn-queue:hover { transform: scale(1.02); }
         .btn-queue.cancel { background: #ff6b6b; color: #fff; }
         .btn-queue:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
         .party-block { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
         .party-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #8888aa; }
         .party-title i { margin-right: 8px; color: #ffd700; }
@@ -340,8 +144,6 @@
         .party-empty { color: #555; font-size: 13px; }
         .party-feature { font-size: 11px; color: #555; margin-top: 8px; padding: 8px 12px; background: #1a1a2e; border-radius: 8px; }
         .party-feature i { margin-right: 6px; color: #ffd700; }
-
-        /* ===== МАТЧ ===== */
         .match-page { padding-top: 8px; }
         .match-info-bar { display: flex; flex-wrap: wrap; gap: 12px; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
         .info-item { font-size: 13px; color: #8888aa; }
@@ -360,8 +162,6 @@
         .player-card .info { flex: 1; }
         .player-card .info .name { font-size: 13px; font-weight: 600; }
         .player-card .captain-badge { font-size: 10px; color: #ffd700; padding: 2px 8px; background: rgba(255,215,0,0.1); border-radius: 10px; }
-
-        /* ===== БАН КАРТ ===== */
         .bans-container { display: grid; gap: 16px; margin-bottom: 16px; }
         .ban-section { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; }
         .ban-header { margin-bottom: 12px; }
@@ -370,17 +170,7 @@
         .ban-title .turn { font-size: 12px; font-weight: 400; color: #8888aa; }
         .ban-title .turn span { color: #ffd700; font-weight: 600; }
         .ban-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
-        .ban-btn {
-            padding: 6px 14px;
-            border: 1px solid #2a2a4a;
-            border-radius: 10px;
-            background: #1a1a2e;
-            color: #fff;
-            font-family: inherit;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+        .ban-btn { padding: 6px 14px; border: 1px solid #2a2a4a; border-radius: 10px; background: #1a1a2e; color: #fff; font-family: inherit; font-size: 12px; cursor: pointer; transition: all 0.2s ease; }
         .ban-btn:hover { border-color: #ffd700; }
         .ban-btn.banned { display: none; }
         .ban-btn.selected { border-color: #ffd700; background: rgba(255,215,0,0.1); color: #ffd700; }
@@ -388,7 +178,6 @@
         .ban-btn:disabled:hover { border-color: #2a2a4a; }
         .ban-status { display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; color: #8888aa; }
         .ban-status .status-text.done { color: #51cf66; }
-
         .lobby-section { display: none; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
         .lobby-section.visible { display: block; }
         .lobby-section .lobby-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
@@ -405,7 +194,6 @@
         .lobby-link-display .link-label { font-size: 12px; color: #8888aa; margin-bottom: 4px; }
         .lobby-link-display .link-value { font-size: 13px; color: #4dabf7; text-decoration: underline; cursor: pointer; }
         .lobby-link-display .link-status { font-size: 12px; color: #51cf66; margin-top: 4px; }
-
         .screenshot-section { display: none; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
         .screenshot-section.visible { display: block; }
         .screenshot-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
@@ -416,7 +204,6 @@
         .screenshot-preview { margin: 8px 0; max-height: 200px; overflow: hidden; border-radius: 10px; }
         .screenshot-preview img { width: 100%; height: auto; max-height: 200px; object-fit: cover; }
         .screenshot-status { font-size: 13px; color: #8888aa; }
-
         .match-result-section { display: none; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
         .match-result-section.admin-visible { display: block; }
         .result-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
@@ -431,8 +218,6 @@
         .btn-end { width: 100%; padding: 12px; border: none; border-radius: 12px; background: #ff6b6b; color: #fff; font-family: inherit; font-weight: 700; cursor: pointer; transition: transform 0.2s ease; }
         .btn-end:hover:not(:disabled) { transform: scale(1.02); }
         .btn-end:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* ===== ПРОФИЛЬ ===== */
         .profile-card { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 20px; }
         .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
         .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; color: #0b0b0f; flex-shrink: 0; overflow: hidden; }
@@ -451,67 +236,19 @@
         .btn-action:hover { transform: scale(1.02); }
         .btn-action.edit { background: #2a2a4a; color: #fff; }
         .btn-action.logout { background: #ff6b6b; color: #fff; }
-
-        /* ===== АДМИН-ПАНЕЛЬ (как в S2 Arena) ===== */
-        .admin-panel-wrap {
-            display: none;
-            background: #14141f;
-            border: 1px solid #2a2a4a;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
+        .admin-panel-wrap { display: none; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
         .admin-panel-wrap.visible { display: block; }
         .adm-title { font-size: 18px; font-weight: 800; margin-bottom: 12px; color: #ffd700; }
-        .adm-tabs {
-            display: flex;
-            gap: 4px;
-            overflow-x: auto;
-            margin-bottom: 14px;
-            padding-bottom: 4px;
-        }
+        .adm-tabs { display: flex; gap: 4px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 4px; }
         .adm-tabs::-webkit-scrollbar { height: 3px; }
         .adm-tabs::-webkit-scrollbar-thumb { background: #2a2a4a; border-radius: 3px; }
-        .adm-tabs button {
-            flex: none;
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            color: #8888aa;
-            padding: 8px 14px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: 700;
-            font-size: 12px;
-            transition: all 0.2s ease;
-        }
-        .adm-tabs button.on {
-            background: #2a2a4a;
-            color: #fff;
-            border-color: #ffd700;
-        }
+        .adm-tabs button { flex: none; background: #1a1a2e; border: 1px solid #2a2a4a; color: #8888aa; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-family: inherit; font-weight: 700; font-size: 12px; transition: all 0.2s ease; }
+        .adm-tabs button.on { background: #2a2a4a; color: #fff; border-color: #ffd700; }
         .adm-body { display: flex; flex-direction: column; gap: 12px; }
-
-        .adm-match {
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            border-radius: 12px;
-            padding: 14px;
-        }
-        .adm-match .hdr {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
+        .adm-match { background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 12px; padding: 14px; }
+        .adm-match .hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .adm-match .hdr h3 { font-size: 14px; font-weight: 700; }
-        .adm-match .badge-status {
-            font-size: 10px;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 10px;
-            text-transform: uppercase;
-        }
+        .adm-match .badge-status { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px; text-transform: uppercase; }
         .adm-match .badge-status.pending { background: rgba(255,215,0,0.2); color: #ffd700; }
         .adm-match .badge-status.active { background: rgba(77,171,247,0.2); color: #4dabf7; }
         .adm-match .meta { font-size: 11px; color: #8888aa; margin-bottom: 8px; }
@@ -521,116 +258,29 @@
         .adm-team.blue h4 { color: #4dabf7; }
         .adm-team.orange h4 { color: #ff922b; }
         .adm-pl { display: flex; align-items: center; gap: 6px; padding: 4px 0; font-size: 12px; }
-        .adm-pl .av {
-            width: 22px; height: 22px; border-radius: 50%;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            color: #0b0b0f; display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 10px;
-        }
+        .adm-pl .av { width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 10px; }
         .adm-pl .nm { flex: 1; font-weight: 600; }
         .adm-pl .cap { font-size: 9px; color: #ffd700; }
-
-        .adm-score-row {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 6px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .adm-score-row input {
-            width: 100%;
-            padding: 10px;
-            background: #0b0b0f;
-            border: 1px solid #2a2a4a;
-            border-radius: 8px;
-            color: #fff;
-            font-family: inherit;
-            font-size: 18px;
-            font-weight: 900;
-            text-align: center;
-            outline: none;
-        }
+        .adm-score-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px; align-items: center; margin-bottom: 10px; }
+        .adm-score-row input { width: 100%; padding: 10px; background: #0b0b0f; border: 1px solid #2a2a4a; border-radius: 8px; color: #fff; font-family: inherit; font-size: 18px; font-weight: 900; text-align: center; outline: none; }
         .adm-score-row .sep { color: #666; font-weight: 900; }
-        .adm-finish-btns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            margin-bottom: 6px;
-        }
-        .adm-finish-btns button {
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-family: inherit;
-            font-weight: 700;
-            font-size: 12px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
+        .adm-finish-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+        .adm-finish-btns button { padding: 10px; border: none; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 12px; cursor: pointer; transition: transform 0.2s ease; }
         .adm-finish-btns button:hover { transform: scale(1.02); }
         .adm-finish-btns .btn-blue { background: #4dabf7; color: #fff; }
         .adm-finish-btns .btn-orange { background: #ff922b; color: #fff; }
-        .adm-cancel-btn {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #2a2a4a;
-            background: transparent;
-            color: #ff6b6b;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .adm-cancel-btn { width: 100%; padding: 8px; border: 1px solid #2a2a4a; background: transparent; color: #ff6b6b; border-radius: 8px; font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer; }
         .adm-cancel-btn:hover { background: rgba(255,107,107,0.1); }
-
-        .adm-player {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            border-radius: 10px;
-            padding: 10px 12px;
-            flex-wrap: wrap;
-        }
-        .adm-player .av {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            color: #0b0b0f; display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 14px; flex-shrink: 0;
-        }
+        .adm-player { display: flex; align-items: center; gap: 8px; background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px; padding: 10px 12px; flex-wrap: wrap; }
+        .adm-player .av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
         .adm-player .nm { flex: 1; font-weight: 600; font-size: 13px; }
         .adm-player .elo { font-weight: 800; color: #ffd700; font-size: 14px; }
         .adm-player .actions { display: flex; gap: 4px; width: 100%; margin-top: 4px; }
-        .adm-player .actions button {
-            flex: 1;
-            padding: 6px;
-            border: none;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            background: #2a2a4a;
-            color: #fff;
-        }
+        .adm-player .actions button { flex: 1; padding: 6px; border: none; border-radius: 6px; font-family: inherit; font-size: 10px; font-weight: 700; cursor: pointer; background: #2a2a4a; color: #fff; }
         .adm-player .actions button:hover { background: #3a3a5a; }
         .adm-player .actions button.danger { background: #ff6b6b; color: #fff; }
         .adm-player .actions button.ok { background: #51cf66; color: #fff; }
-
-        .adm-search {
-            width: 100%;
-            padding: 10px 14px;
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            border-radius: 10px;
-            color: #fff;
-            font-family: inherit;
-            font-size: 13px;
-            outline: none;
-            margin-bottom: 10px;
-        }
+        .adm-search { width: 100%; padding: 10px 14px; background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px; color: #fff; font-family: inherit; font-size: 13px; outline: none; margin-bottom: 10px; }
         .adm-search:focus { border-color: #ffd700; }
         .adm-empty { color: #555; font-size: 13px; text-align: center; padding: 20px 0; }
         .adm-qrow { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid #2a2a4a; font-size: 13px; }
@@ -638,54 +288,13 @@
         .adm-qrow .av { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #0b0b0f; }
         .adm-qrow .nm { flex: 1; font-weight: 600; }
         .adm-qrow .elo { font-weight: 800; color: #ffd700; }
-
         .adm-settings { display: flex; flex-direction: column; gap: 10px; }
-        .adm-settings select {
-            width: 100%;
-            padding: 10px 14px;
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            border-radius: 10px;
-            color: #fff;
-            font-family: inherit;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .adm-promo-creation {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .adm-promo-row {
-            display: flex;
-            gap: 6px;
-        }
-        .adm-promo-row input {
-            flex: 1;
-            padding: 8px 12px;
-            background: #0b0b0f;
-            border: 1px solid #2a2a4a;
-            border-radius: 8px;
-            color: #fff;
-            font-family: inherit;
-            font-size: 13px;
-            outline: none;
-        }
+        .adm-settings select { width: 100%; padding: 10px 14px; background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px; color: #fff; font-family: inherit; font-size: 14px; outline: none; }
+        .adm-promo-creation { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .adm-promo-row { display: flex; gap: 6px; }
+        .adm-promo-row input { flex: 1; padding: 8px 12px; background: #0b0b0f; border: 1px solid #2a2a4a; border-radius: 8px; color: #fff; font-family: inherit; font-size: 13px; outline: none; }
         .adm-promo-row input:focus { border-color: #ffd700; }
-        .adm-promo-row button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            color: #0b0b0f;
-            font-family: inherit;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* ===== ДРУЗЬЯ ===== */
+        .adm-promo-row button { padding: 8px 16px; border: none; border-radius: 8px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-weight: 700; cursor: pointer; }
         .friends-page { padding-top: 8px; }
         .friends-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .friends-header h2 { font-size: 20px; font-weight: 800; }
@@ -717,8 +326,6 @@
         .friend-item .friend-actions .btn-decline { background: #ff6b6b; color: #fff; }
         .friends-empty { text-align: center; padding: 40px 20px; color: #555; }
         .friends-empty i { font-size: 40px; margin-bottom: 12px; display: block; color: #2a2a4a; }
-
-        /* ===== ТОП ===== */
         .top-page { padding-top: 8px; }
         .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .top-header h2 { font-size: 20px; font-weight: 800; }
@@ -735,8 +342,6 @@
         .top-item .info .stats { font-size: 12px; color: #8888aa; }
         .top-item .elo { font-weight: 800; font-size: 16px; color: #ffd700; }
         .top-item .elo .elo-label { font-size: 10px; color: #666; font-weight: 400; display: block; text-align: right; }
-
-        /* ===== КОШЕЛЁК ===== */
         .wallet-page { padding-top: 8px; }
         .wallet-card { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 16px; }
         .wallet-card .balance { font-size: 36px; font-weight: 900; color: #ffd700; }
@@ -745,45 +350,14 @@
         .wallet-promo input { flex: 1; padding: 10px 14px; background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px; color: #fff; font-family: inherit; font-size: 14px; outline: none; text-transform: uppercase; }
         .wallet-promo input:focus { border-color: #ffd700; }
         .wallet-promo button { padding: 10px 20px; border: none; border-radius: 10px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-weight: 700; cursor: pointer; }
-
         .placeholder { text-align: center; padding: 60px 20px; color: #555; }
         .placeholder i { font-size: 48px; margin-bottom: 16px; display: block; color: #2a2a4a; }
         .placeholder h2 { font-size: 18px; font-weight: 700; color: #8888aa; }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: 480px;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 8px 12px;
-            background: rgba(20,20,31,0.95);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            z-index: 100;
-        }
-        .bottom-nav .item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: transparent;
-            border: none;
-            color: #555;
-            font-family: inherit;
-            font-size: 10px;
-            cursor: pointer;
-            padding: 4px 8px;
-            transition: color 0.2s ease;
-            gap: 2px;
-            position: relative;
-        }
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 480px; width: 100%; display: flex; justify-content: space-around; padding: 8px 8px 12px; background: rgba(20,20,31,0.95); backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.05); z-index: 100; }
+        .bottom-nav .item { display: flex; flex-direction: column; align-items: center; background: transparent; border: none; color: #555; font-family: inherit; font-size: 10px; cursor: pointer; padding: 4px 8px; transition: color 0.2s ease; gap: 2px; position: relative; }
         .bottom-nav .item i { font-size: 20px; }
         .bottom-nav .item.active { color: #ffd700; }
         .bottom-nav .item span { font-weight: 500; }
-
         @media (max-width: 480px) {
             .auth-box { padding: 24px 20px; }
             .hero-title { font-size: 20px; }
@@ -1032,7 +606,6 @@
                 <button class="btn-action logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
             </div>
 
-            <!-- ===== НОВАЯ АДМИН-ПАНЕЛЬ (как в S2 Arena) ===== -->
             <div class="admin-panel-wrap" id="adminPanelWrap">
                 <div class="adm-title"><i class="fas fa-user-shield"></i> Админ-меню</div>
                 <div class="adm-tabs" id="admTabs">
@@ -1048,10 +621,10 @@
 
             <div class="match-dynamics">
                 <div class="title"><i class="fas fa-chart-bar"></i> Динамика матчей (последние 10)</div>
-                <div class="chart-container" id="chartContainer"><div style="color:#666; text-align:center; width:100%; padding:10px 0;">Нет данных</div></div>
+                <div class="chart-container" id="chartContainer" style="display:flex;align-items:flex-end;gap:4px;height:60px;padding:8px;background:#1a1a2e;border-radius:10px;min-height:60px;"><div style="color:#666; text-align:center; width:100%; padding:10px 0;">Нет данных</div></div>
             </div>
             <div class="match-history">
-                <div class="title"><i class="fas fa-history"></i> История матчей</div>
+                <div class="title" style="font-size:14px;font-weight:700;margin-bottom:8px;"><i class="fas fa-history"></i> История матчей</div>
                 <div id="matchHistoryList"><div style="color:#666; text-align:center; padding:8px 0;">Нет сыгранных матчей</div></div>
             </div>
         </div>
@@ -1115,9 +688,6 @@
 </div>
 
 <script>
-    // ============================================================
-    //  SUPABASE
-    // ============================================================
     const SUPABASE_URL = 'https://tgjltbpmuczfkikvmmde.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1151,7 +721,6 @@
     let isConfirming = false;
     let heartbeatFailCount = 0;
 
-    // Админ-панель
     let adminTab = 'matches';
     let adminMatches = [];
     let adminPlayers = [];
@@ -1164,15 +733,9 @@
     let draftState = {
         gameNumber: 1,
         modeOptions: ['Gem Grab', 'Brawl Ball', 'Knockout', 'Heist', 'Bounty', 'Hot Zone', 'Siege'],
-        modeBanned: [],
-        modeFinal: null,
-        currentCaptain: 0,
-        isComplete: false
+        modeBanned: [], modeFinal: null, currentCaptain: 0, isComplete: false
     };
 
-    // ============================================================
-    //  УТИЛИТЫ
-    // ============================================================
     function generateCode() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let code = '';
@@ -1229,77 +792,32 @@
         document.getElementById('registerMessage').textContent = '';
     }
 
-    // ============================================================
-    //  РЕГИСТРАЦИЯ (до 16 символов!)
-    // ============================================================
     async function registerUser() {
         const username = document.getElementById('regUsername').value.trim();
         const password = document.getElementById('regPassword').value;
         const confirm = document.getElementById('regPasswordConfirm').value;
         const messageEl = document.getElementById('registerMessage');
 
-        if (!username || !password || !confirm) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Заполните все поля';
-            return;
-        }
-        if (username.length < 3) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Никнейм минимум 3 символа';
-            return;
-        }
-        if (username.length > 16) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Никнейм максимум 16 символов';
-            return;
-        }
-        if (!/^[A-Za-z0-9_]+$/.test(username)) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Только латиница, цифры и _';
-            return;
-        }
-        if (password !== confirm) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Пароли не совпадают';
-            return;
-        }
-        if (password.length < 8) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Пароль минимум 8 символов';
-            return;
-        }
+        if (!username || !password || !confirm) { messageEl.className = 'auth-message show error'; messageEl.textContent = '❌ Заполните все поля'; return; }
+        if (username.length < 3) { messageEl.className = 'auth-message show error'; messageEl.textContent = '❌ Никнейм минимум 3 символа'; return; }
+        if (username.length > 16) { messageEl.className = 'auth-message show error'; messageEl.textContent = '❌ Никнейм максимум 16 символов'; return; }
+        if (!/^[A-Za-z0-9_]+$/.test(username)) { messageEl.className = 'auth-message show error'; messageEl.textContent = '❌ Только латиница, цифры и _'; return; }
+        if (password !== confirm) { messageEl.className = 'auth-message show error'; messageEl.textContent = '❌ Пароли не совпадают'; return; }
+        if (password.length < 8) { messageEl.className = 'auth-message show error'; messageEl.textContent = '❌ Пароль минимум 8 символов'; return; }
 
         messageEl.className = 'auth-message show info';
         messageEl.textContent = '⏳ Проверка...';
 
         try {
-            const { data: existing } = await supabaseClient
-                .from('users').select('username').eq('username', username).maybeSingle();
-
-            if (existing) {
-                messageEl.className = 'auth-message show error';
-                messageEl.textContent = '❌ Никнейм занят';
-                return;
-            }
+            const { data: existing } = await supabaseClient.from('users').select('username').eq('username', username).maybeSingle();
+            if (existing) { messageEl.className = 'auth-message show error'; messageEl.textContent = '❌ Никнейм занят'; return; }
 
             const partyCode = generateCode();
             const userId = 'user_' + Date.now().toString();
+            const newUser = { id: userId, username, password, partycode: partyCode };
 
-            const newUser = {
-                id: userId,
-                username: username,
-                password: password,
-                partycode: partyCode
-            };
-
-            const { data, error } = await supabaseClient
-                .from('users').insert([newUser]).select().single();
-
-            if (error) {
-                messageEl.className = 'auth-message show error';
-                messageEl.textContent = '❌ Ошибка: ' + error.message;
-                return;
-            }
+            const { data, error } = await supabaseClient.from('users').insert([newUser]).select().single();
+            if (error) { messageEl.className = 'auth-message show error'; messageEl.textContent = '❌ Ошибка: ' + error.message; return; }
 
             currentUser = data;
             saveSession(data);
@@ -1317,24 +835,14 @@
         const password = document.getElementById('loginPassword').value;
         const messageEl = document.getElementById('loginMessage');
 
-        if (!username || !password) {
-            messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Заполните все поля';
-            return;
-        }
+        if (!username || !password) { messageEl.className = 'auth-message show error'; messageEl.textContent = '❌ Заполните все поля'; return; }
 
         messageEl.className = 'auth-message show info';
         messageEl.textContent = '⏳ Поиск...';
 
         try {
-            const { data, error } = await supabaseClient
-                .from('users').select('*').eq('username', username).eq('password', password).maybeSingle();
-
-            if (error || !data) {
-                messageEl.className = 'auth-message show error';
-                messageEl.textContent = '❌ Неверный никнейм или пароль';
-                return;
-            }
+            const { data, error } = await supabaseClient.from('users').select('*').eq('username', username).eq('password', password).maybeSingle();
+            if (error || !data) { messageEl.className = 'auth-message show error'; messageEl.textContent = '❌ Неверный никнейм или пароль'; return; }
 
             currentUser = data;
             saveSession(data);
@@ -1347,20 +855,15 @@
         }
     }
 
-    // ============================================================
-    //  ПРОВЕРКА АВТОРИЗАЦИИ
-    // ============================================================
     async function checkAuth() {
         if (currentUser) {
             document.getElementById('authPage').style.display = 'none';
             document.getElementById('mainSite').style.display = 'block';
-            
+
             document.getElementById('pName').textContent = currentUser.username;
             document.getElementById('avatar').textContent = currentUser.username.charAt(0).toUpperCase();
-            
             if (currentUser.registered) {
-                const regDate = new Date(currentUser.registered).toLocaleDateString('ru-RU');
-                document.getElementById('pReg').textContent = regDate;
+                document.getElementById('pReg').textContent = new Date(currentUser.registered).toLocaleDateString('ru-RU');
             }
 
             const matches = currentUser.matches || 0;
@@ -1375,7 +878,6 @@
             const isAdmin = currentUser.isadmin === true;
             const adminBadge = document.getElementById('adminBadge');
             const adminPanel = document.getElementById('adminPanelWrap');
-
             if (isAdmin) {
                 adminBadge.classList.add('visible');
                 adminPanel.classList.add('visible');
@@ -1388,13 +890,11 @@
 
             await checkQueueOnLoad();
             await checkActiveMatchOnLoad();
-
             await loadMatchHistory();
             await renderChart();
             await renderTopPage();
             await loadFriends();
             await updateHomeStats();
-
             updatePartyUI();
             navigate('home');
             showToast('success', 'Добро пожаловать!', currentUser.username);
@@ -1406,9 +906,7 @@
 
     function handleLogout() {
         if (!confirm('Выйти из аккаунта?')) return;
-        if (currentUser && isSearching) {
-            supabaseClient.from('queue').delete().eq('user_id', currentUser.id);
-        }
+        if (currentUser && isSearching) supabaseClient.from('queue').delete().eq('user_id', currentUser.id);
         clearSession();
         currentUser = null;
         currentMatch = null;
@@ -1419,9 +917,6 @@
         showToast('info', 'Выход', 'Вы вышли');
     }
 
-    // ============================================================
-    //  НАВИГАЦИЯ
-    // ============================================================
     const pages = {
         home: 'pageHome', profile: 'pageProfile', shop: 'pageShop',
         friends: 'pageFriends', matches: 'pageMatches', top: 'pageTop',
@@ -1437,9 +932,6 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // ============================================================
-    //  АДМИН-ПАНЕЛЬ (НОВАЯ — как в S2 Arena)
-    // ============================================================
     document.addEventListener('click', async (e) => {
         const tab = e.target.closest('[data-adm-tab]');
         if (tab) {
@@ -1462,54 +954,30 @@
         if (!currentUser?.isadmin) return;
         const body = document.getElementById('admBody');
         if (!body) return;
-        
         body.innerHTML = '<div class="adm-empty">Загрузка...</div>';
 
         try {
             if (adminTab === 'matches') {
-                const { data } = await supabaseClient
-                    .from('active_matches').select('*')
-                    .in('status', ['pending', 'active'])
-                    .order('created_at', { ascending: false });
+                const { data } = await supabaseClient.from('active_matches').select('*').in('status', ['pending', 'active']).order('created_at', { ascending: false });
                 adminMatches = data || [];
-
-                if (adminMatches.length === 0) {
-                    body.innerHTML = '<div class="adm-empty">Нет активных матчей</div>';
-                    return;
-                }
+                if (adminMatches.length === 0) { body.innerHTML = '<div class="adm-empty">Нет активных матчей</div>'; return; }
 
                 body.innerHTML = adminMatches.map(m => {
                     let orange = [], blue = [];
                     try { orange = JSON.parse(m.orange); blue = JSON.parse(m.blue); } catch (e) {}
                     const statusText = m.status === 'pending' ? 'Ожидает' : 'Активен';
-
                     const renderTeam = (list, side, avgElo) => `
-                        <div class="adm-team ${side === 'blue' ? 'blue' : 'orange'}">
+                        <div class="adm-team ${side}">
                             <h4>${side === 'blue' ? 'BLUE' : 'ORANGE'} · ELO ${avgElo}</h4>
-                            ${list.map((p, i) => `
-                                <div class="adm-pl">
-                                    <div class="av">${(p.username || '?').charAt(0).toUpperCase()}</div>
-                                    <div class="nm">${p.username || '?'}</div>
-                                    ${i === 0 ? '<span class="cap">👑</span>' : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-
+                            ${list.map((p, i) => `<div class="adm-pl"><div class="av">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="nm">${p.username||'?'}</div>${i === 0 ? '<span class="cap">👑</span>' : ''}</div>`).join('')}
+                        </div>`;
                     const avgO = orange.length ? Math.round(orange.reduce((s, p) => s + (p.elo || 1000), 0) / orange.length) : 0;
                     const avgB = blue.length ? Math.round(blue.reduce((s, p) => s + (p.elo || 1000), 0) / blue.length) : 0;
-
                     return `
                         <div class="adm-match" data-match-id="${m.id}">
-                            <div class="hdr">
-                                <h3>Матч #${m.id.slice(-6)}</h3>
-                                <span class="badge-status ${m.status === 'pending' ? 'pending' : 'active'}">${statusText}</span>
-                            </div>
+                            <div class="hdr"><h3>Матч #${m.id.slice(-6)}</h3><span class="badge-status ${m.status === 'pending' ? 'pending' : 'active'}">${statusText}</span></div>
                             <div class="meta">Создан: ${new Date(m.created_at).toLocaleTimeString('ru-RU')}</div>
-                            <div class="adm-teams">
-                                ${renderTeam(orange, 'orange', avgO)}
-                                ${renderTeam(blue, 'blue', avgB)}
-                            </div>
+                            <div class="adm-teams">${renderTeam(orange, 'orange', avgO)}${renderTeam(blue, 'blue', avgB)}</div>
                             <div class="adm-score-row">
                                 <input type="number" class="adm-score-a" placeholder="0" min="0" max="99" inputmode="numeric" />
                                 <span class="sep">:</span>
@@ -1520,24 +988,20 @@
                                 <button class="btn-orange" onclick="admFinishMatch('${m.id}', 'orange')">🏆 ORANGE</button>
                             </div>
                             <button class="adm-cancel-btn" onclick="admCancelMatch('${m.id}')">❌ Отменить без рейтинга</button>
-                        </div>
-                    `;
+                        </div>`;
                 }).join('');
             }
 
             else if (adminTab === 'players') {
-                let q = supabaseClient.from('users').select('*')
-                    .order('elo', { ascending: false }).limit(50);
+                let q = supabaseClient.from('users').select('*').order('elo', { ascending: false }).limit(50);
                 if (adminSearchQuery) q = q.ilike('username', '%' + adminSearchQuery + '%');
                 const { data } = await q;
                 adminPlayers = data || [];
-
                 if (adminPlayers.length === 0) {
                     body.innerHTML = `<input class="adm-search" id="admSearchInput" placeholder="Поиск по нику..." value="${adminSearchQuery}"><div class="adm-empty">Никого не нашли</div>`;
                     bindAdminSearch();
                     return;
                 }
-
                 body.innerHTML = `
                     <input class="adm-search" id="admSearchInput" placeholder="Поиск по нику..." value="${adminSearchQuery}">
                     ${adminPlayers.map(p => `
@@ -1548,48 +1012,29 @@
                             <div class="actions">
                                 <button onclick="admSetRating('${p.id}', '${p.username}', ${p.elo || 1000})">💰 Рейтинг</button>
                                 <button class="danger" onclick="admSetBanned('${p.id}', ${!p.banned})">${p.banned ? '✅ Разбан' : '🚫 Бан'}</button>
-                                <button class="${p.isadmin ? 'danger' : 'ok'}" onclick="admSetAdmin('${p.id}', ${!p.isadmin})">${p.isadmin ? '❌ Снять админа' : '👑 Сделать админом'}</button>
+                                <button class="${p.isadmin ? 'danger' : 'ok'}" onclick="admSetAdmin('${p.id}', ${!p.isadmin})">${p.isadmin ? '❌ Снять' : '👑 Админ'}</button>
                             </div>
-                        </div>
-                    `).join('')}
-                `;
+                        </div>`).join('')}`;
                 bindAdminSearch();
             }
 
             else if (adminTab === 'queue') {
-                const { data } = await supabaseClient
-                    .from('queue').select('*').eq('status', 'searching')
-                    .order('created_at', { ascending: true });
+                const { data } = await supabaseClient.from('queue').select('*').eq('status', 'searching').order('created_at', { ascending: true });
                 adminQueue = data || [];
-
                 body.innerHTML = `
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                         <div style="font-weight:700;font-size:14px;">В очереди: ${adminQueue.length}</div>
                         <button onclick="admClearQueue()" style="padding:6px 12px;background:#ff6b6b;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:11px;">🧹 Очистить</button>
                     </div>
-                    ${adminQueue.length === 0 
-                        ? '<div class="adm-empty">Очередь пуста</div>' 
-                        : adminQueue.map(p => `
-                            <div class="adm-qrow">
-                                <div class="av">${p.username.charAt(0).toUpperCase()}</div>
-                                <div class="nm">${p.username}</div>
-                                <div class="elo">${p.elo || 1000}</div>
-                            </div>
-                        `).join('')}
-                `;
+                    ${adminQueue.length === 0 ? '<div class="adm-empty">Очередь пуста</div>' : adminQueue.map(p => `<div class="adm-qrow"><div class="av">${p.username.charAt(0).toUpperCase()}</div><div class="nm">${p.username}</div><div class="elo">${p.elo || 1000}</div></div>`).join('')}`;
             }
 
             else if (adminTab === 'promos') {
-                const { data } = await supabaseClient
-                    .from('promocodes').select('*')
-                    .order('created_at', { ascending: false });
+                const { data } = await supabaseClient.from('promocodes').select('*').order('created_at', { ascending: false });
                 adminPromos = data || [];
-
                 body.innerHTML = `
                     <div class="adm-promo-creation">
-                        <div class="adm-promo-row">
-                            <input type="text" id="admPromoCode" placeholder="КОД" maxlength="20" />
-                        </div>
+                        <div class="adm-promo-row"><input type="text" id="admPromoCode" placeholder="КОД" maxlength="20" /></div>
                         <div class="adm-promo-row">
                             <input type="number" id="admPromoAmount" placeholder="Сумма ₽" min="1" />
                             <input type="number" id="admPromoUses" placeholder="Активаций" min="1" value="1" />
@@ -1597,38 +1042,28 @@
                         <button onclick="admCreatePromo()" style="padding:10px;background:linear-gradient(135deg,#ffd700,#ff6b00);border:none;border-radius:8px;color:#0b0b0f;font-weight:700;cursor:pointer;">Создать промокод</button>
                     </div>
                     <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Существующие:</div>
-                    ${adminPromos.length === 0 
-                        ? '<div class="adm-empty">Нет промокодов</div>' 
-                        : adminPromos.map(p => `
-                            <div class="adm-qrow" style="${p.used_count >= p.max_uses ? 'opacity:0.5;' : ''}">
-                                <div class="nm"><b>${p.code}</b> — ${p.amount} ₽</div>
-                                <div style="font-size:11px;color:#8888aa;">${p.used_count}/${p.max_uses}</div>
-                                <button onclick="admDeletePromo('${p.id}')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;padding:0 4px;">×</button>
-                            </div>
-                        `).join('')}
-                `;
+                    ${adminPromos.length === 0 ? '<div class="adm-empty">Нет промокодов</div>' : adminPromos.map(p => `
+                        <div class="adm-qrow" style="${p.used_count >= p.max_uses ? 'opacity:0.5;' : ''}">
+                            <div class="nm"><b>${p.code}</b> — ${p.amount} ₽</div>
+                            <div style="font-size:11px;color:#8888aa;">${p.used_count}/${p.max_uses}</div>
+                            <button onclick="admDeletePromo('${p.id}')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;padding:0 4px;">×</button>
+                        </div>`).join('')}`;
             }
 
             else if (adminTab === 'admins') {
-                const { data } = await supabaseClient
-                    .from('users').select('id, username').eq('isadmin', true);
+                const { data } = await supabaseClient.from('users').select('id, username').eq('isadmin', true);
                 adminAdmins = data || [];
-
                 body.innerHTML = `
                     <div style="display:flex;gap:8px;margin-bottom:12px;">
                         <input class="adm-search" id="admNewAdmin" placeholder="Никнейм нового админа" style="margin-bottom:0;">
                         <button onclick="admAddAdmin()" style="padding:10px 14px;background:linear-gradient(135deg,#ffd700,#ff6b00);border:none;border-radius:10px;color:#0b0b0f;font-weight:700;cursor:pointer;">+</button>
                     </div>
-                    ${adminAdmins.length === 0 
-                        ? '<div class="adm-empty">Нет админов</div>' 
-                        : adminAdmins.map(a => `
-                            <div class="adm-qrow">
-                                <div class="av">${a.username.charAt(0).toUpperCase()}</div>
-                                <div class="nm">${a.username} 👑</div>
-                                ${a.username !== 'Destro' ? `<button onclick="admRemoveAdmin('${a.id}')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;">×</button>` : ''}
-                            </div>
-                        `).join('')}
-                `;
+                    ${adminAdmins.length === 0 ? '<div class="adm-empty">Нет админов</div>' : adminAdmins.map(a => `
+                        <div class="adm-qrow">
+                            <div class="av">${a.username.charAt(0).toUpperCase()}</div>
+                            <div class="nm">${a.username} 👑</div>
+                            ${a.username !== 'Destro' ? `<button onclick="admRemoveAdmin('${a.id}')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;">×</button>` : ''}
+                        </div>`).join('')}`;
             }
 
             else if (adminTab === 'settings') {
@@ -1641,8 +1076,7 @@
                             </select>
                         </div>
                         <button onclick="admSaveSettings()" style="padding:12px;background:linear-gradient(135deg,#ffd700,#ff6b00);border:none;border-radius:10px;color:#0b0b0f;font-weight:700;cursor:pointer;">Сохранить</button>
-                    </div>
-                `;
+                    </div>`;
             }
         } catch (e) {
             body.innerHTML = '<div class="adm-empty">Ошибка: ' + e.message + '</div>';
@@ -1664,17 +1098,13 @@
         });
     }
 
-    // Админ действия: засчитывание матча
     async function admFinishMatch(matchId, winner) {
         const card = document.querySelector(`[data-match-id="${matchId}"]`);
         if (!card) return;
-
         const scoreA = card.querySelector('.adm-score-a').value;
         const scoreB = card.querySelector('.adm-score-b').value;
 
-        const { data: match } = await supabaseClient
-            .from('active_matches').select('*').eq('id', matchId).single();
-
+        const { data: match } = await supabaseClient.from('active_matches').select('*').eq('id', matchId).single();
         if (!match) return showToast('error', 'Ошибка', 'Матч не найден');
 
         const orange = JSON.parse(match.orange);
@@ -1682,10 +1112,8 @@
         const winners = winner === 'blue' ? blue : orange;
         const losers = winner === 'blue' ? orange : blue;
 
-        // ELO
         const playerIds = [...orange, ...blue].map(p => p.id);
-        const { data: playersData } = await supabaseClient
-            .from('users').select('id, elo').in('id', playerIds);
+        const { data: playersData } = await supabaseClient.from('users').select('id, elo').in('id', playerIds);
 
         const eloMap = {};
         playersData.forEach(p => eloMap[p.id] = p.elo || 1000);
@@ -1695,27 +1123,23 @@
 
         const K = 32;
         const eloChanges = {};
-
         for (const wp of winners) {
             const welo = eloMap[wp.id] || 1000;
-            const expected = 1 / (1 + Math.pow(10, (avgLoserElo - welo) / 400));
-            eloChanges[wp.id] = Math.round(K * (1 - expected));
+            eloChanges[wp.id] = Math.round(K * (1 - 1 / (1 + Math.pow(10, (avgLoserElo - welo) / 400))));
         }
         for (const lp of losers) {
             const lelo = eloMap[lp.id] || 1000;
-            const expected = 1 / (1 + Math.pow(10, (avgWinnerElo - lelo) / 400));
-            eloChanges[lp.id] = Math.round(K * (0 - expected));
+            eloChanges[lp.id] = Math.round(K * (0 - 1 / (1 + Math.pow(10, (avgWinnerElo - lelo) / 400))));
         }
 
-        // Обновляем игроков
+        const mapName = match.draft_state ? (JSON.parse(match.draft_state).modeFinal || 'Gem Grab') : 'Gem Grab';
+
         for (const player of [...orange, ...blue]) {
             const isWin = winners.some(w => w.id === player.id);
             const eloChange = eloChanges[player.id] || 0;
 
             try {
-                const { data: userData } = await supabaseClient
-                    .from('users').select('*').eq('id', player.id).single();
-
+                const { data: userData } = await supabaseClient.from('users').select('*').eq('id', player.id).single();
                 if (userData) {
                     await supabaseClient.from('users').update({
                         matches: (userData.matches || 0) + 1,
@@ -1731,7 +1155,7 @@
                     id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 4),
                     user_id: player.id,
                     username: player.username,
-                    map: match.draft_state ? (JSON.parse(match.draft_state).modeFinal || 'Gem Grab') : 'Gem Grab',
+                    map: mapName,
                     result: isWin ? 'win' : 'loss',
                     elo_change: eloChange,
                     match_date: new Date().toISOString(),
@@ -1740,14 +1164,10 @@
                     score_b: scoreB !== '' ? +scoreB : null,
                     created_at: new Date().toISOString()
                 }]);
-            } catch (e) {
-                console.error('Ошибка для', player.username, e);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Удаляем матч
         await supabaseClient.from('active_matches').delete().eq('id', matchId);
-
         showToast('success', 'Матч засчитан!', `Победа ${winner === 'blue' ? 'BLUE' : 'ORANGE'}`);
         await renderAdminPanel();
         await updateHomeStats();
@@ -1772,14 +1192,14 @@
     }
 
     async function admSetBanned(userId, banned) {
-        if (!confirm(banned ? 'Забанить игрока?' : 'Разбанить игрока?')) return;
-        await supabaseClient.from('users').update({ banned: banned }).eq('id', userId);
+        if (!confirm(banned ? 'Забанить?' : 'Разбанить?')) return;
+        await supabaseClient.from('users').update({ banned }).eq('id', userId);
         showToast('success', 'Готово', banned ? 'Забанен' : 'Разбанен');
         await renderAdminPanel();
     }
 
     async function admSetAdmin(userId, isAdmin) {
-        if (!confirm(isAdmin ? 'Сделать админом?' : 'Снять права админа?')) return;
+        if (!confirm(isAdmin ? 'Сделать админом?' : 'Снять права?')) return;
         await supabaseClient.from('users').update({ isadmin: isAdmin }).eq('id', userId);
         showToast('success', 'Готово', 'Роль обновлена');
         await renderAdminPanel();
@@ -1796,13 +1216,8 @@
         const code = document.getElementById('admPromoCode').value.trim().toUpperCase();
         const amount = parseInt(document.getElementById('admPromoAmount').value);
         const uses = parseInt(document.getElementById('admPromoUses').value) || 1;
-
         if (!code || !amount || amount < 1) return showToast('error', 'Ошибка', 'Проверьте данные');
-
-        const { error } = await supabaseClient.from('promocodes').insert([{
-            code, amount, max_uses: uses, used_count: 0, created_by: currentUser.username
-        }]);
-
+        const { error } = await supabaseClient.from('promocodes').insert([{ code, amount, max_uses: uses, used_count: 0, created_by: currentUser.username }]);
         if (error) return showToast('error', 'Ошибка', error.code === '23505' ? 'Промокод существует' : error.message);
         showToast('success', 'Готово', 'Промокод ' + code);
         await renderAdminPanel();
@@ -1839,40 +1254,23 @@
         showToast('success', 'Готово', `Формат: ${size}×${size}`);
     }
 
-    // ============================================================
-    //  СТАТИСТИКА НА ГЛАВНОЙ
-    // ============================================================
     async function updateHomeStats() {
         try {
-            const { count: queueCount } = await supabaseClient
-                .from('queue').select('*', { count: 'exact', head: true })
-                .eq('status', 'searching');
-
-            const { data: activeMatches } = await supabaseClient
-                .from('active_matches').select('orange, blue').in('status', ['pending', 'active']);
-
+            const { count: queueCount } = await supabaseClient.from('queue').select('*', { count: 'exact', head: true }).eq('status', 'searching');
+            const { data: activeMatches } = await supabaseClient.from('active_matches').select('orange, blue').in('status', ['pending', 'active']);
             let inMatchPlayers = 0;
-            (activeMatches || []).forEach(m => {
-                try { inMatchPlayers += JSON.parse(m.orange).length + JSON.parse(m.blue).length; } catch (e) {}
-            });
-
-            const { count: historyCount } = await supabaseClient
-                .from('match_history').select('*', { count: 'exact', head: true });
-
+            (activeMatches || []).forEach(m => { try { inMatchPlayers += JSON.parse(m.orange).length + JSON.parse(m.blue).length; } catch (e) {} });
+            const { count: historyCount } = await supabaseClient.from('match_history').select('*', { count: 'exact', head: true });
             document.getElementById('activePlayersHome').textContent = queueCount || 0;
             document.getElementById('inMatchPlayersHome').textContent = inMatchPlayers;
             document.getElementById('totalMatchesHome').textContent = historyCount || 0;
         } catch (e) {}
     }
 
-    // ============================================================
-    //  ОЧИСТКА ДУБЛИКАТОВ + HEARTBEAT + ОЧЕРЕДЬ
-    // ============================================================
     async function checkAndCleanDuplicates() {
         if (!currentUser) return;
         try {
-            const { data } = await supabaseClient.from('queue')
-                .select('id').eq('user_id', currentUser.id).eq('status', 'searching');
+            const { data } = await supabaseClient.from('queue').select('id').eq('user_id', currentUser.id).eq('status', 'searching');
             if (data && data.length > 1) {
                 const ids = data.slice(1).map(q => q.id);
                 await supabaseClient.from('queue').delete().in('id', ids);
@@ -1884,24 +1282,16 @@
         if (heartbeatInterval) clearInterval(heartbeatInterval);
         heartbeatFailCount = 0;
         heartbeatInterval = setInterval(async () => {
-            if (!isSearching || !currentUser) {
-                clearInterval(heartbeatInterval); heartbeatInterval = null; return;
-            }
+            if (!isSearching || !currentUser) { clearInterval(heartbeatInterval); heartbeatInterval = null; return; }
             try {
-                await supabaseClient.from('queue')
-                    .update({ last_seen: new Date().toISOString() })
-                    .eq('user_id', currentUser.id).eq('status', 'searching');
-
+                await supabaseClient.from('queue').update({ last_seen: new Date().toISOString() }).eq('user_id', currentUser.id).eq('status', 'searching');
                 const { data, error } = await supabaseClient.rpc('check_and_create_match');
                 if (error) { heartbeatFailCount++; return; }
                 heartbeatFailCount = 0;
-
                 if (data && data.match_created) {
                     clearInterval(heartbeatInterval); heartbeatInterval = null;
                     await loadCreatedMatch(data.match_id);
-                } else {
-                    await updateQueueCount();
-                }
+                } else await updateQueueCount();
             } catch (e) { heartbeatFailCount++; }
         }, 20000);
     }
@@ -1910,29 +1300,23 @@
         try {
             const { data } = await supabaseClient.from('active_matches').select('*').eq('id', matchId).single();
             if (!data) return;
-
             const orange = JSON.parse(data.orange);
             const blue = JSON.parse(data.blue);
-
             currentMatch = { orange, blue };
             currentMatchId = matchId;
             isPlayerInMatch = true;
             isCaptain = blue.length > 0 && blue[0].id === currentUser.id;
-
             isSearching = false;
             if (searchTimerInterval) clearInterval(searchTimerInterval);
             if (queueUpdateInterval) { clearInterval(queueUpdateInterval); queueUpdateInterval = null; }
             if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
-
             document.getElementById('queueBtn').style.display = 'block';
             document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
             document.getElementById('queueBtn').className = 'btn-queue';
             document.getElementById('queueBtn').onclick = startSearch;
             document.getElementById('queueBtn').disabled = false;
             document.getElementById('cancelBtn').style.display = 'none';
-
             if (searchChannel) { supabaseClient.removeChannel(searchChannel); searchChannel = null; }
-
             matchPlayers = [...orange, ...blue];
             confirmedPlayers = [];
             showConfirmModal();
@@ -1945,14 +1329,12 @@
         if (!currentUser) return;
         try {
             await checkAndCleanDuplicates();
-            const { data } = await supabaseClient.from('queue')
-                .select('*').eq('user_id', currentUser.id).eq('status', 'searching').maybeSingle();
+            const { data } = await supabaseClient.from('queue').select('*').eq('user_id', currentUser.id).eq('status', 'searching').maybeSingle();
             if (data) {
                 const lastSeen = data.last_seen ? new Date(data.last_seen).getTime() : 0;
                 const stale = Date.now() - lastSeen > 60000;
-                if (stale) {
-                    await supabaseClient.from('queue').delete().eq('id', data.id);
-                } else {
+                if (stale) await supabaseClient.from('queue').delete().eq('id', data.id);
+                else {
                     isSearching = true;
                     searchSeconds = Math.floor((Date.now() - new Date(data.created_at).getTime()) / 1000);
                     document.getElementById('queueBtn').style.display = 'none';
@@ -1969,22 +1351,18 @@
     async function checkActiveMatchOnLoad() {
         if (!currentUser) return;
         try {
-            const { data } = await supabaseClient.from('active_matches').select('*')
-                .in('status', ['pending', 'active']).order('created_at', { ascending: false }).limit(1);
-
+            const { data } = await supabaseClient.from('active_matches').select('*').in('status', ['pending', 'active']).order('created_at', { ascending: false }).limit(1);
             if (!data || data.length === 0) return;
             const match = data[0];
             const orange = JSON.parse(match.orange);
             const blue = JSON.parse(match.blue);
             const isInMatch = orange.some(p => p.id === currentUser.id) || blue.some(p => p.id === currentUser.id);
-
             if (isInMatch) {
                 currentMatch = { orange, blue };
                 isPlayerInMatch = true;
                 currentMatchId = match.id;
                 isCaptain = blue.length > 0 && blue[0].id === currentUser.id;
                 if (match.draft_state) draftState = JSON.parse(match.draft_state);
-
                 if (match.status === 'pending') {
                     matchPlayers = [...orange, ...blue];
                     confirmedPlayers = [];
@@ -2006,9 +1384,6 @@
         isSearching = false; isStartingSearch = false; isCanceling = false;
     }
 
-    // ============================================================
-    //  ПОИСК МАТЧА
-    // ============================================================
     async function startSearch() {
         if (isStartingSearch || isSearching) return;
         if (currentMatch) { navigate('matchPage'); return showToast('info', 'Активный матч', 'Вы уже в матче!'); }
@@ -2021,20 +1396,14 @@
             document.getElementById('cancelBtn').style.display = 'none';
             await cleanupSearchState();
 
-            const { data: dq } = await supabaseClient.from('queue')
-                .select('id').eq('user_id', currentUser.id).eq('status', 'searching');
-            if (dq && dq.length > 0) {
-                await supabaseClient.from('queue').delete().in('id', dq.map(q => q.id));
-            }
+            const { data: dq } = await supabaseClient.from('queue').select('id').eq('user_id', currentUser.id).eq('status', 'searching');
+            if (dq && dq.length > 0) await supabaseClient.from('queue').delete().in('id', dq.map(q => q.id));
 
             const { error: qErr } = await supabaseClient.from('queue').insert({
-                user_id: currentUser.id,
-                username: currentUser.username,
-                elo: currentUser.elo || 1000,
-                status: 'searching',
+                user_id: currentUser.id, username: currentUser.username,
+                elo: currentUser.elo || 1000, status: 'searching',
                 party_members: partyFriends.map(f => f.username).join(','),
-                last_seen: new Date().toISOString(),
-                created_at: new Date().toISOString()
+                last_seen: new Date().toISOString(), created_at: new Date().toISOString()
             });
 
             if (qErr) {
@@ -2051,7 +1420,6 @@
             document.getElementById('queueBtn').style.display = 'none';
             document.getElementById('cancelBtn').style.display = 'inline-flex';
             document.getElementById('searchStatus').textContent = 'Поиск';
-
             await updateQueueCount();
             await updateHomeStats();
             startSearchTimer();
@@ -2063,7 +1431,6 @@
                 if (isSearching) updateQueueCount();
                 else { clearInterval(queueUpdateInterval); queueUpdateInterval = null; }
             }, 3000);
-
             showToast('info', 'Поиск начат', 'Ищем игроков...');
         } catch (e) {
             showToast('error', 'Ошибка', e.message);
@@ -2078,32 +1445,23 @@
     async function updateQueueCount() {
         try {
             await checkAndCleanDuplicates();
-            const { count } = await supabaseClient.from('queue')
-                .select('*', { count: 'exact', head: true }).eq('status', 'searching');
+            const { count } = await supabaseClient.from('queue').select('*', { count: 'exact', head: true }).eq('status', 'searching');
             const cnt = count || 0;
             document.getElementById('searchCurrentPlayers').textContent = cnt;
-            const { data: players } = await supabaseClient.from('queue')
-                .select('username').eq('status', 'searching').limit(6);
-            if (players && players.length > 0) {
-                document.getElementById('searchStatus').textContent = 'Поиск (' + players.map(p => p.username).join(', ') + ')';
-            } else {
-                document.getElementById('searchStatus').textContent = 'Поиск';
-            }
+            const { data: players } = await supabaseClient.from('queue').select('username').eq('status', 'searching').limit(6);
+            if (players && players.length > 0) document.getElementById('searchStatus').textContent = 'Поиск (' + players.map(p => p.username).join(', ') + ')';
+            else document.getElementById('searchStatus').textContent = 'Поиск';
         } catch (e) {}
     }
 
     async function cancelSearch() {
-        if (isCanceling) return;
-        if (!isSearching) return;
+        if (isCanceling || !isSearching) return;
         isCanceling = true;
         document.getElementById('cancelBtn').disabled = true;
         document.getElementById('cancelBtn').textContent = '⏳ Отмена...';
-
         try {
-            await supabaseClient.from('queue').delete()
-                .eq('user_id', currentUser.id).eq('status', 'searching');
+            await supabaseClient.from('queue').delete().eq('user_id', currentUser.id).eq('status', 'searching');
             await cleanupSearchState();
-
             document.getElementById('queueBtn').style.display = 'block';
             document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
             document.getElementById('queueBtn').className = 'btn-queue';
@@ -2114,14 +1472,10 @@
             document.getElementById('cancelBtn').textContent = 'Отменить поиск';
             document.getElementById('searchCurrentPlayers').textContent = '0';
             document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
-
             await updateHomeStats();
             showToast('info', 'Поиск отменён', '');
-        } catch (e) {
-            showToast('error', 'Ошибка', e.message);
-        } finally {
-            isCanceling = false;
-        }
+        } catch (e) { showToast('error', 'Ошибка', e.message); }
+        finally { isCanceling = false; }
     }
 
     function startSearchTimer() {
@@ -2143,16 +1497,12 @@
             }).subscribe();
     }
 
-    // ============================================================
-    //  ПОДТВЕРЖДЕНИЕ
-    // ============================================================
     function showConfirmModal() {
         if (isConfirming) return;
         isConfirming = true;
         waitingConfirm = true;
         matchPlayers = [...currentMatch.orange, ...currentMatch.blue];
-        const modal = document.getElementById('confirmModal');
-        modal.classList.add('active');
+        document.getElementById('confirmModal').classList.add('active');
         confirmTimeLeft = 25;
         document.getElementById('modalTimer').textContent = confirmTimeLeft;
         document.getElementById('modalTimer').className = 'modal-timer';
@@ -2161,7 +1511,6 @@
         btn.textContent = '✅ Подтвердить';
         btn.disabled = false;
         renderModalPlayers();
-
         if (confirmTimer) clearInterval(confirmTimer);
         confirmTimer = setInterval(() => {
             confirmTimeLeft--;
@@ -2169,7 +1518,6 @@
             if (confirmTimeLeft <= 5) document.getElementById('modalTimer').className = 'modal-timer warning';
             if (confirmTimeLeft <= 0) { clearInterval(confirmTimer); handleConfirmTimeout(); }
         }, 1000);
-
         document.getElementById('matchNavLabel').textContent = 'Матч';
         document.querySelector('#matchNavBtn i').className = 'fas fa-gamepad';
     }
@@ -2178,17 +1526,12 @@
         document.getElementById('modalPlayers').innerHTML = matchPlayers.map(p => {
             const isConf = confirmedPlayers.includes(p.id);
             const isMe = p.id === currentUser.id;
-            return `
-                <div class="modal-player ${isConf ? 'confirmed' : ''}" onclick="${isMe && !isConf ? 'handleConfirm()' : ''}">
-                    <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
-                    <div class="info">
-                        <div class="name">${p.username} ${isMe ? ' (Вы)' : ''}</div>
-                        <div class="status">${isConf ? '✅ Готов' : '⏳ Ожидание...'}</div>
-                    </div>
-                    <div class="status-icon ${isConf ? 'confirmed' : 'pending'}">${isConf ? '✅' : '⏳'}</div>
-                </div>`;
+            return `<div class="modal-player ${isConf ? 'confirmed' : ''}" onclick="${isMe && !isConf ? 'handleConfirm()' : ''}">
+                <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
+                <div class="info"><div class="name">${p.username} ${isMe ? ' (Вы)' : ''}</div><div class="status">${isConf ? '✅ Готов' : '⏳ Ожидание...'}</div></div>
+                <div class="status-icon ${isConf ? 'confirmed' : 'pending'}">${isConf ? '✅' : '⏳'}</div>
+            </div>`;
         }).join('');
-
         const allConf = matchPlayers.every(p => confirmedPlayers.includes(p.id));
         const btn = document.getElementById('confirmBtn');
         if (allConf) {
@@ -2198,17 +1541,14 @@
             clearInterval(confirmTimer);
             setTimeout(() => {
                 document.getElementById('confirmModal').classList.remove('active');
-                waitingConfirm = false;
-                isConfirming = false;
-                supabaseClient.from('active_matches').update({ status: 'active' }).eq('id', currentMatchId)
-                    .then(() => startMatchAfterConfirm());
+                waitingConfirm = false; isConfirming = false;
+                supabaseClient.from('active_matches').update({ status: 'active' }).eq('id', currentMatchId).then(() => startMatchAfterConfirm());
             }, 800);
         }
     }
 
     function handleConfirm() {
-        if (!waitingConfirm) return;
-        if (confirmedPlayers.includes(currentUser.id)) return;
+        if (!waitingConfirm || confirmedPlayers.includes(currentUser.id)) return;
         confirmedPlayers.push(currentUser.id);
         renderModalPlayers();
         showToast('success', 'Подтверждено!', '');
@@ -2278,9 +1618,6 @@
             }).subscribe();
     }
 
-    // ============================================================
-    //  МАТЧ
-    // ============================================================
     function checkLobbyVisibility() {
         if (isCaptain && draftState.isComplete) document.getElementById('lobbySection').classList.add('visible');
         else document.getElementById('lobbySection').classList.remove('visible');
@@ -2309,29 +1646,17 @@
         const isBCap = currentUser && bCap === currentUser.username;
         const canBan = isOCap || isBCap;
 
-        const sO = [...currentMatch.orange].sort((a, b) => {
-            if (a.username === oCap) return -1; if (b.username === oCap) return 1; return 0;
-        });
-        const sB = [...currentMatch.blue].sort((a, b) => {
-            if (a.username === bCap) return -1; if (b.username === bCap) return 1; return 0;
-        });
+        const sO = [...currentMatch.orange].sort((a, b) => { if (a.username === oCap) return -1; if (b.username === oCap) return 1; return 0; });
+        const sB = [...currentMatch.blue].sort((a, b) => { if (a.username === bCap) return -1; if (b.username === bCap) return 1; return 0; });
 
         document.getElementById('teamOrangePlayers').innerHTML = sO.map(p => {
             const isCap = p.username === oCap;
-            return `<div class="player-card">
-                <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
-                <div class="info"><span class="name">${p.username}</span></div>
-                ${isCap ? `<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>` : ''}
-            </div>`;
+            return `<div class="player-card"><div class="avatar">${p.username.charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username}</span></div>${isCap ? `<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>` : ''}</div>`;
         }).join('') || '<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
 
         document.getElementById('teamBluePlayers').innerHTML = sB.map(p => {
             const isCap = p.username === bCap;
-            return `<div class="player-card">
-                <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
-                <div class="info"><span class="name">${p.username}</span></div>
-                ${isCap ? `<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>` : ''}
-            </div>`;
+            return `<div class="player-card"><div class="avatar">${p.username.charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username}</span></div>${isCap ? `<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>` : ''}</div>`;
         }).join('') || '<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
 
         updateBanButtons(canBan);
@@ -2381,9 +1706,6 @@
         r.readAsDataURL(file);
     });
 
-    // ============================================================
-    //  ДРАФТ
-    // ============================================================
     function resetDraft() {
         draftState = {
             gameNumber: draftState.gameNumber,
@@ -2408,7 +1730,6 @@
         const oCap = currentMatch && currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
         const bCap = currentMatch && currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
         const canBan = currentUser && (currentUser.username === oCap || currentUser.username === bCap);
-
         document.querySelectorAll('#modesBanContainer .ban-btn').forEach(btn => {
             const v = btn.dataset.value;
             if (s.modeBanned.includes(v)) { btn.classList.add('banned'); btn.style.display = 'none'; }
@@ -2422,7 +1743,6 @@
                 btn.style.cursor = canBan ? 'pointer' : 'not-allowed';
             }
         });
-
         const av = s.modeOptions.filter(v => !s.modeBanned.includes(v) && v !== s.modeFinal);
         document.getElementById('modesLeft').textContent = av.length;
         const ms = document.getElementById('modesStatus');
@@ -2442,7 +1762,6 @@
         const bCap = currentMatch && currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
         const canBan = currentUser && (currentUser.username === oCap || currentUser.username === bCap);
         if (!canBan) return showToast('error', 'Доступ запрещён', 'Только капитаны банят');
-
         s.modeBanned.push(value);
         const av = s.modeOptions.filter(v => !s.modeBanned.includes(v));
         if (av.length === 1) {
@@ -2455,9 +1774,6 @@
         renderDraftUI();
     }
 
-    // ============================================================
-    //  ЗАСЧИТЫВАНИЕ ИЗ КАРТОЧКИ МАТЧА
-    // ============================================================
     document.getElementById('blueWinBtn').addEventListener('click', () => {
         if (!currentMatch || !draftState.isComplete) return showToast('error', 'Ошибка', 'Дождитесь драфта');
         if (!currentUser?.isadmin) return showToast('error', 'Доступ запрещён', '');
@@ -2473,7 +1789,6 @@
     async function finishMatch(winner) {
         if (!currentMatch || !currentUser?.isadmin) return;
         await admFinishMatch(currentMatchId, winner);
-        
         currentMatch = null; isPlayerInMatch = false; isCaptain = false; draftState.isComplete = false;
         document.getElementById('matchResultSection').classList.remove('admin-visible');
         document.getElementById('lobbySection').classList.remove('visible');
@@ -2486,8 +1801,7 @@
     }
 
     function endMatch() {
-        if (!currentMatch) return;
-        if (!currentUser?.isadmin) return showToast('error', 'Доступ запрещён', '');
+        if (!currentMatch || !currentUser?.isadmin) return showToast('error', 'Доступ запрещён', '');
         if (!confirm('Завершить без засчитывания?')) return;
         supabaseClient.from('active_matches').delete().eq('id', currentMatchId);
         currentMatch = null; isPlayerInMatch = false; isCaptain = false; draftState.isComplete = false;
@@ -2500,9 +1814,6 @@
         navigate('matches');
     }
 
-    // ============================================================
-    //  ПРОФИЛЬ
-    // ============================================================
     async function updateProfile() {
         if (!currentUser) return;
         const m = currentUser.matches || 0;
@@ -2520,20 +1831,15 @@
     async function loadMatchHistory() {
         if (!currentUser) return;
         try {
-            const { data } = await supabaseClient.from('match_history').select('*')
-                .eq('user_id', currentUser.id).order('match_date', { ascending: false }).limit(20);
+            const { data } = await supabaseClient.from('match_history').select('*').eq('user_id', currentUser.id).order('match_date', { ascending: false }).limit(20);
             const c = document.getElementById('matchHistoryList');
-            if (!data || data.length === 0) {
-                c.innerHTML = '<div style="color:#666;text-align:center;padding:8px 0;">Нет матчей</div>';
-                return;
-            }
+            if (!data || data.length === 0) { c.innerHTML = '<div style="color:#666;text-align:center;padding:8px 0;">Нет матчей</div>'; return; }
             c.innerHTML = data.map(m => `
-                <div class="match-item">
-                    <span class="map"><i class="fas fa-gamepad"></i> ${m.map || 'Неизвестная'}</span>
-                    <span class="date">${new Date(m.match_date).toLocaleDateString('ru-RU')}</span>
-                    <span class="result ${m.result === 'win' ? 'win' : 'loss'}">
-                        ${m.result === 'win' ? '🏆 Победа' : '💀 Поражение'}
-                        ${m.elo_change ? ` (${m.elo_change > 0 ? '+' : ''}${m.elo_change})` : ''}
+                <div class="match-item" style="display:flex;justify-content:space-between;padding:8px 12px;background:#1a1a2e;border-radius:8px;margin-bottom:6px;font-size:13px;">
+                    <span style="color:#8888aa;"><i class="fas fa-gamepad"></i> ${m.map || 'Неизвестная'}</span>
+                    <span style="color:#666;font-size:11px;">${new Date(m.match_date).toLocaleDateString('ru-RU')}</span>
+                    <span class="${m.result === 'win' ? 'win' : 'loss'}" style="color:${m.result === 'win' ? '#51cf66' : '#ff6b6b'};font-weight:600;">
+                        ${m.result === 'win' ? '🏆 Победа' : '💀 Поражение'} ${m.elo_change ? `(${m.elo_change > 0 ? '+' : ''}${m.elo_change})` : ''}
                     </span>
                 </div>`).join('');
         } catch (e) {}
@@ -2541,26 +1847,16 @@
 
     async function renderChart() {
         try {
-            const { data } = await supabaseClient.from('match_history').select('*')
-                .eq('user_id', currentUser.id).order('match_date', { ascending: false }).limit(10);
-            if (!data || data.length === 0) {
-                document.getElementById('chartContainer').innerHTML = '<div style="color:#666;text-align:center;width:100%;padding:10px 0;">Нет данных</div>';
-                return;
-            }
+            const { data } = await supabaseClient.from('match_history').select('*').eq('user_id', currentUser.id).order('match_date', { ascending: false }).limit(10);
+            if (!data || data.length === 0) { document.getElementById('chartContainer').innerHTML = '<div style="color:#666;text-align:center;width:100%;padding:10px 0;">Нет данных</div>'; return; }
             const lm = data.slice(0, 10).reverse();
             document.getElementById('chartContainer').innerHTML = lm.map((m, i) => {
                 const isW = m.result === 'win';
-                return `<div class="chart-bar-wrap" title="${m.map || ''}">
-                    <div class="chart-bar ${isW ? 'win' : 'loss'}" style="height:40px;${isW ? 'border-radius:3px 3px 0 0;align-self:flex-end;' : 'border-radius:0 0 3px 3px;align-self:flex-start;'}"></div>
-                    <span class="bar-label">${i + 1}</span>
-                </div>`;
+                return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;" title="${m.map || ''}"><div class="chart-bar ${isW ? 'win' : 'loss'}" style="width:100%;height:40px;background:${isW ? '#51cf66' : '#ff6b6b'};${isW ? 'border-radius:3px 3px 0 0;align-self:flex-end;' : 'border-radius:0 0 3px 3px;align-self:flex-start;'}"></div><span style="font-size:8px;color:#666;margin-top:2px;">${i + 1}</span></div>`;
             }).join('');
         } catch (e) {}
     }
 
-    // ============================================================
-    //  ДРУЗЬЯ
-    // ============================================================
     async function loadFriends() {
         if (!currentUser) return;
         try {
@@ -2570,15 +1866,12 @@
                 const { data } = await supabaseClient.from('users').select('id, username, isadmin, elo').in('id', ids);
                 myFriends = data || [];
             } else myFriends = [];
-
-            const { data: rd } = await supabaseClient.from('friend_requests').select('from_user_id')
-                .eq('to_user_id', currentUser.id).eq('status', 'pending');
+            const { data: rd } = await supabaseClient.from('friend_requests').select('from_user_id').eq('to_user_id', currentUser.id).eq('status', 'pending');
             const rids = rd ? rd.map(r => r.from_user_id) : [];
             if (rids.length > 0) {
                 const { data } = await supabaseClient.from('users').select('id, username, isadmin, elo').in('id', rids);
                 friendRequests = data || [];
             } else friendRequests = [];
-
             const { data: all } = await supabaseClient.from('users').select('id, username, isadmin, elo').neq('id', currentUser.id);
             friendsList = all || [];
             renderFriends();
@@ -2589,19 +1882,13 @@
         const c = document.getElementById('friendsListContainer');
         const cnt = document.getElementById('friendsCount');
         let f = [], isR = false;
-        if (friendsTab === ' `<friends') f = myFriends;
+        if (friendsTab === 'friends') f = myFriends;
         else { isR = true; f = friendRequests; }
         cnt.textContent = myFriends.length + ' друзей';
-
         if (f.length === 0) {
-            c.innerHTML = `<div class="friends-empty">
-                <i class="fas fa-user-friends"></i>
-                <p>${isR ? 'Нет заявок' : 'Нет друзей'}</p>
-                <span style="font-size:12px;color:#666;">Ищите игроков по никнейму</span>
-            </div>`;
+            c.innerHTML = `<div class="friends-empty"><i class="fas fa-user-friends"></i><p>${isR ? 'Нет заявок' : 'Нет друзей'}</p><span style="font-size:12px;color:#666;">Ищите игроков по никнейму</span></div>`;
             return;
         }
-
         c.innerHTML = f.map(fr => {
             const isFriend = myFriends.some(m => m.id === fr.id);
             const isReq = friendRequests.some(r => r.id === fr.id);
@@ -2609,24 +1896,13 @@
             let cls = 'none', txt = 'Не в друзьях', ac = '';
             if (isReq && !isFriend) {
                 cls = 'request'; txt = 'Заявка';
-                ac = `<button class="btn-accept" onclick="acceptFriend('${fr.id}')"><i class="fas fa-check"></i></button>
-                      <button class="btn-decline" onclick="declineFriend('${fr.id}')"><i class="fas fa-times"></i></button>`;
+                ac = `<button class="btn-accept" onclick="acceptFriend('${fr.id}')"><i class="fas fa-check"></i></button><button class="btn-decline" onclick="declineFriend('${fr.id}')"><i class="fas fa-times"></i></button>`;
             } else if (isFriend) {
                 cls = 'friend'; txt = 'Друг';
-                if (inP) ac = `<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i></button>
-                               <button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-times"></i></button>`;
-                else ac =button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button>
-                           <button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-times"></i></button>`;
-            } else {
-                ac = `<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`;
-            }
-            return `<div class="friend-item">
-                <div class="avatar">${fr.username.charAt(0).toUpperCase()}</div>
-                <div class="info"><div class="name">${fr.username} ${fr.isadmin ? '👑' : ''}</div>
-                <div class="status">ELO: ${fr.elo || 1000}</div></div>
-                <span class="status-badge ${cls}">${txt}</span>
-                <div class="friend-actions">${ac}</div>
-            </div>`;
+                if (inP) ac = `<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i></button><button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-times"></i></button>`;
+                else ac = `<button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button><button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-times"></i></button>`;
+            } else ac = `<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`;
+            return `<div class="friend-item"><div class="avatar">${fr.username.charAt(0).toUpperCase()}</div><div class="info"><div class="name">${fr.username} ${fr.isadmin ? '👑' : ''}</div><div class="status">ELO: ${fr.elo || 1000}</div></div><span class="status-badge ${cls}">${txt}</span><div class="friend-actions">${ac}</div></div>`;
         }).join('');
     }
 
@@ -2652,52 +1928,37 @@
                 if (inP) ac = `<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i></button>`;
                 else ac = `<button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button>`;
             } else ac = `<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`;
-            return `<div class="friend-item">
-                <div class="avatar">${fr.username.charAt(0).toUpperCase()}</div>
-                <div class="info"><div class="name">${fr.username}</div><div class="status">ELO: ${fr.elo || 1000}</div></div>
-                <span class="status-badge ${cls}">${txt}</span>
-                <div class="friend-actions">${ac}</div>
-            </div>`;
+            return `<div class="friend-item"><div class="avatar">${fr.username.charAt(0).toUpperCase()}</div><div class="info"><div class="name">${fr.username}</div><div class="status">ELO: ${fr.elo || 1000}</div></div><span class="status-badge ${cls}">${txt}</span><div class="friend-actions">${ac}</div></div>`;
         }).join('');
     }
 
     async function sendFriendRequest(uid) {
-        const { data: ex } = await supabaseClient.from('friend_requests').select('*')
-            .eq('from_user_id', currentUser.id).eq('to_user_id', uid).maybeSingle();
+        const { data: ex } = await supabaseClient.from('friend_requests').select('*').eq('from_user_id', currentUser.id).eq('to_user_id', uid).maybeSingle();
         if (ex) {
             if (ex.status === 'pending') return showToast('info', 'Уже отправлено', '');
             if (ex.status === 'accepted') return showToast('info', 'Уже друг', '');
         }
-        const { error } = await supabaseClient.from('friend_requests').insert({
-            from_user_id: currentUser.id, to_user_id: uid, status: 'pending'
-        });
+        const { error } = await supabaseClient.from('friend_requests').insert({ from_user_id: currentUser.id, to_user_id: uid, status: 'pending' });
         if (error) return showToast('error', 'Ошибка', error.message);
         showToast('success', 'Заявка отправлена', '');
         await loadFriends();
     }
 
     async function acceptFriend(uid) {
-        await supabaseClient.from('friend_requests').update({ status: 'accepted' })
-            .eq('from_user_id', uid).eq('to_user_id', currentUser.id);
-        await supabaseClient.from('friends').insert([
-            { user_id: currentUser.id, friend_id: uid },
-            { user_id: uid, friend_id: currentUser.id }
-        ]);
+        await supabaseClient.from('friend_requests').update({ status: 'accepted' }).eq('from_user_id', uid).eq('to_user_id', currentUser.id);
+        await supabaseClient.from('friends').insert([{ user_id: currentUser.id, friend_id: uid }, { user_id: uid, friend_id: currentUser.id }]);
         showToast('success', 'Друг добавлен', '');
         await loadFriends();
     }
 
     async function declineFriend(uid) {
-        await supabaseClient.from('friend_requests').update({ status: 'declined' })
-            .eq('from_user_id', uid).eq('to_user_id', currentUser.id);
+        await supabaseClient.from('friend_requests').update({ status: 'declined' }).eq('from_user_id', uid).eq('to_user_id', currentUser.id);
         await loadFriends();
     }
 
     async function removeFriend(id) {
         if (!confirm('Удалить из друзей?')) return;
-        await supabaseClient.from('friends').delete()
-            .or(`user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`)
-            .or(`user_id.eq.${id},friend_id.eq.${id}`);
+        await supabaseClient.from('friends').delete().or(`user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`).or(`user_id.eq.${id},friend_id.eq.${id}`);
         showToast('info', 'Удалён', '');
         await loadFriends();
     }
@@ -2719,13 +1980,9 @@
         renderFriends();
     }
 
-    // ============================================================
-    //  ТОП
-    // ============================================================
     async function renderTopPage() {
         try {
-            const { data } = await supabaseClient.from('users').select('*')
-                .order('elo', { ascending: false }).limit(10);
+            const { data } = await supabaseClient.from('users').select('*').order('elo', { ascending: false }).limit(10);
             const c = document.getElementById('topList');
             const ur = data.findIndex(u => u.id === currentUser?.id) + 1;
             document.getElementById('userRank').textContent = '#' + (ur || 0);
@@ -2735,22 +1992,11 @@
                 let rc = '';
                 if (n === 1) rc = 'gold'; else if (n === 2) rc = 'silver'; else if (n === 3) rc = 'bronze';
                 const wr = u.matches > 0 ? Math.round((u.wins / u.matches) * 100) : 0;
-                return `<div class="top-item">
-                    <div class="rank ${rc}">#${n}</div>
-                    <div class="avatar">${u.username.charAt(0).toUpperCase()}</div>
-                    <div class="info">
-                        <div class="name">${u.username} ${u.isadmin ? '👑' : ''}</div>
-                        <div class="stats">${u.matches || 0} матчей | ${wr}% побед</div>
-                    </div>
-                    <div class="elo">${u.elo || 1000}<span class="elo-label">ELO</span></div>
-                </div>`;
+                return `<div class="top-item"><div class="rank ${rc}">#${n}</div><div class="avatar">${u.username.charAt(0).toUpperCase()}</div><div class="info"><div class="name">${u.username} ${u.isadmin ? '👑' : ''}</div><div class="stats">${u.matches || 0} матчей | ${wr}% побед</div></div><div class="elo">${u.elo || 1000}<span class="elo-label">ELO</span></div></div>`;
             }).join('');
         } catch (e) {}
     }
 
-    // ============================================================
-    //  ПРОМОКОД
-    // ============================================================
     async function applyPromo() {
         const inp = document.getElementById('promoInput');
         const code = inp.value.trim().toUpperCase();
@@ -2767,26 +2013,16 @@
             document.getElementById('walletBalance').textContent = nb + ' ₽';
             showToast('success', 'Применён!', '+' + data.amount + ' ₽');
             inp.value = '';
-        } catch (e) {
-            showToast('error', 'Ошибка', e.message);
-        }
+        } catch (e) { showToast('error', 'Ошибка', e.message); }
     }
 
     function updatePartyUI() {
         document.getElementById('partyCount').textContent = partyFriends.length + '/2';
         const c = document.getElementById('partyMembers');
         if (partyFriends.length === 0) { c.innerHTML = '<span class="party-empty">Нет участников</span>'; return; }
-        c.innerHTML = partyFriends.map(f => `
-            <span class="party-member">
-                <span class="avatar-small">${f.username.charAt(0).toUpperCase()}</span>
-                ${f.username}
-                <span class="remove" onclick="removeFromParty('${f.id}')">&times;</span>
-            </span>`).join('');
+        c.innerHTML = partyFriends.map(f => `<span class="party-member"><span class="avatar-small">${f.username.charAt(0).toUpperCase()}</span>${f.username}<span class="remove" onclick="removeFromParty('${f.id}')">&times;</span></span>`).join('');
     }
 
-    // ============================================================
-    //  СТАРТ
-    // ============================================================
     document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('tabLogin').addEventListener('click', () => switchAuthTab('login'));
         document.getElementById('tabRegister').addEventListener('click', () => switchAuthTab('register'));
@@ -2794,29 +2030,24 @@
         document.getElementById('switchToLogin').addEventListener('click', e => { e.preventDefault(); switchAuthTab('login'); });
         document.getElementById('loginBtn').addEventListener('click', loginUser);
         document.getElementById('registerBtn').addEventListener('click', registerUser);
-
         document.addEventListener('keydown', e => {
             if (e.key === 'Enter') {
                 if (document.getElementById('loginForm').classList.contains('active')) loginUser();
                 else if (document.getElementById('registerForm').classList.contains('active')) registerUser();
             }
         });
-
         document.getElementById('modesBanContainer').addEventListener('click', e => {
             const btn = e.target.closest('.ban-btn');
             if (!btn || btn.classList.contains('banned') || btn.classList.contains('selected')) return;
             handleModesBan(btn.dataset.value);
         });
-
         document.getElementById('promoInput')?.addEventListener('keydown', e => {
             if (e.key === 'Enter') applyPromo();
         });
-
         const session = getSession();
         if (session) {
             try {
-                const { data } = await supabaseClient.from('users').select('*')
-                    .eq('id', session.id).eq('username', session.username).maybeSingle();
+                const { data } = await supabaseClient.from('users').select('*').eq('id', session.id).eq('username', session.username).maybeSingle();
                 if (data) currentUser = data;
             } catch (e) {}
         }

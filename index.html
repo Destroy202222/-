@@ -2,59 +2,74 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b1118">
-<title>S2 Arena — матчи 5×5 в Standoff 2</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0a0612">
+<title>STARTUP BRAWL STARS — матчи 3×3 в Brawl Stars</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Lilita+One&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#0b1118; --panel:#141d28; --panel2:#1b2735; --line:#2a3948;
-  --text:#e8edf3; --mute:#8b9cb0;
-  --ct:#4ea1ff; --t:#ffb238; --ok:#3fd68a; --bad:#ff5f56;
-  --disp:'Oswald','Arial Narrow',Impact,sans-serif;
+  --ink:#0a0612;
+  --panel:#171029;
+  --panel2:#221741;
+  --line:#332457;
+  --text:#f3eefe;
+  --mute:#a99bc7;
+  --bs:#ffd21e;        /* жёлтый Brawl Stars */
+  --bs2:#ff4fa3;       /* розовый */
+  --ct:#4ea1ff;        /* синий */
+  --t:#ffd21e;         /* основной акцент */
+  --ok:#3fd68a;
+  --bad:#ff5f56;
+  --purple:#a35bff;
+  --disp:'Lilita One','Oswald','Arial Narrow',Impact,sans-serif;
   --body:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
   --cut:14px;
 }
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
 body{
   margin:0;color:var(--text);font:15px/1.5 var(--body);min-height:100vh;
+  overscroll-behavior-y:contain;
   background-color:var(--ink);
   background-image:
-    linear-gradient(rgba(139,156,176,.05) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(139,156,176,.05) 1px,transparent 1px);
-  background-size:36px 36px;
+    radial-gradient(circle at 15% 10%, rgba(163,91,255,.18), transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(255,210,30,.10), transparent 45%),
+    linear-gradient(rgba(163,91,255,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(163,91,255,.05) 1px,transparent 1px);
+  background-size:auto,auto,36px 36px,36px 36px;
 }
 button,input,textarea,select{font:inherit;color:inherit}
-h1,h2,h3{font-family:var(--disp);font-weight:600;letter-spacing:.02em;margin:0}
-h1{font-size:30px;line-height:1.1}
-h2{font-size:20px}
-h3{font-size:16px}
+h1,h2,h3{font-family:var(--disp);font-weight:400;letter-spacing:.03em;margin:0}
+h1{font-size:32px;line-height:1.1;text-transform:uppercase}
+h2{font-size:22px;text-transform:uppercase}
+h3{font-size:17px;text-transform:uppercase}
 p{margin:0}
 .mute{color:var(--mute)}
 .small{font-size:13px}
-.num{font-family:var(--disp);font-variant-numeric:tabular-nums}
-:focus-visible{outline:2px solid var(--ct);outline-offset:2px}
+.num{font-family:var(--disp);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+:focus-visible{outline:2px solid var(--bs);outline-offset:2px}
 .wrap{max-width:880px;margin:0 auto;padding:0 16px}
 
 /* ---------- шапка и навигация ---------- */
-.bar{position:sticky;top:0;z-index:20;background:rgba(11,17,24,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.bar-in{display:flex;align-items:center;gap:16px;height:58px}
-.brand{font-family:var(--disp);font-weight:700;font-size:22px;letter-spacing:.04em;cursor:pointer;user-select:none}
-.brand b{color:var(--t);font-weight:700}
+.bar{position:sticky;top:0;z-index:20;background:rgba(10,6,18,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar-in{display:flex;align-items:center;gap:16px;height:60px}
+.brand{font-family:var(--disp);font-weight:400;font-size:20px;letter-spacing:.06em;cursor:pointer;user-select:none;text-transform:uppercase;line-height:1}
+.brand .s1{color:var(--text)}
+.brand b{color:var(--bs);font-weight:400;text-shadow:0 0 12px rgba(255,210,30,.5)}
 .nav-d{display:none;gap:4px;margin-left:8px}
-.nav-btn{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--mute);padding:8px 12px;cursor:pointer;font-weight:700}
+.nav-btn{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--mute);padding:8px 12px;cursor:pointer;font-weight:700;border-radius:10px;transition:color .15s,background .15s}
 .nav-btn svg{width:18px;height:18px;fill:currentColor}
-.nav-btn.on{color:var(--text)}
-.nav-btn.on svg{color:var(--t)}
-.nav-btn .dot{width:8px;height:8px;border-radius:50%;background:var(--t)}
-.me-chip{margin-left:auto;display:flex;align-items:center;gap:10px;cursor:pointer}
-.me-chip .nick{font-weight:800;line-height:1.1}
-.me-chip .rt{font-family:var(--disp);color:var(--t);font-size:15px;line-height:1.1}
-.nav-m{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;background:rgba(11,17,24,.96);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-.nav-m .nav-btn{flex:1;flex-direction:column;gap:2px;font-size:11px;padding:9px 2px}
+.nav-btn.on{color:var(--text);background:rgba(255,210,30,.08)}
+.nav-btn.on svg{color:var(--bs)}
+.nav-btn .dot{width:8px;height:8px;border-radius:50%;background:var(--bs)}
+.me-chip{margin-left:auto;display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 6px;border-radius:12px}
+.me-chip:hover{background:var(--panel2)}
+.me-chip .nick{font-weight:800;line-height:1.1;font-size:14px}
+.me-chip .rt{font-family:var(--disp);color:var(--bs);font-size:16px;line-height:1.1}
+.nav-m{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;background:rgba(10,6,18,.97);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.nav-m .nav-btn{flex:1;flex-direction:column;gap:2px;font-size:11px;padding:9px 2px;border-radius:0}
 main{padding-top:16px;padding-bottom:96px}
 @media (min-width:860px){
   .nav-d{display:flex}.nav-m{display:none}main{padding-bottom:48px}
@@ -66,22 +81,24 @@ main{padding-top:16px;padding-bottom:96px}
   clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,0 100%);
 }
 .panel.ct{border-left-color:var(--ct)}
-.panel.t{border-left-color:var(--t)}
+.panel.t{border-left-color:var(--bs)}
 .panel.ok{border-left-color:var(--ok)}
 .panel.bad{border-left-color:var(--bad)}
 .panel>h2{margin-bottom:10px}
 .btn{
-  display:block;width:100%;border:0;cursor:pointer;background:var(--t);color:#1c1300;
-  font-family:var(--disp);font-weight:600;font-size:18px;letter-spacing:.04em;padding:13px 18px;
+  display:block;width:100%;border:0;cursor:pointer;background:linear-gradient(180deg,#ffe066,#ffc400);color:#231500;
+  font-family:var(--disp);font-weight:400;font-size:19px;letter-spacing:.05em;padding:14px 18px;text-transform:uppercase;
   clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
-  transition:filter .15s;
+  transition:filter .15s,transform .08s;
+  box-shadow:0 6px 0 rgba(0,0,0,.25);
 }
-.btn:hover{filter:brightness(1.08)}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:translateY(2px);box-shadow:0 4px 0 rgba(0,0,0,.25)}
 .btn:disabled{opacity:.5;cursor:default}
-.btn.ghost{background:var(--panel2);color:var(--text)}
-.btn.ct{background:var(--ct);color:#04121f}
-.btn.bad{background:var(--bad);color:#210503}
-.btn.sm{display:inline-block;width:auto;font-size:15px;padding:8px 14px}
+.btn.ghost{background:var(--panel2);color:var(--text);box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.btn.ct{background:linear-gradient(180deg,#7dc0ff,#3a8ee8);color:#04121f}
+.btn.bad{background:linear-gradient(180deg,#ff8b83,#e23b30);color:#210503}
+.btn.sm{display:inline-block;width:auto;font-size:15px;padding:8px 14px;box-shadow:0 4px 0 rgba(0,0,0,.25)}
 .row{display:flex;gap:8px;align-items:center}
 .row>*{flex:1}
 .between{display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -90,19 +107,19 @@ input[type=text],input[type=password],input[type=number],textarea,select{
   width:100%;padding:12px 13px;background:var(--ink);border:1px solid var(--line);color:var(--text);border-radius:0;
 }
 textarea{resize:vertical;min-height:84px}
-label.f{display:block;color:var(--mute);font-size:13px;margin-bottom:4px}
+label.f{display:block;color:var(--mute);font-size:13px;margin-bottom:4px;font-weight:600}
 .err{color:var(--bad);min-height:20px;font-size:14px}
-.badge{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;margin-left:6px;vertical-align:middle;background:var(--panel2);color:var(--mute)}
-.badge.own{background:var(--t);color:#1c1300}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;margin-left:6px;vertical-align:middle;background:var(--panel2);color:var(--mute);border-radius:6px}
+.badge.own{background:var(--bs);color:#231500}
 .badge.adm{background:var(--ct);color:#04121f}
 .badge.ban{background:var(--bad);color:#210503}
 .empty{color:var(--mute);padding:14px 0;text-align:center}
 
 /* ---------- аватары и ранги ---------- */
-.av{display:inline-flex;align-items:center;justify-content:center;flex:none;font-weight:800;font-family:var(--disp)}
+.av{display:inline-flex;align-items:center;justify-content:center;flex:none;font-weight:800;font-family:var(--disp);border-radius:12px}
 .ins{display:block;flex:none}
 
-/* ---------- радар: главный экран ---------- */
+/* ---------- радар: главный экран (НЕ ТРОГАЮ ЛОГИКУ) ---------- */
 .online{display:flex;align-items:center;gap:6px;color:var(--mute);font-size:13px;white-space:nowrap}
 .online i{width:8px;height:8px;border-radius:50%;background:var(--bad)}
 .online.on i{background:var(--ok)}
@@ -111,22 +128,22 @@ label.f{display:block;color:var(--mute);font-size:13px;margin-bottom:4px}
   background:
     linear-gradient(var(--line),var(--line)) center/1px 100% no-repeat,
     linear-gradient(var(--line),var(--line)) center/100% 1px no-repeat,
-    repeating-radial-gradient(circle,transparent 0 22%,rgba(78,161,255,.22) 22% calc(22% + 1px)),
-    #0c1520;
-  box-shadow:inset 0 0 0 2px var(--line);overflow:hidden;
+    repeating-radial-gradient(circle,transparent 0 22%,rgba(255,210,30,.18) 22% calc(22% + 1px)),
+    #140a26;
+  box-shadow:inset 0 0 0 2px var(--line),0 0 40px rgba(163,91,255,.25);overflow:hidden;
 }
 .sweep{position:absolute;inset:0;border-radius:50%;opacity:0;
-  background:conic-gradient(from 0deg,rgba(78,161,255,0) 0deg,rgba(78,161,255,.42) 70deg,rgba(78,161,255,0) 71deg)}
+  background:conic-gradient(from 0deg,rgba(255,210,30,0) 0deg,rgba(255,210,30,.5) 70deg,rgba(255,210,30,0) 71deg)}
 .radar.on .sweep{opacity:1;animation:spin 3.2s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.blip{position:absolute;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--t);box-shadow:0 0 0 4px rgba(255,178,56,.18)}
-.blip.me{background:var(--ct);box-shadow:0 0 0 4px rgba(78,161,255,.25)}
+.blip{position:absolute;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--bs);box-shadow:0 0 0 4px rgba(255,210,30,.22)}
+.blip.me{background:var(--ct);box-shadow:0 0 0 4px rgba(78,161,255,.3)}
 .core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
-.core b{font-family:var(--disp);font-size:44px;font-weight:600;line-height:1;text-shadow:0 0 12px var(--ink),0 0 4px var(--ink)}
-.core small{color:var(--mute);text-shadow:0 0 8px var(--ink)}
+.core b{font-family:var(--disp);font-size:46px;font-weight:400;line-height:1;text-shadow:0 0 16px var(--ink),0 0 6px var(--ink)}
+.core small{color:var(--mute);text-shadow:0 0 8px var(--ink);text-transform:uppercase;font-weight:700;letter-spacing:.1em;font-size:11px}
 .slots{display:flex;gap:4px;margin:12px 0}
-.slots i{flex:1;height:8px;background:var(--panel2)}
-.slots i.on{background:var(--t)}
+.slots i{flex:1;height:8px;background:var(--panel2);border-radius:3px}
+.slots i.on{background:linear-gradient(90deg,#ffe066,#ffc400)}
 .qrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
 .qrow:first-of-type{border-top:0}
 .qrow .grow{flex:1;font-weight:700}
@@ -137,62 +154,63 @@ label.f{display:block;color:var(--mute);font-size:13px;margin-bottom:4px}
 .versus{display:grid;gap:12px}
 @media (min-width:600px){.versus{grid-template-columns:1fr 1fr}}
 .team{background:var(--panel);padding:14px;border-top:3px solid var(--ct)}
-.team.b{border-top-color:var(--t)}
+.team.b{border-top-color:var(--bs)}
 .team .th{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-.team.a h3{color:var(--ct)}.team.b h3{color:var(--t)}
+.team.a h3{color:var(--ct)}.team.b h3{color:var(--bs)}
 .pl{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
 .pl:first-of-type{border-top:0}
 .pl .grow{flex:1;font-weight:700}
-.pl.me .grow{color:var(--t)}
-.cap{color:var(--t);font-size:12px;font-weight:800;margin-left:6px}
+.pl.me .grow{color:var(--bs)}
+.cap{color:var(--bs);font-size:12px;font-weight:800;margin-left:6px}
 .code{font-family:var(--disp);font-size:34px;letter-spacing:.06em;word-break:break-all}
 .pick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .pick .btn{background:var(--panel2);color:var(--text)}
-.pick .btn.on[data-v="A"]{background:var(--ct);color:#04121f}
-.pick .btn.on[data-v="B"]{background:var(--t);color:#1c1300}
+.pick .btn.on[data-v="A"]{background:linear-gradient(180deg,#7dc0ff,#3a8ee8);color:#04121f}
+.pick .btn.on[data-v="B"]{background:linear-gradient(180deg,#ffe066,#ffc400);color:#231500}
 .score{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;text-align:center;margin:10px 0}
-.bignum{font-family:var(--disp);font-size:56px;line-height:1}
+.bignum{font-family:var(--disp);font-size:56px;line-height:1;font-weight:400}
 .win{color:var(--ok)}.lose{color:var(--bad)}
 
 /* ---------- таблицы и списки ---------- */
 .lrow{display:flex;align-items:center;gap:10px;padding:10px 4px;border-top:1px solid var(--line);cursor:pointer}
 .lrow:first-of-type{border-top:0}
 .lrow:hover{background:var(--panel2)}
-.lrow.me{background:rgba(255,178,56,.08)}
-.lrow .pos{width:26px;text-align:center;font-family:var(--disp);font-size:18px;color:var(--mute)}
-.lrow .pos.top{color:var(--t)}
+.lrow.me{background:rgba(255,210,30,.09)}
+.lrow .pos{width:26px;text-align:center;font-family:var(--disp);font-size:20px;color:var(--mute)}
+.lrow .pos.top{color:var(--bs)}
 .lrow .grow{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lrow .rt{font-family:var(--disp);font-size:20px;min-width:52px;text-align:right}
+.lrow .rt{font-family:var(--disp);font-size:22px;min-width:52px;text-align:right}
 .lrow .wl{color:var(--mute);font-size:13px;min-width:46px;text-align:right}
 details.panel summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:12px}
 details.panel summary::-webkit-details-marker{display:none}
-.mscore{font-family:var(--disp);font-size:26px}
+.mscore{font-family:var(--disp);font-size:28px}
 .d-pos{color:var(--ok)}.d-neg{color:var(--bad)}
 
 /* ---------- профиль ---------- */
 .hero{display:flex;gap:16px;align-items:center}
 .hero h1{display:flex;align-items:center;flex-wrap:wrap}
 .tierline{display:flex;align-items:center;gap:8px;font-weight:800}
-.meter{height:8px;background:var(--panel2);margin:8px 0 4px}
-.meter i{display:block;height:100%;background:var(--t)}
+.meter{height:8px;background:var(--panel2);margin:8px 0 4px;border-radius:4px;overflow:hidden}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,#ffe066,#ffc400)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
-.stat{background:var(--panel2);padding:10px 8px;text-align:center}
-.stat b{display:block;font-family:var(--disp);font-size:24px;font-weight:600;line-height:1.1}
+.stat{background:var(--panel2);padding:10px 8px;text-align:center;border-radius:10px}
+.stat b{display:block;font-family:var(--disp);font-size:26px;font-weight:400;line-height:1.1;color:var(--bs)}
 .stat span{font-size:12px;color:var(--mute)}
 .picker{display:flex;flex-wrap:wrap;gap:6px}
-.picker button{width:40px;height:40px;border:2px solid transparent;background:var(--ink);cursor:pointer;font-size:20px;padding:0}
-.picker button.on{border-color:var(--t)}
+.picker button{width:40px;height:40px;border:2px solid transparent;background:var(--ink);cursor:pointer;font-size:20px;padding:0;border-radius:10px}
+.picker button.on{border-color:var(--bs)}
 .picker.colors button{border-radius:50%}
 svg.spark{width:100%;height:64px;display:block;margin-top:12px}
 
 /* ---------- вход / регистрация ---------- */
 .auth{min-height:100vh;display:grid;place-items:center;padding:20px}
 .auth-card{width:100%;max-width:400px;position:relative}
-.auth .brand{font-size:36px;text-align:center;margin-bottom:6px;cursor:default}
+.auth .brand{font-size:30px;text-align:center;margin-bottom:8px;cursor:default;line-height:1.05}
+.auth .brand .line{display:block;font-size:26px;color:var(--bs);text-shadow:0 0 16px rgba(255,210,30,.55)}
 .auth .lead{text-align:center;color:var(--mute);margin-bottom:22px}
-.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--ink);margin-bottom:14px}
-.seg button{background:none;border:0;padding:11px;cursor:pointer;color:var(--mute);font-weight:800}
-.seg button.on{background:var(--panel2);color:var(--text)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--ink);margin-bottom:14px;border-radius:10px;overflow:hidden}
+.seg button{background:none;border:0;padding:12px;cursor:pointer;color:var(--mute);font-weight:800;text-transform:uppercase;font-family:var(--disp);letter-spacing:.05em;font-size:15px}
+.seg button.on{background:var(--panel2);color:var(--bs)}
 
 .field{display:block}
 .field .in-wrap{position:relative}
@@ -203,44 +221,45 @@ svg.spark{width:100%;height:64px;display:block;margin-top:12px}
 .field.has-err input{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad) inset}
 .eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--mute);cursor:pointer;padding:8px;display:grid;place-items:center}
 .eye:hover{color:var(--text)}
-.eye.on{color:var(--t)}
+.eye.on{color:var(--bs)}
 .pw-meter{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px}
-.pw-meter i{height:4px;background:var(--panel2);transition:background .2s}
+.pw-meter i{height:4px;background:var(--panel2);transition:background .2s;border-radius:2px}
 .pw-hint{margin-top:4px;transition:color .2s}
 .agree{display:flex;gap:10px;align-items:flex-start;color:var(--mute);font-size:13px;line-height:1.4;cursor:pointer;padding:2px 0}
-.agree input{accent-color:var(--t);width:16px;height:16px;margin-top:2px;flex:none}
+.agree input{accent-color:var(--bs);width:16px;height:16px;margin-top:2px;flex:none}
 .agree b{color:var(--text);font-weight:700}
 #a-err.big{min-height:20px;margin:4px 0 0}
 .center{text-align:center}
-.lnk{color:var(--t);text-decoration:none;font-weight:700}
+.lnk{color:var(--bs);text-decoration:none;font-weight:700}
 .lnk:hover{text-decoration:underline}
 #a-go{position:relative;display:grid;place-items:center}
-#a-go .spin{position:absolute;right:16px;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;border:2px solid rgba(0,0,0,.25);border-top-color:#1c1300;opacity:0;transition:opacity .15s}
+#a-go .spin{position:absolute;right:16px;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;border:2px solid rgba(0,0,0,.25);border-top-color:#231500;opacity:0;transition:opacity .15s}
 #a-go.loading{pointer-events:none}
 #a-go.loading .spin{opacity:1;animation:spin .8s linear infinite}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 .field.has-err input{animation:shake .25s ease-out}
 @media (max-width:420px){
   .auth-card{padding:18px 14px}
-  .auth .brand{font-size:30px}
+  .auth .brand{font-size:24px}
+  .auth .brand .line{font-size:22px}
 }
 
 /* ---------- уведомления ---------- */
 #toasts{position:fixed;left:0;right:0;top:66px;z-index:60;display:grid;gap:8px;justify-items:center;pointer-events:none;padding:0 16px}
-.toast{background:var(--panel2);border-left:3px solid var(--ct);padding:10px 14px;max-width:420px;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:tin .2s ease-out}
+.toast{background:var(--panel2);border-left:3px solid var(--ct);padding:10px 14px;max-width:420px;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:tin .2s ease-out;border-radius:8px}
 .toast.bad{border-left-color:var(--bad)}.toast.ok{border-left-color:var(--ok)}
 .toast.out{opacity:0;transition:opacity .4s}
 @keyframes tin{from{transform:translateY(-8px);opacity:0}}
-.found{position:fixed;inset:0;z-index:70;background:rgba(11,17,24,.94);display:grid;place-items:center;text-align:center;animation:fin .25s}
-.found h1{font-size:clamp(40px,12vw,84px);color:var(--t);letter-spacing:.05em}
+.found{position:fixed;inset:0;z-index:70;background:rgba(10,6,18,.94);display:grid;place-items:center;text-align:center;animation:fin .25s}
+.found h1{font-size:clamp(40px,12vw,84px);color:var(--bs);letter-spacing:.05em;text-shadow:0 0 40px rgba(255,210,30,.5)}
 @keyframes fin{from{opacity:0}}
 
 /* ---------- админка ---------- */
 .tabs{display:flex;gap:4px;overflow-x:auto;margin-bottom:12px}
-.tabs button{flex:none;background:var(--panel);border:0;color:var(--mute);padding:10px 14px;cursor:pointer;font-weight:800}
-.tabs button.on{background:var(--panel2);color:var(--text);box-shadow:inset 0 -3px 0 var(--t)}
+.tabs button{flex:none;background:var(--panel);border:0;color:var(--mute);padding:10px 14px;cursor:pointer;font-weight:800;border-radius:8px}
+.tabs button.on{background:var(--panel2);color:var(--bs);box-shadow:inset 0 -3px 0 var(--bs)}
 .adm-actions{display:flex;flex-wrap:wrap;gap:6px}
-.rep{font-size:13px;color:var(--t);margin:4px 0}
+.rep{font-size:13px;color:var(--bs);margin:4px 0}
 .logrow{padding:8px 0;border-top:1px solid var(--line);font-size:14px}
 .logrow:first-of-type{border-top:0}
 
@@ -259,7 +278,7 @@ svg.spark{width:100%;height:64px;display:block;margin-top:12px}
 /* =====================  НАСТРОЙКИ  ===================== */
 const SUPABASE_URL = 'https://zwrczkwtzzfywgqprmrt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndyY3prd3R6emZ5d2dxcHJtcnQiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4OTc2MDQzNywiZXhwIjoyMTA1MzM2NDM3fQ.2OdASwhJVUUoG_uvKc03DKFmZtOm5GPFgBjQAkVlJ5Y';
-const EMAIL_DOMAIN = '@s2arena.app';
+const EMAIL_DOMAIN = '@startupbrawl.app';   // ник → служебный email
 
 /* =====================  УТИЛИТЫ  ===================== */
 const $ = (s, r = document) => r.querySelector(s);
@@ -300,9 +319,9 @@ function errText(e) {
 
 /* ранги */
 const TIERS = [
-  { n: 'Рекрут', min: 0, c: '#8b9cb0' }, { n: 'Страж', min: 900, c: '#6fb4ff' },
-  { n: 'Ветеран', min: 1100, c: '#4ea1ff' }, { n: 'Элита', min: 1300, c: '#ffb238' },
-  { n: 'Мастер', min: 1500, c: '#ff8a3d' }, { n: 'Легенда', min: 1800, c: '#ff5f56' }
+  { n: 'Бронза', min: 0, c: '#c78a4a' }, { n: 'Серебро', min: 900, c: '#b9c4d1' },
+  { n: 'Золото', min: 1100, c: '#ffd21e' }, { n: 'Мифик', min: 1300, c: '#ff4fa3' },
+  { n: 'Легенда', min: 1500, c: '#a35bff' }, { n: 'Мастер', min: 1800, c: '#ff5f56' }
 ];
 const tierIdx = r => { let i = 0; TIERS.forEach((t, k) => { if (r >= t.min) i = k; }); return i; };
 const tier = r => TIERS[tierIdx(r)];
@@ -313,7 +332,7 @@ function insignia(r, size = 26) {
   for (let i = 0; i < n; i++) p += `<path d="M4 ${i * 7 + 12} L16 ${i * 7 + 6} L28 ${i * 7 + 12}"/>`;
   return `<svg class="ins" viewBox="0 0 32 ${h}" width="${size}" height="${Math.round(size * h / 32)}" fill="none" stroke="${t.c}" stroke-width="3" stroke-linecap="square" aria-label="${t.n}">${p}</svg>`;
 }
-const AV_COLORS = ['#4ea1ff', '#ffb238', '#3fd68a', '#ff5f56', '#b48cff', '#2fd0d0', '#ff8ab3', '#c7d36b'];
+const AV_COLORS = ['#4ea1ff', '#ffd21e', '#3fd68a', '#ff5f56', '#a35bff', '#2fd0d0', '#ff8ab3', '#c7d36b'];
 const AV_EMOJI = ['🎯', '🔫', '🦊', '🐺', '🐉', '💀', '🚀', '👑', '⚡', '🔥', '🧠', '🦅'];
 function avatar(p, size = 40) {
   const c = AV_COLORS[(p.color || 0) % 8];
@@ -336,10 +355,10 @@ const ICONS = {
 /* =====================  СОСТОЯНИЕ  ===================== */
 if (!window.supabase) { root.innerHTML = '<div class="auth"><div class="panel bad">Не загрузилась библиотека Supabase. Проверь интернет и перезагрузи страницу.</div></div>'; return; }
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let dismissedIds; try { dismissedIds = new Set(JSON.parse(lsGet('s2a_dismissed') || '[]')); } catch (e) { dismissedIds = new Set(); }
+let dismissedIds; try { dismissedIds = new Set(JSON.parse(lsGet('sbs_dismissed') || '[]')); } catch (e) { dismissedIds = new Set(); }
 const S = {
   session: null, me: null, page: 'play', authMode: 'login',
-  settings: { team_size: '5' }, queue: [], inQueue: false, joinedAt: 0,
+  settings: { team_size: '3' }, queue: [], inQueue: false, joinedAt: 0,
   match: null, mplayers: [], rep: { winner: null },
   board: [], recent: [], online: 0, conn: 'connecting',
   viewId: null, pv: null, editing: false, draft: null,
@@ -477,7 +496,7 @@ function pwScore(p) {
 function pwPaint(p) {
   const m = document.querySelector('[data-pw]'); if (!m) return;
   const s = pwScore(p);
-  const colors = ['#ff5f56', '#ff8a3d', '#ffb238', '#3fd68a'];
+  const colors = ['#ff5f56', '#ff8a3d', '#ffd21e', '#3fd68a'];
   [...m.children].forEach((b, i) => {
     b.style.background = i < s ? colors[s - 1] : 'var(--panel2)';
   });
@@ -510,7 +529,7 @@ const checkNick = deb(async (nick) => {
   }
 }, 400);
 
-/* ---------- отправка формы ---------- */
+/* ---------- отправка формы (ник + пароль, без почты) ---------- */
 async function doAuth() {
   const reg = S.authMode === 'reg';
   const nick = ($('#a-nick').value || '').trim();
@@ -530,6 +549,7 @@ async function doAuth() {
 
   setLoading(true, reg ? 'Создаём аккаунт…' : 'Входим…');
   try {
+    // служебный email из ника — пользователь его никогда не видит
     const email = nick.toLowerCase() + EMAIL_DOMAIN;
 
     if (reg) {
@@ -568,7 +588,7 @@ async function doAuth() {
   }
 }
 
-/* =====================  REALTIME  ===================== */
+/* =====================  REALTIME (НЕ ТРОГАЮ)  ===================== */
 function subscribe() {
   const uid = S.me.id;
   const onQ = deb(async () => { await loadQueue(); softRender(); });
@@ -583,7 +603,7 @@ function subscribe() {
     if (S.page === 'rating') await loadBoard();
     softRender();
   }, 600);
-  S.ch = sb.channel('s2-db')
+  S.ch = sb.channel('sbs-db')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'queue' }, onQ)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, onM)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'match_players', filter: 'user_id=eq.' + uid }, onM)
@@ -591,7 +611,7 @@ function subscribe() {
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'settings' }, deb(async () => { await loadSettings(); softRender(); }))
     .subscribe(st => { S.conn = st === 'SUBSCRIBED' ? 'on' : st === 'CONNECTING' ? 'connecting' : 'off'; updateOnline(); });
 
-  S.pch = sb.channel('s2-online', { config: { presence: { key: uid } } });
+  S.pch = sb.channel('sbs-online', { config: { presence: { key: uid } } });
   S.pch.on('presence', { event: 'sync' }, () => { S.online = Object.keys(S.pch.presenceState()).length; updateOnline(); })
     .subscribe(async st => { if (st === 'SUBSCRIBED') await S.pch.track({ nick: S.me.nickname }); });
 }
@@ -616,7 +636,7 @@ function startTimers() {
 function matchFound() {
   const d = document.createElement('div');
   d.className = 'found';
-  d.innerHTML = '<div><h1>Матч найден</h1><p class="mute">Открываем комнату…</p></div>';
+  d.innerHTML = '<div><h1>Матч найден!</h1><p class="mute">Открываем комнату…</p></div>';
   document.body.appendChild(d);
   try { navigator.vibrate && navigator.vibrate([120, 60, 120]); } catch (e) {}
   setTimeout(() => d.remove(), 1700);
@@ -635,7 +655,7 @@ function navHtml() {
 function renderApp() {
   root.innerHTML = `
   <header class="bar"><div class="wrap bar-in">
-    <div class="brand" data-act="nav" data-p="play">S2<b>ARENA</b></div>
+    <div class="brand" data-act="nav" data-p="play"><span class="s1">STARTUP</span> <b>BRAWL STARS</b></div>
     <nav class="nav-d" id="nav-d"></nav>
     <div class="me-chip" id="chip" data-act="nav" data-p="profile"></div>
   </div></header>
@@ -667,14 +687,14 @@ function renderView() {
   updateOnline();
 }
 
-/* ---------- вход / регистрация ---------- */
+/* ---------- вход / регистрация (только ник + пароль) ---------- */
 function renderAuth() {
   const reg = S.authMode === 'reg';
   root.innerHTML = `
   <div class="auth">
     <form class="panel t auth-card" id="af" autocomplete="on" novalidate>
-      <div class="brand">S2<b>ARENA</b></div>
-      <p class="lead">Матчи 5×5 в Standoff 2 с рейтингом и живым поиском</p>
+      <div class="brand"><span>STARTUP</span><span class="line">BRAWL STARS</span></div>
+      <p class="lead">Матчи 3×3 в Brawl Stars с рейтингом и живым поиском</p>
 
       <div class="seg">
         <button type="button" class="${reg ? '' : 'on'}" data-act="authmode" data-v="login">Вход</button>
@@ -687,7 +707,7 @@ function renderAuth() {
           <div class="in-wrap">
             <input type="text" id="a-nick" maxlength="16" autocomplete="username"
                    autocapitalize="off" spellcheck="false" enterkeyhint="next"
-                   inputmode="text" placeholder="например, shadow_fox">
+                   inputmode="text" placeholder="например, shelly_pro">
             <span class="status" aria-live="polite"></span>
           </div>
           <div class="hint">3–16 символов: латиница, цифры, _</div>
@@ -740,15 +760,13 @@ function renderAuth() {
     </form>
   </div>`;
 
-  requestAnimationFrame(() => {
-    const el = $('#a-nick'); if (el) el.focus();
-  });
+  requestAnimationFrame(() => { const el = $('#a-nick'); if (el) el.focus(); });
 }
 
-/* ---------- играть ---------- */
+/* ---------- играть (НЕ ТРОГАЮ ЛОГИКУ ПОИСКА) ---------- */
 function vPlay() {
   if (S.match) return vMatch();
-  const ts = +S.settings.team_size || 5, need = ts * 2, q = S.queue, t = tier(S.me.rating);
+  const ts = +S.settings.team_size || 3, need = ts * 2, q = S.queue, t = tier(S.me.rating);
   const blips = q.map(p => { const b = blip(p.user_id); return `<i class="blip${p.user_id === S.me.id ? ' me' : ''}" style="left:${b.x}%;top:${b.y}%"></i>`; }).join('');
   let slots = ''; for (let i = 0; i < need; i++) slots += `<i class="${i < q.length ? 'on' : ''}"></i>`;
   const list = q.length
@@ -772,7 +790,7 @@ function vPlay() {
   <section class="panel"><h2>Как проходит матч</h2>
     <ol class="steps">
       <li>Сервер собирает ${need} игроков и делит их на две команды.</li>
-      <li>Хост (капитан команды 1) создаёт комнату в Standoff 2 и вставляет её код на сайт.</li>
+      <li>Хост (капитан команды 1) создаёт комнату в Brawl Stars и вставляет её код на сайт.</li>
       <li>После игры капитаны сообщают счёт, админ засчитывает матч и рейтинг обновляется.</li>
     </ol>
   </section>`;
@@ -795,7 +813,7 @@ function vMatch() {
   else {
     const won = mine && mine.team === m.winner, d = mine && mine.delta != null ? mine.delta : 0;
     head = `<section class="panel ${won ? 'ok' : 'bad'}"><h2 class="${won ? 'win' : 'lose'}">${won ? 'Победа' : 'Поражение'}</h2>
-      <div class="score"><span class="bignum" style="color:var(--ct)">${m.score_a ?? '–'}</span><span class="mute">:</span><span class="bignum" style="color:var(--t)">${m.score_b ?? '–'}</span></div>
+      <div class="score"><span class="bignum" style="color:var(--ct)">${m.score_a ?? '–'}</span><span class="mute">:</span><span class="bignum" style="color:var(--bs)">${m.score_b ?? '–'}</span></div>
       <div class="between"><span class="mute">Изменение рейтинга</span><span class="bignum ${d >= 0 ? 'win' : 'lose'}" style="font-size:36px">${d >= 0 ? '+' : ''}${d}</span></div>
       <div style="height:12px"></div><button class="btn" data-act="dismiss">Вернуться в лобби</button></section>`;
   }
@@ -803,7 +821,7 @@ function vMatch() {
   if (open) {
     let body;
     if (m.room_code) body = `<div class="mute small">Код комнаты</div><div class="code">${esc(m.room_code)}</div>` + (mine && mine.is_captain && mine.team === 'A' ? '<div style="height:8px"></div><button class="btn ghost sm" data-act="roomedit">Изменить код</button>' : '');
-    else if (mine && mine.is_captain && mine.team === 'A') body = '<p class="mute" style="margin-bottom:10px">Ты хост. Создай комнату в Standoff 2 и вставь её код сюда: остальные увидят его сразу.</p><input type="text" id="rc" maxlength="40" placeholder="Код или ID комнаты"><div style="height:8px"></div><button class="btn" data-act="room">Отправить код</button>';
+    else if (mine && mine.is_captain && mine.team === 'A') body = '<p class="mute" style="margin-bottom:10px">Ты хост. Создай комнату в Brawl Stars и вставь её код сюда: остальные увидят его сразу.</p><input type="text" id="rc" maxlength="40" placeholder="Код комнаты"><div style="height:8px"></div><button class="btn" data-act="room">Отправить код</button>';
     else body = `<p class="mute">Ждём код комнаты от хоста: <b style="color:var(--text)">${esc(host ? host.nickname : '—')}</b></p>`;
     if (m.room_code && S.roomEdit) body = '<input type="text" id="rc" maxlength="40" placeholder="Новый код"><div style="height:8px"></div><button class="btn" data-act="room">Сохранить код</button>';
     room = `<section class="panel ct"><h2>Комната</h2>${body}</section>`;
@@ -843,7 +861,7 @@ function vMatches() {
     const w = m.winner === 'A' ? 'ct' : 't';
     const side = (l) => l.map(p => `<div class="pl">${letterAv(p.nickname, 26)}<div class="grow">${esc(p.nickname)}${p.is_captain ? '<span class="cap">капитан</span>' : ''}</div><span class="num ${p.delta >= 0 ? 'd-pos' : 'd-neg'}">${p.delta >= 0 ? '+' : ''}${p.delta}</span></div>`).join('');
     return `<details class="panel ${w}"><summary>
-      <span class="mscore" style="color:var(--ct)">${m.score_a ?? '–'}</span><span class="mute">:</span><span class="mscore" style="color:var(--t)">${m.score_b ?? '–'}</span>
+      <span class="mscore" style="color:var(--ct)">${m.score_a ?? '–'}</span><span class="mute">:</span><span class="mscore" style="color:var(--bs)">${m.score_b ?? '–'}</span>
       <span class="mute small" style="margin-left:auto;text-align:right">Победила команда ${m.winner === 'A' ? '1' : '2'}<br>${ago(m.finished_at)}</span></summary>
       <div class="versus" style="margin-top:12px"><div class="team a"><h3>Команда 1</h3>${side(A)}</div><div class="team b"><h3>Команда 2</h3>${side(B)}</div></div></details>`;
   }).join('');
@@ -856,7 +874,7 @@ function spark(hist) {
   const vals = [pts[0].rating_before, ...pts.map(h => h.rating_after)];
   const mn = Math.min(...vals), mx = Math.max(...vals), rg = Math.max(1, mx - mn);
   const xy = vals.map((v, i) => `${(i / (vals.length - 1) * 296 + 2).toFixed(1)},${(58 - (v - mn) / rg * 52).toFixed(1)}`).join(' ');
-  return `<svg class="spark" viewBox="0 0 300 62" preserveAspectRatio="none"><polyline points="${xy}" fill="none" stroke="var(--t)" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg>`;
+  return `<svg class="spark" viewBox="0 0 300 62" preserveAspectRatio="none"><polyline points="${xy}" fill="none" stroke="var(--bs)" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg>`;
 }
 function vProfile() {
   if (!S.pv || !S.pv.p) return '<section class="panel"><div class="empty">Загружаем профиль…</div></section>';
@@ -869,7 +887,7 @@ function vProfile() {
     return `<section class="panel t"><h2>Редактировать профиль</h2><div class="stack">
       <div><label class="f">Аватар</label><div class="picker">${AV_EMOJI.map(e => `<button data-act="pav" data-v="${e}" class="${d.avatar === e ? 'on' : ''}">${e}</button>`).join('')}</div></div>
       <div><label class="f">Цвет</label><div class="picker colors">${AV_COLORS.map((c, i) => `<button data-act="pcol" data-v="${i}" class="${d.color === i ? 'on' : ''}" style="background:${c}"></button>`).join('')}</div></div>
-      <div><label class="f" for="e-sid">Ник или ID в Standoff 2</label><input type="text" id="e-sid" maxlength="24" value="${esc(p.standoff_id)}"></div>
+      <div><label class="f" for="e-sid">Ник в Brawl Stars</label><input type="text" id="e-sid" maxlength="24" value="${esc(p.standoff_id)}"></div>
       <div><label class="f" for="e-bio">О себе</label><textarea id="e-bio" maxlength="160">${esc(p.bio)}</textarea></div>
       <div class="row"><button class="btn ghost" data-act="pcancel">Отмена</button><button class="btn" data-act="psave">Сохранить</button></div>
     </div></section>`;
@@ -885,7 +903,7 @@ function vProfile() {
   <section class="panel t">
     <div class="hero">${avatar(p, 76)}<div style="min-width:0">
       <h1>${esc(p.nickname)}${roleBadge(p)}</h1>
-      <div class="mute small">${p.standoff_id ? 'Standoff 2: ' + esc(p.standoff_id) : 'ID Standoff 2 не указан'}</div>
+      <div class="mute small">${p.standoff_id ? 'Brawl Stars: ' + esc(p.standoff_id) : 'Ник в Brawl Stars не указан'}</div>
     </div></div>
     ${p.bio ? `<p style="margin-top:12px">${esc(p.bio)}</p>` : ''}
     <div class="between" style="margin-top:16px"><div class="tierline">${insignia(p.rating, 30)}<span style="color:${t.c}">${t.n}</span></div><div class="bignum" style="font-size:44px">${p.rating}</div></div>
@@ -926,7 +944,7 @@ function admBody() {
   }
   if (t === 'players') return `<section class="panel"><input type="text" id="psearch" placeholder="Найти игрока по нику" value="${esc(S.adm.q)}"><div id="plist">${playersHtml()}</div></section>`;
   if (t === 'queue') return `<section class="panel"><div class="between"><h2>В очереди: ${S.queue.length}</h2><button class="btn ghost sm" data-act="clearq">Очистить</button></div>${S.queue.length ? S.queue.map(p => `<div class="qrow">${letterAv(p.nickname, 30)}<div class="grow">${esc(p.nickname)}</div><div class="num">${p.rating}</div></div>`).join('') : '<div class="empty">Очередь пуста.</div>'}</section>`;
-  if (t === 'settings') return `<section class="panel"><h2>Формат матча</h2><p class="mute small" style="margin-bottom:10px">Сколько игроков в каждой команде. Для проверки вдвоём поставь 1 на 1, для игры — 5 на 5.</p>
+  if (t === 'settings') return `<section class="panel"><h2>Формат матча</h2><p class="mute small" style="margin-bottom:10px">Сколько игроков в каждой команде. Для проверки вдвоём поставь 1 на 1, для игры — 3 на 3.</p>
     <select id="tsize">${[1, 2, 3, 4, 5].map(n => `<option value="${n}"${+S.settings.team_size === n ? ' selected' : ''}>${n} на ${n}</option>`).join('')}</select>
     <div style="height:10px"></div><button class="btn" data-act="savesize">Сохранить</button></section>`;
   if (t === 'log') return `<section class="panel">${S.adm.log.length ? S.adm.log.map(l => `<div class="logrow"><b>${esc(l.admin_nick || '—')}</b> · ${esc(l.action)}${l.details ? ': ' + esc(l.details) : ''}<div class="mute small">${ago(l.created_at)}</div></div>`).join('') : '<div class="empty">Журнал пуст.</div>'}</section>`;
@@ -968,6 +986,7 @@ const A = {
   async profile(el) { S.page = 'profile'; S.viewId = el.dataset.id; S.pv = null; S.editing = false; renderChrome(); renderView(); await loadProfile(el.dataset.id); softRender(); window.scrollTo(0, 0); },
   logout() { sb.auth.signOut().then(() => { teardown(); S.authMode = 'login'; renderAuth(); }); },
 
+  /* ---- НЕ ТРОГАЮ: поиск матча ---- */
   async join() {
     const id = await rpc('join_queue');
     await loadQueue();
@@ -975,7 +994,7 @@ const A = {
     softRender();
   },
   async leave() { await rpc('leave_queue'); await loadQueue(); softRender(); },
-  dismiss() { dismissedIds.add(S.match.id); lsSet('s2a_dismissed', JSON.stringify([...dismissedIds].slice(-50))); S.match = null; S.mplayers = []; S.roomEdit = false; softRender(); },
+  dismiss() { dismissedIds.add(S.match.id); lsSet('sbs_dismissed', JSON.stringify([...dismissedIds].slice(-50))); S.match = null; S.mplayers = []; S.roomEdit = false; softRender(); },
   roomedit() { S.roomEdit = true; renderView(); },
   async room() {
     const v = $('#rc').value.trim(); if (!v) return toast('Введи код комнаты', 'bad');
@@ -989,6 +1008,7 @@ const A = {
     await rpc('submit_report', { p_match: S.match.id, p_winner: S.rep.winner, p_score_a: a === '' ? null : +a, p_score_b: b === '' ? null : +b });
     await refreshMatch(); softRender(); toast('Результат отправлен админу', 'ok');
   },
+  /* ---- /НЕ ТРОГАЮ ---- */
 
   pedit() { S.editing = true; S.draft = { avatar: S.me.avatar, color: S.me.color }; renderView(); },
   pcancel() { S.editing = false; renderView(); },
@@ -1075,7 +1095,7 @@ window.addEventListener('pagehide', () => { if (S.inQueue && S.me) sb.rpc('leave
 
 /* =====================  СТАРТ  ===================== */
 (async () => {
-  root.innerHTML = '<div class="auth"><div class="brand">S2<b>ARENA</b></div></div>';
+  root.innerHTML = '<div class="auth"><div class="brand"><span>STARTUP</span><span class="line">BRAWL STARS</span></div></div>';
   const { data } = await sb.auth.getSession();
   if (data.session) await onSession(data.session); else renderAuth();
   sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT' && S.me) { teardown(); renderAuth(); } });

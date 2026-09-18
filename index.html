@@ -862,4 +862,225 @@ function vProfile() {
   if (!S.pv || !S.pv.p) return '<section class="panel"><div class="empty">Загружаем профиль…</div></section>';
   const p = S.pv.p, hist = S.pv.hist, own = p.id === S.me.id;
   const t = tier(p.rating), nt = nextTier(p.rating);
-  const pct = nt ? Math.round((p.rating - t.min) / (nt
+  const pct = nt ? Math.round((p.rating - t.min) / (nt.min - t.min) * 100) : 100;
+  const games = p.wins + p.losses, wr = games ? Math.round(p.wins / games * 100) : 0;
+  if (own && S.editing) {
+    const d = S.draft;
+    return `<section class="panel t"><h2>Редактировать профиль</h2><div class="stack">
+      <div><label class="f">Аватар</label><div class="picker">${AV_EMOJI.map(e => `<button data-act="pav" data-v="${e}" class="${d.avatar === e ? 'on' : ''}">${e}</button>`).join('')}</div></div>
+      <div><label class="f">Цвет</label><div class="picker colors">${AV_COLORS.map((c, i) => `<button data-act="pcol" data-v="${i}" class="${d.color === i ? 'on' : ''}" style="background:${c}"></button>`).join('')}</div></div>
+      <div><label class="f" for="e-sid">Ник или ID в Standoff 2</label><input type="text" id="e-sid" maxlength="24" value="${esc(p.standoff_id)}"></div>
+      <div><label class="f" for="e-bio">О себе</label><textarea id="e-bio" maxlength="160">${esc(p.bio)}</textarea></div>
+      <div class="row"><button class="btn ghost" data-act="pcancel">Отмена</button><button class="btn" data-act="psave">Сохранить</button></div>
+    </div></section>`;
+  }
+  const hrows = hist.length ? hist.map(h => {
+    const won = h.team === h.matches.winner;
+    return `<div class="lrow" style="cursor:default"><div class="grow ${won ? 'win' : 'lose'}">${won ? 'Победа' : 'Поражение'}</div>
+      <div class="num mute">${h.matches.score_a ?? '–'}:${h.matches.score_b ?? '–'}</div>
+      <div class="num ${h.delta >= 0 ? 'd-pos' : 'd-neg'}" style="min-width:44px;text-align:right">${h.delta >= 0 ? '+' : ''}${h.delta}</div>
+      <div class="wl">${ago(h.matches.finished_at)}</div></div>`;
+  }).join('') : '<div class="empty">Матчей пока нет. Найди первый на вкладке «Играть».</div>';
+  return `
+  <section class="panel t">
+    <div class="hero">${avatar(p, 76)}<div style="min-width:0">
+      <h1>${esc(p.nickname)}${roleBadge(p)}</h1>
+      <div class="mute small">${p.standoff_id ? 'Standoff 2: ' + esc(p.standoff_id) : 'ID Standoff 2 не указан'}</div>
+    </div></div>
+    ${p.bio ? `<p style="margin-top:12px">${esc(p.bio)}</p>` : ''}
+    <div class="between" style="margin-top:16px"><div class="tierline">${insignia(p.rating, 30)}<span style="color:${t.c}">${t.n}</span></div><div class="bignum" style="font-size:44px">${p.rating}</div></div>
+    <div class="meter"><i style="width:${pct}%"></i></div>
+    <div class="mute small">${nt ? `До ранга «${nt.n}»: ${nt.min - p.rating}` : 'Высший ранг'}</div>
+    ${spark(hist)}
+    <div class="stats"><div class="stat"><b>${p.matches_played}</b><span>матчей</span></div><div class="stat"><b class="win">${p.wins}</b><span>побед</span></div><div class="stat"><b class="lose">${p.losses}</b><span>поражений</span></div><div class="stat"><b>${wr}%</b><span>винрейт</span></div></div>
+    ${own ? '<div style="height:14px"></div><div class="row"><button class="btn ct" data-act="pedit">Редактировать</button><button class="btn ghost" data-act="logout">Выйти</button></div>' : ''}
+  </section>
+  <section class="panel ct"><h2>Последние матчи</h2>${hrows}</section>`;
+}
+
+/* ---------- админка ---------- */
+function vAdmin() {
+  if (!isAdmin()) return '<section class="panel bad"><h2>Нет доступа</h2></section>';
+  const tabs = [['matches', 'Матчи'], ['players', 'Игроки'], ['queue', 'Очередь'], ...(isOwner() ? [['settings', 'Настройки']] : []), ['log', 'Журнал']];
+  return `<h1 style="margin-bottom:12px">Админ-меню</h1>
+  <div class="tabs">${tabs.map(([k, l]) => `<button class="${S.adminTab === k ? 'on' : ''}" data-act="admtab" data-v="${k}">${l}</button>`).join('')}</div>${admBody()}`;
+}
+function admBody() {
+  const t = S.adminTab;
+  if (t === 'matches') {
+    if (!S.adm.matches.length) return '<section class="panel"><div class="empty">Активных матчей нет.</div></section>';
+    return S.adm.matches.map(m => {
+      const pl = m.match_players || [], A = pl.filter(p => p.team === 'A'), B = pl.filter(p => p.team === 'B');
+      const reps = Object.values(m.reports || {});
+      const names = l => l.map(p => `<div class="pl">${letterAv(p.nickname, 26)}<div class="grow">${esc(p.nickname)}${p.is_captain ? '<span class="cap">капитан</span>' : ''}</div><span class="num mute">${p.rating_before}</span></div>`).join('');
+      return `<section class="panel ${m.status === 'review' ? 't' : 'ct'}" data-mid="${m.id}">
+        <div class="between"><h2>Матч ${m.id.slice(0, 6)}</h2><span class="badge ${m.status === 'review' ? 'own' : ''}">${m.status === 'review' ? 'на проверке' : 'идёт'}</span></div>
+        <div class="mute small">создан ${ago(m.created_at)}${m.room_code ? ' · комната ' + esc(m.room_code) : ''}</div>
+        <div class="versus" style="margin:10px 0"><div class="team a"><h3>Команда 1 · ${m.avg_a ?? '—'}</h3>${names(A)}</div><div class="team b"><h3>Команда 2 · ${m.avg_b ?? '—'}</h3>${names(B)}</div></div>
+        ${reps.map(r => `<div class="rep">Капитан ${esc(r.nick)}: победа команды ${r.winner === 'A' ? '1' : '2'}${r.a != null ? ` (${esc(r.a)}:${esc(r.b)})` : ''}</div>`).join('')}
+        <div class="score"><input type="number" class="sa" min="0" max="99" placeholder="Счёт 1" inputmode="numeric"><span class="mute">:</span><input type="number" class="sb" min="0" max="99" placeholder="Счёт 2" inputmode="numeric"></div>
+        <div class="row"><button class="btn ct" data-act="fin" data-w="A">Победа команды 1</button><button class="btn" data-act="fin" data-w="B">Победа команды 2</button></div>
+        <div style="height:8px"></div><button class="btn ghost" data-act="cancelm">Отменить матч без рейтинга</button>
+      </section>`;
+    }).join('');
+  }
+  if (t === 'players') return `<section class="panel"><input type="text" id="psearch" placeholder="Найти игрока по нику" value="${esc(S.adm.q)}"><div id="plist">${playersHtml()}</div></section>`;
+  if (t === 'queue') return `<section class="panel"><div class="between"><h2>В очереди: ${S.queue.length}</h2><button class="btn ghost sm" data-act="clearq">Очистить</button></div>${S.queue.length ? S.queue.map(p => `<div class="qrow">${letterAv(p.nickname, 30)}<div class="grow">${esc(p.nickname)}</div><div class="num">${p.rating}</div></div>`).join('') : '<div class="empty">Очередь пуста.</div>'}</section>`;
+  if (t === 'settings') return `<section class="panel"><h2>Формат матча</h2><p class="mute small" style="margin-bottom:10px">Сколько игроков в каждой команде. Для проверки вдвоём поставь 1 на 1, для игры — 5 на 5.</p>
+    <select id="tsize">${[1, 2, 3, 4, 5].map(n => `<option value="${n}"${+S.settings.team_size === n ? ' selected' : ''}>${n} на ${n}</option>`).join('')}</select>
+    <div style="height:10px"></div><button class="btn" data-act="savesize">Сохранить</button></section>`;
+  if (t === 'log') return `<section class="panel">${S.adm.log.length ? S.adm.log.map(l => `<div class="logrow"><b>${esc(l.admin_nick || '—')}</b> · ${esc(l.action)}${l.details ? ': ' + esc(l.details) : ''}<div class="mute small">${ago(l.created_at)}</div></div>`).join('') : '<div class="empty">Журнал пуст.</div>'}</section>`;
+  return '';
+}
+function playersHtml() {
+  if (!S.adm.players.length) return '<div class="empty">Никого не нашли.</div>';
+  return S.adm.players.map(p => `<div class="qrow" data-uid="${p.id}" data-nick="${esc(p.nickname)}" style="flex-wrap:wrap">
+    ${letterAv(p.nickname, 32)}<div class="grow">${esc(p.nickname)}${roleBadge(p)}</div><div class="num">${p.rating}</div>
+    <div class="adm-actions" style="width:100%">
+      <button class="btn ghost sm" data-act="prate">Рейтинг</button>
+      ${p.role !== 'owner' ? `<button class="btn ghost sm" data-act="pban" data-b="${p.banned ? 0 : 1}">${p.banned ? 'Разбанить' : 'Забанить'}</button>` : ''}
+      ${isOwner() && p.role !== 'owner' ? `<button class="btn ghost sm" data-act="prole" data-r="${p.role === 'admin' ? 'player' : 'admin'}">${p.role === 'admin' ? 'Снять админа' : 'Сделать админом'}</button>` : ''}
+    </div></div>`).join('');
+}
+
+/* =====================  ДЕЙСТВИЯ  ===================== */
+const rpc = async (fn, args) => { const { data, error } = await sb.rpc(fn, args); if (error) throw error; return data; };
+const A = {
+  authmode(el) {
+    S.authMode = el.dataset.v;
+    nickOk = null;
+    renderAuth();
+  },
+  togglepass(el) {
+    const inp = document.getElementById(el.dataset.t);
+    if (!inp) return;
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    el.classList.toggle('on', inp.type === 'text');
+  },
+  async nav(el) {
+    S.page = el.dataset.p; S.editing = false;
+    if (S.page === 'rating') await loadBoard();
+    if (S.page === 'matches') await loadRecent();
+    if (S.page === 'profile') { S.viewId = S.me.id; S.pv = null; renderChrome(); renderView(); await loadProfile(S.me.id); }
+    if (S.page === 'admin') await loadAdmin();
+    softRender(); window.scrollTo(0, 0);
+  },
+  async profile(el) { S.page = 'profile'; S.viewId = el.dataset.id; S.pv = null; S.editing = false; renderChrome(); renderView(); await loadProfile(el.dataset.id); softRender(); window.scrollTo(0, 0); },
+  logout() { sb.auth.signOut().then(() => { teardown(); S.authMode = 'login'; renderAuth(); }); },
+
+  async join() {
+    const id = await rpc('join_queue');
+    await loadQueue();
+    if (id) { await refreshMatch(); }
+    softRender();
+  },
+  async leave() { await rpc('leave_queue'); await loadQueue(); softRender(); },
+  dismiss() { dismissedIds.add(S.match.id); lsSet('s2a_dismissed', JSON.stringify([...dismissedIds].slice(-50))); S.match = null; S.mplayers = []; S.roomEdit = false; softRender(); },
+  roomedit() { S.roomEdit = true; renderView(); },
+  async room() {
+    const v = $('#rc').value.trim(); if (!v) return toast('Введи код комнаты', 'bad');
+    await rpc('set_room_code', { p_match: S.match.id, p_code: v });
+    S.roomEdit = false; await refreshMatch(); softRender(); toast('Код отправлен', 'ok');
+  },
+  repw(el) { S.rep.winner = el.dataset.v; renderView(); },
+  async report() {
+    if (!S.rep.winner) return toast('Выбери победившую команду', 'bad');
+    const a = $('#rs-a').value, b = $('#rs-b').value;
+    await rpc('submit_report', { p_match: S.match.id, p_winner: S.rep.winner, p_score_a: a === '' ? null : +a, p_score_b: b === '' ? null : +b });
+    await refreshMatch(); softRender(); toast('Результат отправлен админу', 'ok');
+  },
+
+  pedit() { S.editing = true; S.draft = { avatar: S.me.avatar, color: S.me.color }; renderView(); },
+  pcancel() { S.editing = false; renderView(); },
+  pav(el) { S.draft.avatar = el.dataset.v; renderView(); },
+  pcol(el) { S.draft.color = +el.dataset.v; renderView(); },
+  async psave() {
+    await rpc('update_my_profile', { p_bio: $('#e-bio').value.trim(), p_standoff_id: $('#e-sid').value.trim(), p_avatar: S.draft.avatar, p_color: S.draft.color });
+    S.editing = false; await loadMe(); await loadProfile(S.me.id); softRender(); toast('Профиль сохранён', 'ok');
+  },
+
+  async admtab(el) { S.adminTab = el.dataset.v; await loadAdmin(); softRender(); },
+  async fin(el) {
+    const card = el.closest('[data-mid]'), w = el.dataset.w;
+    if (!confirm('Засчитать победу команды ' + (w === 'A' ? '1' : '2') + '? Рейтинг игроков изменится.')) return;
+    const a = $('.sa', card).value, b = $('.sb', card).value;
+    await rpc('admin_finish_match', { p_match: card.dataset.mid, p_winner: w, p_score_a: a === '' ? null : +a, p_score_b: b === '' ? null : +b });
+    toast('Матч засчитан', 'ok'); await loadAdmin(); softRender();
+  },
+  async cancelm(el) {
+    const card = el.closest('[data-mid]');
+    if (!confirm('Отменить матч? Рейтинг не изменится.')) return;
+    await rpc('admin_cancel_match', { p_match: card.dataset.mid });
+    toast('Матч отменён', 'ok'); await loadAdmin(); softRender();
+  },
+  async clearq() { if (!confirm('Убрать всех из очереди?')) return; await rpc('admin_clear_queue'); await loadQueue(); softRender(); },
+  async prate(el) {
+    const row = el.closest('[data-uid]'), v = prompt('Новый рейтинг для ' + row.dataset.nick + ' (0–5000):');
+    if (v === null) return; const n = parseInt(v, 10); if (isNaN(n)) return toast('Нужно число', 'bad');
+    await rpc('admin_set_rating', { p_user: row.dataset.uid, p_rating: n }); toast('Рейтинг изменён', 'ok'); await loadAdmin(); softRender();
+  },
+  async pban(el) {
+    const row = el.closest('[data-uid]'), ban = el.dataset.b === '1';
+    if (!confirm((ban ? 'Забанить ' : 'Разбанить ') + row.dataset.nick + '?')) return;
+    await rpc('admin_set_banned', { p_user: row.dataset.uid, p_banned: ban }); toast(ban ? 'Игрок забанен' : 'Бан снят', 'ok'); await loadAdmin(); softRender();
+  },
+  async prole(el) {
+    const row = el.closest('[data-uid]'), r = el.dataset.r;
+    if (!confirm((r === 'admin' ? 'Сделать админом ' : 'Снять админа с ') + row.dataset.nick + '?')) return;
+    await rpc('admin_set_role', { p_user: row.dataset.uid, p_role: r }); toast('Роль изменена', 'ok'); await loadAdmin(); softRender();
+  },
+  async savesize() { await rpc('admin_set_setting', { p_key: 'team_size', p_value: $('#tsize').value }); await loadSettings(); toast('Формат сохранён', 'ok'); softRender(); }
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el || el.disabled || !A[el.dataset.act]) return;
+  Promise.resolve(A[el.dataset.act](el, e)).catch(err => toast(errText(err), 'bad'));
+});
+document.addEventListener('submit', e => { if (e.target.id === 'af') { e.preventDefault(); doAuth(); } });
+document.addEventListener('input', e => {
+  if (!e.target) return;
+  if (e.target.id === 'a-nick') {
+    nickOk = null;
+    const st = document.querySelector('.field[data-f="nick"] .status');
+    if (st) { st.textContent = ''; st.style.color = 'var(--mute)'; }
+    setFieldError('nick', '');
+    checkNick(e.target.value.trim());
+    return;
+  }
+  if (e.target.id === 'a-pass' && S.authMode === 'reg') {
+    pwPaint(e.target.value);
+    if ($('#a-pass2') && $('#a-pass2').value) {
+      setFieldError('pass2', e.target.value === $('#a-pass2').value ? '' : 'Пароли не совпадают');
+    }
+    return;
+  }
+  if (e.target.id === 'a-pass2') {
+    const p1 = $('#a-pass').value, p2 = e.target.value;
+    setFieldError('pass2', p2 && p1 !== p2 ? 'Пароли не совпадают' : '');
+    return;
+  }
+  if (e.target.id !== 'psearch') return;
+  const v = e.target.value.trim();
+  deb(async () => {
+    S.adm.q = v; await loadAdmin();
+    const l = $('#plist'); if (l) l.innerHTML = playersHtml();
+  }, 300)();
+});
+document.addEventListener('focusout', () => {
+  if (!S.dirty) return;
+  setTimeout(() => { if (S.dirty && !typing()) renderView(); }, 1200);
+});
+window.addEventListener('pagehide', () => { if (S.inQueue && S.me) sb.rpc('leave_queue'); });
+
+/* =====================  СТАРТ  ===================== */
+(async () => {
+  root.innerHTML = '<div class="auth"><div class="brand">S2<b>ARENA</b></div></div>';
+  const { data } = await sb.auth.getSession();
+  if (data.session) await onSession(data.session); else renderAuth();
+  sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT' && S.me) { teardown(); renderAuth(); } });
+})();
+})();
+</script>
+</body>
+</html>

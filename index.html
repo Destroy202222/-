@@ -248,6 +248,7 @@
         .page { display: none; padding-bottom: 20px; }
         .page.active { display: block; }
 
+        /* ===== ГЛАВНАЯ ===== */
         .home-hero { margin-top: 8px; }
         .hero-badge { display: inline-block; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.2); padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; color: #ffd700; letter-spacing: 1px; text-transform: uppercase; }
         .hero-title { font-size: 24px; font-weight: 800; line-height: 1.2; margin: 16px 0 20px; }
@@ -274,6 +275,7 @@
         .prize-item.bronze .reward { color: #cd7f32; }
         .prize-premium { text-align: center; font-size: 13px; color: #8888aa; }
 
+        /* ===== ПОИСК ===== */
         .search-page-wrapper { padding-top: 8px; }
         .search-header-block { text-align: center; padding: 16px 0 20px; }
         .search-header-block .search-title { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #ffd700, #ff6b00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -339,6 +341,7 @@
         .party-feature { font-size: 11px; color: #555; margin-top: 8px; padding: 8px 12px; background: #1a1a2e; border-radius: 8px; }
         .party-feature i { margin-right: 6px; color: #ffd700; }
 
+        /* ===== МАТЧ ===== */
         .match-page { padding-top: 8px; }
         .match-info-bar { display: flex; flex-wrap: wrap; gap: 12px; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
         .info-item { font-size: 13px; color: #8888aa; }
@@ -358,6 +361,7 @@
         .player-card .info .name { font-size: 13px; font-weight: 600; }
         .player-card .captain-badge { font-size: 10px; color: #ffd700; padding: 2px 8px; background: rgba(255,215,0,0.1); border-radius: 10px; }
 
+        /* ===== БАН КАРТ ===== */
         .bans-container { display: grid; gap: 16px; margin-bottom: 16px; }
         .ban-section { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; }
         .ban-header { margin-bottom: 12px; }
@@ -385,14 +389,7 @@
         .ban-status { display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; color: #8888aa; }
         .ban-status .status-text.done { color: #51cf66; }
 
-        .lobby-section {
-            display: none;
-            background: #14141f;
-            border: 1px solid #2a2a4a;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
+        .lobby-section { display: none; background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
         .lobby-section.visible { display: block; }
         .lobby-section .lobby-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
         .lobby-section .lobby-title i { margin-right: 8px; color: #ffd700; }
@@ -435,22 +432,10 @@
         .btn-end:hover:not(:disabled) { transform: scale(1.02); }
         .btn-end:disabled { opacity: 0.5; cursor: not-allowed; }
 
+        /* ===== ПРОФИЛЬ ===== */
         .profile-card { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 20px; }
         .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-        .profile-avatar {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ffd700, #ff6b00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 900;
-            color: #0b0b0f;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
+        .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; color: #0b0b0f; flex-shrink: 0; overflow: hidden; }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .profile-info .username { font-size: 20px; font-weight: 800; }
         .profile-info .details { font-size: 12px; color: #8888aa; margin-top: 4px; }
@@ -467,68 +452,240 @@
         .btn-action.edit { background: #2a2a4a; color: #fff; }
         .btn-action.logout { background: #ff6b6b; color: #fff; }
 
-        .profile-admin-panel {
+        /* ===== АДМИН-ПАНЕЛЬ (как в S2 Arena) ===== */
+        .admin-panel-wrap {
             display: none;
-            background: #1a1a2e;
-            border-radius: 12px;
-            padding: 16px;
+            background: #14141f;
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 20px;
             margin-bottom: 16px;
         }
-        .profile-admin-panel.visible { display: block; }
-        .admin-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #ffd700; }
-        .admin-title i { margin-right: 6px; }
-        .admin-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #2a2a4a; }
-        .admin-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .section-title { font-size: 13px; font-weight: 600; color: #8888aa; margin-bottom: 8px; }
-        .admin-input-group { display: flex; gap: 8px; }
-        .admin-input-group input { flex: 1; padding: 8px 12px; background: #0b0b0f; border: 1px solid #2a2a4a; border-radius: 8px; color: #fff; font-family: inherit; font-size: 13px; outline: none; }
-        .admin-input-group input:focus { border-color: #ffd700; }
-        .admin-btn { padding: 8px 16px; border: none; border-radius: 8px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-weight: 700; cursor: pointer; }
-        .admin-status { font-size: 13px; margin-top: 6px; }
-        .admin-status.show { padding: 6px 10px; border-radius: 6px; }
-        .admin-status.error { color: #ff6b6b; background: rgba(255,107,107,0.1); }
-        .admin-status.success { color: #51cf66; background: rgba(81,207,102,0.1); }
-        .admin-list { display: flex; flex-wrap: wrap; gap: 8px; }
-        .admin-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: #0b0b0f; border: 1px solid #2a2a4a; border-radius: 16px; font-size: 13px; }
-        .admin-tag .remove { color: #ff6b6b; cursor: pointer; font-weight: 700; margin-left: 4px; }
-        .admin-tag .remove:hover { color: #ff4444; }
-        .admin-empty { color: #555; font-size: 13px; padding: 4px 0; }
+        .admin-panel-wrap.visible { display: block; }
+        .adm-title { font-size: 18px; font-weight: 800; margin-bottom: 12px; color: #ffd700; }
+        .adm-tabs {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            margin-bottom: 14px;
+            padding-bottom: 4px;
+        }
+        .adm-tabs::-webkit-scrollbar { height: 3px; }
+        .adm-tabs::-webkit-scrollbar-thumb { background: #2a2a4a; border-radius: 3px; }
+        .adm-tabs button {
+            flex: none;
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            color: #8888aa;
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        .adm-tabs button.on {
+            background: #2a2a4a;
+            color: #fff;
+            border-color: #ffd700;
+        }
+        .adm-body { display: flex; flex-direction: column; gap: 12px; }
 
-        .admin-matches-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid #2a2a4a; }
-        .admin-matches-section .section-title { font-size: 13px; font-weight: 600; color: #8888aa; margin-bottom: 8px; }
-        .admin-match-item { display: flex; justify-content: space-between; align-items: center; background: #1a1a2e; border-radius: 10px; padding: 10px 14px; margin-bottom: 6px; border: 1px solid #2a2a4a; cursor: pointer; transition: all 0.2s ease; }
-        .admin-match-item:hover { border-color: #ffd700; background: rgba(255,215,0,0.05); }
-        .admin-match-item .match-info { font-size: 12px; }
-        .admin-match-item .match-info .match-id { color: #8888aa; }
-        .admin-match-item .match-info .match-players { color: #fff; font-weight: 600; }
-        .admin-match-item .match-status { font-size: 11px; padding: 4px 12px; border-radius: 12px; font-weight: 600; }
-        .admin-match-item .match-status.pending { background: rgba(255,215,0,0.2); color: #ffd700; }
-        .admin-match-item .match-status.active { background: rgba(77,171,247,0.2); color: #4dabf7; }
+        .adm-match {
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .adm-match .hdr {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .adm-match .hdr h3 { font-size: 14px; font-weight: 700; }
+        .adm-match .badge-status {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+        .adm-match .badge-status.pending { background: rgba(255,215,0,0.2); color: #ffd700; }
+        .adm-match .badge-status.active { background: rgba(77,171,247,0.2); color: #4dabf7; }
+        .adm-match .meta { font-size: 11px; color: #8888aa; margin-bottom: 8px; }
+        .adm-teams { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .adm-team { background: #14141f; border-radius: 10px; padding: 8px; }
+        .adm-team h4 { font-size: 11px; color: #8888aa; margin-bottom: 6px; text-transform: uppercase; }
+        .adm-team.blue h4 { color: #4dabf7; }
+        .adm-team.orange h4 { color: #ff922b; }
+        .adm-pl { display: flex; align-items: center; gap: 6px; padding: 4px 0; font-size: 12px; }
+        .adm-pl .av {
+            width: 22px; height: 22px; border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #ff6b00);
+            color: #0b0b0f; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 10px;
+        }
+        .adm-pl .nm { flex: 1; font-weight: 600; }
+        .adm-pl .cap { font-size: 9px; color: #ffd700; }
 
-        .promo-section { display: flex; flex-direction: column; gap: 8px; }
-        .promo-input-group { display: flex; flex-wrap: wrap; gap: 8px; }
-        .promo-input-group input { flex: 1; min-width: 60px; padding: 8px 12px; background: #0b0b0f; border: 1px solid #2a2a4a; border-radius: 8px; color: #fff; font-family: inherit; font-size: 13px; outline: none; }
-        .promo-input-group input:focus { border-color: #ffd700; }
-        .promo-btn { padding: 8px 16px; border: none; border-radius: 8px; background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; font-family: inherit; font-weight: 700; cursor: pointer; }
-        .promo-status { font-size: 13px; color: #8888aa; }
+        .adm-score-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .adm-score-row input {
+            width: 100%;
+            padding: 10px;
+            background: #0b0b0f;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 18px;
+            font-weight: 900;
+            text-align: center;
+            outline: none;
+        }
+        .adm-score-row .sep { color: #666; font-weight: 900; }
+        .adm-finish-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .adm-finish-btns button {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .adm-finish-btns button:hover { transform: scale(1.02); }
+        .adm-finish-btns .btn-blue { background: #4dabf7; color: #fff; }
+        .adm-finish-btns .btn-orange { background: #ff922b; color: #fff; }
+        .adm-cancel-btn {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #2a2a4a;
+            background: transparent;
+            color: #ff6b6b;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .adm-cancel-btn:hover { background: rgba(255,107,107,0.1); }
 
-        .match-dynamics { margin-bottom: 16px; }
-        .match-dynamics .title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-        .match-dynamics .title i { margin-right: 6px; color: #ffd700; }
-        .chart-container { display: flex; align-items: flex-end; gap: 4px; height: 60px; padding: 8px; background: #1a1a2e; border-radius: 10px; min-height: 60px; }
-        .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
-        .chart-bar { width: 100%; min-height: 4px; transition: height 0.3s ease; }
-        .chart-bar.win { background: #51cf66; }
-        .chart-bar.loss { background: #ff6b6b; }
-        .bar-label { font-size: 8px; color: #666; margin-top: 2px; }
-        .match-history .title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-        .match-history .title i { margin-right: 6px; color: #ffd700; }
-        .match-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #1a1a2e; border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
-        .match-item .map { color: #8888aa; }
-        .match-item .date { color: #666; font-size: 11px; }
-        .match-item .result.win { color: #51cf66; font-weight: 600; }
-        .match-item .result.loss { color: #ff6b6b; font-weight: 600; }
+        .adm-player {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            padding: 10px 12px;
+            flex-wrap: wrap;
+        }
+        .adm-player .av {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #ff6b00);
+            color: #0b0b0f; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px; flex-shrink: 0;
+        }
+        .adm-player .nm { flex: 1; font-weight: 600; font-size: 13px; }
+        .adm-player .elo { font-weight: 800; color: #ffd700; font-size: 14px; }
+        .adm-player .actions { display: flex; gap: 4px; width: 100%; margin-top: 4px; }
+        .adm-player .actions button {
+            flex: 1;
+            padding: 6px;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            background: #2a2a4a;
+            color: #fff;
+        }
+        .adm-player .actions button:hover { background: #3a3a5a; }
+        .adm-player .actions button.danger { background: #ff6b6b; color: #fff; }
+        .adm-player .actions button.ok { background: #51cf66; color: #fff; }
 
+        .adm-search {
+            width: 100%;
+            padding: 10px 14px;
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+            margin-bottom: 10px;
+        }
+        .adm-search:focus { border-color: #ffd700; }
+        .adm-empty { color: #555; font-size: 13px; text-align: center; padding: 20px 0; }
+        .adm-qrow { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid #2a2a4a; font-size: 13px; }
+        .adm-qrow:first-child { border-top: none; }
+        .adm-qrow .av { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #0b0b0f; }
+        .adm-qrow .nm { flex: 1; font-weight: 600; }
+        .adm-qrow .elo { font-weight: 800; color: #ffd700; }
+
+        .adm-settings { display: flex; flex-direction: column; gap: 10px; }
+        .adm-settings select {
+            width: 100%;
+            padding: 10px 14px;
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .adm-promo-creation {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .adm-promo-row {
+            display: flex;
+            gap: 6px;
+        }
+        .adm-promo-row input {
+            flex: 1;
+            padding: 8px 12px;
+            background: #0b0b0f;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+        }
+        .adm-promo-row input:focus { border-color: #ffd700; }
+        .adm-promo-row button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ffd700, #ff6b00);
+            color: #0b0b0f;
+            font-family: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* ===== ДРУЗЬЯ ===== */
         .friends-page { padding-top: 8px; }
         .friends-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .friends-header h2 { font-size: 20px; font-weight: 800; }
@@ -544,7 +701,6 @@
         .friends-list { display: flex; flex-direction: column; gap: 8px; }
         .friend-item { display: flex; align-items: center; gap: 12px; background: #14141f; border: 1px solid #2a2a4a; border-radius: 12px; padding: 12px 16px; }
         .friend-item .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #0b0b0f; flex-shrink: 0; overflow: hidden; }
-        .friend-item .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .friend-item .info { flex: 1; }
         .friend-item .info .name { font-weight: 600; font-size: 14px; }
         .friend-item .info .status { font-size: 12px; color: #8888aa; }
@@ -555,18 +711,14 @@
         .friend-item .friend-actions { display: flex; gap: 6px; }
         .friend-item .friend-actions button { padding: 6px 12px; border: none; border-radius: 8px; font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
         .friend-item .friend-actions .btn-invite { background: linear-gradient(135deg, #ffd700, #ff6b00); color: #0b0b0f; }
-        .friend-item .friend-actions .btn-invite:hover { transform: scale(1.05); }
         .friend-item .friend-actions .btn-remove { background: #2a2a4a; color: #ff6b6b; }
-        .friend-item .friend-actions .btn-remove:hover { background: #3a3a5a; }
         .friend-item .friend-actions .btn-add { background: #4dabf7; color: #fff; }
-        .friend-item .friend-actions .btn-add:hover { transform: scale(1.05); }
         .friend-item .friend-actions .btn-accept { background: #51cf66; color: #fff; }
-        .friend-item .friend-actions .btn-accept:hover { transform: scale(1.05); }
         .friend-item .friend-actions .btn-decline { background: #ff6b6b; color: #fff; }
-        .friend-item .friend-actions .btn-decline:hover { transform: scale(1.05); }
         .friends-empty { text-align: center; padding: 40px 20px; color: #555; }
         .friends-empty i { font-size: 40px; margin-bottom: 12px; display: block; color: #2a2a4a; }
 
+        /* ===== ТОП ===== */
         .top-page { padding-top: 8px; }
         .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .top-header h2 { font-size: 20px; font-weight: 800; }
@@ -578,13 +730,13 @@
         .top-item .rank.silver { color: #c0c0c0; }
         .top-item .rank.bronze { color: #cd7f32; }
         .top-item .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b00); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #0b0b0f; flex-shrink: 0; overflow: hidden; }
-        .top-item .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .top-item .info { flex: 1; }
         .top-item .info .name { font-weight: 600; font-size: 14px; }
         .top-item .info .stats { font-size: 12px; color: #8888aa; }
         .top-item .elo { font-weight: 800; font-size: 16px; color: #ffd700; }
         .top-item .elo .elo-label { font-size: 10px; color: #666; font-weight: 400; display: block; text-align: right; }
 
+        /* ===== КОШЕЛЁК ===== */
         .wallet-page { padding-top: 8px; }
         .wallet-card { background: #14141f; border: 1px solid #2a2a4a; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 16px; }
         .wallet-card .balance { font-size: 36px; font-weight: 900; color: #ffd700; }
@@ -597,10 +749,6 @@
         .placeholder { text-align: center; padding: 60px 20px; color: #555; }
         .placeholder i { font-size: 48px; margin-bottom: 16px; display: block; color: #2a2a4a; }
         .placeholder h2 { font-size: 18px; font-weight: 700; color: #8888aa; }
-
-        .online-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #8888aa; }
-        .online-badge i { width: 8px; height: 8px; border-radius: 50%; background: #51cf66; box-shadow: 0 0 8px #51cf66; animation: pulseOnline 2s infinite; }
-        @keyframes pulseOnline { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         .bottom-nav {
             position: fixed;
@@ -635,21 +783,6 @@
         .bottom-nav .item i { font-size: 20px; }
         .bottom-nav .item.active { color: #ffd700; }
         .bottom-nav .item span { font-weight: 500; }
-        .bottom-nav .item .badge {
-            position: absolute;
-            top: 0;
-            right: -4px;
-            background: #ff6b6b;
-            color: #fff;
-            font-size: 9px;
-            font-weight: 700;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
 
         @media (max-width: 480px) {
             .auth-box { padding: 24px 20px; }
@@ -658,6 +791,7 @@
             .match-grid { grid-template-columns: 1fr; }
             .result-buttons { grid-template-columns: 1fr; }
             .prize-grid { grid-template-columns: 1fr; }
+            .adm-teams { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -696,7 +830,7 @@
                 <label>Никнейм</label>
                 <div class="input-wrap">
                     <i class="fas fa-user"></i>
-                    <input type="text" id="loginUsername" placeholder="Введите никнейм" />
+                    <input type="text" id="loginUsername" placeholder="Введите никнейм" maxlength="16" />
                 </div>
             </div>
             <div class="form-group">
@@ -715,8 +849,9 @@
                 <label>Никнейм <span style="color:#ff6b6b;">*</span></label>
                 <div class="input-wrap">
                     <i class="fas fa-user"></i>
-                    <input type="text" id="regUsername" placeholder="Придумайте никнейм" />
+                    <input type="text" id="regUsername" placeholder="3–16 символов" maxlength="16" />
                 </div>
+                <div style="font-size:11px;color:#666;margin-top:4px;">От 3 до 16 символов</div>
             </div>
             <div class="form-group">
                 <label>Пароль <span style="color:#ff6b6b;">*</span></label>
@@ -752,18 +887,9 @@
             <div class="hero-badge">КИБЕРСПОРТИВНАЯ ПЛАТФОРМА ПО BRAWL STARS</div>
             <div class="hero-title">Проверь свой <span>скилл</span>, поднимай <span>уровень</span> и играй против сильнейших.</div>
             <div class="hero-stats-row">
-                <div class="hero-stat">
-                    <div class="number" id="activePlayersHome">0</div>
-                    <div class="label">В поиске</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="number" id="inMatchPlayersHome">0</div>
-                    <div class="label">В матче</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="number" id="totalMatchesHome">0</div>
-                    <div class="label">Сыграно матчей</div>
-                </div>
+                <div class="hero-stat"><div class="number" id="activePlayersHome">0</div><div class="label">В поиске</div></div>
+                <div class="hero-stat"><div class="number" id="inMatchPlayersHome">0</div><div class="label">В матче</div></div>
+                <div class="hero-stat"><div class="number" id="totalMatchesHome">0</div><div class="label">Матчей</div></div>
             </div>
             <div class="hero-actions">
                 <button class="btn-hero" onclick="navigate('matches')"><i class="fas fa-search"></i> Поиск матча</button>
@@ -905,41 +1031,21 @@
                 <button class="btn-action edit" onclick="showToast('info', 'Редактирование', 'Функция редактирования профиля')"><i class="fas fa-edit"></i> Редактировать</button>
                 <button class="btn-action logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
             </div>
-            <div class="profile-admin-panel" id="profileAdminPanel">
-                <div class="admin-title"><i class="fas fa-user-shield"></i> Админ-панель</div>
-                <div class="admin-section">
-                    <div class="section-title">Добавить администратора</div>
-                    <div class="admin-input-group">
-                        <input type="text" id="adminAddInput" placeholder="Введите никнейм" />
-                        <button class="admin-btn" id="adminAddBtn"><i class="fas fa-user-plus"></i> Добавить</button>
-                    </div>
-                    <div class="admin-status" id="adminAddStatus"></div>
+
+            <!-- ===== НОВАЯ АДМИН-ПАНЕЛЬ (как в S2 Arena) ===== -->
+            <div class="admin-panel-wrap" id="adminPanelWrap">
+                <div class="adm-title"><i class="fas fa-user-shield"></i> Админ-меню</div>
+                <div class="adm-tabs" id="admTabs">
+                    <button class="on" data-adm-tab="matches">Матчи</button>
+                    <button data-adm-tab="players">Игроки</button>
+                    <button data-adm-tab="queue">Очередь</button>
+                    <button data-adm-tab="promos">Промокоды</button>
+                    <button data-adm-tab="admins">Админы</button>
+                    <button data-adm-tab="settings">Настройки</button>
                 </div>
-                <div class="admin-section">
-                    <div class="section-title">Список администраторов</div>
-                    <div class="admin-list" id="adminList"><div class="admin-empty">Загрузка...</div></div>
-                </div>
-                <div class="admin-section">
-                    <div class="section-title">Создать промокод</div>
-                    <div class="promo-section">
-                        <div class="promo-input-group">
-                            <input type="text" id="promoCodeInput" placeholder="Код" maxlength="20" />
-                            <input type="number" id="promoAmountInput" placeholder="Сумма ₽" min="1" style="max-width:80px;" />
-                            <input type="number" id="promoUsesInput" placeholder="Акт" min="1" value="1" style="max-width:60px;" />
-                            <button class="promo-btn" id="createPromoBtn"><i class="fas fa-plus"></i> Создать</button>
-                        </div>
-                        <div class="promo-status" id="promoStatus"></div>
-                    </div>
-                </div>
-                <div class="admin-section">
-                    <div class="section-title">Список промокодов</div>
-                    <div class="admin-list" id="promoList"><div class="admin-empty">Нет промокодов</div></div>
-                </div>
-                <div class="admin-matches-section">
-                    <div class="section-title"><i class="fas fa-gamepad"></i> Не завершённые матчи</div>
-                    <div id="adminMatchesList"><div class="admin-empty">Нет активных матчей</div></div>
-                </div>
+                <div class="adm-body" id="admBody"></div>
             </div>
+
             <div class="match-dynamics">
                 <div class="title"><i class="fas fa-chart-bar"></i> Динамика матчей (последние 10)</div>
                 <div class="chart-container" id="chartContainer"><div style="color:#666; text-align:center; width:100%; padding:10px 0;">Нет данных</div></div>
@@ -968,7 +1074,7 @@
             <div class="friends-empty">
                 <i class="fas fa-user-friends"></i>
                 <p>У вас пока нет друзей</p>
-                <span style="font-size:12px;color:#666;">Ищите игроков по никнейму и отправляйте заявки</span>
+                <span style="font-size:12px;color:#666;">Ищите игроков по никнейму</span>
             </div>
         </div>
     </div>
@@ -991,9 +1097,6 @@
         <div class="wallet-promo">
             <input type="text" id="promoInput" placeholder="Введите промокод" />
             <button onclick="applyPromo()"><i class="fas fa-gift"></i> Активировать</button>
-        </div>
-        <div style="margin-top:16px;color:#666;font-size:12px;text-align:center;">
-            <i class="fas fa-info-circle"></i> Введите промокод для пополнения баланса
         </div>
     </div>
 
@@ -1042,14 +1145,21 @@
     let isCaptain = false;
     let searchChannel = null;
     let matchChannel = null;
-    let presenceChannel = null;
     let currentMatchId = null;
-    let adminMatches = [];
-    let selectedAdminMatch = null;
     let queueUpdateInterval = null;
     let heartbeatInterval = null;
     let isConfirming = false;
     let heartbeatFailCount = 0;
+
+    // Админ-панель
+    let adminTab = 'matches';
+    let adminMatches = [];
+    let adminPlayers = [];
+    let adminQueue = [];
+    let adminPromos = [];
+    let adminAdmins = [];
+    let adminSearchQuery = '';
+    let currentSettings = { team_size: '3' };
 
     let draftState = {
         gameNumber: 1,
@@ -1061,14 +1171,12 @@
     };
 
     // ============================================================
-    //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+    //  УТИЛИТЫ
     // ============================================================
     function generateCode() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let code = '';
-        for (let i = 0; i < 6; i++) {
-            code += letters[Math.floor(Math.random() * letters.length)];
-        }
+        for (let i = 0; i < 6; i++) code += letters[Math.floor(Math.random() * letters.length)];
         return code;
     }
 
@@ -1122,345 +1230,7 @@
     }
 
     // ============================================================
-    //  ОБНОВЛЕНИЕ СТАТИСТИКИ НА ГЛАВНОЙ
-    // ============================================================
-    async function updateHomeStats() {
-        try {
-            const { count: queueCount } = await supabaseClient
-                .from('queue')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'searching');
-
-            const { data: activeMatches } = await supabaseClient
-                .from('active_matches')
-                .select('orange, blue')
-                .in('status', ['pending', 'active']);
-
-            let inMatchPlayers = 0;
-            if (activeMatches) {
-                activeMatches.forEach(match => {
-                    try {
-                        const orange = JSON.parse(match.orange);
-                        const blue = JSON.parse(match.blue);
-                        inMatchPlayers += orange.length + blue.length;
-                    } catch (e) {}
-                });
-            }
-
-            const { count: historyCount } = await supabaseClient
-                .from('match_history')
-                .select('*', { count: 'exact', head: true });
-
-            document.getElementById('activePlayersHome').textContent = queueCount || 0;
-            document.getElementById('inMatchPlayersHome').textContent = inMatchPlayers || 0;
-            document.getElementById('totalMatchesHome').textContent = historyCount || 0;
-
-        } catch (e) {
-            console.error('Ошибка обновления статистики:', e);
-        }
-    }
-
-    // ============================================================
-    //  ПРОВЕРКА И ОЧИСТКА ДУБЛИКАТОВ
-    // ============================================================
-    async function checkAndCleanDuplicates() {
-        if (!currentUser) return;
-
-        try {
-            const { data: duplicates } = await supabaseClient
-                .from('queue')
-                .select('id')
-                .eq('user_id', currentUser.id)
-                .eq('status', 'searching');
-
-            if (duplicates && duplicates.length > 1) {
-                const idsToDelete = duplicates.slice(1).map(q => q.id);
-                await supabaseClient
-                    .from('queue')
-                    .delete()
-                    .in('id', idsToDelete);
-                console.log(`🧹 Удалено ${idsToDelete.length} дубликатов`);
-            }
-        } catch (e) {
-            console.error('Ошибка очистки дубликатов:', e);
-        }
-    }
-
-    // ============================================================
-    //  HEARTBEAT (каждые 20 сек обновляем "я здесь")
-    // ============================================================
-    function startHeartbeat() {
-        if (heartbeatInterval) clearInterval(heartbeatInterval);
-        heartbeatFailCount = 0;
-
-        heartbeatInterval = setInterval(async () => {
-            if (!isSearching || !currentUser) {
-                clearInterval(heartbeatInterval);
-                heartbeatInterval = null;
-                return;
-            }
-
-            try {
-                // 1. Обновляем last_seen
-                await supabaseClient
-                    .from('queue')
-                    .update({ last_seen: new Date().toISOString() })
-                    .eq('user_id', currentUser.id)
-                    .eq('status', 'searching');
-
-                // 2. Вызываем серверную функцию — она проверит, набралось ли 6 игроков
-                const { data, error } = await supabaseClient
-                    .rpc('check_and_create_match');
-
-                if (error) {
-                    console.warn('Heartbeat RPC ошибка:', error);
-                    heartbeatFailCount++;
-                    if (heartbeatFailCount > 3) {
-                        console.warn('⚠️ Много ошибок heartbeat, останавливаем');
-                        clearInterval(heartbeatInterval);
-                        heartbeatInterval = null;
-                    }
-                    return;
-                }
-
-                heartbeatFailCount = 0;
-
-                // 3. Если сервер создал матч — загружаем его
-                if (data && data.match_created) {
-                    console.log('🎯 Матч создан сервером:', data.match_id);
-                    clearInterval(heartbeatInterval);
-                    heartbeatInterval = null;
-                    await loadCreatedMatch(data.match_id);
-                } else {
-                    // Обновляем счётчик
-                    await updateQueueCount();
-                }
-            } catch (e) {
-                console.error('Ошибка heartbeat:', e);
-                heartbeatFailCount++;
-            }
-        }, 20000);
-    }
-
-    // ============================================================
-    //  ЗАГРУЗКА СОЗДАННОГО СЕРВЕРОМ МАТЧА
-    // ============================================================
-    async function loadCreatedMatch(matchId) {
-        try {
-            const { data, error } = await supabaseClient
-                .from('active_matches')
-                .select('*')
-                .eq('id', matchId)
-                .single();
-
-            if (error || !data) {
-                console.error('Матч не найден:', error);
-                return;
-            }
-
-            const orange = JSON.parse(data.orange);
-            const blue = JSON.parse(data.blue);
-
-            currentMatch = { orange, blue };
-            currentMatchId = matchId;
-            isPlayerInMatch = true;
-            isCaptain = blue.length > 0 && blue[0].id === currentUser.id;
-
-            // Отключаем поиск
-            isSearching = false;
-            if (searchTimerInterval) clearInterval(searchTimerInterval);
-            if (queueUpdateInterval) clearInterval(queueUpdateInterval);
-            queueUpdateInterval = null;
-            if (heartbeatInterval) {
-                clearInterval(heartbeatInterval);
-                heartbeatInterval = null;
-            }
-
-            document.getElementById('queueBtn').style.display = 'block';
-            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
-            document.getElementById('queueBtn').className = 'btn-queue';
-            document.getElementById('queueBtn').onclick = startSearch;
-            document.getElementById('queueBtn').disabled = false;
-            document.getElementById('cancelBtn').style.display = 'none';
-
-            if (searchChannel) {
-                supabaseClient.removeChannel(searchChannel);
-                searchChannel = null;
-            }
-
-            // Показываем модалку подтверждения
-            matchPlayers = [...orange, ...blue];
-            confirmedPlayers = [];
-            showConfirmModal();
-
-            // Подписываемся на матч
-            subscribeToMatch(matchId);
-
-            showToast('success', 'Матч найден!', 'Подтвердите участие');
-
-        } catch (e) {
-            console.error('Ошибка loadCreatedMatch:', e);
-        }
-    }
-
-    // ============================================================
-    //  PRESENCE (показывает сколько онлайн)
-    // ============================================================
-    function subscribePresence() {
-        if (presenceChannel) supabaseClient.removeChannel(presenceChannel);
-
-        presenceChannel = supabaseClient
-            .channel('online_users', {
-                config: { presence: { key: currentUser.id } }
-            })
-            .on('presence', { event: 'sync' }, () => {
-                try {
-                    const state = presenceChannel.presenceState();
-                    const count = Object.keys(state).length;
-                    console.log('👥 Онлайн:', count);
-                } catch (e) {}
-            })
-            .subscribe(async (status) => {
-                if (status === 'SUBSCRIBED') {
-                    await presenceChannel.track({
-                        username: currentUser.username,
-                        online_at: new Date().toISOString()
-                    });
-                }
-            });
-    }
-
-    // ============================================================
-    //  ПРОВЕРКА ОЧЕРЕДИ ПРИ ЗАГРУЗКЕ
-    // ============================================================
-    async function checkQueueOnLoad() {
-        if (!currentUser) return;
-        
-        try {
-            await checkAndCleanDuplicates();
-
-            const { data, error } = await supabaseClient
-                .from('queue')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .eq('status', 'searching')
-                .maybeSingle();
-
-            if (error) {
-                console.error('Ошибка проверки очереди:', error);
-                return;
-            }
-
-            if (data) {
-                // Проверяем, не устарел ли этот поиск (>1 мин назад)
-                const lastSeen = data.last_seen ? new Date(data.last_seen).getTime() : 0;
-                const stale = Date.now() - lastSeen > 60000;
-
-                if (stale) {
-                    await supabaseClient
-                        .from('queue')
-                        .delete()
-                        .eq('id', data.id);
-                    console.log('🧹 Удалён устаревший поиск');
-                } else {
-                    // Возобновляем поиск
-                    isSearching = true;
-                    searchSeconds = Math.floor((Date.now() - new Date(data.created_at).getTime()) / 1000);
-                    document.getElementById('queueBtn').style.display = 'none';
-                    document.getElementById('cancelBtn').style.display = 'inline-flex';
-                    startHeartbeat();
-                    subscribeToQueue();
-                    startSearchTimer();
-                    console.log('✅ Поиск возобновлён');
-                }
-            }
-
-            await updateQueueCount();
-        } catch (e) {
-            console.error('Ошибка checkQueueOnLoad:', e);
-        }
-    }
-
-    // ============================================================
-    //  ПРОВЕРКА АКТИВНОГО МАТЧА ПРИ ЗАГРУЗКЕ
-    // ============================================================
-    async function checkActiveMatchOnLoad() {
-        if (!currentUser) return;
-
-        try {
-            const { data, error } = await supabaseClient
-                .from('active_matches')
-                .select('*')
-                .in('status', ['pending', 'active'])
-                .order('created_at', { ascending: false })
-                .limit(1);
-
-            if (error || !data || data.length === 0) return;
-
-            const match = data[0];
-            const orange = JSON.parse(match.orange);
-            const blue = JSON.parse(match.blue);
-            
-            const isInMatch = orange.some(p => p.id === currentUser.id) || 
-                              blue.some(p => p.id === currentUser.id);
-
-            if (isInMatch) {
-                console.log('✅ Найден активный матч при загрузке');
-                currentMatch = { orange, blue };
-                isPlayerInMatch = true;
-                currentMatchId = match.id;
-                isCaptain = blue.length > 0 && blue[0].id === currentUser.id;
-                
-                if (match.draft_state) {
-                    draftState = JSON.parse(match.draft_state);
-                }
-
-                if (match.status === 'pending') {
-                    matchPlayers = [...orange, ...blue];
-                    confirmedPlayers = [];
-                    showConfirmModal();
-                    subscribeToMatch(match.id);
-                } else if (match.status === 'active') {
-                    navigate('matchPage');
-                    renderMatchPage();
-                    showToast('info', 'Активный матч', 'Вы уже в матче!');
-                }
-            }
-        } catch (e) {
-            console.error('Ошибка проверки активного матча:', e);
-        }
-    }
-
-    // ============================================================
-    //  ОЧИСТКА СОСТОЯНИЯ ПОИСКА
-    // ============================================================
-    async function cleanupSearchState() {
-        if (searchTimerInterval) {
-            clearInterval(searchTimerInterval);
-            searchTimerInterval = null;
-        }
-        if (queueUpdateInterval) {
-            clearInterval(queueUpdateInterval);
-            queueUpdateInterval = null;
-        }
-        if (heartbeatInterval) {
-            clearInterval(heartbeatInterval);
-            heartbeatInterval = null;
-        }
-        if (searchChannel) {
-            try {
-                await supabaseClient.removeChannel(searchChannel);
-            } catch (e) {}
-            searchChannel = null;
-        }
-        isSearching = false;
-        isStartingSearch = false;
-        isCanceling = false;
-        heartbeatFailCount = 0;
-    }
-
-    // ============================================================
-    //  РЕГИСТРАЦИЯ И ВХОД
+    //  РЕГИСТРАЦИЯ (до 16 символов!)
     // ============================================================
     async function registerUser() {
         const username = document.getElementById('regUsername').value.trim();
@@ -1471,6 +1241,21 @@
         if (!username || !password || !confirm) {
             messageEl.className = 'auth-message show error';
             messageEl.textContent = '❌ Заполните все поля';
+            return;
+        }
+        if (username.length < 3) {
+            messageEl.className = 'auth-message show error';
+            messageEl.textContent = '❌ Никнейм минимум 3 символа';
+            return;
+        }
+        if (username.length > 16) {
+            messageEl.className = 'auth-message show error';
+            messageEl.textContent = '❌ Никнейм максимум 16 символов';
+            return;
+        }
+        if (!/^[A-Za-z0-9_]+$/.test(username)) {
+            messageEl.className = 'auth-message show error';
+            messageEl.textContent = '❌ Только латиница, цифры и _';
             return;
         }
         if (password !== confirm) {
@@ -1489,10 +1274,7 @@
 
         try {
             const { data: existing } = await supabaseClient
-                .from('users')
-                .select('username')
-                .eq('username', username)
-                .maybeSingle();
+                .from('users').select('username').eq('username', username).maybeSingle();
 
             if (existing) {
                 messageEl.className = 'auth-message show error';
@@ -1511,10 +1293,7 @@
             };
 
             const { data, error } = await supabaseClient
-                .from('users')
-                .insert([newUser])
-                .select()
-                .single();
+                .from('users').insert([newUser]).select().single();
 
             if (error) {
                 messageEl.className = 'auth-message show error';
@@ -1529,7 +1308,7 @@
             setTimeout(() => checkAuth(), 1000);
         } catch (e) {
             messageEl.className = 'auth-message show error';
-            messageEl.textContent = '❌ Ошибка сервера: ' + e.message;
+            messageEl.textContent = '❌ Ошибка: ' + e.message;
         }
     }
 
@@ -1549,11 +1328,7 @@
 
         try {
             const { data, error } = await supabaseClient
-                .from('users')
-                .select('*')
-                .eq('username', username)
-                .eq('password', password)
-                .maybeSingle();
+                .from('users').select('*').eq('username', username).eq('password', password).maybeSingle();
 
             if (error || !data) {
                 messageEl.className = 'auth-message show error';
@@ -1598,16 +1373,14 @@
             document.getElementById('walletBalance').textContent = (currentUser.balance || 0) + ' ₽';
 
             const isAdmin = currentUser.isadmin === true;
-            
             const adminBadge = document.getElementById('adminBadge');
-            const adminPanel = document.getElementById('profileAdminPanel');
-            
+            const adminPanel = document.getElementById('adminPanelWrap');
+
             if (isAdmin) {
                 adminBadge.classList.add('visible');
                 adminPanel.classList.add('visible');
-                await renderAdminList();
-                await renderPromoList();
-                await loadAdminMatches();
+                await loadSettings();
+                await renderAdminPanel();
             } else {
                 adminBadge.classList.remove('visible');
                 adminPanel.classList.remove('visible');
@@ -1615,7 +1388,6 @@
 
             await checkQueueOnLoad();
             await checkActiveMatchOnLoad();
-            subscribePresence();
 
             await loadMatchHistory();
             await renderChart();
@@ -1634,28 +1406,15 @@
 
     function handleLogout() {
         if (!confirm('Выйти из аккаунта?')) return;
-        
-        // Убираем из очереди
         if (currentUser && isSearching) {
-            supabaseClient
-                .from('queue')
-                .delete()
-                .eq('user_id', currentUser.id);
+            supabaseClient.from('queue').delete().eq('user_id', currentUser.id);
         }
-        
         clearSession();
         currentUser = null;
         currentMatch = null;
         isPlayerInMatch = false;
         cleanupSearchState();
-        if (matchChannel) {
-            supabaseClient.removeChannel(matchChannel);
-            matchChannel = null;
-        }
-        if (presenceChannel) {
-            supabaseClient.removeChannel(presenceChannel);
-            presenceChannel = null;
-        }
+        if (matchChannel) { supabaseClient.removeChannel(matchChannel); matchChannel = null; }
         checkAuth();
         showToast('info', 'Выход', 'Вы вышли');
     }
@@ -1664,20 +1423,13 @@
     //  НАВИГАЦИЯ
     // ============================================================
     const pages = {
-        home: 'pageHome',
-        profile: 'pageProfile',
-        shop: 'pageShop',
-        friends: 'pageFriends',
-        matches: 'pageMatches',
-        top: 'pageTop',
-        wallet: 'pageWallet',
-        matchPage: 'matchPage'
+        home: 'pageHome', profile: 'pageProfile', shop: 'pageShop',
+        friends: 'pageFriends', matches: 'pageMatches', top: 'pageTop',
+        wallet: 'pageWallet', matchPage: 'matchPage'
     };
 
     function navigate(page) {
-        if (page === 'matches' && isPlayerInMatch && currentMatch) {
-            page = 'matchPage';
-        }
+        if (page === 'matches' && isPlayerInMatch && currentMatch) page = 'matchPage';
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pages[page]).classList.add('active');
         document.querySelectorAll('.bottom-nav .item').forEach(b => b.classList.remove('active'));
@@ -1686,173 +1438,607 @@
     }
 
     // ============================================================
-    //  ПОДПИСКА НА ИЗМЕНЕНИЯ МАТЧА
+    //  АДМИН-ПАНЕЛЬ (НОВАЯ — как в S2 Arena)
     // ============================================================
-    function subscribeToMatch(matchId) {
-        if (matchChannel) {
-            supabaseClient.removeChannel(matchChannel);
-            matchChannel = null;
+    document.addEventListener('click', async (e) => {
+        const tab = e.target.closest('[data-adm-tab]');
+        if (tab) {
+            adminTab = tab.dataset.admTab;
+            document.querySelectorAll('[data-adm-tab]').forEach(b => b.classList.remove('on'));
+            tab.classList.add('on');
+            await renderAdminPanel();
         }
+    });
 
-        matchChannel = supabaseClient
-            .channel('match_channel_' + matchId)
-            .on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'active_matches',
-                filter: `id=eq.${matchId}`
-            }, async (payload) => {
-                console.log('🔄 Изменение в матче:', payload);
-                
-                if (payload.eventType === 'DELETE') {
-                    document.getElementById('confirmModal').classList.remove('active');
-                    waitingConfirm = false;
-                    currentMatch = null;
-                    isPlayerInMatch = false;
-                    showToast('info', 'Матч отменён', 'Кто-то не подтвердил участие');
-                    navigate('matches');
+    async function loadSettings() {
+        try {
+            const { data } = await supabaseClient.from('settings').select('*');
+            (data || []).forEach(r => { currentSettings[r.key] = r.value; });
+            if (!currentSettings.team_size) currentSettings.team_size = '3';
+        } catch (e) {}
+    }
+
+    async function renderAdminPanel() {
+        if (!currentUser?.isadmin) return;
+        const body = document.getElementById('admBody');
+        if (!body) return;
+        
+        body.innerHTML = '<div class="adm-empty">Загрузка...</div>';
+
+        try {
+            if (adminTab === 'matches') {
+                const { data } = await supabaseClient
+                    .from('active_matches').select('*')
+                    .in('status', ['pending', 'active'])
+                    .order('created_at', { ascending: false });
+                adminMatches = data || [];
+
+                if (adminMatches.length === 0) {
+                    body.innerHTML = '<div class="adm-empty">Нет активных матчей</div>';
                     return;
                 }
 
-                if (payload.eventType === 'UPDATE') {
-                    const newData = payload.new;
-                    if (newData.status === 'active') {
-                        document.getElementById('confirmModal').classList.remove('active');
-                        waitingConfirm = false;
-                        isConfirming = false;
-                        const orange = JSON.parse(newData.orange);
-                        const blue = JSON.parse(newData.blue);
-                        currentMatch = { orange, blue };
-                        if (newData.draft_state) {
-                            draftState = JSON.parse(newData.draft_state);
-                        }
-                        startMatchAfterConfirm();
-                    }
-                }
-            })
-            .subscribe((status) => {
-                console.log('📡 Статус подписки на матч:', status);
-            });
-    }
+                body.innerHTML = adminMatches.map(m => {
+                    let orange = [], blue = [];
+                    try { orange = JSON.parse(m.orange); blue = JSON.parse(m.blue); } catch (e) {}
+                    const statusText = m.status === 'pending' ? 'Ожидает' : 'Активен';
 
-    // ============================================================
-    //  ПОДПИСКА НА ИЗМЕНЕНИЯ В ОЧЕРЕДИ
-    // ============================================================
-    function subscribeToQueue() {
-        if (searchChannel) {
-            supabaseClient.removeChannel(searchChannel);
-            searchChannel = null;
-        }
+                    const renderTeam = (list, side, avgElo) => `
+                        <div class="adm-team ${side === 'blue' ? 'blue' : 'orange'}">
+                            <h4>${side === 'blue' ? 'BLUE' : 'ORANGE'} · ELO ${avgElo}</h4>
+                            ${list.map((p, i) => `
+                                <div class="adm-pl">
+                                    <div class="av">${(p.username || '?').charAt(0).toUpperCase()}</div>
+                                    <div class="nm">${p.username || '?'}</div>
+                                    ${i === 0 ? '<span class="cap">👑</span>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
 
-        searchChannel = supabaseClient
-            .channel('queue_channel_' + Date.now())
-            .on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'queue'
-            }, async (payload) => {
-                if (isSearching) {
-                    await updateQueueCount();
-                    await updateHomeStats();
-                }
-            })
-            .subscribe((status) => {
-                console.log('📡 Статус подписки на очередь:', status);
-            });
-    }
+                    const avgO = orange.length ? Math.round(orange.reduce((s, p) => s + (p.elo || 1000), 0) / orange.length) : 0;
+                    const avgB = blue.length ? Math.round(blue.reduce((s, p) => s + (p.elo || 1000), 0) / blue.length) : 0;
 
-    // ============================================================
-    //  ТАЙМЕР ПОИСКА
-    // ============================================================
-    function startSearchTimer() {
-        if (searchTimerInterval) clearInterval(searchTimerInterval);
-
-        searchTimerInterval = setInterval(() => {
-            if (!isSearching) {
-                clearInterval(searchTimerInterval);
-                searchTimerInterval = null;
-                return;
+                    return `
+                        <div class="adm-match" data-match-id="${m.id}">
+                            <div class="hdr">
+                                <h3>Матч #${m.id.slice(-6)}</h3>
+                                <span class="badge-status ${m.status === 'pending' ? 'pending' : 'active'}">${statusText}</span>
+                            </div>
+                            <div class="meta">Создан: ${new Date(m.created_at).toLocaleTimeString('ru-RU')}</div>
+                            <div class="adm-teams">
+                                ${renderTeam(orange, 'orange', avgO)}
+                                ${renderTeam(blue, 'blue', avgB)}
+                            </div>
+                            <div class="adm-score-row">
+                                <input type="number" class="adm-score-a" placeholder="0" min="0" max="99" inputmode="numeric" />
+                                <span class="sep">:</span>
+                                <input type="number" class="adm-score-b" placeholder="0" min="0" max="99" inputmode="numeric" />
+                            </div>
+                            <div class="adm-finish-btns">
+                                <button class="btn-blue" onclick="admFinishMatch('${m.id}', 'blue')">🏆 BLUE</button>
+                                <button class="btn-orange" onclick="admFinishMatch('${m.id}', 'orange')">🏆 ORANGE</button>
+                            </div>
+                            <button class="adm-cancel-btn" onclick="admCancelMatch('${m.id}')">❌ Отменить без рейтинга</button>
+                        </div>
+                    `;
+                }).join('');
             }
-            searchSeconds++;
-            const mins = String(Math.floor(searchSeconds / 60)).padStart(2, '0');
-            const secs = String(searchSeconds % 60).padStart(2, '0');
-            document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> ' + mins + ':' + secs;
-        }, 1000);
+
+            else if (adminTab === 'players') {
+                let q = supabaseClient.from('users').select('*')
+                    .order('elo', { ascending: false }).limit(50);
+                if (adminSearchQuery) q = q.ilike('username', '%' + adminSearchQuery + '%');
+                const { data } = await q;
+                adminPlayers = data || [];
+
+                if (adminPlayers.length === 0) {
+                    body.innerHTML = `<input class="adm-search" id="admSearchInput" placeholder="Поиск по нику..." value="${adminSearchQuery}"><div class="adm-empty">Никого не нашли</div>`;
+                    bindAdminSearch();
+                    return;
+                }
+
+                body.innerHTML = `
+                    <input class="adm-search" id="admSearchInput" placeholder="Поиск по нику..." value="${adminSearchQuery}">
+                    ${adminPlayers.map(p => `
+                        <div class="adm-player" data-uid="${p.id}" data-nick="${p.username}">
+                            <div class="av">${p.username.charAt(0).toUpperCase()}</div>
+                            <div class="nm">${p.username} ${p.isadmin ? '👑' : ''}</div>
+                            <div class="elo">${p.elo || 1000}</div>
+                            <div class="actions">
+                                <button onclick="admSetRating('${p.id}', '${p.username}', ${p.elo || 1000})">💰 Рейтинг</button>
+                                <button class="danger" onclick="admSetBanned('${p.id}', ${!p.banned})">${p.banned ? '✅ Разбан' : '🚫 Бан'}</button>
+                                <button class="${p.isadmin ? 'danger' : 'ok'}" onclick="admSetAdmin('${p.id}', ${!p.isadmin})">${p.isadmin ? '❌ Снять админа' : '👑 Сделать админом'}</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+                bindAdminSearch();
+            }
+
+            else if (adminTab === 'queue') {
+                const { data } = await supabaseClient
+                    .from('queue').select('*').eq('status', 'searching')
+                    .order('created_at', { ascending: true });
+                adminQueue = data || [];
+
+                body.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div style="font-weight:700;font-size:14px;">В очереди: ${adminQueue.length}</div>
+                        <button onclick="admClearQueue()" style="padding:6px 12px;background:#ff6b6b;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:11px;">🧹 Очистить</button>
+                    </div>
+                    ${adminQueue.length === 0 
+                        ? '<div class="adm-empty">Очередь пуста</div>' 
+                        : adminQueue.map(p => `
+                            <div class="adm-qrow">
+                                <div class="av">${p.username.charAt(0).toUpperCase()}</div>
+                                <div class="nm">${p.username}</div>
+                                <div class="elo">${p.elo || 1000}</div>
+                            </div>
+                        `).join('')}
+                `;
+            }
+
+            else if (adminTab === 'promos') {
+                const { data } = await supabaseClient
+                    .from('promocodes').select('*')
+                    .order('created_at', { ascending: false });
+                adminPromos = data || [];
+
+                body.innerHTML = `
+                    <div class="adm-promo-creation">
+                        <div class="adm-promo-row">
+                            <input type="text" id="admPromoCode" placeholder="КОД" maxlength="20" />
+                        </div>
+                        <div class="adm-promo-row">
+                            <input type="number" id="admPromoAmount" placeholder="Сумма ₽" min="1" />
+                            <input type="number" id="admPromoUses" placeholder="Активаций" min="1" value="1" />
+                        </div>
+                        <button onclick="admCreatePromo()" style="padding:10px;background:linear-gradient(135deg,#ffd700,#ff6b00);border:none;border-radius:8px;color:#0b0b0f;font-weight:700;cursor:pointer;">Создать промокод</button>
+                    </div>
+                    <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Существующие:</div>
+                    ${adminPromos.length === 0 
+                        ? '<div class="adm-empty">Нет промокодов</div>' 
+                        : adminPromos.map(p => `
+                            <div class="adm-qrow" style="${p.used_count >= p.max_uses ? 'opacity:0.5;' : ''}">
+                                <div class="nm"><b>${p.code}</b> — ${p.amount} ₽</div>
+                                <div style="font-size:11px;color:#8888aa;">${p.used_count}/${p.max_uses}</div>
+                                <button onclick="admDeletePromo('${p.id}')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;padding:0 4px;">×</button>
+                            </div>
+                        `).join('')}
+                `;
+            }
+
+            else if (adminTab === 'admins') {
+                const { data } = await supabaseClient
+                    .from('users').select('id, username').eq('isadmin', true);
+                adminAdmins = data || [];
+
+                body.innerHTML = `
+                    <div style="display:flex;gap:8px;margin-bottom:12px;">
+                        <input class="adm-search" id="admNewAdmin" placeholder="Никнейм нового админа" style="margin-bottom:0;">
+                        <button onclick="admAddAdmin()" style="padding:10px 14px;background:linear-gradient(135deg,#ffd700,#ff6b00);border:none;border-radius:10px;color:#0b0b0f;font-weight:700;cursor:pointer;">+</button>
+                    </div>
+                    ${adminAdmins.length === 0 
+                        ? '<div class="adm-empty">Нет админов</div>' 
+                        : adminAdmins.map(a => `
+                            <div class="adm-qrow">
+                                <div class="av">${a.username.charAt(0).toUpperCase()}</div>
+                                <div class="nm">${a.username} 👑</div>
+                                ${a.username !== 'Destro' ? `<button onclick="admRemoveAdmin('${a.id}')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;">×</button>` : ''}
+                            </div>
+                        `).join('')}
+                `;
+            }
+
+            else if (adminTab === 'settings') {
+                body.innerHTML = `
+                    <div class="adm-settings">
+                        <div>
+                            <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Формат матча</div>
+                            <select id="admTeamSize">
+                                ${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${+currentSettings.team_size === n ? 'selected' : ''}>${n} на ${n} (${n * 2} игроков)</option>`).join('')}
+                            </select>
+                        </div>
+                        <button onclick="admSaveSettings()" style="padding:12px;background:linear-gradient(135deg,#ffd700,#ff6b00);border:none;border-radius:10px;color:#0b0b0f;font-weight:700;cursor:pointer;">Сохранить</button>
+                    </div>
+                `;
+            }
+        } catch (e) {
+            body.innerHTML = '<div class="adm-empty">Ошибка: ' + e.message + '</div>';
+        }
+    }
+
+    function bindAdminSearch() {
+        const input = document.getElementById('admSearchInput');
+        if (!input) return;
+        let timeout;
+        input.addEventListener('input', (e) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(async () => {
+                adminSearchQuery = e.target.value.trim();
+                await renderAdminPanel();
+                const newInput = document.getElementById('admSearchInput');
+                if (newInput) { newInput.focus(); newInput.setSelectionRange(newInput.value.length, newInput.value.length); }
+            }, 400);
+        });
+    }
+
+    // Админ действия: засчитывание матча
+    async function admFinishMatch(matchId, winner) {
+        const card = document.querySelector(`[data-match-id="${matchId}"]`);
+        if (!card) return;
+
+        const scoreA = card.querySelector('.adm-score-a').value;
+        const scoreB = card.querySelector('.adm-score-b').value;
+
+        const { data: match } = await supabaseClient
+            .from('active_matches').select('*').eq('id', matchId).single();
+
+        if (!match) return showToast('error', 'Ошибка', 'Матч не найден');
+
+        const orange = JSON.parse(match.orange);
+        const blue = JSON.parse(match.blue);
+        const winners = winner === 'blue' ? blue : orange;
+        const losers = winner === 'blue' ? orange : blue;
+
+        // ELO
+        const playerIds = [...orange, ...blue].map(p => p.id);
+        const { data: playersData } = await supabaseClient
+            .from('users').select('id, elo').in('id', playerIds);
+
+        const eloMap = {};
+        playersData.forEach(p => eloMap[p.id] = p.elo || 1000);
+
+        const avgWinnerElo = winners.reduce((s, p) => s + (eloMap[p.id] || 1000), 0) / winners.length;
+        const avgLoserElo = losers.reduce((s, p) => s + (eloMap[p.id] || 1000), 0) / losers.length;
+
+        const K = 32;
+        const eloChanges = {};
+
+        for (const wp of winners) {
+            const welo = eloMap[wp.id] || 1000;
+            const expected = 1 / (1 + Math.pow(10, (avgLoserElo - welo) / 400));
+            eloChanges[wp.id] = Math.round(K * (1 - expected));
+        }
+        for (const lp of losers) {
+            const lelo = eloMap[lp.id] || 1000;
+            const expected = 1 / (1 + Math.pow(10, (avgWinnerElo - lelo) / 400));
+            eloChanges[lp.id] = Math.round(K * (0 - expected));
+        }
+
+        // Обновляем игроков
+        for (const player of [...orange, ...blue]) {
+            const isWin = winners.some(w => w.id === player.id);
+            const eloChange = eloChanges[player.id] || 0;
+
+            try {
+                const { data: userData } = await supabaseClient
+                    .from('users').select('*').eq('id', player.id).single();
+
+                if (userData) {
+                    await supabaseClient.from('users').update({
+                        matches: (userData.matches || 0) + 1,
+                        wins: (userData.wins || 0) + (isWin ? 1 : 0),
+                        losses: (userData.losses || 0) + (isWin ? 0 : 1),
+                        elo: Math.max(100, (userData.elo || 1000) + eloChange),
+                        mvp: (userData.mvp || 0) + (isWin ? 1 : 0),
+                        lastlogin: new Date().toISOString()
+                    }).eq('id', player.id);
+                }
+
+                await supabaseClient.from('match_history').insert([{
+                    id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 4),
+                    user_id: player.id,
+                    username: player.username,
+                    map: match.draft_state ? (JSON.parse(match.draft_state).modeFinal || 'Gem Grab') : 'Gem Grab',
+                    result: isWin ? 'win' : 'loss',
+                    elo_change: eloChange,
+                    match_date: new Date().toISOString(),
+                    server_name: 'StartUp Platform',
+                    score_a: scoreA !== '' ? +scoreA : null,
+                    score_b: scoreB !== '' ? +scoreB : null,
+                    created_at: new Date().toISOString()
+                }]);
+            } catch (e) {
+                console.error('Ошибка для', player.username, e);
+            }
+        }
+
+        // Удаляем матч
+        await supabaseClient.from('active_matches').delete().eq('id', matchId);
+
+        showToast('success', 'Матч засчитан!', `Победа ${winner === 'blue' ? 'BLUE' : 'ORANGE'}`);
+        await renderAdminPanel();
+        await updateHomeStats();
+    }
+
+    async function admCancelMatch(matchId) {
+        if (!confirm('Отменить матч без изменения рейтинга?')) return;
+        await supabaseClient.from('active_matches').delete().eq('id', matchId);
+        showToast('info', 'Отменён', 'Матч удалён');
+        await renderAdminPanel();
+        await updateHomeStats();
+    }
+
+    async function admSetRating(userId, username, currentElo) {
+        const v = prompt(`Новый рейтинг для ${username}:`, currentElo);
+        if (v === null) return;
+        const n = parseInt(v, 10);
+        if (isNaN(n) || n < 0 || n > 5000) return showToast('error', 'Ошибка', 'Число от 0 до 5000');
+        await supabaseClient.from('users').update({ elo: n }).eq('id', userId);
+        showToast('success', 'Готово', `${username}: ${n} ELO`);
+        await renderAdminPanel();
+    }
+
+    async function admSetBanned(userId, banned) {
+        if (!confirm(banned ? 'Забанить игрока?' : 'Разбанить игрока?')) return;
+        await supabaseClient.from('users').update({ banned: banned }).eq('id', userId);
+        showToast('success', 'Готово', banned ? 'Забанен' : 'Разбанен');
+        await renderAdminPanel();
+    }
+
+    async function admSetAdmin(userId, isAdmin) {
+        if (!confirm(isAdmin ? 'Сделать админом?' : 'Снять права админа?')) return;
+        await supabaseClient.from('users').update({ isadmin: isAdmin }).eq('id', userId);
+        showToast('success', 'Готово', 'Роль обновлена');
+        await renderAdminPanel();
+    }
+
+    async function admClearQueue() {
+        if (!confirm('Очистить всю очередь?')) return;
+        await supabaseClient.from('queue').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        showToast('success', 'Готово', 'Очередь очищена');
+        await renderAdminPanel();
+    }
+
+    async function admCreatePromo() {
+        const code = document.getElementById('admPromoCode').value.trim().toUpperCase();
+        const amount = parseInt(document.getElementById('admPromoAmount').value);
+        const uses = parseInt(document.getElementById('admPromoUses').value) || 1;
+
+        if (!code || !amount || amount < 1) return showToast('error', 'Ошибка', 'Проверьте данные');
+
+        const { error } = await supabaseClient.from('promocodes').insert([{
+            code, amount, max_uses: uses, used_count: 0, created_by: currentUser.username
+        }]);
+
+        if (error) return showToast('error', 'Ошибка', error.code === '23505' ? 'Промокод существует' : error.message);
+        showToast('success', 'Готово', 'Промокод ' + code);
+        await renderAdminPanel();
+    }
+
+    async function admDeletePromo(id) {
+        if (!confirm('Удалить промокод?')) return;
+        await supabaseClient.from('promocodes').delete().eq('id', id);
+        await renderAdminPanel();
+    }
+
+    async function admAddAdmin() {
+        const nick = document.getElementById('admNewAdmin').value.trim();
+        if (!nick) return;
+        const { data: user } = await supabaseClient.from('users').select('id, isadmin').eq('username', nick).maybeSingle();
+        if (!user) return showToast('error', 'Ошибка', 'Пользователь не найден');
+        if (user.isadmin) return showToast('info', 'Уже админ', '');
+        await supabaseClient.from('users').update({ isadmin: true }).eq('id', user.id);
+        showToast('success', 'Готово', nick + ' теперь админ');
+        await renderAdminPanel();
+    }
+
+    async function admRemoveAdmin(userId) {
+        if (!confirm('Снять админа?')) return;
+        await supabaseClient.from('users').update({ isadmin: false }).eq('id', userId);
+        await renderAdminPanel();
+    }
+
+    async function admSaveSettings() {
+        const size = document.getElementById('admTeamSize').value;
+        const { error } = await supabaseClient.from('settings').upsert([{ key: 'team_size', value: size }], { onConflict: 'key' });
+        if (error) return showToast('error', 'Ошибка', error.message);
+        currentSettings.team_size = size;
+        showToast('success', 'Готово', `Формат: ${size}×${size}`);
     }
 
     // ============================================================
-    //  ОБРАБОТКА ВИДИМОСТИ СТРАНИЦЫ
+    //  СТАТИСТИКА НА ГЛАВНОЙ
     // ============================================================
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden && isSearching) {
-            // Вернулись на страницу — обновим
-            updateQueueCount();
-            updateHomeStats();
-        }
-    });
+    async function updateHomeStats() {
+        try {
+            const { count: queueCount } = await supabaseClient
+                .from('queue').select('*', { count: 'exact', head: true })
+                .eq('status', 'searching');
 
-    window.addEventListener('beforeunload', function() {
-        if (isSearching && currentUser) {
-            // Убираем из очереди при закрытии
-            supabaseClient
-                .from('queue')
-                .delete()
-                .eq('user_id', currentUser.id)
-                .eq('status', 'searching')
-                .then(() => {});
-        }
-    });
+            const { data: activeMatches } = await supabaseClient
+                .from('active_matches').select('orange, blue').in('status', ['pending', 'active']);
+
+            let inMatchPlayers = 0;
+            (activeMatches || []).forEach(m => {
+                try { inMatchPlayers += JSON.parse(m.orange).length + JSON.parse(m.blue).length; } catch (e) {}
+            });
+
+            const { count: historyCount } = await supabaseClient
+                .from('match_history').select('*', { count: 'exact', head: true });
+
+            document.getElementById('activePlayersHome').textContent = queueCount || 0;
+            document.getElementById('inMatchPlayersHome').textContent = inMatchPlayers;
+            document.getElementById('totalMatchesHome').textContent = historyCount || 0;
+        } catch (e) {}
+    }
 
     // ============================================================
-    //  СТАРТ ПОИСКА (главная функция)
+    //  ОЧИСТКА ДУБЛИКАТОВ + HEARTBEAT + ОЧЕРЕДЬ
+    // ============================================================
+    async function checkAndCleanDuplicates() {
+        if (!currentUser) return;
+        try {
+            const { data } = await supabaseClient.from('queue')
+                .select('id').eq('user_id', currentUser.id).eq('status', 'searching');
+            if (data && data.length > 1) {
+                const ids = data.slice(1).map(q => q.id);
+                await supabaseClient.from('queue').delete().in('id', ids);
+            }
+        } catch (e) {}
+    }
+
+    function startHeartbeat() {
+        if (heartbeatInterval) clearInterval(heartbeatInterval);
+        heartbeatFailCount = 0;
+        heartbeatInterval = setInterval(async () => {
+            if (!isSearching || !currentUser) {
+                clearInterval(heartbeatInterval); heartbeatInterval = null; return;
+            }
+            try {
+                await supabaseClient.from('queue')
+                    .update({ last_seen: new Date().toISOString() })
+                    .eq('user_id', currentUser.id).eq('status', 'searching');
+
+                const { data, error } = await supabaseClient.rpc('check_and_create_match');
+                if (error) { heartbeatFailCount++; return; }
+                heartbeatFailCount = 0;
+
+                if (data && data.match_created) {
+                    clearInterval(heartbeatInterval); heartbeatInterval = null;
+                    await loadCreatedMatch(data.match_id);
+                } else {
+                    await updateQueueCount();
+                }
+            } catch (e) { heartbeatFailCount++; }
+        }, 20000);
+    }
+
+    async function loadCreatedMatch(matchId) {
+        try {
+            const { data } = await supabaseClient.from('active_matches').select('*').eq('id', matchId).single();
+            if (!data) return;
+
+            const orange = JSON.parse(data.orange);
+            const blue = JSON.parse(data.blue);
+
+            currentMatch = { orange, blue };
+            currentMatchId = matchId;
+            isPlayerInMatch = true;
+            isCaptain = blue.length > 0 && blue[0].id === currentUser.id;
+
+            isSearching = false;
+            if (searchTimerInterval) clearInterval(searchTimerInterval);
+            if (queueUpdateInterval) { clearInterval(queueUpdateInterval); queueUpdateInterval = null; }
+            if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
+
+            document.getElementById('queueBtn').style.display = 'block';
+            document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
+            document.getElementById('queueBtn').className = 'btn-queue';
+            document.getElementById('queueBtn').onclick = startSearch;
+            document.getElementById('queueBtn').disabled = false;
+            document.getElementById('cancelBtn').style.display = 'none';
+
+            if (searchChannel) { supabaseClient.removeChannel(searchChannel); searchChannel = null; }
+
+            matchPlayers = [...orange, ...blue];
+            confirmedPlayers = [];
+            showConfirmModal();
+            subscribeToMatch(matchId);
+            showToast('success', 'Матч найден!', 'Подтвердите участие');
+        } catch (e) {}
+    }
+
+    async function checkQueueOnLoad() {
+        if (!currentUser) return;
+        try {
+            await checkAndCleanDuplicates();
+            const { data } = await supabaseClient.from('queue')
+                .select('*').eq('user_id', currentUser.id).eq('status', 'searching').maybeSingle();
+            if (data) {
+                const lastSeen = data.last_seen ? new Date(data.last_seen).getTime() : 0;
+                const stale = Date.now() - lastSeen > 60000;
+                if (stale) {
+                    await supabaseClient.from('queue').delete().eq('id', data.id);
+                } else {
+                    isSearching = true;
+                    searchSeconds = Math.floor((Date.now() - new Date(data.created_at).getTime()) / 1000);
+                    document.getElementById('queueBtn').style.display = 'none';
+                    document.getElementById('cancelBtn').style.display = 'inline-flex';
+                    startHeartbeat();
+                    subscribeToQueue();
+                    startSearchTimer();
+                }
+            }
+            await updateQueueCount();
+        } catch (e) {}
+    }
+
+    async function checkActiveMatchOnLoad() {
+        if (!currentUser) return;
+        try {
+            const { data } = await supabaseClient.from('active_matches').select('*')
+                .in('status', ['pending', 'active']).order('created_at', { ascending: false }).limit(1);
+
+            if (!data || data.length === 0) return;
+            const match = data[0];
+            const orange = JSON.parse(match.orange);
+            const blue = JSON.parse(match.blue);
+            const isInMatch = orange.some(p => p.id === currentUser.id) || blue.some(p => p.id === currentUser.id);
+
+            if (isInMatch) {
+                currentMatch = { orange, blue };
+                isPlayerInMatch = true;
+                currentMatchId = match.id;
+                isCaptain = blue.length > 0 && blue[0].id === currentUser.id;
+                if (match.draft_state) draftState = JSON.parse(match.draft_state);
+
+                if (match.status === 'pending') {
+                    matchPlayers = [...orange, ...blue];
+                    confirmedPlayers = [];
+                    showConfirmModal();
+                    subscribeToMatch(match.id);
+                } else if (match.status === 'active') {
+                    navigate('matchPage');
+                    renderMatchPage();
+                }
+            }
+        } catch (e) {}
+    }
+
+    async function cleanupSearchState() {
+        if (searchTimerInterval) { clearInterval(searchTimerInterval); searchTimerInterval = null; }
+        if (queueUpdateInterval) { clearInterval(queueUpdateInterval); queueUpdateInterval = null; }
+        if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
+        if (searchChannel) { try { await supabaseClient.removeChannel(searchChannel); } catch (e) {} searchChannel = null; }
+        isSearching = false; isStartingSearch = false; isCanceling = false;
+    }
+
+    // ============================================================
+    //  ПОИСК МАТЧА
     // ============================================================
     async function startSearch() {
         if (isStartingSearch || isSearching) return;
-        if (currentMatch) {
-            navigate('matchPage');
-            return showToast('info', 'Активный матч', 'Вы уже в матче!');
-        }
+        if (currentMatch) { navigate('matchPage'); return showToast('info', 'Активный матч', 'Вы уже в матче!'); }
         if (!currentUser) return showToast('error', 'Ошибка', 'Авторизуйтесь');
 
         isStartingSearch = true;
-        
         try {
             document.getElementById('queueBtn').disabled = true;
             document.getElementById('queueBtn').textContent = '⏳ Подождите...';
             document.getElementById('cancelBtn').style.display = 'none';
-
             await cleanupSearchState();
 
-            // Удаляем старые записи
-            const { data: duplicateQueue } = await supabaseClient
-                .from('queue')
-                .select('id')
-                .eq('user_id', currentUser.id)
-                .eq('status', 'searching');
-
-            if (duplicateQueue && duplicateQueue.length > 0) {
-                const ids = duplicateQueue.map(q => q.id);
-                await supabaseClient
-                    .from('queue')
-                    .delete()
-                    .in('id', ids);
+            const { data: dq } = await supabaseClient.from('queue')
+                .select('id').eq('user_id', currentUser.id).eq('status', 'searching');
+            if (dq && dq.length > 0) {
+                await supabaseClient.from('queue').delete().in('id', dq.map(q => q.id));
             }
 
-            // Добавляем себя
-            const { error: queueError } = await supabaseClient
-                .from('queue')
-                .insert({
-                    user_id: currentUser.id,
-                    username: currentUser.username,
-                    elo: currentUser.elo || 1000,
-                    status: 'searching',
-                    party_members: partyFriends.map(f => f.username).join(','),
-                    last_seen: new Date().toISOString(),
-                    created_at: new Date().toISOString()
-                });
+            const { error: qErr } = await supabaseClient.from('queue').insert({
+                user_id: currentUser.id,
+                username: currentUser.username,
+                elo: currentUser.elo || 1000,
+                status: 'searching',
+                party_members: partyFriends.map(f => f.username).join(','),
+                last_seen: new Date().toISOString(),
+                created_at: new Date().toISOString()
+            });
 
-            if (queueError) {
-                showToast('error', 'Ошибка', 'Не удалось встать в очередь: ' + queueError.message);
+            if (qErr) {
+                showToast('error', 'Ошибка', 'Не удалось встать: ' + qErr.message);
                 isStartingSearch = false;
                 document.getElementById('queueBtn').disabled = false;
                 document.getElementById('queueBtn').textContent = '🔍 Начать поиск';
@@ -1868,31 +2054,19 @@
 
             await updateQueueCount();
             await updateHomeStats();
-
-            // Запускаем таймер
             startSearchTimer();
-
-            // Запускаем heartbeat (важно!)
             startHeartbeat();
-
-            // Подписываемся на очередь
             subscribeToQueue();
 
-            // Периодическое обновление счётчика
             if (queueUpdateInterval) clearInterval(queueUpdateInterval);
             queueUpdateInterval = setInterval(() => {
-                if (isSearching) {
-                    updateQueueCount();
-                } else {
-                    clearInterval(queueUpdateInterval);
-                    queueUpdateInterval = null;
-                }
+                if (isSearching) updateQueueCount();
+                else { clearInterval(queueUpdateInterval); queueUpdateInterval = null; }
             }, 3000);
 
             showToast('info', 'Поиск начат', 'Ищем игроков...');
         } catch (e) {
-            console.error('Ошибка startSearch:', e);
-            showToast('error', 'Ошибка', 'Произошла ошибка при поиске');
+            showToast('error', 'Ошибка', e.message);
         } finally {
             isStartingSearch = false;
             document.getElementById('queueBtn').disabled = false;
@@ -1901,65 +2075,33 @@
         }
     }
 
-    // ============================================================
-    //  ОБНОВЛЕНИЕ СЧЁТЧИКА ОЧЕРЕДИ
-    // ============================================================
     async function updateQueueCount() {
         try {
             await checkAndCleanDuplicates();
-
-            const { count, error } = await supabaseClient
-                .from('queue')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'searching');
-
-            if (error) {
-                console.error('Ошибка подсчета очереди:', error);
-                return;
-            }
-
-            const currentCount = count || 0;
-            document.getElementById('searchCurrentPlayers').textContent = currentCount;
-            
-            const { data: players } = await supabaseClient
-                .from('queue')
-                .select('username')
-                .eq('status', 'searching')
-                .limit(6);
-            
+            const { count } = await supabaseClient.from('queue')
+                .select('*', { count: 'exact', head: true }).eq('status', 'searching');
+            const cnt = count || 0;
+            document.getElementById('searchCurrentPlayers').textContent = cnt;
+            const { data: players } = await supabaseClient.from('queue')
+                .select('username').eq('status', 'searching').limit(6);
             if (players && players.length > 0) {
-                const names = players.map(p => p.username).join(', ');
-                document.getElementById('searchStatus').textContent = 'Поиск (' + names + ')';
+                document.getElementById('searchStatus').textContent = 'Поиск (' + players.map(p => p.username).join(', ') + ')';
             } else {
                 document.getElementById('searchStatus').textContent = 'Поиск';
             }
-        } catch (e) {
-            console.error('Ошибка updateQueueCount:', e);
-        }
+        } catch (e) {}
     }
 
-    // ============================================================
-    //  ОТМЕНА ПОИСКА
-    // ============================================================
     async function cancelSearch() {
         if (isCanceling) return;
         if (!isSearching) return;
-
         isCanceling = true;
         document.getElementById('cancelBtn').disabled = true;
         document.getElementById('cancelBtn').textContent = '⏳ Отмена...';
 
         try {
-            const { error } = await supabaseClient
-                .from('queue')
-                .delete()
-                .eq('user_id', currentUser.id)
-                .eq('status', 'searching');
-
-            if (error) {
-                console.error('Ошибка удаления из очереди:', error);
-            }
-
+            await supabaseClient.from('queue').delete()
+                .eq('user_id', currentUser.id).eq('status', 'searching');
             await cleanupSearchState();
 
             document.getElementById('queueBtn').style.display = 'block';
@@ -1972,53 +2114,60 @@
             document.getElementById('cancelBtn').textContent = 'Отменить поиск';
             document.getElementById('searchCurrentPlayers').textContent = '0';
             document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> 00:00';
-            document.getElementById('searchStatus').textContent = 'Поиск';
 
             await updateHomeStats();
-            showToast('info', 'Поиск отменён', 'Вы отменили поиск');
+            showToast('info', 'Поиск отменён', '');
         } catch (e) {
-            console.error('Ошибка cancelSearch:', e);
-            showToast('error', 'Ошибка', 'Не удалось отменить поиск');
+            showToast('error', 'Ошибка', e.message);
         } finally {
             isCanceling = false;
         }
     }
 
+    function startSearchTimer() {
+        if (searchTimerInterval) clearInterval(searchTimerInterval);
+        searchTimerInterval = setInterval(() => {
+            if (!isSearching) { clearInterval(searchTimerInterval); searchTimerInterval = null; return; }
+            searchSeconds++;
+            const m = String(Math.floor(searchSeconds / 60)).padStart(2, '0');
+            const s = String(searchSeconds % 60).padStart(2, '0');
+            document.getElementById('searchTimerDisplay').innerHTML = '<i class="fas fa-clock"></i> ' + m + ':' + s;
+        }, 1000);
+    }
+
+    function subscribeToQueue() {
+        if (searchChannel) { supabaseClient.removeChannel(searchChannel); searchChannel = null; }
+        searchChannel = supabaseClient.channel('queue_' + Date.now())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'queue' }, async () => {
+                if (isSearching) { await updateQueueCount(); await updateHomeStats(); }
+            }).subscribe();
+    }
+
     // ============================================================
-    //  ПОДТВЕРЖДЕНИЕ МАТЧА
+    //  ПОДТВЕРЖДЕНИЕ
     // ============================================================
     function showConfirmModal() {
         if (isConfirming) return;
         isConfirming = true;
-        
         waitingConfirm = true;
         matchPlayers = [...currentMatch.orange, ...currentMatch.blue];
-
         const modal = document.getElementById('confirmModal');
-        const timerEl = document.getElementById('modalTimer');
-        const confirmBtn = document.getElementById('confirmBtn');
-        
         modal.classList.add('active');
         confirmTimeLeft = 25;
-        timerEl.textContent = confirmTimeLeft;
-        timerEl.className = 'modal-timer';
-        confirmBtn.className = 'btn-confirm';
-        confirmBtn.textContent = '✅ Подтвердить';
-        confirmBtn.disabled = false;
-        
+        document.getElementById('modalTimer').textContent = confirmTimeLeft;
+        document.getElementById('modalTimer').className = 'modal-timer';
+        const btn = document.getElementById('confirmBtn');
+        btn.className = 'btn-confirm';
+        btn.textContent = '✅ Подтвердить';
+        btn.disabled = false;
         renderModalPlayers();
 
         if (confirmTimer) clearInterval(confirmTimer);
         confirmTimer = setInterval(() => {
             confirmTimeLeft--;
-            timerEl.textContent = confirmTimeLeft;
-            if (confirmTimeLeft <= 5) {
-                timerEl.className = 'modal-timer warning';
-            }
-            if (confirmTimeLeft <= 0) {
-                clearInterval(confirmTimer);
-                handleConfirmTimeout();
-            }
+            document.getElementById('modalTimer').textContent = confirmTimeLeft;
+            if (confirmTimeLeft <= 5) document.getElementById('modalTimer').className = 'modal-timer warning';
+            if (confirmTimeLeft <= 0) { clearInterval(confirmTimer); handleConfirmTimeout(); }
         }, 1000);
 
         document.getElementById('matchNavLabel').textContent = 'Матч';
@@ -2026,43 +2175,33 @@
     }
 
     function renderModalPlayers() {
-        const container = document.getElementById('modalPlayers');
-        container.innerHTML = matchPlayers.map(p => {
-            const isConfirmed = confirmedPlayers.includes(p.id);
-            const isCurrentUser = p.id === currentUser.id;
+        document.getElementById('modalPlayers').innerHTML = matchPlayers.map(p => {
+            const isConf = confirmedPlayers.includes(p.id);
+            const isMe = p.id === currentUser.id;
             return `
-                <div class="modal-player ${isConfirmed ? 'confirmed' : ''}" onclick="${isCurrentUser && !isConfirmed ? 'handleConfirm()' : ''}">
+                <div class="modal-player ${isConf ? 'confirmed' : ''}" onclick="${isMe && !isConf ? 'handleConfirm()' : ''}">
                     <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
                     <div class="info">
-                        <div class="name">${p.username} ${isCurrentUser ? ' (Вы)' : ''}</div>
-                        <div class="status">${isConfirmed ? '✅ Готов' : '⏳ Ожидание...'}</div>
+                        <div class="name">${p.username} ${isMe ? ' (Вы)' : ''}</div>
+                        <div class="status">${isConf ? '✅ Готов' : '⏳ Ожидание...'}</div>
                     </div>
-                    <div class="status-icon ${isConfirmed ? 'confirmed' : 'pending'}">
-                        ${isConfirmed ? '✅' : '⏳'}
-                    </div>
-                </div>
-            `;
+                    <div class="status-icon ${isConf ? 'confirmed' : 'pending'}">${isConf ? '✅' : '⏳'}</div>
+                </div>`;
         }).join('');
 
-        const allConfirmed = matchPlayers.every(p => confirmedPlayers.includes(p.id));
-        const confirmBtn = document.getElementById('confirmBtn');
-        
-        if (allConfirmed) {
-            confirmBtn.className = 'btn-confirm confirmed';
-            confirmBtn.textContent = '✅ Все готовы!';
-            confirmBtn.disabled = true;
+        const allConf = matchPlayers.every(p => confirmedPlayers.includes(p.id));
+        const btn = document.getElementById('confirmBtn');
+        if (allConf) {
+            btn.className = 'btn-confirm confirmed';
+            btn.textContent = '✅ Все готовы!';
+            btn.disabled = true;
             clearInterval(confirmTimer);
             setTimeout(() => {
                 document.getElementById('confirmModal').classList.remove('active');
                 waitingConfirm = false;
                 isConfirming = false;
-                supabaseClient
-                    .from('active_matches')
-                    .update({ status: 'active' })
-                    .eq('id', currentMatchId)
-                    .then(() => {
-                        startMatchAfterConfirm();
-                    });
+                supabaseClient.from('active_matches').update({ status: 'active' }).eq('id', currentMatchId)
+                    .then(() => startMatchAfterConfirm());
             }, 800);
         }
     }
@@ -2072,44 +2211,31 @@
         if (confirmedPlayers.includes(currentUser.id)) return;
         confirmedPlayers.push(currentUser.id);
         renderModalPlayers();
-        showToast('success', 'Подтверждено!', 'Вы подтвердили участие');
+        showToast('success', 'Подтверждено!', '');
     }
 
     function handleConfirmTimeout() {
-        const notConfirmed = matchPlayers.filter(p => !confirmedPlayers.includes(p.id));
-        
-        if (notConfirmed.length > 0) {
+        const notConf = matchPlayers.filter(p => !confirmedPlayers.includes(p.id));
+        if (notConf.length > 0) {
             document.getElementById('confirmModal').classList.remove('active');
-            waitingConfirm = false;
-            isConfirming = false;
-            showToast('info', 'Матч отменён', `${notConfirmed.length} игроков не подтвердили`);
-            
-            supabaseClient
-                .from('active_matches')
-                .delete()
-                .eq('id', currentMatchId);
-            
-            currentMatch = null;
-            isPlayerInMatch = false;
-            isCaptain = false;
+            waitingConfirm = false; isConfirming = false;
+            showToast('info', 'Матч отменён', `${notConf.length} не подтвердили`);
+            supabaseClient.from('active_matches').delete().eq('id', currentMatchId);
+            currentMatch = null; isPlayerInMatch = false; isCaptain = false;
             document.getElementById('matchNavLabel').textContent = 'Поиск';
             document.querySelector('#matchNavBtn i').className = 'fas fa-search';
             navigate('matches');
             return;
         }
-        
         document.getElementById('confirmModal').classList.remove('active');
-        waitingConfirm = false;
-        isConfirming = false;
+        waitingConfirm = false; isConfirming = false;
         startMatchAfterConfirm();
     }
 
     function startMatchAfterConfirm() {
         if (!currentMatch) return;
-
         draftState.gameNumber = (draftState.gameNumber || 0) + 1;
         resetDraft();
-
         document.getElementById('matchResultSection').classList.remove('admin-visible');
         document.getElementById('lobbySection').classList.remove('visible');
         document.getElementById('screenshotSection').classList.remove('visible');
@@ -2121,40 +2247,49 @@
         document.getElementById('lobbyInput').value = '';
         document.getElementById('lobbyLinkDisplay').classList.remove('visible');
         lobbyLink = null;
-
         navigate('matchPage');
         renderMatchPage();
         showToast('success', 'Матч начался!', `${currentMatch.orange.length + currentMatch.blue.length} игроков`);
         checkMatchResultVisibility();
         checkLobbyVisibility();
         updateHomeStats();
-        
-        if (currentUser?.isadmin) {
-            loadAdminMatches();
-        }
+    }
+
+    function subscribeToMatch(matchId) {
+        if (matchChannel) { supabaseClient.removeChannel(matchChannel); matchChannel = null; }
+        matchChannel = supabaseClient.channel('match_' + matchId)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'active_matches', filter: `id=eq.${matchId}` }, async (payload) => {
+                if (payload.eventType === 'DELETE') {
+                    document.getElementById('confirmModal').classList.remove('active');
+                    waitingConfirm = false; currentMatch = null; isPlayerInMatch = false;
+                    navigate('matches');
+                    return;
+                }
+                if (payload.eventType === 'UPDATE') {
+                    const nd = payload.new;
+                    if (nd.status === 'active') {
+                        document.getElementById('confirmModal').classList.remove('active');
+                        waitingConfirm = false; isConfirming = false;
+                        currentMatch = { orange: JSON.parse(nd.orange), blue: JSON.parse(nd.blue) };
+                        if (nd.draft_state) draftState = JSON.parse(nd.draft_state);
+                        startMatchAfterConfirm();
+                    }
+                }
+            }).subscribe();
     }
 
     // ============================================================
     //  МАТЧ
     // ============================================================
     function checkLobbyVisibility() {
-        if (isCaptain && draftState.isComplete) {
-            document.getElementById('lobbySection').classList.add('visible');
-        } else {
-            document.getElementById('lobbySection').classList.remove('visible');
-        }
+        if (isCaptain && draftState.isComplete) document.getElementById('lobbySection').classList.add('visible');
+        else document.getElementById('lobbySection').classList.remove('visible');
     }
 
     function checkMatchResultVisibility() {
         const isAdmin = currentUser?.isadmin === true;
-        const isPlayer = isPlayerInMatch;
-        
-        if (draftState.isComplete && isPlayer) {
-            document.getElementById('screenshotSection').classList.add('visible');
-        } else {
-            document.getElementById('screenshotSection').classList.remove('visible');
-        }
-        
+        if (draftState.isComplete && isPlayerInMatch) document.getElementById('screenshotSection').classList.add('visible');
+        else document.getElementById('screenshotSection').classList.remove('visible');
         if (draftState.isComplete && isAdmin) {
             document.getElementById('matchResultSection').classList.add('admin-visible');
             document.getElementById('matchActions').classList.add('admin-visible');
@@ -2168,45 +2303,35 @@
 
     function renderMatchPage() {
         if (!currentMatch) return;
+        const oCap = currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
+        const bCap = currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
+        const isOCap = currentUser && oCap === currentUser.username;
+        const isBCap = currentUser && bCap === currentUser.username;
+        const canBan = isOCap || isBCap;
 
-        const oCaptain = currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
-        const bCaptain = currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
-
-        const isOrangeCaptain = currentUser && oCaptain === currentUser.username;
-        const isBlueCaptain = currentUser && bCaptain === currentUser.username;
-        const canBan = isOrangeCaptain || isBlueCaptain;
-
-        const sortedOrange = [...currentMatch.orange].sort((a, b) => {
-            if (a.username === oCaptain) return -1;
-            if (b.username === oCaptain) return 1;
-            return 0;
+        const sO = [...currentMatch.orange].sort((a, b) => {
+            if (a.username === oCap) return -1; if (b.username === oCap) return 1; return 0;
         });
-        const sortedBlue = [...currentMatch.blue].sort((a, b) => {
-            if (a.username === bCaptain) return -1;
-            if (b.username === bCaptain) return 1;
-            return 0;
+        const sB = [...currentMatch.blue].sort((a, b) => {
+            if (a.username === bCap) return -1; if (b.username === bCap) return 1; return 0;
         });
 
-        document.getElementById('teamOrangePlayers').innerHTML = sortedOrange.map(p => {
-            const isCaptain = p.username === oCaptain;
-            return `
-                <div class="player-card">
-                    <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
-                    <div class="info"><span class="name">${p.username}</span></div>
-                    ${isCaptain ? `<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>` : ''}
-                </div>
-            `;
+        document.getElementById('teamOrangePlayers').innerHTML = sO.map(p => {
+            const isCap = p.username === oCap;
+            return `<div class="player-card">
+                <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
+                <div class="info"><span class="name">${p.username}</span></div>
+                ${isCap ? `<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>` : ''}
+            </div>`;
         }).join('') || '<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
 
-        document.getElementById('teamBluePlayers').innerHTML = sortedBlue.map(p => {
-            const isCaptain = p.username === bCaptain;
-            return `
-                <div class="player-card">
-                    <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
-                    <div class="info"><span class="name">${p.username}</span></div>
-                    ${isCaptain ? `<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>` : ''}
-                </div>
-            `;
+        document.getElementById('teamBluePlayers').innerHTML = sB.map(p => {
+            const isCap = p.username === bCap;
+            return `<div class="player-card">
+                <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
+                <div class="info"><span class="name">${p.username}</span></div>
+                ${isCap ? `<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>` : ''}
+            </div>`;
         }).join('') || '<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
 
         updateBanButtons(canBan);
@@ -2216,8 +2341,7 @@
     }
 
     function updateBanButtons(canBan) {
-        const buttons = document.querySelectorAll('#modesBanContainer .ban-btn');
-        buttons.forEach(btn => {
+        document.querySelectorAll('#modesBanContainer .ban-btn').forEach(btn => {
             if (!draftState.isComplete && !draftState.modeFinal) {
                 btn.disabled = !canBan;
                 btn.style.opacity = canBan ? '1' : '0.4';
@@ -2226,308 +2350,36 @@
         });
     }
 
-    // ============================================================
-    //  ЛОББИ
-    // ============================================================
     function addLobbyLink() {
         const input = document.getElementById('lobbyInput');
         const link = input.value.trim();
-        
         if (!link) return showToast('error', 'Ошибка', 'Введите ссылку');
-        if (!link.startsWith('http://') && !link.startsWith('https://')) {
-            return showToast('error', 'Ошибка', 'Ссылка должна начинаться с http');
-        }
-        
-        lobbyLink = link;
-        input.value = '';
-        
+        if (!link.startsWith('http')) return showToast('error', 'Ошибка', 'Начинается с http');
+        lobbyLink = link; input.value = '';
         document.getElementById('lobbyLinkDisplay').classList.add('visible');
         document.getElementById('lobbyLinkValue').textContent = lobbyLink;
-        showToast('success', 'Ссылка добавлена!', 'Все игроки увидят её');
+        showToast('success', 'Готово', '');
     }
 
     function copyLobbyLink() {
         if (!lobbyLink) return;
-        navigator.clipboard.writeText(lobbyLink).then(() => {
-            showToast('success', 'Скопировано!', 'Ссылка в буфере');
-        }).catch(() => {
-            const input = document.createElement('input');
-            input.value = lobbyLink;
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-            showToast('success', 'Скопировано!', 'Ссылка в буфере');
-        });
+        navigator.clipboard.writeText(lobbyLink).then(() => showToast('success', 'Скопировано', ''));
     }
 
-    // ============================================================
-    //  АДМИН-МЕНЕДЖЕР МАТЧЕЙ
-    // ============================================================
-    async function loadAdminMatches() {
-        if (!currentUser?.isadmin) return;
-        try {
-            const { data, error } = await supabaseClient
-                .from('active_matches')
-                .select('*')
-                .in('status', ['pending', 'active'])
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            adminMatches = data || [];
-            renderAdminMatches();
-        } catch (e) {
-            console.error('Ошибка загрузки матчей:', e);
-        }
-    }
-
-    function renderAdminMatches() {
-        const container = document.getElementById('adminMatchesList');
-        
-        if (adminMatches.length === 0) {
-            container.innerHTML = '<div class="admin-empty">Нет активных матчей</div>';
-            return;
-        }
-
-        container.innerHTML = adminMatches.map(match => {
-            let players = [];
-            try {
-                const orange = JSON.parse(match.orange);
-                const blue = JSON.parse(match.blue);
-                players = [...orange, ...blue];
-            } catch (e) {}
-            
-            const playerNames = players.map(p => p.username).join(', ');
-            const statusText = match.status === 'pending' ? 'Ожидает' : 'В процессе';
-            const statusClass = match.status === 'pending' ? 'pending' : 'active';
-
-            return `
-                <div class="admin-match-item" onclick="openAdminMatch('${match.id}')">
-                    <div class="match-info">
-                        <div class="match-id">#${match.id.substring(0, 8)}</div>
-                        <div class="match-players">${playerNames || 'Нет игроков'}</div>
-                    </div>
-                    <span class="match-status ${statusClass}">${statusText}</span>
-                </div>
-            `;
-        }).join('');
-    }
-
-    async function openAdminMatch(matchId) {
-        if (!currentUser?.isadmin) return;
-        try {
-            const { data, error } = await supabaseClient
-                .from('active_matches')
-                .select('*')
-                .eq('id', matchId)
-                .single();
-
-            if (error) throw error;
-            selectedAdminMatch = data;
-            
-            const orange = JSON.parse(data.orange);
-            const blue = JSON.parse(data.blue);
-            
-            currentMatch = { orange, blue };
-            isPlayerInMatch = true;
-            isCaptain = false;
-            currentMatchId = matchId;
-            
-            if (data.draft_state) {
-                draftState = JSON.parse(data.draft_state);
-            }
-
-            document.getElementById('matchResultSection').classList.add('admin-visible');
-            document.getElementById('matchActions').classList.add('admin-visible');
-            document.getElementById('endMatchBtn').disabled = false;
-            document.getElementById('screenshotSection').classList.add('visible');
-
-            navigate('matchPage');
-            renderMatchPage();
-            showToast('success', 'Матч загружен', 'Засчитайте результат');
-        } catch (e) {
-            showToast('error', 'Ошибка', 'Не удалось загрузить матч');
-        }
-    }
-
-    // ============================================================
-    //  СКРИНШОТ
-    // ============================================================
-    document.getElementById('screenshotUploadBtn').addEventListener('click', function() {
-        const input = document.getElementById('screenshotInput');
-        const file = input.files[0];
-        const statusEl = document.getElementById('screenshotStatus');
-
-        if (!file) { statusEl.textContent = '❌ Выберите файл'; statusEl.style.color = '#ff6b6b'; return; }
-        if (!file.type.startsWith('image/')) { statusEl.textContent = '❌ Только изображения'; statusEl.style.color = '#ff6b6b'; return; }
-        if (file.size > 5 * 1024 * 1024) { statusEl.textContent = '❌ Файл больше 5MB'; statusEl.style.color = '#ff6b6b'; return; }
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
+    document.getElementById('screenshotUploadBtn').addEventListener('click', function () {
+        const file = document.getElementById('screenshotInput').files[0];
+        const st = document.getElementById('screenshotStatus');
+        if (!file) { st.textContent = '❌ Выберите файл'; st.style.color = '#ff6b6b'; return; }
+        if (!file.type.startsWith('image/')) { st.textContent = '❌ Только изображения'; st.style.color = '#ff6b6b'; return; }
+        if (file.size > 5 * 1024 * 1024) { st.textContent = '❌ Больше 5MB'; st.style.color = '#ff6b6b'; return; }
+        const r = new FileReader();
+        r.onload = e => {
             currentScreenshot = e.target.result;
-            document.getElementById('screenshotPreview').innerHTML = `<img src="${currentScreenshot}" alt="Скриншот" />`;
-            statusEl.textContent = '✅ Скриншот загружен!';
-            statusEl.style.color = '#51cf66';
+            document.getElementById('screenshotPreview').innerHTML = `<img src="${currentScreenshot}" />`;
+            st.textContent = '✅ Загружено'; st.style.color = '#51cf66';
         };
-        reader.readAsDataURL(file);
+        r.readAsDataURL(file);
     });
-
-    // ============================================================
-    //  ЗАСЧИТЫВАНИЕ МАТЧА
-    // ============================================================
-    document.getElementById('blueWinBtn').addEventListener('click', function() {
-        if (!currentMatch || !draftState.isComplete) return showToast('error', 'Ошибка', 'Дождитесь драфта');
-        if (!currentUser?.isadmin) return showToast('error', 'Доступ запрещён', 'Только админы');
-        finishMatch('blue');
-    });
-
-    document.getElementById('orangeWinBtn').addEventListener('click', function() {
-        if (!currentMatch || !draftState.isComplete) return showToast('error', 'Ошибка', 'Дождитесь драфта');
-        if (!currentUser?.isadmin) return showToast('error', 'Доступ запрещён', 'Только админы');
-        finishMatch('orange');
-    });
-
-    async function finishMatch(winner) {
-        if (!currentMatch || !currentUser?.isadmin) return;
-
-        const map = draftState.modeFinal || 'Gem Grab';
-        const allPlayers = [...currentMatch.orange, ...currentMatch.blue];
-        const winners = winner === 'blue' ? currentMatch.blue : currentMatch.orange;
-        const losers = winner === 'blue' ? currentMatch.orange : currentMatch.blue;
-
-        const playerIds = allPlayers.map(p => p.id);
-        const { data: playersData } = await supabaseClient
-            .from('users')
-            .select('id, elo')
-            .in('id', playerIds);
-
-        const eloMap = {};
-        playersData.forEach(p => { eloMap[p.id] = p.elo || 1000; });
-
-        const avgWinnerElo = winners.reduce((sum, p) => sum + (eloMap[p.id] || 1000), 0) / winners.length;
-        const avgLoserElo = losers.reduce((sum, p) => sum + (eloMap[p.id] || 1000), 0) / losers.length;
-
-        const K = 32;
-        const eloChanges = {};
-
-        for (const wp of winners) {
-            const welo = eloMap[wp.id] || 1000;
-            const expected = 1 / (1 + Math.pow(10, (avgLoserElo - welo) / 400));
-            eloChanges[wp.id] = Math.round(K * (1 - expected));
-        }
-
-        for (const lp of losers) {
-            const lelo = eloMap[lp.id] || 1000;
-            const expected = 1 / (1 + Math.pow(10, (avgWinnerElo - lelo) / 400));
-            eloChanges[lp.id] = Math.round(K * (0 - expected));
-        }
-
-        for (const player of allPlayers) {
-            const isWin = winners.some(w => w.id === player.id);
-            const eloChange = eloChanges[player.id] || 0;
-
-            try {
-                const { data: userData } = await supabaseClient
-                    .from('users').select('*').eq('id', player.id).single();
-
-                if (userData) {
-                    await supabaseClient
-                        .from('users')
-                        .update({
-                            matches: (userData.matches || 0) + 1,
-                            wins: (userData.wins || 0) + (isWin ? 1 : 0),
-                            losses: (userData.losses || 0) + (isWin ? 0 : 1),
-                            elo: Math.max(100, (userData.elo || 1000) + eloChange),
-                            mvp: (userData.mvp || 0) + (isWin ? 1 : 0),
-                            lastlogin: new Date().toISOString()
-                        })
-                        .eq('id', player.id);
-                }
-
-                await supabaseClient
-                    .from('match_history')
-                    .insert([{
-                        id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 4),
-                        user_id: player.id,
-                        username: player.username,
-                        map: map,
-                        result: isWin ? 'win' : 'loss',
-                        elo_change: eloChange,
-                        match_date: new Date().toISOString(),
-                        server_name: 'StartUp Platform',
-                        screenshot: currentScreenshot || null,
-                        created_at: new Date().toISOString()
-                    }]);
-            } catch (e) {
-                console.error('Ошибка сохранения для', player.username, e);
-            }
-        }
-
-        if (currentMatchId) {
-            await supabaseClient.from('active_matches').delete().eq('id', currentMatchId);
-        }
-
-        const { data: updatedUser } = await supabaseClient
-            .from('users').select('*').eq('id', currentUser.id).single();
-
-        if (updatedUser) {
-            currentUser = updatedUser;
-            saveSession(updatedUser);
-            await updateProfile();
-        }
-
-        const winnerTeam = winner === 'blue' ? 'BLUE' : 'ORANGE';
-        const changes = winners.map(p => `${p.username} +${eloChanges[p.id] || 0}`).join(', ');
-        showToast('success', 'Матч засчитан!', `${winnerTeam}. ELO: ${changes}`);
-
-        // Сброс
-        document.getElementById('matchResultSection').classList.remove('admin-visible');
-        document.getElementById('lobbySection').classList.remove('visible');
-        document.getElementById('screenshotSection').classList.remove('visible');
-        document.getElementById('matchActions').classList.remove('admin-visible');
-        document.getElementById('endMatchBtn').disabled = true;
-
-        currentMatch = null;
-        isPlayerInMatch = false;
-        isCaptain = false;
-        selectedAdminMatch = null;
-        draftState.isComplete = false;
-        currentScreenshot = null;
-        lobbyLink = null;
-        document.getElementById('screenshotInput').value = '';
-        document.getElementById('screenshotPreview').innerHTML = '';
-        document.getElementById('screenshotStatus').textContent = '';
-        document.getElementById('lobbyInput').value = '';
-        document.getElementById('lobbyLinkDisplay').classList.remove('visible');
-
-        await loadAdminMatches();
-        await updateHomeStats();
-        document.getElementById('matchNavLabel').textContent = 'Поиск';
-        document.querySelector('#matchNavBtn i').className = 'fas fa-search';
-        navigate('matches');
-    }
-
-    function endMatch() {
-        if (!currentMatch) return;
-        if (!currentUser?.isadmin) return showToast('error', 'Доступ запрещён', 'Только админы');
-        if (!confirm('Завершить без засчитывания?')) return;
-        
-        currentMatch = null;
-        isPlayerInMatch = false;
-        isCaptain = false;
-        draftState.isComplete = false;
-        document.getElementById('matchResultSection').classList.remove('admin-visible');
-        document.getElementById('lobbySection').classList.remove('visible');
-        document.getElementById('screenshotSection').classList.remove('visible');
-        document.getElementById('matchActions').classList.remove('admin-visible');
-        document.getElementById('endMatchBtn').disabled = true;
-        
-        if (currentUser?.isadmin) loadAdminMatches();
-        updateHomeStats();
-        document.getElementById('matchNavLabel').textContent = 'Поиск';
-        document.querySelector('#matchNavBtn i').className = 'fas fa-search';
-        navigate('matches');
-    }
 
     // ============================================================
     //  ДРАФТ
@@ -2536,46 +2388,33 @@
         draftState = {
             gameNumber: draftState.gameNumber,
             modeOptions: ['Gem Grab', 'Brawl Ball', 'Knockout', 'Heist', 'Bounty', 'Hot Zone', 'Siege'],
-            modeBanned: [],
-            modeFinal: null,
-            currentCaptain: 0,
-            isComplete: false
+            modeBanned: [], modeFinal: null, currentCaptain: 0, isComplete: false
         };
         renderDraftUI();
     }
 
-    function getCaptainName(index) {
-        if (!currentMatch) return 'Капитан ' + (index + 1);
-        const captains = [];
-        if (currentMatch.orange.length > 0) captains.push(currentMatch.orange[0].username);
-        if (currentMatch.blue.length > 0) captains.push(currentMatch.blue[0].username);
-        return captains[index] || 'Капитан ' + (index + 1);
+    function getCaptainName(i) {
+        if (!currentMatch) return 'Капитан ' + (i + 1);
+        const c = [];
+        if (currentMatch.orange.length > 0) c.push(currentMatch.orange[0].username);
+        if (currentMatch.blue.length > 0) c.push(currentMatch.blue[0].username);
+        return c[i] || 'Капитан ' + (i + 1);
     }
 
     function renderDraftUI() {
-        const state = draftState;
+        const s = draftState;
+        document.getElementById('matchGameNumber').textContent = '#' + s.gameNumber;
+        document.getElementById('matchSelectedMode').textContent = s.modeFinal || '—';
+        const oCap = currentMatch && currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
+        const bCap = currentMatch && currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
+        const canBan = currentUser && (currentUser.username === oCap || currentUser.username === bCap);
 
-        document.getElementById('matchGameNumber').textContent = '#' + state.gameNumber;
-        document.getElementById('matchSelectedMode').textContent = state.modeFinal || '—';
-
-        const modesContainer = document.getElementById('modesBanContainer');
-        const modeBtns = modesContainer.querySelectorAll('.ban-btn');
-        
-        const oCaptain = currentMatch && currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
-        const bCaptain = currentMatch && currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
-        const canBan = currentUser && (currentUser.username === oCaptain || currentUser.username === bCaptain);
-        
-        modeBtns.forEach(btn => {
-            const val = btn.dataset.value;
-            if (state.modeBanned.includes(val)) {
-                btn.classList.add('banned');
-                btn.style.display = 'none';
-            } else if (state.modeFinal === val) {
-                btn.classList.add('selected');
-                btn.disabled = true;
-            } else if (state.isComplete) {
-                btn.disabled = true;
-            } else {
+        document.querySelectorAll('#modesBanContainer .ban-btn').forEach(btn => {
+            const v = btn.dataset.value;
+            if (s.modeBanned.includes(v)) { btn.classList.add('banned'); btn.style.display = 'none'; }
+            else if (s.modeFinal === v) { btn.classList.add('selected'); btn.disabled = true; }
+            else if (s.isComplete) { btn.disabled = true; }
+            else {
                 btn.classList.remove('banned', 'selected');
                 btn.style.display = '';
                 btn.disabled = !canBan;
@@ -2584,59 +2423,81 @@
             }
         });
 
-        const availableModes = state.modeOptions.filter(v => !state.modeBanned.includes(v) && v !== state.modeFinal);
-        document.getElementById('modesLeft').textContent = availableModes.length;
-
-        const modesStatus = document.getElementById('modesStatus');
-        if (state.modeFinal) {
-            modesStatus.textContent = '✅ ' + state.modeFinal;
-            modesStatus.className = 'status-text done';
-        } else if (!state.isComplete) {
-            const captainName = getCaptainName(state.currentCaptain);
-            modesStatus.textContent = 'Ход: ' + captainName + (canBan ? ' (Вы)' : '');
-            modesStatus.className = 'status-text';
-        } else {
-            modesStatus.textContent = 'Ожидание...';
-            modesStatus.className = 'status-text';
-        }
-        document.getElementById('modesTurnName').textContent = !state.isComplete ? getCaptainName(state.currentCaptain) : '—';
-
-        const bansContainer = document.getElementById('bansContainer');
-        if (state.isComplete) {
-            bansContainer.style.display = 'none';
-        } else {
-            bansContainer.style.display = 'grid';
-        }
-
+        const av = s.modeOptions.filter(v => !s.modeBanned.includes(v) && v !== s.modeFinal);
+        document.getElementById('modesLeft').textContent = av.length;
+        const ms = document.getElementById('modesStatus');
+        if (s.modeFinal) { ms.textContent = '✅ ' + s.modeFinal; ms.className = 'status-text done'; }
+        else if (!s.isComplete) { ms.textContent = 'Ход: ' + getCaptainName(s.currentCaptain) + (canBan ? ' (Вы)' : ''); ms.className = 'status-text'; }
+        else { ms.textContent = 'Ожидание...'; ms.className = 'status-text'; }
+        document.getElementById('modesTurnName').textContent = !s.isComplete ? getCaptainName(s.currentCaptain) : '—';
+        document.getElementById('bansContainer').style.display = s.isComplete ? 'none' : 'grid';
         checkMatchResultVisibility();
         checkLobbyVisibility();
     }
 
     function handleModesBan(value) {
-        const state = draftState;
-        if (state.isComplete || state.modeBanned.includes(value) || state.modeFinal) return;
-        
-        const oCaptain = currentMatch && currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
-        const bCaptain = currentMatch && currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
-        const canBan = currentUser && (currentUser.username === oCaptain || currentUser.username === bCaptain);
-        
+        const s = draftState;
+        if (s.isComplete || s.modeBanned.includes(value) || s.modeFinal) return;
+        const oCap = currentMatch && currentMatch.orange.length > 0 ? currentMatch.orange[0].username : null;
+        const bCap = currentMatch && currentMatch.blue.length > 0 ? currentMatch.blue[0].username : null;
+        const canBan = currentUser && (currentUser.username === oCap || currentUser.username === bCap);
         if (!canBan) return showToast('error', 'Доступ запрещён', 'Только капитаны банят');
 
-        state.modeBanned.push(value);
-
-        const available = state.modeOptions.filter(v => !state.modeBanned.includes(v));
-        if (available.length === 1) {
-            state.modeFinal = available[0];
-            state.isComplete = true;
+        s.modeBanned.push(value);
+        const av = s.modeOptions.filter(v => !s.modeBanned.includes(v));
+        if (av.length === 1) {
+            s.modeFinal = av[0]; s.isComplete = true;
             renderDraftUI();
-            showToast('success', 'Драфт завершён!', 'Режим: ' + state.modeFinal);
-            checkMatchResultVisibility();
-            checkLobbyVisibility();
+            showToast('success', 'Драфт завершён!', 'Режим: ' + s.modeFinal);
             return;
         }
-
-        state.currentCaptain = state.currentCaptain === 0 ? 1 : 0;
+        s.currentCaptain = s.currentCaptain === 0 ? 1 : 0;
         renderDraftUI();
+    }
+
+    // ============================================================
+    //  ЗАСЧИТЫВАНИЕ ИЗ КАРТОЧКИ МАТЧА
+    // ============================================================
+    document.getElementById('blueWinBtn').addEventListener('click', () => {
+        if (!currentMatch || !draftState.isComplete) return showToast('error', 'Ошибка', 'Дождитесь драфта');
+        if (!currentUser?.isadmin) return showToast('error', 'Доступ запрещён', '');
+        finishMatch('blue');
+    });
+
+    document.getElementById('orangeWinBtn').addEventListener('click', () => {
+        if (!currentMatch || !draftState.isComplete) return showToast('error', 'Ошибка', 'Дождитесь драфта');
+        if (!currentUser?.isadmin) return showToast('error', 'Доступ запрещён', '');
+        finishMatch('orange');
+    });
+
+    async function finishMatch(winner) {
+        if (!currentMatch || !currentUser?.isadmin) return;
+        await admFinishMatch(currentMatchId, winner);
+        
+        currentMatch = null; isPlayerInMatch = false; isCaptain = false; draftState.isComplete = false;
+        document.getElementById('matchResultSection').classList.remove('admin-visible');
+        document.getElementById('lobbySection').classList.remove('visible');
+        document.getElementById('screenshotSection').classList.remove('visible');
+        document.getElementById('matchActions').classList.remove('admin-visible');
+        document.getElementById('endMatchBtn').disabled = true;
+        document.getElementById('matchNavLabel').textContent = 'Поиск';
+        document.querySelector('#matchNavBtn i').className = 'fas fa-search';
+        navigate('matches');
+    }
+
+    function endMatch() {
+        if (!currentMatch) return;
+        if (!currentUser?.isadmin) return showToast('error', 'Доступ запрещён', '');
+        if (!confirm('Завершить без засчитывания?')) return;
+        supabaseClient.from('active_matches').delete().eq('id', currentMatchId);
+        currentMatch = null; isPlayerInMatch = false; isCaptain = false; draftState.isComplete = false;
+        document.getElementById('matchResultSection').classList.remove('admin-visible');
+        document.getElementById('lobbySection').classList.remove('visible');
+        document.getElementById('screenshotSection').classList.remove('visible');
+        document.getElementById('matchActions').classList.remove('admin-visible');
+        document.getElementById('matchNavLabel').textContent = 'Поиск';
+        document.querySelector('#matchNavBtn i').className = 'fas fa-search';
+        navigate('matches');
     }
 
     // ============================================================
@@ -2644,42 +2505,29 @@
     // ============================================================
     async function updateProfile() {
         if (!currentUser) return;
-        
-        const matches = currentUser.matches || 0;
-        const wins = currentUser.wins || 0;
-        const winrate = matches > 0 ? Math.round((wins / matches) * 100) : 0;
-        
-        document.getElementById('pWr').textContent = winrate + '%';
-        document.getElementById('pMatches').textContent = matches;
+        const m = currentUser.matches || 0;
+        const w = currentUser.wins || 0;
+        const wr = m > 0 ? Math.round((w / m) * 100) : 0;
+        document.getElementById('pWr').textContent = wr + '%';
+        document.getElementById('pMatches').textContent = m;
         document.getElementById('pMvp').textContent = currentUser.mvp || 0;
         document.getElementById('pElo').textContent = currentUser.elo || 1000;
         document.getElementById('walletBalance').textContent = (currentUser.balance || 0) + ' ₽';
-
         await loadMatchHistory();
         await renderChart();
     }
 
-    // ============================================================
-    //  ИСТОРИЯ МАТЧЕЙ
-    // ============================================================
     async function loadMatchHistory() {
         if (!currentUser) return;
         try {
-            const { data, error } = await supabaseClient
-                .from('match_history')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .order('match_date', { ascending: false })
-                .limit(20);
-
-            if (error) throw error;
-            const container = document.getElementById('matchHistoryList');
+            const { data } = await supabaseClient.from('match_history').select('*')
+                .eq('user_id', currentUser.id).order('match_date', { ascending: false }).limit(20);
+            const c = document.getElementById('matchHistoryList');
             if (!data || data.length === 0) {
-                container.innerHTML = '<div style="color:#666; text-align:center; padding:8px 0;">Нет матчей</div>';
+                c.innerHTML = '<div style="color:#666;text-align:center;padding:8px 0;">Нет матчей</div>';
                 return;
             }
-
-            container.innerHTML = data.map(m => `
+            c.innerHTML = data.map(m => `
                 <div class="match-item">
                     <span class="map"><i class="fas fa-gamepad"></i> ${m.map || 'Неизвестная'}</span>
                     <span class="date">${new Date(m.match_date).toLocaleDateString('ru-RU')}</span>
@@ -2687,42 +2535,27 @@
                         ${m.result === 'win' ? '🏆 Победа' : '💀 Поражение'}
                         ${m.elo_change ? ` (${m.elo_change > 0 ? '+' : ''}${m.elo_change})` : ''}
                     </span>
-                </div>
-            `).join('');
-        } catch (e) {
-            console.error('Ошибка истории:', e);
-        }
+                </div>`).join('');
+        } catch (e) {}
     }
 
-    // ============================================================
-    //  ГРАФИК
-    // ============================================================
     async function renderChart() {
         try {
-            const { data, error } = await supabaseClient
-                .from('match_history').select('*').eq('user_id', currentUser.id)
-                .order('match_date', { ascending: false }).limit(10);
-
-            if (error || !data || data.length === 0) {
-                document.getElementById('chartContainer').innerHTML = '<div style="color:#666; text-align:center; width:100%; padding:10px 0;">Нет данных</div>';
+            const { data } = await supabaseClient.from('match_history').select('*')
+                .eq('user_id', currentUser.id).order('match_date', { ascending: false }).limit(10);
+            if (!data || data.length === 0) {
+                document.getElementById('chartContainer').innerHTML = '<div style="color:#666;text-align:center;width:100%;padding:10px 0;">Нет данных</div>';
                 return;
             }
-
-            const container = document.getElementById('chartContainer');
-            const lastMatches = data.slice(0, 10).reverse();
-
-            container.innerHTML = lastMatches.map((m, index) => {
-                const isWin = m.result === 'win';
-                return `
-                    <div class="chart-bar-wrap" title="${m.map || 'Матч'}">
-                        <div class="chart-bar ${isWin ? 'win' : 'loss'}" style="height: 40px; ${isWin ? 'border-radius: 3px 3px 0 0; align-self: flex-end;' : 'border-radius: 0 0 3px 3px; align-self: flex-start;'}"></div>
-                        <span class="bar-label">${index + 1}</span>
-                    </div>
-                `;
+            const lm = data.slice(0, 10).reverse();
+            document.getElementById('chartContainer').innerHTML = lm.map((m, i) => {
+                const isW = m.result === 'win';
+                return `<div class="chart-bar-wrap" title="${m.map || ''}">
+                    <div class="chart-bar ${isW ? 'win' : 'loss'}" style="height:40px;${isW ? 'border-radius:3px 3px 0 0;align-self:flex-end;' : 'border-radius:0 0 3px 3px;align-self:flex-start;'}"></div>
+                    <span class="bar-label">${i + 1}</span>
+                </div>`;
             }).join('');
-        } catch (e) {
-            console.error('Chart error:', e);
-        }
+        } catch (e) {}
     }
 
     // ============================================================
@@ -2731,203 +2564,132 @@
     async function loadFriends() {
         if (!currentUser) return;
         try {
-            const { data: friendsData } = await supabaseClient
-                .from('friends').select('friend_id').eq('user_id', currentUser.id);
+            const { data: fd } = await supabaseClient.from('friends').select('friend_id').eq('user_id', currentUser.id);
+            const ids = fd ? fd.map(f => f.friend_id) : [];
+            if (ids.length > 0) {
+                const { data } = await supabaseClient.from('users').select('id, username, isadmin, elo').in('id', ids);
+                myFriends = data || [];
+            } else myFriends = [];
 
-            const friendIds = friendsData ? friendsData.map(f => f.friend_id) : [];
-            
-            if (friendIds.length > 0) {
-                const { data: usersData } = await supabaseClient
-                    .from('users').select('id, username, isadmin, elo')
-                    .in('id', friendIds);
-                myFriends = usersData || [];
-            } else {
-                myFriends = [];
-            }
-
-            const { data: requestsData } = await supabaseClient
-                .from('friend_requests').select('from_user_id')
+            const { data: rd } = await supabaseClient.from('friend_requests').select('from_user_id')
                 .eq('to_user_id', currentUser.id).eq('status', 'pending');
+            const rids = rd ? rd.map(r => r.from_user_id) : [];
+            if (rids.length > 0) {
+                const { data } = await supabaseClient.from('users').select('id, username, isadmin, elo').in('id', rids);
+                friendRequests = data || [];
+            } else friendRequests = [];
 
-            const requestIds = requestsData ? requestsData.map(r => r.from_user_id) : [];
-            
-            if (requestIds.length > 0) {
-                const { data: usersData } = await supabaseClient
-                    .from('users').select('id, username, isadmin, elo').in('id', requestIds);
-                friendRequests = usersData || [];
-            } else {
-                friendRequests = [];
-            }
-
-            const { data: allUsers } = await supabaseClient
-                .from('users').select('id, username, isadmin, elo').neq('id', currentUser.id);
-            friendsList = allUsers || [];
-
+            const { data: all } = await supabaseClient.from('users').select('id, username, isadmin, elo').neq('id', currentUser.id);
+            friendsList = all || [];
             renderFriends();
-        } catch (e) {
-            console.error('Ошибка друзей:', e);
-        }
+        } catch (e) {}
     }
 
     function renderFriends() {
-        const container = document.getElementById('friendsListContainer');
-        const count = document.getElementById('friendsCount');
-        
-        let filtered = [];
-        let isRequests = false;
-        
-        if (friendsTab === 'friends') filtered = myFriends;
-        else if (friendsTab === 'requests') { isRequests = true; filtered = friendRequests; }
-        
-        count.textContent = myFriends.length + ' друзей';
+        const c = document.getElementById('friendsListContainer');
+        const cnt = document.getElementById('friendsCount');
+        let f = [], isR = false;
+        if (friendsTab === ' `<friends') f = myFriends;
+        else { isR = true; f = friendRequests; }
+        cnt.textContent = myFriends.length + ' друзей';
 
-        if (filtered.length === 0) {
-            container.innerHTML = `
-                <div class="friends-empty">
-                    <i class="fas fa-user-friends"></i>
-                    <p>${isRequests ? 'Нет заявок' : 'Нет друзей'}</p>
-                    <span style="font-size:12px;color:#666;">Ищите игроков по никнейму</span>
-                </div>`;
+        if (f.length === 0) {
+            c.innerHTML = `<div class="friends-empty">
+                <i class="fas fa-user-friends"></i>
+                <p>${isR ? 'Нет заявок' : 'Нет друзей'}</p>
+                <span style="font-size:12px;color:#666;">Ищите игроков по никнейму</span>
+            </div>`;
             return;
         }
 
-        container.innerHTML = filtered.map(f => {
-            const isFriend = myFriends.some(m => m.id === f.id);
-            const isRequest = friendRequests.some(r => r.id === f.id);
-            const inParty = partyFriends.some(p => p.id === f.id);
-            
-            let statusClass = 'none', statusText = 'Не в друзьях', actions = '';
-            
-            if (isRequest && !isFriend) {
-                statusClass = 'request'; statusText = 'Заявка';
-                actions = `
-                    <button class="btn-accept" onclick="acceptFriend('${f.id}')"><i class="fas fa-check"></i></button>
-                    <button class="btn-decline" onclick="declineFriend('${f.id}')"><i class="fas fa-times"></i></button>`;
+        c.innerHTML = f.map(fr => {
+            const isFriend = myFriends.some(m => m.id === fr.id);
+            const isReq = friendRequests.some(r => r.id === fr.id);
+            const inP = partyFriends.some(p => p.id === fr.id);
+            let cls = 'none', txt = 'Не в друзьях', ac = '';
+            if (isReq && !isFriend) {
+                cls = 'request'; txt = 'Заявка';
+                ac = `<button class="btn-accept" onclick="acceptFriend('${fr.id}')"><i class="fas fa-check"></i></button>
+                      <button class="btn-decline" onclick="declineFriend('${fr.id}')"><i class="fas fa-times"></i></button>`;
             } else if (isFriend) {
-                statusClass = 'friend'; statusText = 'Друг';
-                if (inParty) {
-                    actions = `
-                        <button class="btn-remove" onclick="removeFromParty('${f.id}')"><i class="fas fa-user-minus"></i></button>
-                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>`;
-                } else {
-                    actions = `
-                        <button class="btn-invite" onclick="inviteToParty('${f.id}')"><i class="fas fa-user-plus"></i> Пригласить</button>
-                        <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>`;
-                }
+                cls = 'friend'; txt = 'Друг';
+                if (inP) ac = `<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i></button>
+                               <button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-times"></i></button>`;
+                else ac =button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button>
+                           <button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-times"></i></button>`;
             } else {
-                actions = `<button class="btn-add" onclick="sendFriendRequest('${f.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`;
+                ac = `<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`;
             }
-            
-            return `
-                <div class="friend-item">
-                    <div class="avatar">${f.username.charAt(0).toUpperCase()}</div>
-                    <div class="info">
-                        <div class="name">${f.username} ${f.isadmin ? '👑' : ''}</div>
-                        <div class="status">ELO: ${f.elo || 1000}</div>
-                    </div>
-                    <span class="status-badge ${statusClass}">${statusText}</span>
-                    <div class="friend-actions">${actions}</div>
-                </div>`;
+            return `<div class="friend-item">
+                <div class="avatar">${fr.username.charAt(0).toUpperCase()}</div>
+                <div class="info"><div class="name">${fr.username} ${fr.isadmin ? '👑' : ''}</div>
+                <div class="status">ELO: ${fr.elo || 1000}</div></div>
+                <span class="status-badge ${cls}">${txt}</span>
+                <div class="friend-actions">${ac}</div>
+            </div>`;
         }).join('');
     }
 
-    function switchFriendsTab(tab) {
-        friendsTab = tab;
-        document.querySelectorAll('.friends-tabs .tab').forEach(t => t.classList.remove('active'));
-        document.querySelector(`.friends-tabs .tab[data-tab="${tab}"]`)?.classList.add('active');
+    function switchFriendsTab(t) {
+        friendsTab = t;
+        document.querySelectorAll('.friends-tabs .tab').forEach(x => x.classList.remove('active'));
+        document.querySelector(`.friends-tabs .tab[data-tab="${t}"]`)?.classList.add('active');
         renderFriends();
     }
 
     function searchFriends() {
-        const query = document.getElementById('friendSearchInput').value.toLowerCase();
-        if (!query) return renderFriends();
-        
-        const container = document.getElementById('friendsListContainer');
-        const filtered = friendsList.filter(f => f.username.toLowerCase().includes(query));
-        
-        if (filtered.length === 0) {
-            container.innerHTML = `<div class="friends-empty"><i class="fas fa-search"></i><p>Никто не найден</p></div>`;
-            return;
-        }
-
-        container.innerHTML = filtered.map(f => {
-            const isFriend = myFriends.some(m => m.id === f.id);
-            const isRequest = friendRequests.some(r => r.id === f.id);
-            const inParty = partyFriends.some(p => p.id === f.id);
-            
-            let statusClass = 'none', statusText = 'Не в друзьях', actions = '';
-            
-            if (isRequest && !isFriend) {
-                statusClass = 'request'; statusText = 'Заявка';
-                actions = `<button class="btn-accept" onclick="acceptFriend('${f.id}')"><i class="fas fa-check"></i></button>
-                           <button class="btn-decline" onclick="declineFriend('${f.id}')"><i class="fas fa-times"></i></button>`;
-            } else if (isFriend) {
-                statusClass = 'friend'; statusText = 'Друг';
-                if (inParty) {
-                    actions = `<button class="btn-remove" onclick="removeFromParty('${f.id}')"><i class="fas fa-user-minus"></i></button>
-                               <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>`;
-                } else {
-                    actions = `<button class="btn-invite" onclick="inviteToParty('${f.id}')"><i class="fas fa-user-plus"></i> Пригласить</button>
-                               <button class="btn-remove" onclick="removeFriend('${f.id}')"><i class="fas fa-times"></i></button>`;
-                }
-            } else {
-                actions = `<button class="btn-add" onclick="sendFriendRequest('${f.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`;
-            }
-            
-            return `
-                <div class="friend-item">
-                    <div class="avatar">${f.username.charAt(0).toUpperCase()}</div>
-                    <div class="info">
-                        <div class="name">${f.username} ${f.isadmin ? '👑' : ''}</div>
-                        <div class="status">ELO: ${f.elo || 1000}</div>
-                    </div>
-                    <span class="status-badge ${statusClass}">${statusText}</span>
-                    <div class="friend-actions">${actions}</div>
-                </div>`;
+        const q = document.getElementById('friendSearchInput').value.toLowerCase();
+        if (!q) return renderFriends();
+        const c = document.getElementById('friendsListContainer');
+        const f = friendsList.filter(x => x.username.toLowerCase().includes(q));
+        if (f.length === 0) { c.innerHTML = '<div class="friends-empty"><i class="fas fa-search"></i><p>Никто не найден</p></div>'; return; }
+        c.innerHTML = f.map(fr => {
+            const isFriend = myFriends.some(m => m.id === fr.id);
+            const inP = partyFriends.some(p => p.id === fr.id);
+            let cls = 'none', txt = 'Не в друзьях', ac = '';
+            if (isFriend) {
+                cls = 'friend'; txt = 'Друг';
+                if (inP) ac = `<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i></button>`;
+                else ac = `<button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button>`;
+            } else ac = `<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`;
+            return `<div class="friend-item">
+                <div class="avatar">${fr.username.charAt(0).toUpperCase()}</div>
+                <div class="info"><div class="name">${fr.username}</div><div class="status">ELO: ${fr.elo || 1000}</div></div>
+                <span class="status-badge ${cls}">${txt}</span>
+                <div class="friend-actions">${ac}</div>
+            </div>`;
         }).join('');
     }
 
-    async function sendFriendRequest(userId) {
-        if (!currentUser) return;
-        const { data: existing } = await supabaseClient
-            .from('friend_requests').select('*')
-            .eq('from_user_id', currentUser.id).eq('to_user_id', userId).maybeSingle();
-
-        if (existing) {
-            if (existing.status === 'pending') return showToast('info', 'Уже отправлено', 'Заявка отправлена');
-            if (existing.status === 'accepted') return showToast('info', 'Уже друг', 'В друзьях');
+    async function sendFriendRequest(uid) {
+        const { data: ex } = await supabaseClient.from('friend_requests').select('*')
+            .eq('from_user_id', currentUser.id).eq('to_user_id', uid).maybeSingle();
+        if (ex) {
+            if (ex.status === 'pending') return showToast('info', 'Уже отправлено', '');
+            if (ex.status === 'accepted') return showToast('info', 'Уже друг', '');
         }
-
-        const { error } = await supabaseClient
-            .from('friend_requests')
-            .insert({ from_user_id: currentUser.id, to_user_id: userId, status: 'pending' });
-
+        const { error } = await supabaseClient.from('friend_requests').insert({
+            from_user_id: currentUser.id, to_user_id: uid, status: 'pending'
+        });
         if (error) return showToast('error', 'Ошибка', error.message);
-        showToast('success', 'Заявка отправлена', 'Пользователь получит уведомление');
+        showToast('success', 'Заявка отправлена', '');
         await loadFriends();
     }
 
-    async function acceptFriend(userId) {
-        if (!currentUser) return;
-        await supabaseClient
-            .from('friend_requests').update({ status: 'accepted' })
-            .eq('from_user_id', userId).eq('to_user_id', currentUser.id);
-
+    async function acceptFriend(uid) {
+        await supabaseClient.from('friend_requests').update({ status: 'accepted' })
+            .eq('from_user_id', uid).eq('to_user_id', currentUser.id);
         await supabaseClient.from('friends').insert([
-            { user_id: currentUser.id, friend_id: userId },
-            { user_id: userId, friend_id: currentUser.id }
+            { user_id: currentUser.id, friend_id: uid },
+            { user_id: uid, friend_id: currentUser.id }
         ]);
-
-        showToast('success', 'Друг добавлен', 'Теперь вы друзья!');
+        showToast('success', 'Друг добавлен', '');
         await loadFriends();
     }
 
-    async function declineFriend(userId) {
-        if (!currentUser) return;
-        await supabaseClient
-            .from('friend_requests').update({ status: 'declined' })
-            .eq('from_user_id', userId).eq('to_user_id', currentUser.id);
-        showToast('info', 'Отклонено', 'Заявка отклонена');
+    async function declineFriend(uid) {
+        await supabaseClient.from('friend_requests').update({ status: 'declined' })
+            .eq('from_user_id', uid).eq('to_user_id', currentUser.id);
         await loadFriends();
     }
 
@@ -2936,27 +2698,25 @@
         await supabaseClient.from('friends').delete()
             .or(`user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`)
             .or(`user_id.eq.${id},friend_id.eq.${id}`);
-        showToast('info', 'Удалён', 'Пользователь удалён');
+        showToast('info', 'Удалён', '');
         await loadFriends();
     }
 
     function inviteToParty(id) {
-        const friend = myFriends.find(f => f.id === id);
-        if (!friend) return showToast('error', 'Ошибка', 'Не в друзьях');
+        const fr = myFriends.find(f => f.id === id);
+        if (!fr) return;
         if (partyFriends.some(p => p.id === id)) return showToast('info', 'Уже в пати', '');
-        if (partyFriends.length >= 2) return showToast('error', 'Ошибка', 'Максимум 2 человека');
-        
-        partyFriends.push({ id: friend.id, username: friend.username });
+        if (partyFriends.length >= 2) return showToast('error', 'Ошибка', 'Максимум 2');
+        partyFriends.push({ id: fr.id, username: fr.username });
         updatePartyUI();
         renderFriends();
-        showToast('success', 'Приглашён!', friend.username + ' в пати');
+        showToast('success', 'В пати', fr.username);
     }
 
     function removeFromParty(id) {
         partyFriends = partyFriends.filter(f => f.id !== id);
         updatePartyUI();
         renderFriends();
-        showToast('info', 'Удалён', 'Игрок удалён из пати');
     }
 
     // ============================================================
@@ -2964,232 +2724,59 @@
     // ============================================================
     async function renderTopPage() {
         try {
-            const { data: users, error } = await supabaseClient
-                .from('users').select('*').order('elo', { ascending: false }).limit(10);
-
-            if (error) throw error;
-            const container = document.getElementById('topList');
-            const userRank = users.findIndex(u => u.id === currentUser?.id) + 1;
-            document.getElementById('userRank').textContent = '#' + (userRank || 0);
-
-            if (!users || users.length === 0) {
-                container.innerHTML = `<div class="friends-empty"><i class="fas fa-trophy"></i> Нет данных</div>`;
-                return;
-            }
-
-            container.innerHTML = users.map((u, i) => {
-                const rankNum = i + 1;
-                let rankClass = '';
-                if (rankNum === 1) rankClass = 'gold';
-                else if (rankNum === 2) rankClass = 'silver';
-                else if (rankNum === 3) rankClass = 'bronze';
-                const winrate = u.matches > 0 ? Math.round((u.wins / u.matches) * 100) : 0;
-
-                return `
-                    <div class="top-item">
-                        <div class="rank ${rankClass}">#${rankNum}</div>
-                        <div class="avatar">${u.username.charAt(0).toUpperCase()}</div>
-                        <div class="info">
-                            <div class="name">${u.username} ${u.isadmin ? '👑' : ''}</div>
-                            <div class="stats">${u.matches || 0} матчей | ${winrate}% побед</div>
-                        </div>
-                        <div class="elo">${u.elo || 1000}<span class="elo-label">ELO</span></div>
-                    </div>`;
+            const { data } = await supabaseClient.from('users').select('*')
+                .order('elo', { ascending: false }).limit(10);
+            const c = document.getElementById('topList');
+            const ur = data.findIndex(u => u.id === currentUser?.id) + 1;
+            document.getElementById('userRank').textContent = '#' + (ur || 0);
+            if (!data || data.length === 0) { c.innerHTML = '<div class="friends-empty"><i class="fas fa-trophy"></i> Нет данных</div>'; return; }
+            c.innerHTML = data.map((u, i) => {
+                const n = i + 1;
+                let rc = '';
+                if (n === 1) rc = 'gold'; else if (n === 2) rc = 'silver'; else if (n === 3) rc = 'bronze';
+                const wr = u.matches > 0 ? Math.round((u.wins / u.matches) * 100) : 0;
+                return `<div class="top-item">
+                    <div class="rank ${rc}">#${n}</div>
+                    <div class="avatar">${u.username.charAt(0).toUpperCase()}</div>
+                    <div class="info">
+                        <div class="name">${u.username} ${u.isadmin ? '👑' : ''}</div>
+                        <div class="stats">${u.matches || 0} матчей | ${wr}% побед</div>
+                    </div>
+                    <div class="elo">${u.elo || 1000}<span class="elo-label">ELO</span></div>
+                </div>`;
             }).join('');
-        } catch (e) {
-            console.error('Top page error:', e);
-        }
+        } catch (e) {}
     }
 
     // ============================================================
-    //  АДМИН-ПАНЕЛЬ
-    // ============================================================
-    async function renderAdminList() {
-        try {
-            const { data: admins } = await supabaseClient
-                .from('users').select('id, username, isadmin').eq('isadmin', true);
-
-            const container = document.getElementById('adminList');
-            if (!admins || admins.length === 0) {
-                container.innerHTML = '<div class="admin-empty">Нет администраторов</div>';
-                return;
-            }
-
-            container.innerHTML = admins.map(admin => `
-                <span class="admin-tag">
-                    ${admin.username}
-                    ${admin.username !== 'Destro' && currentUser?.username === 'Destro' ? 
-                        `<span class="remove" onclick="removeAdmin('${admin.id}')">&times;</span>` : 
-                        '<span style="color:#ffd700;font-size:10px;">👑</span>'}
-                </span>`).join('');
-        } catch (e) {
-            console.error('Admin list error:', e);
-        }
-    }
-
-    async function addAdmin() {
-        if (!currentUser?.isadmin) return showToast('error', 'Доступ запрещён', '');
-        const username = document.getElementById('adminAddInput').value.trim();
-        const statusEl = document.getElementById('adminAddStatus');
-
-        if (!username) {
-            statusEl.className = 'admin-status show error';
-            statusEl.textContent = '❌ Введите никнейм';
-            return;
-        }
-
-        try {
-            const { data: user } = await supabaseClient
-                .from('users').select('id, isadmin').eq('username', username).maybeSingle();
-
-            if (!user) {
-                statusEl.className = 'admin-status show error';
-                statusEl.textContent = '❌ Пользователь не найден';
-                return;
-            }
-
-            if (user.isadmin) {
-                statusEl.className = 'admin-status show error';
-                statusEl.textContent = '❌ Уже администратор';
-                return;
-            }
-
-            await supabaseClient.from('users').update({ isadmin: true }).eq('id', user.id);
-            statusEl.className = 'admin-status show success';
-            statusEl.textContent = '✅ ' + username + ' теперь админ!';
-            document.getElementById('adminAddInput').value = '';
-            renderAdminList();
-        } catch (e) {
-            statusEl.className = 'admin-status show error';
-            statusEl.textContent = '❌ Ошибка: ' + e.message;
-        }
-    }
-
-    async function removeAdmin(userId) {
-        if (!currentUser?.isadmin) return;
-        if (!confirm('Удалить админа?')) return;
-        await supabaseClient.from('users').update({ isadmin: false }).eq('id', userId);
-        showToast('success', 'Готово', 'Администратор удалён');
-        renderAdminList();
-    }
-
-    // ============================================================
-    //  ПРОМОКОДЫ
-    // ============================================================
-    async function renderPromoList() {
-        try {
-            const { data } = await supabaseClient
-                .from('promocodes').select('*').order('created_at', { ascending: false });
-
-            const container = document.getElementById('promoList');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="admin-empty">Нет промокодов</div>';
-                return;
-            }
-
-            container.innerHTML = data.map(p => `
-                <span class="admin-tag" style="${p.used_count >= p.max_uses ? 'opacity:0.5;' : ''}">
-                    ${p.code} — ${p.amount} ₽ (${p.used_count}/${p.max_uses})
-                    ${p.used_count >= p.max_uses ? '✅' : '🟢'}
-                    ${p.used_count < p.max_uses && currentUser?.isadmin ? 
-                        `<span class="remove" onclick="deletePromo('${p.id}')">&times;</span>` : ''}
-                </span>`).join('');
-        } catch (e) {
-            console.error('Promo list error:', e);
-        }
-    }
-
-    async function createPromo() {
-        if (!currentUser?.isadmin) return;
-        const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
-        const amount = parseInt(document.getElementById('promoAmountInput').value);
-        const maxUses = parseInt(document.getElementById('promoUsesInput').value) || 1;
-        const statusEl = document.getElementById('promoStatus');
-
-        if (!code || !amount || amount < 1) {
-            statusEl.textContent = '❌ Проверьте данные';
-            statusEl.style.color = '#ff6b6b';
-            return;
-        }
-
-        try {
-            const { error } = await supabaseClient.from('promocodes').insert([{
-                code, amount, max_uses: maxUses, used_count: 0, created_by: currentUser.username
-            }]).select().single();
-
-            if (error) {
-                statusEl.textContent = error.code === '23505' ? '❌ Промокод существует' : '❌ ' + error.message;
-                statusEl.style.color = '#ff6b6b';
-                return;
-            }
-
-            statusEl.textContent = '✅ Промокод ' + code + ' создан!';
-            statusEl.style.color = '#51cf66';
-            document.getElementById('promoCodeInput').value = '';
-            document.getElementById('promoAmountInput').value = '';
-            document.getElementById('promoUsesInput').value = '1';
-            renderPromoList();
-        } catch (e) {
-            statusEl.textContent = '❌ Ошибка: ' + e.message;
-            statusEl.style.color = '#ff6b6b';
-        }
-    }
-
-    async function deletePromo(id) {
-        if (!confirm('Удалить промокод?')) return;
-        await supabaseClient.from('promocodes').delete().eq('id', id);
-        showToast('success', 'Готово', 'Промокод удалён');
-        renderPromoList();
-    }
-
-    // ============================================================
-    //  ПРОМОКОД В КОШЕЛЬКЕ
+    //  ПРОМОКОД
     // ============================================================
     async function applyPromo() {
-        const input = document.getElementById('promoInput');
-        const code = input.value.trim().toUpperCase();
+        const inp = document.getElementById('promoInput');
+        const code = inp.value.trim().toUpperCase();
         if (!code) return showToast('error', 'Ошибка', 'Введите промокод');
-
         try {
-            const { data } = await supabaseClient
-                .from('promocodes').select('*').eq('code', code).single();
-
-            if (!data) return showToast('error', 'Ошибка', 'Промокод не найден');
-            if (data.used_count >= data.max_uses) return showToast('error', 'Ошибка', 'Промокод использован');
-
-            await supabaseClient.from('promocodes')
-                .update({ used_count: data.used_count + 1 }).eq('id', data.id);
-
-            const newBalance = (currentUser.balance || 0) + data.amount;
-            await supabaseClient.from('users').update({ balance: newBalance }).eq('id', currentUser.id);
-
-            currentUser.balance = newBalance;
+            const { data } = await supabaseClient.from('promocodes').select('*').eq('code', code).single();
+            if (!data) return showToast('error', 'Ошибка', 'Не найден');
+            if (data.used_count >= data.max_uses) return showToast('error', 'Ошибка', 'Использован');
+            await supabaseClient.from('promocodes').update({ used_count: data.used_count + 1 }).eq('id', data.id);
+            const nb = (currentUser.balance || 0) + data.amount;
+            await supabaseClient.from('users').update({ balance: nb }).eq('id', currentUser.id);
+            currentUser.balance = nb;
             saveSession(currentUser);
-            document.getElementById('walletBalance').textContent = newBalance + ' ₽';
-
-            showToast('success', 'Промокод применён!', 'Получено ' + data.amount + ' ₽');
-            input.value = '';
-            renderPromoList();
+            document.getElementById('walletBalance').textContent = nb + ' ₽';
+            showToast('success', 'Применён!', '+' + data.amount + ' ₽');
+            inp.value = '';
         } catch (e) {
             showToast('error', 'Ошибка', e.message);
         }
     }
 
-    // ============================================================
-    //  ПАТИ UI
-    // ============================================================
     function updatePartyUI() {
         document.getElementById('partyCount').textContent = partyFriends.length + '/2';
-        renderPartyMembers();
-    }
-
-    function renderPartyMembers() {
-        const container = document.getElementById('partyMembers');
-        if (partyFriends.length === 0) {
-            container.innerHTML = '<span class="party-empty">Нет участников</span>';
-            return;
-        }
-        container.innerHTML = partyFriends.map(f => `
+        const c = document.getElementById('partyMembers');
+        if (partyFriends.length === 0) { c.innerHTML = '<span class="party-empty">Нет участников</span>'; return; }
+        c.innerHTML = partyFriends.map(f => `
             <span class="party-member">
                 <span class="avatar-small">${f.username.charAt(0).toUpperCase()}</span>
                 ${f.username}
@@ -3198,28 +2785,22 @@
     }
 
     // ============================================================
-    //  ПОДКЛЮЧЕНИЕ ОБРАБОТЧИКОВ
+    //  СТАРТ
     // ============================================================
-    document.addEventListener('DOMContentLoaded', async function() {
+    document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('tabLogin').addEventListener('click', () => switchAuthTab('login'));
         document.getElementById('tabRegister').addEventListener('click', () => switchAuthTab('register'));
         document.getElementById('switchToRegister').addEventListener('click', e => { e.preventDefault(); switchAuthTab('register'); });
         document.getElementById('switchToLogin').addEventListener('click', e => { e.preventDefault(); switchAuthTab('login'); });
-
         document.getElementById('loginBtn').addEventListener('click', loginUser);
         document.getElementById('registerBtn').addEventListener('click', registerUser);
 
         document.addEventListener('keydown', e => {
             if (e.key === 'Enter') {
-                const loginForm = document.getElementById('loginForm');
-                const registerForm = document.getElementById('registerForm');
-                if (loginForm.classList.contains('active')) loginUser();
-                else if (registerForm.classList.contains('active')) registerUser();
+                if (document.getElementById('loginForm').classList.contains('active')) loginUser();
+                else if (document.getElementById('registerForm').classList.contains('active')) registerUser();
             }
         });
-
-        document.getElementById('adminAddBtn').addEventListener('click', addAdmin);
-        document.getElementById('createPromoBtn').addEventListener('click', createPromo);
 
         document.getElementById('modesBanContainer').addEventListener('click', e => {
             const btn = e.target.closest('.ban-btn');
@@ -3234,13 +2815,11 @@
         const session = getSession();
         if (session) {
             try {
-                const { data } = await supabaseClient
-                    .from('users').select('*')
+                const { data } = await supabaseClient.from('users').select('*')
                     .eq('id', session.id).eq('username', session.username).maybeSingle();
                 if (data) currentUser = data;
             } catch (e) {}
         }
-
         await checkAuth();
     });
 </script>

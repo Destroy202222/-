@@ -185,14 +185,45 @@ details.panel summary::-webkit-details-marker{display:none}
 .picker.colors button{border-radius:50%}
 svg.spark{width:100%;height:64px;display:block;margin-top:12px}
 
-/* ---------- вход ---------- */
+/* ---------- вход / регистрация ---------- */
 .auth{min-height:100vh;display:grid;place-items:center;padding:20px}
-.auth-card{width:100%;max-width:400px}
+.auth-card{width:100%;max-width:400px;position:relative}
 .auth .brand{font-size:36px;text-align:center;margin-bottom:6px;cursor:default}
-.auth .lead{text-align:center;color:var(--mute);margin-bottom:18px}
+.auth .lead{text-align:center;color:var(--mute);margin-bottom:22px}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--ink);margin-bottom:14px}
 .seg button{background:none;border:0;padding:11px;cursor:pointer;color:var(--mute);font-weight:800}
 .seg button.on{background:var(--panel2);color:var(--text)}
+
+.field{display:block}
+.field .in-wrap{position:relative}
+.field .in-wrap input{padding-right:44px}
+.field .status{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-weight:800;font-size:14px;color:var(--mute)}
+.field .hint{color:var(--mute);font-size:12px;margin-top:4px;line-height:1.35}
+.field .err{color:var(--bad);font-size:13px;min-height:16px;margin-top:2px}
+.field.has-err input{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad) inset}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--mute);cursor:pointer;padding:8px;display:grid;place-items:center}
+.eye:hover{color:var(--text)}
+.eye.on{color:var(--t)}
+.pw-meter{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px}
+.pw-meter i{height:4px;background:var(--panel2);transition:background .2s}
+.pw-hint{margin-top:4px;transition:color .2s}
+.agree{display:flex;gap:10px;align-items:flex-start;color:var(--mute);font-size:13px;line-height:1.4;cursor:pointer;padding:2px 0}
+.agree input{accent-color:var(--t);width:16px;height:16px;margin-top:2px;flex:none}
+.agree b{color:var(--text);font-weight:700}
+#a-err.big{min-height:20px;margin:4px 0 0}
+.center{text-align:center}
+.lnk{color:var(--t);text-decoration:none;font-weight:700}
+.lnk:hover{text-decoration:underline}
+#a-go{position:relative;display:grid;place-items:center}
+#a-go .spin{position:absolute;right:16px;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;border:2px solid rgba(0,0,0,.25);border-top-color:#1c1300;opacity:0;transition:opacity .15s}
+#a-go.loading{pointer-events:none}
+#a-go.loading .spin{opacity:1;animation:spin .8s linear infinite}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.field.has-err input{animation:shake .25s ease-out}
+@media (max-width:420px){
+  .auth-card{padding:18px 14px}
+  .auth .brand{font-size:30px}
+}
 
 /* ---------- уведомления ---------- */
 #toasts{position:fixed;left:0;right:0;top:66px;z-index:60;display:grid;gap:8px;justify-items:center;pointer-events:none;padding:0 16px}
@@ -227,8 +258,8 @@ svg.spark{width:100%;height:64px;display:block;margin-top:12px}
 
 /* =====================  НАСТРОЙКИ  ===================== */
 const SUPABASE_URL = 'https://zwrczkwtzzfywgqprmrt.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3cmN6a3d0enpmeXdncXBybXJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3NjA0MzcsImV4cCI6MjEwNTMzNjQzN30.2OdASwhJVUUoG_uvKc03DKFmZtOm5GPFgBjQAkVlJ5Y';
-const EMAIL_DOMAIN = '@s2arena.app';   // ник превращается в служебный email: nick@s2arena.app
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndyY3prd3R6emZ5d2dxcHJtcnQiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4OTc2MDQzNywiZXhwIjoyMTA1MzM2NDM3fQ.2OdASwhJVUUoG_uvKc03DKFmZtOm5GPFgBjQAkVlJ5Y';
+const EMAIL_DOMAIN = '@s2arena.app';
 
 /* =====================  УТИЛИТЫ  ===================== */
 const $ = (s, r = document) => r.querySelector(s);
@@ -267,7 +298,7 @@ function errText(e) {
   return m || 'Что-то пошло не так';
 }
 
-/* ранги: чем больше шевронов, тем выше */
+/* ранги */
 const TIERS = [
   { n: 'Рекрут', min: 0, c: '#8b9cb0' }, { n: 'Страж', min: 900, c: '#6fb4ff' },
   { n: 'Ветеран', min: 1100, c: '#4ea1ff' }, { n: 'Элита', min: 1300, c: '#ffb238' },
@@ -313,7 +344,7 @@ const S = {
   board: [], recent: [], online: 0, conn: 'connecting',
   viewId: null, pv: null, editing: false, draft: null,
   adminTab: 'matches', adm: { matches: [], players: [], log: [], q: '' },
-  dirty: false, ch: null, pch: null, hb: null, tick: null
+  dirty: false, ch: null, pch: null, hb: null, tick: null, roomEdit: false
 };
 const isAdmin = () => !!S.me && (S.me.role === 'admin' || S.me.role === 'owner');
 const isOwner = () => !!S.me && S.me.role === 'owner';
@@ -374,498 +405,3 @@ async function loadAdmin() {
   if (t === 'matches') {
     const { data } = await sb.from('matches').select('*, match_players(*)').in('status', ['live', 'review']).order('created_at', { ascending: false });
     S.adm.matches = data || [];
-  } else if (t === 'players') {
-    let q = sb.from('profiles').select('id,nickname,role,rating,banned,matches_played').order('rating', { ascending: false }).limit(40);
-    if (S.adm.q) q = q.ilike('nickname', '%' + S.adm.q.replace(/[%_,]/g, '') + '%');
-    const { data } = await q; S.adm.players = data || [];
-  } else if (t === 'queue') {
-    await loadQueue();
-  } else if (t === 'log') {
-    const { data } = await sb.from('admin_log').select('*').order('created_at', { ascending: false }).limit(40);
-    S.adm.log = data || [];
-  }
-}
-async function refreshMatch() {
-  const prev = S.match;
-  await loadMatch();
-  if (S.match && S.match.status === 'live' && (!prev || prev.id !== S.match.id)) {
-    S.inQueue = false; S.page = 'play'; S.rep = { winner: null }; matchFound();
-  }
-  if (prev && S.match && prev.id === S.match.id && prev.status !== 'finished' && S.match.status === 'finished') {
-    await loadMe();
-    const mine = S.mplayers.find(p => p.user_id === S.me.id);
-    if (mine && mine.delta != null) toast('Матч засчитан: ' + (mine.delta >= 0 ? '+' : '') + mine.delta + ' к рейтингу', mine.delta >= 0 ? 'ok' : 'bad');
-  }
-  if (prev && S.match && prev.id === S.match.id && prev.status !== 'cancelled' && S.match.status === 'cancelled') toast('Матч отменён админом', 'bad');
-}
-
-/* =====================  ВХОД И СЕССИЯ  ===================== */
-async function onSession(session) {
-  S.session = session;
-  await loadMe();
-  if (!S.me) { toast('Профиль не найден. Выполни schema.sql в Supabase.', 'bad'); await sb.auth.signOut(); renderAuth(); return; }
-  await Promise.all([loadSettings(), loadQueue(), loadBoard()]);
-  await refreshMatch();
-  subscribe();
-  startTimers();
-  S.page = 'play';
-  renderApp();
-}
-function teardown() {
-  clearInterval(S.hb); clearInterval(S.tick);
-  if (S.ch) sb.removeChannel(S.ch);
-  if (S.pch) sb.removeChannel(S.pch);
-  S.ch = S.pch = null;
-  Object.assign(S, { me: null, session: null, queue: [], inQueue: false, match: null, mplayers: [], pv: null, viewId: null, editing: false });
-}
-async function doAuth() {
-  const nick = $('#a-nick').value.trim(), pass = $('#a-pass').value, btn = $('#a-go'), err = $('#a-err');
-  err.textContent = '';
-  if (!/^[A-Za-z0-9_]{3,16}$/.test(nick)) { err.textContent = 'Ник: 3–16 символов, латиница, цифры и _'; return; }
-  if (pass.length < 6) { err.textContent = 'Пароль — минимум 6 символов'; return; }
-  btn.disabled = true;
-  try {
-    const email = nick.toLowerCase() + EMAIL_DOMAIN;
-    if (S.authMode === 'reg') {
-      if (pass !== $('#a-pass2').value) throw new Error('Пароли не совпадают');
-      const free = await sb.rpc('nickname_available', { p_nick: nick });
-      if (free.error) throw free.error;
-      if (!free.data) throw new Error('Этот ник уже занят');
-      const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { nickname: nick } } });
-      if (error) throw error;
-      if (!data.session) throw new Error('В Supabase включено подтверждение почты. Выключи «Confirm email»: Authentication → Providers → Email.');
-      await onSession(data.session);
-    } else {
-      const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-      if (error) throw error;
-      await onSession(data.session);
-    }
-  } catch (e) { err.textContent = errText(e); btn.disabled = false; }
-}
-
-/* =====================  REALTIME (WebSocket)  ===================== */
-function subscribe() {
-  const uid = S.me.id;
-  const onQ = deb(async () => { await loadQueue(); softRender(); });
-  const onM = deb(async () => {
-    await refreshMatch();
-    if (S.page === 'admin') await loadAdmin();
-    if (S.page === 'matches') await loadRecent();
-    softRender();
-  });
-  const onP = deb(async () => {
-    await loadMe();
-    if (S.page === 'rating') await loadBoard();
-    softRender();
-  }, 600);
-  S.ch = sb.channel('s2-db')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'queue' }, onQ)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, onM)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'match_players', filter: 'user_id=eq.' + uid }, onM)
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, onP)
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'settings' }, deb(async () => { await loadSettings(); softRender(); }))
-    .subscribe(st => { S.conn = st === 'SUBSCRIBED' ? 'on' : st === 'CONNECTING' ? 'connecting' : 'off'; updateOnline(); });
-
-  S.pch = sb.channel('s2-online', { config: { presence: { key: uid } } });
-  S.pch.on('presence', { event: 'sync' }, () => { S.online = Object.keys(S.pch.presenceState()).length; updateOnline(); })
-    .subscribe(async st => { if (st === 'SUBSCRIBED') await S.pch.track({ nick: S.me.nickname }); });
-}
-function updateOnline() {
-  const el = $('#online'); if (!el) return;
-  el.className = 'online' + (S.conn === 'on' ? ' on' : '');
-  el.innerHTML = '<i></i>' + (S.conn === 'on' ? S.online + ' в сети' : S.conn === 'connecting' ? 'подключение…' : 'нет связи');
-}
-function startTimers() {
-  clearInterval(S.hb); clearInterval(S.tick);
-  // пока игрок в очереди, раз в 20 сек подтверждаем, что он на месте (сервер заодно пробует собрать матч)
-  S.hb = setInterval(async () => {
-    if (!S.inQueue) return;
-    const { data } = await sb.rpc('queue_heartbeat');
-    if (data) { await refreshMatch(); softRender(); }
-  }, 20000);
-  S.tick = setInterval(() => {
-    const el = $('#qt'); if (!el || !S.joinedAt) return;
-    const s = Math.max(0, Math.floor((Date.now() - S.joinedAt) / 1000));
-    el.textContent = Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
-  }, 1000);
-}
-function matchFound() {
-  const d = document.createElement('div');
-  d.className = 'found';
-  d.innerHTML = '<div><h1>Матч найден</h1><p class="mute">Открываем комнату…</p></div>';
-  document.body.appendChild(d);
-  try { navigator.vibrate && navigator.vibrate([120, 60, 120]); } catch (e) {}
-  setTimeout(() => d.remove(), 1700);
-}
-
-/* =====================  ОТРИСОВКА  ===================== */
-function navItems() {
-  const it = [['play', 'Играть'], ['rating', 'Рейтинг'], ['matches', 'Матчи'], ['profile', 'Профиль']];
-  if (isAdmin()) it.push(['admin', 'Админ']);
-  return it;
-}
-function navHtml() {
-  return navItems().map(([k, l]) =>
-    `<button class="nav-btn${S.page === k ? ' on' : ''}" data-act="nav" data-p="${k}"><svg viewBox="0 0 24 24">${ICONS[k]}</svg>${l}${k === 'play' && S.match && S.match.status !== 'finished' ? '<i class="dot"></i>' : ''}</button>`).join('');
-}
-function renderApp() {
-  root.innerHTML = `
-  <header class="bar"><div class="wrap bar-in">
-    <div class="brand" data-act="nav" data-p="play">S2<b>ARENA</b></div>
-    <nav class="nav-d" id="nav-d"></nav>
-    <div class="me-chip" id="chip" data-act="nav" data-p="profile"></div>
-  </div></header>
-  <main class="wrap" id="view"></main>
-  <nav class="nav-m" id="nav-m"></nav>`;
-  renderChrome(); renderView();
-}
-function renderChrome() {
-  const a = $('#nav-d'), b = $('#nav-m'), c = $('#chip');
-  if (!a) return;
-  a.innerHTML = navHtml(); b.innerHTML = navHtml();
-  c.innerHTML = `${avatar(S.me, 34)}<div><div class="nick">${esc(S.me.nickname)}</div><div class="rt">${S.me.rating}</div></div>`;
-}
-function typing() {
-  const a = document.activeElement, v = $('#view');
-  return !!(a && v && v.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
-}
-function softRender() {
-  if (!S.me) return;
-  renderChrome();
-  if (typing()) { S.dirty = true; return; }
-  renderView();
-}
-function renderView() {
-  const v = $('#view'); if (!v) return;
-  S.dirty = false;
-  const pages = { play: vPlay, rating: vRating, matches: vMatches, profile: vProfile, admin: vAdmin };
-  v.innerHTML = (pages[S.page] || vPlay)();
-  updateOnline();
-}
-
-/* ---------- вход / регистрация ---------- */
-function renderAuth() {
-  const reg = S.authMode === 'reg';
-  root.innerHTML = `
-  <div class="auth"><form class="panel t auth-card" id="af" autocomplete="on">
-    <div class="brand">S2<b>ARENA</b></div>
-    <p class="lead">Матчи 5×5 в Standoff 2 с рейтингом и живым поиском</p>
-    <div class="seg">
-      <button type="button" class="${reg ? '' : 'on'}" data-act="authmode" data-v="login">Вход</button>
-      <button type="button" class="${reg ? 'on' : ''}" data-act="authmode" data-v="reg">Регистрация</button>
-    </div>
-    <div class="stack">
-      <div><label class="f" for="a-nick">Ник</label><input type="text" id="a-nick" maxlength="16" autocomplete="username" autocapitalize="off" spellcheck="false"></div>
-      <div><label class="f" for="a-pass">Пароль</label><input type="password" id="a-pass" autocomplete="${reg ? 'new-password' : 'current-password'}"></div>
-      ${reg ? '<div><label class="f" for="a-pass2">Повтори пароль</label><input type="password" id="a-pass2" autocomplete="new-password"></div>' : ''}
-      <div class="err" id="a-err"></div>
-      <button class="btn" id="a-go" type="submit">${reg ? 'Создать аккаунт' : 'Войти'}</button>
-    </div>
-  </form></div>`;
-}
-
-/* ---------- играть ---------- */
-function vPlay() {
-  if (S.match) return vMatch();
-  const ts = +S.settings.team_size || 5, need = ts * 2, q = S.queue, t = tier(S.me.rating);
-  const blips = q.map(p => { const b = blip(p.user_id); return `<i class="blip${p.user_id === S.me.id ? ' me' : ''}" style="left:${b.x}%;top:${b.y}%"></i>`; }).join('');
-  let slots = ''; for (let i = 0; i < need; i++) slots += `<i class="${i < q.length ? 'on' : ''}"></i>`;
-  const list = q.length
-    ? q.map(p => `<div class="qrow">${letterAv(p.nickname, 30)}<div class="grow">${esc(p.nickname)}${p.user_id === S.me.id ? '<span class="cap">это ты</span>' : ''}</div><div class="num">${esc(p.rating)}</div></div>`).join('')
-    : '<div class="empty">В очереди никого нет. Нажми «Найти матч» первым.</div>';
-  return `
-  <section class="panel t">
-    <div class="between"><h1>Матч ${ts} на ${ts}</h1><div id="online" class="online"></div></div>
-    <p class="mute small" style="margin-top:4px">Команды собираются по рейтингу, поэтому силы почти равны.</p>
-    <div class="radar${S.inQueue ? ' on' : ''}">
-      <div class="sweep"></div>${blips}
-      <div class="core">${S.inQueue ? '<b id="qt">0:00</b><small>идёт поиск</small>' : `<b>${S.me.rating}</b><small>${t.n}</small>`}</div>
-    </div>
-    <div class="between small mute"><span>В очереди</span><span><b class="num" style="color:var(--text)">${q.length}</b> из ${need}</span></div>
-    <div class="slots">${slots}</div>
-    ${S.inQueue
-      ? '<button class="btn ghost" data-act="leave">Отменить поиск</button>'
-      : '<button class="btn" data-act="join">Найти матч</button>'}
-  </section>
-  <section class="panel ct"><h2>Кто в очереди</h2>${list}</section>
-  <section class="panel"><h2>Как проходит матч</h2>
-    <ol class="steps">
-      <li>Сервер собирает $${''}{need} игроков и делит их на две команды.</li>
-      <li>Хост (капитан команды 1) создаёт комнату в Standoff 2 и вставляет её код на сайт.</li>
-      <li>После игры капитаны сообщают счёт, админ засчитывает матч и рейтинг обновляется.</li>
-    </ol>
-  </section>`.replace('$${need}', need).replace('$' + '{need}', need);
-}
-
-/* ---------- матч ---------- */
-function teamHtml(list, side, avg) {
-  return `<div class="team ${side.toLowerCase()}"><div class="th"><h3>Команда ${side === 'A' ? '1' : '2'}</h3><span class="mute small">средний рейтинг <b class="num" style="color:var(--text)">${avg ?? '—'}</b></span></div>
-  ${list.map(p => `<div class="pl${p.user_id === S.me.id ? ' me' : ''}">${letterAv(p.nickname, 32)}<div class="grow">${esc(p.nickname)}${p.is_captain ? '<span class="cap">капитан</span>' : ''}</div>${p.delta != null ? `<span class="num ${p.delta >= 0 ? 'd-pos' : 'd-neg'}">${p.delta >= 0 ? '+' : ''}${p.delta}</span>` : ''}<span class="num mute">${p.rating_before}</span></div>`).join('')}</div>`;
-}
-function vMatch() {
-  const m = S.match, pl = S.mplayers, mine = pl.find(p => p.user_id === S.me.id);
-  const A = pl.filter(p => p.team === 'A'), B = pl.filter(p => p.team === 'B');
-  const host = A.find(p => p.is_captain), open = m.status === 'live' || m.status === 'review';
-  const reports = Object.values(m.reports || {});
-  let head;
-  if (m.status === 'live') head = '<section class="panel ok"><h2>Матч идёт</h2><p class="mute">Заходите в комнату и играйте. Когда закончите, капитаны сообщают результат.</p></section>';
-  else if (m.status === 'review') head = '<section class="panel t"><h2>Результат на проверке</h2><p class="mute">Капитан отправил счёт. Ждём, пока админ засчитает матч.</p></section>';
-  else if (m.status === 'cancelled') head = '<section class="panel bad"><h2>Матч отменён</h2><p class="mute">Рейтинг не изменился.</p><div style="height:12px"></div><button class="btn ghost" data-act="dismiss">Вернуться в лобби</button></section>';
-  else {
-    const won = mine && mine.team === m.winner, d = mine && mine.delta != null ? mine.delta : 0;
-    head = `<section class="panel ${won ? 'ok' : 'bad'}"><h2 class="${won ? 'win' : 'lose'}">${won ? 'Победа' : 'Поражение'}</h2>
-      <div class="score"><span class="bignum" style="color:var(--ct)">${m.score_a ?? '–'}</span><span class="mute">:</span><span class="bignum" style="color:var(--t)">${m.score_b ?? '–'}</span></div>
-      <div class="between"><span class="mute">Изменение рейтинга</span><span class="bignum ${d >= 0 ? 'win' : 'lose'}" style="font-size:36px">${d >= 0 ? '+' : ''}${d}</span></div>
-      <div style="height:12px"></div><button class="btn" data-act="dismiss">Вернуться в лобби</button></section>`;
-  }
-  let room = '';
-  if (open) {
-    let body;
-    if (m.room_code) body = `<div class="mute small">Код комнаты</div><div class="code">${esc(m.room_code)}</div>` + (mine && mine.is_captain && mine.team === 'A' ? '<div style="height:8px"></div><button class="btn ghost sm" data-act="roomedit">Изменить код</button>' : '');
-    else if (mine && mine.is_captain && mine.team === 'A') body = '<p class="mute" style="margin-bottom:10px">Ты хост. Создай комнату в Standoff 2 и вставь её код сюда: остальные увидят его сразу.</p><input type="text" id="rc" maxlength="40" placeholder="Код или ID комнаты"><div style="height:8px"></div><button class="btn" data-act="room">Отправить код</button>';
-    else body = `<p class="mute">Ждём код комнаты от хоста: <b style="color:var(--text)">${esc(host ? host.nickname : '—')}</b></p>`;
-    if (m.room_code && S.roomEdit) body = '<input type="text" id="rc" maxlength="40" placeholder="Новый код"><div style="height:8px"></div><button class="btn" data-act="room">Сохранить код</button>';
-    room = `<section class="panel ct"><h2>Комната</h2>${body}</section>`;
-  }
-  let rep = '';
-  if (open && mine && mine.is_captain) {
-    const my = (m.reports || {})[S.me.id];
-    rep = `<section class="panel t"><h2>Результат матча</h2>` + (my
-      ? `<p class="mute">Ты отправил: победа команды ${my.winner === 'A' ? '1' : '2'}${my.a != null ? ` (${my.a}:${my.b})` : ''}. Админ проверит и засчитает матч.</p>`
-      : `<p class="mute" style="margin-bottom:10px">Кто победил? Отправляют оба капитана, админ сверит и засчитает.</p>
-        <div class="pick"><button class="btn${S.rep.winner === 'A' ? ' on' : ''}" data-act="repw" data-v="A">Команда 1</button><button class="btn${S.rep.winner === 'B' ? ' on' : ''}" data-act="repw" data-v="B">Команда 2</button></div>
-        <div class="score"><input type="number" id="rs-a" min="0" max="99" placeholder="Счёт 1" inputmode="numeric"><span class="mute">:</span><input type="number" id="rs-b" min="0" max="99" placeholder="Счёт 2" inputmode="numeric"></div>
-        <button class="btn" data-act="report">Отправить результат</button>`) + '</section>';
-  } else if (open) {
-    rep = '<section class="panel"><p class="mute">Результат вводят капитаны команд, потом админ засчитывает матч.</p></section>';
-  }
-  const seen = reports.length && open ? `<section class="panel"><h2>Отчёты капитанов</h2>${reports.map(r => `<div class="rep">${esc(r.nick)}: победа команды ${r.winner === 'A' ? '1' : '2'}${r.a != null ? ` (${esc(r.a)}:${esc(r.b)})` : ''}</div>`).join('')}</section>` : '';
-  return head + `<div class="versus">${teamHtml(A, 'A', m.avg_a)}${teamHtml(B, 'B', m.avg_b)}</div><div style="height:12px"></div>` + room + rep + seen;
-}
-
-/* ---------- рейтинг ---------- */
-function vRating() {
-  const rows = S.board.length ? S.board.map((p, i) => `
-    <div class="lrow${p.id === S.me.id ? ' me' : ''}" data-act="profile" data-id="${p.id}">
-      <div class="pos${i < 3 ? ' top' : ''}">${i + 1}</div>${avatar(p, 34)}
-      <div class="grow">${esc(p.nickname)}${roleBadge(p)}</div>
-      ${insignia(p.rating, 22)}<div class="rt">${p.rating}</div><div class="wl">${p.wins}/${p.losses}</div>
-    </div>`).join('') : '<div class="empty">Пока никто не сыграл. Первые матчи определят топ.</div>';
-  return `<section class="panel t"><h1 style="margin-bottom:8px">Рейтинг</h1><p class="mute small" style="margin-bottom:8px">Топ-50 игроков. Справа: рейтинг и победы/поражения.</p>${rows}</section>`;
-}
-
-/* ---------- матчи ---------- */
-function vMatches() {
-  if (!S.recent.length) return '<section class="panel t"><h1>Матчи</h1><div class="empty">Засчитанных матчей пока нет.</div></section>';
-  return '<h1 style="margin-bottom:12px">Матчи</h1>' + S.recent.map(m => {
-    const A = m.match_players.filter(p => p.team === 'A'), B = m.match_players.filter(p => p.team === 'B');
-    const w = m.winner === 'A' ? 'ct' : 't';
-    const side = (l, c) => l.map(p => `<div class="pl">${letterAv(p.nickname, 26)}<div class="grow">${esc(p.nickname)}${p.is_captain ? '<span class="cap">капитан</span>' : ''}</div><span class="num ${p.delta >= 0 ? 'd-pos' : 'd-neg'}">${p.delta >= 0 ? '+' : ''}${p.delta}</span></div>`).join('');
-    return `<details class="panel ${w}"><summary>
-      <span class="mscore" style="color:var(--ct)">${m.score_a ?? '–'}</span><span class="mute">:</span><span class="mscore" style="color:var(--t)">${m.score_b ?? '–'}</span>
-      <span class="mute small" style="margin-left:auto;text-align:right">Победила команда ${m.winner === 'A' ? '1' : '2'}<br>${ago(m.finished_at)}</span></summary>
-      <div class="versus" style="margin-top:12px"><div class="team a"><h3>Команда 1</h3>${side(A)}</div><div class="team b"><h3>Команда 2</h3>${side(B)}</div></div></details>`;
-  }).join('');
-}
-
-/* ---------- профиль ---------- */
-function spark(hist) {
-  const pts = hist.filter(h => h.rating_after != null).slice().reverse();
-  if (pts.length < 2) return '';
-  const vals = [pts[0].rating_before, ...pts.map(h => h.rating_after)];
-  const mn = Math.min(...vals), mx = Math.max(...vals), rg = Math.max(1, mx - mn);
-  const xy = vals.map((v, i) => `${(i / (vals.length - 1) * 296 + 2).toFixed(1)},${(58 - (v - mn) / rg * 52).toFixed(1)}`).join(' ');
-  return `<svg class="spark" viewBox="0 0 300 62" preserveAspectRatio="none"><polyline points="${xy}" fill="none" stroke="var(--t)" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg>`;
-}
-function vProfile() {
-  if (!S.pv || !S.pv.p) return '<section class="panel"><div class="empty">Загружаем профиль…</div></section>';
-  const p = S.pv.p, hist = S.pv.hist, own = p.id === S.me.id;
-  const t = tier(p.rating), nt = nextTier(p.rating);
-  const pct = nt ? Math.round((p.rating - t.min) / (nt.min - t.min) * 100) : 100;
-  const games = p.wins + p.losses, wr = games ? Math.round(p.wins / games * 100) : 0;
-  if (own && S.editing) {
-    const d = S.draft;
-    return `<section class="panel t"><h2>Редактировать профиль</h2><div class="stack">
-      <div><label class="f">Аватар</label><div class="picker">${AV_EMOJI.map(e => `<button data-act="pav" data-v="${e}" class="${d.avatar === e ? 'on' : ''}">${e}</button>`).join('')}</div></div>
-      <div><label class="f">Цвет</label><div class="picker colors">${AV_COLORS.map((c, i) => `<button data-act="pcol" data-v="${i}" class="${d.color === i ? 'on' : ''}" style="background:${c}"></button>`).join('')}</div></div>
-      <div><label class="f" for="e-sid">Ник или ID в Standoff 2</label><input type="text" id="e-sid" maxlength="24" value="${esc(p.standoff_id)}"></div>
-      <div><label class="f" for="e-bio">О себе</label><textarea id="e-bio" maxlength="160">${esc(p.bio)}</textarea></div>
-      <div class="row"><button class="btn ghost" data-act="pcancel">Отмена</button><button class="btn" data-act="psave">Сохранить</button></div>
-    </div></section>`;
-  }
-  const hrows = hist.length ? hist.map(h => {
-    const won = h.team === h.matches.winner;
-    return `<div class="lrow" style="cursor:default"><div class="grow ${won ? 'win' : 'lose'}">${won ? 'Победа' : 'Поражение'}</div>
-      <div class="num mute">${h.matches.score_a ?? '–'}:${h.matches.score_b ?? '–'}</div>
-      <div class="num ${h.delta >= 0 ? 'd-pos' : 'd-neg'}" style="min-width:44px;text-align:right">${h.delta >= 0 ? '+' : ''}${h.delta}</div>
-      <div class="wl">${ago(h.matches.finished_at)}</div></div>`;
-  }).join('') : '<div class="empty">Матчей пока нет. Найди первый на вкладке «Играть».</div>';
-  return `
-  <section class="panel t">
-    <div class="hero">${avatar(p, 76)}<div style="min-width:0">
-      <h1>${esc(p.nickname)}${roleBadge(p)}</h1>
-      <div class="mute small">${p.standoff_id ? 'Standoff 2: ' + esc(p.standoff_id) : 'ID Standoff 2 не указан'}</div>
-    </div></div>
-    ${p.bio ? `<p style="margin-top:12px">${esc(p.bio)}</p>` : ''}
-    <div class="between" style="margin-top:16px"><div class="tierline">${insignia(p.rating, 30)}<span style="color:${t.c}">${t.n}</span></div><div class="bignum" style="font-size:44px">${p.rating}</div></div>
-    <div class="meter"><i style="width:${pct}%"></i></div>
-    <div class="mute small">${nt ? `До ранга «${nt.n}»: ${nt.min - p.rating}` : 'Высший ранг'}</div>
-    ${spark(hist)}
-    <div class="stats"><div class="stat"><b>${p.matches_played}</b><span>матчей</span></div><div class="stat"><b class="win">${p.wins}</b><span>побед</span></div><div class="stat"><b class="lose">${p.losses}</b><span>поражений</span></div><div class="stat"><b>${wr}%</b><span>винрейт</span></div></div>
-    ${own ? '<div style="height:14px"></div><div class="row"><button class="btn ct" data-act="pedit">Редактировать</button><button class="btn ghost" data-act="logout">Выйти</button></div>' : ''}
-  </section>
-  <section class="panel ct"><h2>Последние матчи</h2>${hrows}</section>`;
-}
-
-/* ---------- админка ---------- */
-function vAdmin() {
-  if (!isAdmin()) return '<section class="panel bad"><h2>Нет доступа</h2></section>';
-  const tabs = [['matches', 'Матчи'], ['players', 'Игроки'], ['queue', 'Очередь'], ...(isOwner() ? [['settings', 'Настройки']] : []), ['log', 'Журнал']];
-  return `<h1 style="margin-bottom:12px">Админ-меню</h1>
-  <div class="tabs">${tabs.map(([k, l]) => `<button class="${S.adminTab === k ? 'on' : ''}" data-act="admtab" data-v="${k}">${l}</button>`).join('')}</div>${admBody()}`;
-}
-function admBody() {
-  const t = S.adminTab;
-  if (t === 'matches') {
-    if (!S.adm.matches.length) return '<section class="panel"><div class="empty">Активных матчей нет.</div></section>';
-    return S.adm.matches.map(m => {
-      const pl = m.match_players || [], A = pl.filter(p => p.team === 'A'), B = pl.filter(p => p.team === 'B');
-      const reps = Object.values(m.reports || {});
-      const names = l => l.map(p => `<div class="pl">${letterAv(p.nickname, 26)}<div class="grow">${esc(p.nickname)}${p.is_captain ? '<span class="cap">капитан</span>' : ''}</div><span class="num mute">${p.rating_before}</span></div>`).join('');
-      return `<section class="panel ${m.status === 'review' ? 't' : 'ct'}" data-mid="${m.id}">
-        <div class="between"><h2>Матч ${m.id.slice(0, 6)}</h2><span class="badge ${m.status === 'review' ? 'own' : ''}">${m.status === 'review' ? 'на проверке' : 'идёт'}</span></div>
-        <div class="mute small">создан ${ago(m.created_at)}${m.room_code ? ' · комната ' + esc(m.room_code) : ''}</div>
-        <div class="versus" style="margin:10px 0"><div class="team a"><h3>Команда 1 · ${m.avg_a ?? '—'}</h3>${names(A)}</div><div class="team b"><h3>Команда 2 · ${m.avg_b ?? '—'}</h3>${names(B)}</div></div>
-        ${reps.map(r => `<div class="rep">Капитан ${esc(r.nick)}: победа команды ${r.winner === 'A' ? '1' : '2'}${r.a != null ? ` (${esc(r.a)}:${esc(r.b)})` : ''}</div>`).join('')}
-        <div class="score"><input type="number" class="sa" min="0" max="99" placeholder="Счёт 1" inputmode="numeric"><span class="mute">:</span><input type="number" class="sb" min="0" max="99" placeholder="Счёт 2" inputmode="numeric"></div>
-        <div class="row"><button class="btn ct" data-act="fin" data-w="A">Победа команды 1</button><button class="btn" data-act="fin" data-w="B">Победа команды 2</button></div>
-        <div style="height:8px"></div><button class="btn ghost" data-act="cancelm">Отменить матч без рейтинга</button>
-      </section>`;
-    }).join('');
-  }
-  if (t === 'players') return `<section class="panel"><input type="text" id="psearch" placeholder="Найти игрока по нику" value="${esc(S.adm.q)}"><div id="plist">${playersHtml()}</div></section>`;
-  if (t === 'queue') return `<section class="panel"><div class="between"><h2>В очереди: ${S.queue.length}</h2><button class="btn ghost sm" data-act="clearq">Очистить</button></div>${S.queue.length ? S.queue.map(p => `<div class="qrow">${letterAv(p.nickname, 30)}<div class="grow">${esc(p.nickname)}</div><div class="num">${p.rating}</div></div>`).join('') : '<div class="empty">Очередь пуста.</div>'}</section>`;
-  if (t === 'settings') return `<section class="panel"><h2>Формат матча</h2><p class="mute small" style="margin-bottom:10px">Сколько игроков в каждой команде. Для проверки вдвоём поставь 1 на 1, для игры — 5 на 5.</p>
-    <select id="tsize">${[1, 2, 3, 4, 5].map(n => `<option value="${n}"${+S.settings.team_size === n ? ' selected' : ''}>${n} на ${n}</option>`).join('')}</select>
-    <div style="height:10px"></div><button class="btn" data-act="savesize">Сохранить</button></section>`;
-  if (t === 'log') return `<section class="panel">${S.adm.log.length ? S.adm.log.map(l => `<div class="logrow"><b>${esc(l.admin_nick || '—')}</b> · ${esc(l.action)}${l.details ? ': ' + esc(l.details) : ''}<div class="mute small">${ago(l.created_at)}</div></div>`).join('') : '<div class="empty">Журнал пуст.</div>'}</section>`;
-  return '';
-}
-function playersHtml() {
-  if (!S.adm.players.length) return '<div class="empty">Никого не нашли.</div>';
-  return S.adm.players.map(p => `<div class="qrow" data-uid="${p.id}" data-nick="${esc(p.nickname)}" style="flex-wrap:wrap">
-    ${letterAv(p.nickname, 32)}<div class="grow">${esc(p.nickname)}${roleBadge(p)}</div><div class="num">${p.rating}</div>
-    <div class="adm-actions" style="width:100%">
-      <button class="btn ghost sm" data-act="prate">Рейтинг</button>
-      ${p.role !== 'owner' ? `<button class="btn ghost sm" data-act="pban" data-b="${p.banned ? 0 : 1}">${p.banned ? 'Разбанить' : 'Забанить'}</button>` : ''}
-      ${isOwner() && p.role !== 'owner' ? `<button class="btn ghost sm" data-act="prole" data-r="${p.role === 'admin' ? 'player' : 'admin'}">${p.role === 'admin' ? 'Снять админа' : 'Сделать админом'}</button>` : ''}
-    </div></div>`).join('');
-}
-
-/* =====================  ДЕЙСТВИЯ  ===================== */
-const rpc = async (fn, args) => { const { data, error } = await sb.rpc(fn, args); if (error) throw error; return data; };
-const A = {
-  authmode(el) { S.authMode = el.dataset.v; renderAuth(); },
-  async nav(el) {
-    S.page = el.dataset.p; S.editing = false;
-    if (S.page === 'rating') await loadBoard();
-    if (S.page === 'matches') await loadRecent();
-    if (S.page === 'profile') { S.viewId = S.me.id; S.pv = null; renderChrome(); renderView(); await loadProfile(S.me.id); }
-    if (S.page === 'admin') await loadAdmin();
-    softRender(); window.scrollTo(0, 0);
-  },
-  async profile(el) { S.page = 'profile'; S.viewId = el.dataset.id; S.pv = null; S.editing = false; renderChrome(); renderView(); await loadProfile(el.dataset.id); softRender(); window.scrollTo(0, 0); },
-  logout() { sb.auth.signOut().then(() => { teardown(); S.authMode = 'login'; renderAuth(); }); },
-
-  async join() {
-    const id = await rpc('join_queue');
-    await loadQueue();
-    if (id) { await refreshMatch(); }
-    softRender();
-  },
-  async leave() { await rpc('leave_queue'); await loadQueue(); softRender(); },
-  dismiss() { dismissedIds.add(S.match.id); lsSet('s2a_dismissed', JSON.stringify([...dismissedIds].slice(-50))); S.match = null; S.mplayers = []; S.roomEdit = false; softRender(); },
-  roomedit() { S.roomEdit = true; renderView(); },
-  async room() {
-    const v = $('#rc').value.trim(); if (!v) return toast('Введи код комнаты', 'bad');
-    await rpc('set_room_code', { p_match: S.match.id, p_code: v });
-    S.roomEdit = false; await refreshMatch(); softRender(); toast('Код отправлен', 'ok');
-  },
-  repw(el) { S.rep.winner = el.dataset.v; renderView(); },
-  async report() {
-    if (!S.rep.winner) return toast('Выбери победившую команду', 'bad');
-    const a = $('#rs-a').value, b = $('#rs-b').value;
-    await rpc('submit_report', { p_match: S.match.id, p_winner: S.rep.winner, p_score_a: a === '' ? null : +a, p_score_b: b === '' ? null : +b });
-    await refreshMatch(); softRender(); toast('Результат отправлен админу', 'ok');
-  },
-
-  pedit() { S.editing = true; S.draft = { avatar: S.me.avatar, color: S.me.color }; renderView(); },
-  pcancel() { S.editing = false; renderView(); },
-  pav(el) { S.draft.avatar = el.dataset.v; renderView(); },
-  pcol(el) { S.draft.color = +el.dataset.v; renderView(); },
-  async psave() {
-    await rpc('update_my_profile', { p_bio: $('#e-bio').value.trim(), p_standoff_id: $('#e-sid').value.trim(), p_avatar: S.draft.avatar, p_color: S.draft.color });
-    S.editing = false; await loadMe(); await loadProfile(S.me.id); softRender(); toast('Профиль сохранён', 'ok');
-  },
-
-  async admtab(el) { S.adminTab = el.dataset.v; await loadAdmin(); softRender(); },
-  async fin(el) {
-    const card = el.closest('[data-mid]'), w = el.dataset.w;
-    if (!confirm('Засчитать победу команды ' + (w === 'A' ? '1' : '2') + '? Рейтинг игроков изменится.')) return;
-    const a = $('.sa', card).value, b = $('.sb', card).value;
-    await rpc('admin_finish_match', { p_match: card.dataset.mid, p_winner: w, p_score_a: a === '' ? null : +a, p_score_b: b === '' ? null : +b });
-    toast('Матч засчитан', 'ok'); await loadAdmin(); softRender();
-  },
-  async cancelm(el) {
-    const card = el.closest('[data-mid]');
-    if (!confirm('Отменить матч? Рейтинг не изменится.')) return;
-    await rpc('admin_cancel_match', { p_match: card.dataset.mid });
-    toast('Матч отменён', 'ok'); await loadAdmin(); softRender();
-  },
-  async clearq() { if (!confirm('Убрать всех из очереди?')) return; await rpc('admin_clear_queue'); await loadQueue(); softRender(); },
-  async prate(el) {
-    const row = el.closest('[data-uid]'), v = prompt('Новый рейтинг для ' + row.dataset.nick + ' (0–5000):');
-    if (v === null) return; const n = parseInt(v, 10); if (isNaN(n)) return toast('Нужно число', 'bad');
-    await rpc('admin_set_rating', { p_user: row.dataset.uid, p_rating: n }); toast('Рейтинг изменён', 'ok'); await loadAdmin(); softRender();
-  },
-  async pban(el) {
-    const row = el.closest('[data-uid]'), ban = el.dataset.b === '1';
-    if (!confirm((ban ? 'Забанить ' : 'Разбанить ') + row.dataset.nick + '?')) return;
-    await rpc('admin_set_banned', { p_user: row.dataset.uid, p_banned: ban }); toast(ban ? 'Игрок забанен' : 'Бан снят', 'ok'); await loadAdmin(); softRender();
-  },
-  async prole(el) {
-    const row = el.closest('[data-uid]'), r = el.dataset.r;
-    if (!confirm((r === 'admin' ? 'Сделать админом ' : 'Снять админа с ') + row.dataset.nick + '?')) return;
-    await rpc('admin_set_role', { p_user: row.dataset.uid, p_role: r }); toast('Роль изменена', 'ok'); await loadAdmin(); softRender();
-  },
-  async savesize() { await rpc('admin_set_setting', { p_key: 'team_size', p_value: $('#tsize').value }); await loadSettings(); toast('Формат сохранён', 'ok'); softRender(); }
-};
-
-document.addEventListener('click', e => {
-  const el = e.target.closest('[data-act]');
-  if (!el || el.disabled || !A[el.dataset.act]) return;
-  Promise.resolve(A[el.dataset.act](el, e)).catch(err => toast(errText(err), 'bad'));
-});
-document.addEventListener('submit', e => { if (e.target.id === 'af') { e.preventDefault(); doAuth(); } });
-document.addEventListener('input', deb(async e => {
-  if (e.target.id !== 'psearch') return;
-  S.adm.q = e.target.value.trim(); await loadAdmin();
-  const l = $('#plist'); if (l) l.innerHTML = playersHtml();
-}, 300));
-document.addEventListener('focusout', () => {
-  if (!S.dirty) return;
-  setTimeout(() => { if (S.dirty && !typing()) renderView(); }, 1200);
-});
-window.addEventListener('pagehide', () => { if (S.inQueue && S.me) sb.rpc('leave_queue'); });
-
-/* =====================  СТАРТ  ===================== */
-(async () => {
-  root.innerHTML = '<div class="auth"><div class="brand">S2<b>ARENA</b></div></div>';
-  const { data } = await sb.auth.getSession();
-  if (data.session) await onSession(data.session); else renderAuth();
-  sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT' && S.me) { teardown(); renderAuth(); } });
-})();
-})();
-</script>
-</body>
-</html>

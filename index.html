@@ -12,65 +12,62 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
-/* ===== ФОН: оранжевая клетка + свечения ===== */
 :root{
   --bg:#0b0b0f;
   --accent:#ff8a1f;
   --accent-2:#ff6b00;
   --gold:#ffd700;
-  --grid-size:44px;
+  --grid-size:48px;
+  --grid-line:rgba(255,138,31,.09);
 }
-html,body{height:100%}
+
+/* ===== ФОН: ровная оранжевая сетка, без шахмат ===== */
+html{scroll-behavior:smooth}
 body{
   background-color:var(--bg);
   background-image:
-    radial-gradient(circle at 12% 10%, rgba(255,138,31,.18), transparent 45%),
-    radial-gradient(circle at 88% 88%, rgba(255,107,0,.16), transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(255,215,0,.05), transparent 60%),
-    linear-gradient(45deg, rgba(255,138,31,.055) 25%, transparent 25%, transparent 75%, rgba(255,138,31,.055) 75%),
-    linear-gradient(45deg, rgba(255,138,31,.055) 25%, transparent 25%, transparent 75%, rgba(255,138,31,.055) 75%),
-    linear-gradient(180deg,#0e0d14 0%,#0b0b0f 100%);
-  background-size: 100% 100%, 100% 100%, 100% 100%, var(--grid-size) var(--grid-size), var(--grid-size) var(--grid-size), 100% 100%;
-  background-position: 0 0, 0 0, 0 0, 0 0, calc(var(--grid-size)/2) calc(var(--grid-size)/2), 0 0;
-  background-attachment: fixed;
+    radial-gradient(circle at 12% 10%, rgba(255,138,31,.14), transparent 45%),
+    radial-gradient(circle at 88% 88%, rgba(255,107,0,.12), transparent 45%),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(0deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, var(--grid-size) var(--grid-size), var(--grid-size) var(--grid-size);
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
   color:#fff;
   font-family:'Inter',system-ui,sans-serif;
-  padding-bottom:70px;
+  padding-bottom:80px;
   min-height:100vh;
   line-height:1.5;
   position:relative;
-  overflow-x:hidden;
 }
 
-/* Анимированные blob-свечения для «живости» */
-body::before,
+/* Мягкое свечение через fixed-слой, не ломает scroll */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    radial-gradient(circle at 10% 5%, rgba(255,138,31,.10), transparent 50%),
+    radial-gradient(circle at 90% 95%, rgba(255,107,0,.10), transparent 50%);
+}
 body::after{
   content:'';
   position:fixed;
   width:520px;height:520px;
   border-radius:50%;
-  filter:blur(120px);
-  opacity:.28;
+  filter:blur(140px);
+  opacity:.22;
   z-index:0;
   pointer-events:none;
-}
-body::before{
   background:radial-gradient(circle,#ff8a1f,transparent 70%);
   top:-160px;left:-160px;
   animation:blob1 22s ease-in-out infinite;
 }
-body::after{
-  background:radial-gradient(circle,#ffd700,transparent 70%);
-  bottom:-200px;right:-180px;
-  animation:blob2 26s ease-in-out infinite;
-}
 @keyframes blob1{
   0%,100%{transform:translate(0,0) scale(1)}
-  50%{transform:translate(120px,80px) scale(1.15)}
-}
-@keyframes blob2{
-  0%,100%{transform:translate(0,0) scale(1)}
-  50%{transform:translate(-120px,-70px) scale(1.2)}
+  50%{transform:translate(140px,90px) scale(1.15)}
 }
 
 /* Все контейнеры поверх фона */
@@ -82,7 +79,7 @@ body::after{
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#1a1a2e;border:1px solid rgba(255,138,31,0.3);border-radius:16px;padding:16px 24px;max-width:400px;width:90%;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .4s;opacity:0;box-shadow:0 20px 60px rgba(0,0,0,.8)}
 .toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
 .toast .ttl{font-weight:700;font-size:15px;margin-bottom:4px}
-.toast .ttl.success{color:#51cf66}.toast .ttl.error{color:#ff6b6b}.toast .ttl.info{color:#ff8a1f}
+.toast .ttl.success{color:#51cf66}.toast .ttl.error{color:#ff6b6b}.toast .ttl.info{color:var(--accent)}
 .toast .txt{font-size:13px;color:#b0b0c0}
 
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:20px}
@@ -113,7 +110,6 @@ body::after{
 .modal-actions .btn-confirm:disabled{opacity:.4;cursor:not-allowed}
 .modal-actions .btn-confirm.confirmed{background:linear-gradient(135deg,#51cf66,#2b8a3e);color:#fff}
 
-/* Модалка редактирования */
 .modal-box .form-group{margin-bottom:16px}
 .modal-box .form-group label{display:block;font-size:13px;font-weight:600;color:#b0b0c0;margin-bottom:6px}
 .modal-box .input-wrap{display:flex;align-items:center;background:#1a1a2e;border-radius:12px;padding:0 14px;border:1px solid #2a2a4a;transition:border-color .2s}
@@ -134,7 +130,7 @@ body::after{
 .auth-box{background:rgba(20,20,31,.85);backdrop-filter:blur(20px);border-radius:24px;padding:40px 32px;max-width:420px;width:100%;border:1px solid rgba(255,138,31,.2);box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 60px rgba(255,138,31,.08)}
 .auth-logo{text-align:center;margin-bottom:32px}
 .auth-logo .icon{font-size:48px;display:block;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(255,138,31,.5))}
-.auth-logo h1{font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.auth-logo h1{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px}
 .auth-logo .sub{color:#8888aa;font-size:13px;letter-spacing:2px;text-transform:uppercase}
 .auth-tabs{display:flex;gap:8px;margin-bottom:24px;background:#1a1a2e;border-radius:12px;padding:4px}
 .auth-tabs .tab{flex:1;padding:10px;border:none;background:transparent;color:#8888aa;font-family:inherit;font-size:13px;font-weight:600;border-radius:10px;cursor:pointer;transition:all .2s}
@@ -161,13 +157,15 @@ body::after{
 .auth-footer a{color:var(--accent);cursor:pointer;text-decoration:none;font-weight:600}
 
 .main-wrapper{display:none;max-width:480px;margin:0 auto;padding:0 16px}
+
+/* ===== HEADER: название как в навигации снизу ===== */
 .header{padding:20px 0 16px;text-align:center;border-bottom:1px solid rgba(255,138,31,.1);margin-bottom:8px}
 .header .logo{cursor:pointer}
-.header .logo h1{font-size:22px;font-weight:800;background:linear-gradient(135deg,#fff,#8888aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.header .logo .sub{font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-top:2px;-webkit-text-fill-color:var(--accent);opacity:.85}
+.header .logo h1{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.header .logo .sub{font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+
 .page{display:none;padding-bottom:20px}.page.active{display:block}
 
-/* Home hero — карточки с оранжевой подсветкой */
 .home-hero{padding-top:12px}
 .hero-badge{display:inline-block;background:rgba(255,138,31,.12);border:1px solid rgba(255,138,31,.3);padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;color:var(--accent);letter-spacing:1px;text-transform:uppercase}
 .hero-title{font-size:24px;font-weight:800;line-height:1.2;margin:16px 0 20px}
@@ -416,7 +414,6 @@ body::after{
 
 <div class="toast" id="toast"><div class="ttl" id="toastTitle">Успешно</div><div class="txt" id="toastText">Действие выполнено</div></div>
 
-<!-- Confirm match modal -->
 <div class="modal-overlay" id="confirmModal">
 <div class="modal-box">
 <div class="modal-title">🎮 Матч <span class="highlight">найден!</span></div>
@@ -427,7 +424,6 @@ body::after{
 </div>
 </div>
 
-<!-- Edit profile modal -->
 <div class="modal-overlay" id="editProfileModal">
 <div class="modal-box">
 <div class="modal-title">✏️ <span class="highlight">Редактировать</span></div>
@@ -794,7 +790,6 @@ showToast('success','Готово','Никнейм: '+newName);
 setTimeout(()=>{closeEditProfile();renderFriends();renderTopPage()},700);
 }catch(e){msg.className='auth-message show error';msg.textContent='❌ '+e.message;btn.disabled=false;btn.textContent='Сохранить'}
 }
-// init edit input listeners
 document.addEventListener('input',e=>{
 if(e.target&&e.target.id==='editUsernameInput')updateEditCounter();
 });
@@ -1048,17 +1043,14 @@ document.getElementById('searchStatus').textContent='Поиск';
 }catch(e){}
 }
 
+/* ===== Отмена поиска с задержкой 1 сек ===== */
 async function cancelSearch(){
 if(isCanceling||!isSearching)return;
 isCanceling=true;
 const cb=document.getElementById('cancelBtn');
 cb.disabled=true;
-let countdown=3;
-cb.innerHTML=`<i class="fas fa-hourglass-half"></i> Отмена ${countdown}...`;
-if(searchCountdownTimer)clearInterval(searchCountdownTimer);
-searchCountdownTimer=setInterval(()=>{countdown--;if(countdown>0)cb.innerHTML=`<i class="fas fa-hourglass-half"></i> Отмена ${countdown}...`},1000);
-await new Promise(r=>setTimeout(r,3000));
-clearInterval(searchCountdownTimer);searchCountdownTimer=null;
+cb.innerHTML=`<i class="fas fa-hourglass-half"></i> Отмена...`;
+await new Promise(r=>setTimeout(r,1000));
 if(!isCanceling)return;
 try{
 await supabaseClient.from('queue').delete().eq('user_id',currentUser.id).eq('status','searching');
@@ -1491,11 +1483,9 @@ if(!btn||btn.classList.contains('banned')||btn.classList.contains('selected'))re
 handleModesBan(btn.dataset.value);
 });
 document.getElementById('promoInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')applyPromo()});
-// Close edit modal on overlay click
 document.getElementById('editProfileModal').addEventListener('click',e=>{
 if(e.target.id==='editProfileModal')closeEditProfile();
 });
-// Esc to close edit modal
 document.addEventListener('keydown',e=>{
 if(e.key==='Escape'&&document.getElementById('editProfileModal').classList.contains('active'))closeEditProfile();
 });

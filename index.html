@@ -610,8 +610,10 @@ body::after{
 </div>
 
 <script>
-const SUPABASE_URL='https://zwrczkwtzzfywgqprmrt.supabase.co';
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3cmN6a3d0enpmeXdncXBybXJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3NjA0MzcsImV4cCI6MjEwNTMzNjQzN30.2OdASwhJVUUoG_uvKc03DKFmZtOm5GPFgBjQAkVlJ5Y';
+/* ===== ВАШИ КЛЮЧИ SUPABASE (из первого сообщения) ===== */
+const SUPABASE_URL='https://tgjltbpmuczfkikvmmde.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
+
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[];
@@ -893,14 +895,13 @@ if(data&&data.length>1){const ids=data.slice(1).map(q=>q.id);await supabaseClien
 }catch(e){}
 }
 
-/* ===== HEARTBEAT / TIMERS (механика Claude + fixes) ===== */
+/* ===== HEARTBEAT / TIMERS ===== */
 function startHeartbeat(){
   if(heartbeatInterval)clearInterval(heartbeatInterval);
   heartbeatFailCount=0;
   heartbeatInterval=setInterval(async()=>{
     if(!currentUser){clearInterval(heartbeatInterval);heartbeatInterval=null;return}
     try{
-      // 1) если считаем, что в очереди — стучимся в heartbeat + пробуем собрать
       if(isSearching){
         const{data,error}=await supabaseClient.rpc('queue_heartbeat_v2',{p_user_id:currentUser.id});
         if(error){heartbeatFailCount++;return}
@@ -909,7 +910,6 @@ function startHeartbeat(){
         if(mid){clearInterval(heartbeatInterval);heartbeatInterval=null;await loadCreatedMatch(mid);return}
         await updateQueueCount();
       }
-      // 2) если не в очереди, но и матча нет — проверяем, не собрали ли его без нас
       if(!currentMatch && !isPlayerInMatch){
         await checkActiveMatchOnLoad();
       }
@@ -1053,7 +1053,6 @@ document.getElementById('searchStatus').textContent='Поиск';
 }catch(e){}
 }
 
-/* Отмена поиска — с задержкой 1 секунда */
 async function cancelSearch(){
 if(isCanceling||!isSearching)return;
 isCanceling=true;
@@ -1094,7 +1093,6 @@ if(isSearching){await updateQueueCount();await updateHomeStats()}
 }).subscribe();
 }
 
-/* Realtime: матч создан → мгновенно узнаём */
 function subscribeToMatchCreation(){
 if(matchCreatedChannel){supabaseClient.removeChannel(matchCreatedChannel);matchCreatedChannel=null}
 matchCreatedChannel=supabaseClient.channel('match_created_'+Date.now())
@@ -1505,7 +1503,6 @@ if(partyFriends.length===0){c.innerHTML='<span class="party-empty">Нет уча
 c.innerHTML=partyFriends.map(f=>`<span class="party-member"><span class="avatar-small">${f.username.charAt(0).toUpperCase()}</span>${f.username}<span class="remove" onclick="removeFromParty('${f.id}')">&times;</span></span>`).join('');
 }
 
-/* ===== MATCH FOUND OVERLAY ===== */
 function matchFound(){
 const now=Date.now();
 if(now-_foundShown<3000)return;
@@ -1518,7 +1515,6 @@ try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}
 setTimeout(()=>d.remove(),1500);
 }
 
-/* ===== RESYNC (Claude) ===== */
 async function resync(){
 if(!currentUser)return;
 try{
@@ -1556,7 +1552,6 @@ document.addEventListener('keydown',e=>{
 if(e.key==='Escape'&&document.getElementById('editProfileModal').classList.contains('active'))closeEditProfile();
 });
 
-// cleanup_stale_queue раз в минуту
 cleanupInterval=setInterval(async()=>{
 try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}
 },60000);

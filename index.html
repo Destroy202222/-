@@ -331,28 +331,33 @@ body::after{
 .adm-promo-creation{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .adm-promo-row{display:flex;gap:6px}
 .adm-promo-row input{flex:1;padding:8px 12px;background:#0b0b0f;border:1px solid #2a2a4a;border-radius:8px;color:#fff;font-family:inherit;font-size:13px;outline:none}
+
 .friends-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .friends-header h2{font-size:20px;font-weight:800}
 .friends-header .count{color:#8888aa;font-size:13px}
 .friends-tabs{display:flex;gap:4px;background:rgba(20,20,31,.8);border-radius:12px;padding:4px;margin-bottom:16px}
-.friends-tabs .tab{flex:1;padding:8px;border:none;background:transparent;color:#8888aa;font-family:inherit;font-size:12px;font-weight:600;border-radius:10px;cursor:pointer}
+.friends-tabs .tab{flex:1;padding:8px;border:none;background:transparent;color:#8888aa;font-family:inherit;font-size:12px;font-weight:600;border-radius:10px;cursor:pointer;position:relative}
 .friends-tabs .tab.active{background:#2a2a4a;color:#fff}
+.friends-tabs .tab .req-badge{display:none;position:absolute;top:-4px;right:6px;background:#ff6b6b;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 6px;min-width:18px;text-align:center}
+.friends-tabs .tab .req-badge.visible{display:inline-block}
 .friends-search{display:flex;gap:8px;margin-bottom:16px}
 .friends-search input{flex:1;padding:10px 14px;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;color:#fff;font-family:inherit;font-size:14px;outline:none}
 .friends-search input:focus{border-color:var(--accent)}
 .friends-search button{padding:10px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f;font-family:inherit;font-weight:700;cursor:pointer}
 .friends-list{display:flex;flex-direction:column;gap:8px}
-.friend-item{display:flex;align-items:center;gap:12px;background:rgba(20,20,31,.8);border:1px solid #2a2a4a;border-radius:12px;padding:12px 16px}
+.friend-item{display:flex;align-items:center;gap:12px;background:rgba(20,20,31,.8);border:1px solid #2a2a4a;border-radius:12px;padding:12px 16px;flex-wrap:wrap}
 .friend-item .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#0b0b0f;flex-shrink:0;overflow:hidden}
-.friend-item .info{flex:1}
-.friend-item .info .name{font-weight:600;font-size:14px}
+.friend-item .info{flex:1;min-width:0}
+.friend-item .info .name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .friend-item .info .status{font-size:12px;color:#8888aa}
 .friend-item .status-badge{padding:4px 12px;border-radius:12px;font-size:11px;font-weight:600}
 .friend-item .status-badge.friend{background:rgba(81,207,102,.2);color:#51cf66}
 .friend-item .status-badge.request{background:rgba(255,138,31,.2);color:var(--accent)}
+.friend-item .status-badge.sent{background:rgba(77,171,247,.2);color:#4dabf7}
 .friend-item .status-badge.none{background:rgba(255,107,107,.2);color:#ff6b6b}
-.friend-item .friend-actions{display:flex;gap:6px}
-.friend-item .friend-actions button{padding:6px 12px;border:none;border-radius:8px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer}
+.friend-item .friend-actions{display:flex;gap:6px;width:100%;margin-top:8px}
+.friend-item .friend-actions button{flex:1;padding:8px 12px;border:none;border-radius:8px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:transform .15s}
+.friend-item .friend-actions button:active{transform:scale(.97)}
 .friend-item .friend-actions .btn-invite{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f}
 .friend-item .friend-actions .btn-remove{background:#2a2a4a;color:#ff6b6b}
 .friend-item .friend-actions .btn-add{background:#4dabf7;color:#fff}
@@ -360,6 +365,7 @@ body::after{
 .friend-item .friend-actions .btn-decline{background:#ff6b6b;color:#fff}
 .friends-empty{text-align:center;padding:40px 20px;color:#555}
 .friends-empty i{font-size:40px;margin-bottom:12px;display:block;color:#2a2a4a}
+
 .top-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .top-header h2{font-size:20px;font-weight:800}
 .top-header .user-rank{background:rgba(20,20,31,.8);border:1px solid #2a2a4a;border-radius:12px;padding:6px 16px;font-size:14px;font-weight:700;color:var(--accent)}
@@ -383,9 +389,11 @@ body::after{
 .placeholder i{font-size:48px;margin-bottom:16px;display:block;color:#2a2a4a}
 .placeholder h2{font-size:18px;font-weight:700;color:#8888aa}
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;display:flex;justify-content:space-around;padding:8px 8px 12px;background:rgba(20,20,31,.95);backdrop-filter:blur(12px);border-top:1px solid rgba(255,138,31,.12);z-index:100}
-.bottom-nav .item{display:flex;flex-direction:column;align-items:center;background:transparent;border:none;color:#555;font-family:inherit;font-size:10px;cursor:pointer;padding:4px 8px;gap:2px;transition:color .2s}
+.bottom-nav .item{display:flex;flex-direction:column;align-items:center;background:transparent;border:none;color:#555;font-family:inherit;font-size:10px;cursor:pointer;padding:4px 8px;gap:2px;transition:color .2s;position:relative}
 .bottom-nav .item i{font-size:20px}
 .bottom-nav .item.active{color:var(--accent)}
+.bottom-nav .item .nav-badge{display:none;position:absolute;top:0;right:8px;background:#ff6b6b;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center}
+.bottom-nav .item .nav-badge.visible{display:inline-block}
 
 .found-overlay{position:fixed;inset:0;z-index:9997;background:rgba(11,11,15,.94);display:grid;place-items:center;text-align:center;animation:fin .25s}
 .found-overlay h1{font-size:clamp(40px,12vw,84px);color:var(--accent);font-weight:900;letter-spacing:.02em}
@@ -581,7 +589,7 @@ body::after{
 <div class="friends-header"><h2>Друзья</h2><span class="count" id="friendsCount">0 друзей</span></div>
 <div class="friends-tabs">
 <button class="tab active" data-tab="friends" onclick="switchFriendsTab('friends')">Все</button>
-<button class="tab" data-tab="requests" onclick="switchFriendsTab('requests')">Заявки</button>
+<button class="tab" data-tab="requests" onclick="switchFriendsTab('requests')">Заявки <span class="req-badge" id="reqBadge">0</span></button>
 </div>
 <div class="friends-search"><input type="text" id="friendSearchInput" placeholder="Поиск по никнейму..." /><button onclick="searchFriends()"><i class="fas fa-search"></i></button></div>
 <div class="friends-list" id="friendsListContainer"><div class="friends-empty"><i class="fas fa-user-friends"></i><p>Нет друзей</p></div></div>
@@ -602,7 +610,7 @@ body::after{
 <nav class="bottom-nav">
 <button class="item" data-page="profile" onclick="navigate('profile')"><i class="fas fa-user"></i><span>Профиль</span></button>
 <button class="item" data-page="shop" onclick="navigate('shop')"><i class="fas fa-store"></i><span>Шоп</span></button>
-<button class="item" data-page="friends" onclick="navigate('friends')"><i class="fas fa-user-friends"></i><span>Друзья</span></button>
+<button class="item" data-page="friends" onclick="navigate('friends')"><i class="fas fa-user-friends"></i><span>Друзья</span><span class="nav-badge" id="navFriendBadge">0</span></button>
 <button class="item active" id="matchNavBtn" data-page="matches" onclick="navigate('matches')"><i class="fas fa-search"></i><span id="matchNavLabel">Поиск</span></button>
 <button class="item" data-page="top" onclick="navigate('top')"><i class="fas fa-trophy"></i><span>Топ</span></button>
 <button class="item" data-page="wallet" onclick="navigate('wallet')"><i class="fas fa-wallet"></i><span>Кошелёк</span></button>
@@ -610,17 +618,18 @@ body::after{
 </div>
 
 <script>
-/* ===== ВАШИ КЛЮЧИ SUPABASE (из первого сообщения) ===== */
+/* ===== ВАШИ КЛЮЧИ SUPABASE ===== */
 const SUPABASE_URL='https://tgjltbpmuczfkikvmmde.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
 
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[];
+let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[],sentRequests=[];
 let isSearching=false,isStartingSearch=false,isCanceling=false,searchTimerInterval=null,searchSeconds=0;
 let currentScreenshot=null,isPlayerInMatch=false,friendsTab='friends',waitingConfirm=false;
 let confirmedPlayers=[],matchPlayers=[],confirmTimer=null,confirmTimeLeft=25,lobbyLink=null,isCaptain=false;
 let searchChannel=null,matchChannel=null,matchCreatedChannel=null,currentMatchId=null;
+let friendsChannel=null;
 let queueUpdateInterval=null,heartbeatInterval=null,cleanupInterval=null;
 let isConfirming=false,heartbeatFailCount=0,searchCountdownTimer=null;
 let adminTab='matches',adminMatches=[],adminPlayers=[],adminQueue=[],adminPromos=[],adminAdmins=[];
@@ -688,7 +697,7 @@ document.getElementById('pMvp').textContent=currentUser.mvp||0;
 document.getElementById('pElo').textContent=currentUser.elo||1000;
 document.getElementById('walletBalance').textContent=(currentUser.balance||0)+' ₽';
 const isAdmin=currentUser.isadmin===true;
-if(isAdmin){document.getElementById('adminBadge').classList.add('visible');document.getElementById('adminPanelWrap').classList.add('visible');await loadSettings();await renderAdminPanel()}
+if(isAdmin){document.getElementById('adminBadge').classList.add('visible');document.getElementById('adminPanelWrap').classList.add('visible');await loadSettings();await renderAdminPanel();if(!matchCreatedChannel)subscribeToMatchCreation()}
 else{document.getElementById('adminBadge').classList.remove('visible');document.getElementById('adminPanelWrap').classList.remove('visible')}
 await checkQueueOnLoad();
 await checkActiveMatchOnLoad();
@@ -696,6 +705,7 @@ await loadMatchHistory();
 await renderChart();
 await renderTopPage();
 await loadFriends();
+subscribeToFriends();
 await updateHomeStats();
 updatePartyUI();
 navigate('home');
@@ -713,6 +723,7 @@ clearSession();currentUser=null;currentMatch=null;isPlayerInMatch=false;
 cleanupSearchState();
 if(matchChannel){supabaseClient.removeChannel(matchChannel);matchChannel=null}
 if(matchCreatedChannel){supabaseClient.removeChannel(matchCreatedChannel);matchCreatedChannel=null}
+if(friendsChannel){supabaseClient.removeChannel(friendsChannel);friendsChannel=null}
 checkAuth();showToast('info','Выход','');
 }
 
@@ -799,7 +810,10 @@ const st=m.status==='pending'?'Ожидает':'Активен';
 const rt=(list,side,avg)=>`<div class="adm-team ${side}"><h4>${side.toUpperCase()} · ELO ${avg}</h4>${list.map((p,i)=>`<div class="adm-pl"><div class="av">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="nm">${p.username||'?'}</div>${i===0?'<span class="cap">👑</span>':''}</div>`).join('')}</div>`;
 const avgO=orange.length?Math.round(orange.reduce((s,p)=>s+(p.elo||1000),0)/orange.length):0;
 const avgB=blue.length?Math.round(blue.reduce((s,p)=>s+(p.elo||1000),0)/blue.length):0;
-return `<div class="adm-match" data-match-id="${m.id}"><div class="hdr"><h3>#${m.id.slice(-6)}</h3><span class="badge-status ${m.status==='pending'?'pending':'active'}">${st}</span></div><div class="meta">${new Date(m.created_at).toLocaleTimeString('ru-RU')}</div><div class="adm-teams">${rt(orange,'orange',avgO)}${rt(blue,'blue',avgB)}</div><div class="adm-score-row"><input type="number" class="adm-score-a" placeholder="0" min="0" max="99"><span class="sep">:</span><input type="number" class="adm-score-b" placeholder="0" min="0" max="99"></div><div class="adm-finish-btns"><button class="btn-blue" onclick="admFinishMatch('${m.id}','blue')">🏆 BLUE</button><button class="btn-orange" onclick="admFinishMatch('${m.id}','orange')">🏆 ORANGE</button></div><button class="adm-cancel-btn" onclick="admCancelMatch('${m.id}')">❌ Отменить</button></div>`;
+const screenshot=m.screenshot_url?`<div style="margin:10px 0"><div style="font-size:11px;color:#8888aa;margin-bottom:4px">📸 Скриншот от ${m.screenshot_by||'игрока'}:</div><img src="${m.screenshot_url}" style="max-width:100%;max-height:300px;border-radius:8px;cursor:pointer" onclick="window.open('${m.screenshot_url}','_blank')"></div>`:'<div style="font-size:11px;color:#666;margin:8px 0">📸 Скриншот не приложен</div>';
+let draftInfo='';
+try{if(m.draft_state){const d=JSON.parse(m.draft_state);draftInfo=`<div class="meta">Режим: ${d.modeFinal||'не выбран'} · банов: ${(d.modeBanned||[]).length}</div>`}}catch(e){}
+return `<div class="adm-match" data-match-id="${m.id}"><div class="hdr"><h3>#${m.id.slice(-6)}</h3><span class="badge-status ${m.status==='pending'?'pending':'active'}">${st}</span></div><div class="meta">${new Date(m.created_at).toLocaleTimeString('ru-RU')}</div>${draftInfo}<div class="adm-teams">${rt(orange,'orange',avgO)}${rt(blue,'blue',avgB)}</div>${screenshot}<div class="adm-score-row"><input type="number" class="adm-score-a" placeholder="0" min="0" max="99"><span class="sep">:</span><input type="number" class="adm-score-b" placeholder="0" min="0" max="99"></div><div class="adm-finish-btns"><button class="btn-blue" onclick="admFinishMatch('${m.id}','blue')">🏆 BLUE</button><button class="btn-orange" onclick="admFinishMatch('${m.id}','orange')">🏆 ORANGE</button></div><button class="adm-cancel-btn" onclick="admCancelMatch('${m.id}')">❌ Отменить</button></div>`;
 }).join('');
 }
 else if(adminTab==='players'){
@@ -926,6 +940,8 @@ const orange=JSON.parse(data.orange),blue=JSON.parse(data.blue);
 currentMatch={id:data.id,orange,blue};currentMatchId=id;isPlayerInMatch=true;
 isCaptain=blue.length>0&&blue[0].id===currentUser.id;
 isSearching=false;
+if(data.draft_state)draftState=JSON.parse(data.draft_state);
+if(data.screenshot_url)currentScreenshot=data.screenshot_url;
 if(searchTimerInterval)clearInterval(searchTimerInterval);
 if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null}
 if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null}
@@ -966,6 +982,7 @@ if(currentMatch&&currentMatch.id===match.id&&isPlayerInMatch)return;
 currentMatch={id:match.id,orange,blue};isPlayerInMatch=true;currentMatchId=match.id;
 isCaptain=blue.length>0&&blue[0].id===currentUser.id;
 if(match.draft_state)draftState=JSON.parse(match.draft_state);
+if(match.screenshot_url)currentScreenshot=match.screenshot_url;
 if(match.status==='pending'){matchPlayers=[...orange,...blue];confirmedPlayers=[];showConfirmModal();subscribeToMatch(match.id)}
 else if(match.status==='active'){navigate('matchPage');renderMatchPage()}
 return;
@@ -1094,9 +1111,13 @@ if(isSearching){await updateQueueCount();await updateHomeStats()}
 }
 
 function subscribeToMatchCreation(){
-if(matchCreatedChannel){supabaseClient.removeChannel(matchCreatedChannel);matchCreatedChannel=null}
+if(matchCreatedChannel)return;
 matchCreatedChannel=supabaseClient.channel('match_created_'+Date.now())
-.on('postgres_changes',{event:'INSERT',schema:'public',table:'active_matches'},async(payload)=>{
+.on('postgres_changes',{event:'*',schema:'public',table:'active_matches'},async(payload)=>{
+if(currentUser?.isadmin && adminTab==='matches'){
+  await renderAdminPanel();
+}
+if(payload.eventType!=='INSERT')return;
 const m=payload.new;
 if(!m||!currentUser)return;
 if(currentMatch&&currentMatch.id===m.id&&isPlayerInMatch)return;
@@ -1174,12 +1195,14 @@ startMatchAfterConfirm();
 function startMatchAfterConfirm(){
 if(!currentMatch)return;
 draftState.gameNumber=(draftState.gameNumber||0)+1;
-resetDraft();
+if(!draftState.modeOptions||!draftState.modeOptions.length){
+  draftState.modeOptions=['Gem Grab','Brawl Ball','Knockout','Heist','Bounty','Hot Zone','Siege'];
+  draftState.modeBanned=[];draftState.modeFinal=null;draftState.currentCaptain=0;draftState.isComplete=false;
+}
 document.getElementById('matchResultSection').classList.remove('admin-visible');
 document.getElementById('lobbySection').classList.remove('visible');
 document.getElementById('screenshotSection').classList.remove('visible');
 document.getElementById('matchActions').classList.remove('admin-visible');
-currentScreenshot=null;
 document.getElementById('screenshotInput').value='';
 document.getElementById('screenshotPreview').innerHTML='';
 document.getElementById('screenshotStatus').textContent='';
@@ -1198,8 +1221,13 @@ matchChannel=supabaseClient.channel('match_'+id)
 .on('postgres_changes',{event:'*',schema:'public',table:'active_matches',filter:`id=eq.${id}`},async(payload)=>{
 if(payload.eventType==='DELETE'){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;currentMatch=null;isPlayerInMatch=false;navigate('matches');return}
 if(payload.eventType==='UPDATE'){const nd=payload.new;
-if(nd.status==='active'&&!currentMatch){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;currentMatch={id:nd.id,orange:JSON.parse(nd.orange),blue:JSON.parse(nd.blue)};currentMatchId=nd.id;isPlayerInMatch=true;if(nd.draft_state)draftState=JSON.parse(nd.draft_state);startMatchAfterConfirm()}
-if(nd.status==='active'&&currentMatch&&currentMatch.id===nd.id){currentMatch.orange=JSON.parse(nd.orange);currentMatch.blue=JSON.parse(nd.blue)}
+// Синхронизация драфта у всех игроков
+if(nd.draft_state){
+  try{draftState=JSON.parse(nd.draft_state);renderDraftUI()}catch(e){}
+}
+if(nd.screenshot_url){currentScreenshot=nd.screenshot_url}
+if(nd.status==='active'&&!currentMatch){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;currentMatch={id:nd.id,orange:JSON.parse(nd.orange),blue:JSON.parse(nd.blue)};currentMatchId=nd.id;isPlayerInMatch=true;startMatchAfterConfirm()}
+if(nd.status==='active'&&currentMatch&&currentMatch.id===nd.id){currentMatch.orange=JSON.parse(nd.orange);currentMatch.blue=JSON.parse(nd.blue);renderMatchPage()}
 }
 }).subscribe();
 }
@@ -1230,6 +1258,7 @@ document.getElementById('teamOrangePlayers').innerHTML=so.map(p=>`<div class="pl
 document.getElementById('teamBluePlayers').innerHTML=sb.map(p=>`<div class="player-card"><div class="avatar">${p.username.charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username}</span></div>${p.username===bc?'<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>':''}</div>`).join('')||'<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
 updateBanButtons(canBan);
 renderDraftUI();
+if(currentScreenshot){document.getElementById('screenshotPreview').innerHTML=`<img src="${currentScreenshot}">`;document.getElementById('screenshotStatus').textContent='✅ Загружено';document.getElementById('screenshotStatus').style.color='#51cf66'}
 checkMatchResultVisibility();checkLobbyVisibility();
 }
 
@@ -1251,19 +1280,36 @@ showToast('success','Готово','');
 
 function copyLobbyLink(){if(!lobbyLink)return;navigator.clipboard.writeText(lobbyLink).then(()=>showToast('success','Скопировано',''))}
 
-document.getElementById('screenshotUploadBtn').addEventListener('click',function(){
+document.getElementById('screenshotUploadBtn').addEventListener('click',async function(){
 const f=document.getElementById('screenshotInput').files[0];
 const s=document.getElementById('screenshotStatus');
 if(!f){s.textContent='❌ Выберите файл';s.style.color='#ff6b6b';return}
 if(!f.type.startsWith('image/')){s.textContent='❌ Только изображения';s.style.color='#ff6b6b';return}
 if(f.size>5*1024*1024){s.textContent='❌ Больше 5MB';s.style.color='#ff6b6b';return}
-const r=new FileReader();
-r.onload=e=>{currentScreenshot=e.target.result;document.getElementById('screenshotPreview').innerHTML=`<img src="${currentScreenshot}">`;s.textContent='✅ Загружено';s.style.color='#51cf66'};
-r.readAsDataURL(f);
+if(!currentMatchId){s.textContent='❌ Нет активного матча';s.style.color='#ff6b6b';return}
+s.textContent='⏳ Загрузка...';s.style.color='#8888aa';
+try{
+  const ext=(f.name.split('.').pop()||'jpg').toLowerCase();
+  const path=currentMatchId+'/'+currentUser.id+'_'+Date.now()+'.'+ext;
+  const{error:upErr}=await supabaseClient.storage.from('screenshots').upload(path,f,{cacheControl:'3600',upsert:false});
+  if(upErr){s.textContent='❌ '+upErr.message;s.style.color='#ff6b6b';return}
+  const{data:pub}=supabaseClient.storage.from('screenshots').getPublicUrl(path);
+  const url=pub.publicUrl;
+  const{error:rpcErr}=await supabaseClient.rpc('save_screenshot',{p_match:currentMatchId,p_url:url,p_username:currentUser.username});
+  if(rpcErr){s.textContent='❌ '+rpcErr.message;s.style.color='#ff6b6b';return}
+  currentScreenshot=url;
+  document.getElementById('screenshotPreview').innerHTML=`<img src="${url}">`;
+  s.textContent='✅ Отправлено админу';s.style.color='#51cf66';
+  showToast('success','Скриншот загружен','Админ увидит его в матче');
+}catch(e){s.textContent='❌ '+e.message;s.style.color='#ff6b6b'}
 });
 
 function resetDraft(){
-draftState={gameNumber:draftState.gameNumber,modeOptions:['Gem Grab','Brawl Ball','Knockout','Heist','Bounty','Hot Zone','Siege'],modeBanned:[],modeFinal:null,currentCaptain:0,isComplete:false};
+if(draftState && draftState.modeOptions && draftState.modeOptions.length){
+  renderDraftUI();
+  return;
+}
+draftState={gameNumber:draftState.gameNumber||1,modeOptions:['Gem Grab','Brawl Ball','Knockout','Heist','Bounty','Hot Zone','Siege'],modeBanned:[],modeFinal:null,currentCaptain:0,isComplete:false};
 renderDraftUI();
 }
 
@@ -1277,19 +1323,19 @@ return c[i]||'Капитан '+(i+1);
 
 function renderDraftUI(){
 const s=draftState;
-document.getElementById('matchGameNumber').textContent='#'+s.gameNumber;
+document.getElementById('matchGameNumber').textContent='#'+(s.gameNumber||1);
 document.getElementById('matchSelectedMode').textContent=s.modeFinal||'—';
 const oc=currentMatch&&currentMatch.orange.length>0?currentMatch.orange[0].username:null;
 const bc=currentMatch&&currentMatch.blue.length>0?currentMatch.blue[0].username:null;
 const canBan=currentUser&&(currentUser.username===oc||currentUser.username===bc);
 document.querySelectorAll('#modesBanContainer .ban-btn').forEach(btn=>{
 const v=btn.dataset.value;
-if(s.modeBanned.includes(v)){btn.classList.add('banned');btn.style.display='none'}
-else if(s.modeFinal===v){btn.classList.add('selected');btn.disabled=true}
+if((s.modeBanned||[]).includes(v)){btn.classList.add('banned');btn.style.display='none'}
+else if(s.modeFinal===v){btn.classList.add('selected');btn.disabled=true;btn.style.display=''}
 else if(s.isComplete){btn.disabled=true}
 else{btn.classList.remove('banned','selected');btn.style.display='';btn.disabled=!canBan;btn.style.opacity=canBan?'1':'0.4';btn.style.cursor=canBan?'pointer':'not-allowed'}
 });
-const av=s.modeOptions.filter(v=>!s.modeBanned.includes(v)&&v!==s.modeFinal);
+const av=(s.modeOptions||[]).filter(v=>!(s.modeBanned||[]).includes(v)&&v!==s.modeFinal);
 document.getElementById('modesLeft').textContent=av.length;
 const ms=document.getElementById('modesStatus');
 if(s.modeFinal){ms.textContent='✅ '+s.modeFinal;ms.className='status-text done'}
@@ -1300,18 +1346,20 @@ document.getElementById('bansContainer').style.display=s.isComplete?'none':'grid
 checkMatchResultVisibility();checkLobbyVisibility();
 }
 
-function handleModesBan(value){
+async function handleModesBan(value){
 const s=draftState;
-if(s.isComplete||s.modeBanned.includes(value)||s.modeFinal)return;
+if(s.isComplete||(s.modeBanned||[]).includes(value)||s.modeFinal)return;
 const oc=currentMatch&&currentMatch.orange.length>0?currentMatch.orange[0].username:null;
 const bc=currentMatch&&currentMatch.blue.length>0?currentMatch.blue[0].username:null;
 const canBan=currentUser&&(currentUser.username===oc||currentUser.username===bc);
 if(!canBan)return showToast('error','Доступ','Только капитаны');
-s.modeBanned.push(value);
+s.modeBanned=s.modeBanned||[];s.modeBanned.push(value);
 const av=s.modeOptions.filter(v=>!s.modeBanned.includes(v));
-if(av.length===1){s.modeFinal=av[0];s.isComplete=true;renderDraftUI();showToast('success','Драфт завершён!','Режим: '+s.modeFinal);return}
-s.currentCaptain=s.currentCaptain===0?1:0;
+if(av.length===1){s.modeFinal=av[0];s.isComplete=true;}
+else{s.currentCaptain=s.currentCaptain===0?1:0;}
 renderDraftUI();
+try{await supabaseClient.rpc('save_draft',{p_match:currentMatchId,p_draft:s})}catch(e){console.error('save_draft failed',e)}
+if(s.isComplete)showToast('success','Драфт завершён!','Режим: '+s.modeFinal);
 }
 
 document.getElementById('blueWinBtn').addEventListener('click',()=>{
@@ -1375,80 +1423,216 @@ document.getElementById('chartContainer').innerHTML=lm.map((m,i)=>{const w=m.res
 }catch(e){}
 }
 
+/* ===================== ДРУЗЬЯ (полностью переписано) ===================== */
+
 async function loadFriends(){
-if(!currentUser)return;
-try{
-const{data:fd}=await supabaseClient.from('friends').select('friend_id').eq('user_id',currentUser.id);
-const ids=fd?fd.map(f=>f.friend_id):[];
-if(ids.length>0){const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',ids);myFriends=data||[]}
-else myFriends=[];
-const{data:rd}=await supabaseClient.from('friend_requests').select('from_user_id').eq('to_user_id',currentUser.id).eq('status','pending');
-const rids=rd?rd.map(r=>r.from_user_id):[];
-if(rids.length>0){const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',rids);friendRequests=data||[]}
-else friendRequests=[];
-const{data:all}=await supabaseClient.from('users').select('id, username, isadmin, elo').neq('id',currentUser.id);
-friendsList=all||[];
-renderFriends();
-}catch(e){}
+  if(!currentUser)return;
+  try{
+    // 1. Мои друзья (в обе стороны)
+    const{data:fd1}=await supabaseClient.from('friends').select('friend_id').eq('user_id',currentUser.id);
+    const{data:fd2}=await supabaseClient.from('friends').select('user_id').eq('friend_id',currentUser.id);
+    const ids=new Set([...(fd1||[]).map(f=>f.friend_id),...(fd2||[]).map(f=>f.user_id)]);
+    if(ids.size>0){
+      const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',[...ids]);
+      myFriends=data||[];
+    }else{
+      myFriends=[];
+    }
+
+    // 2. Входящие заявки (ко мне, статус pending)
+    const{data:rd}=await supabaseClient.from('friend_requests')
+      .select('from_user_id').eq('to_user_id',currentUser.id).eq('status','pending');
+    const rids=(rd||[]).map(r=>r.from_user_id);
+    if(rids.length>0){
+      const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',rids);
+      friendRequests=data||[];
+    }else{
+      friendRequests=[];
+    }
+
+    // 3. Исходящие заявки (от меня, статус pending)
+    const{data:sd}=await supabaseClient.from('friend_requests')
+      .select('to_user_id').eq('from_user_id',currentUser.id).eq('status','pending');
+    const sids=(sd||[]).map(r=>r.to_user_id);
+    if(sids.length>0){
+      const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',sids);
+      sentRequests=data||[];
+    }else{
+      sentRequests=[];
+    }
+
+    // 4. Все игроки (для поиска)
+    const{data:all}=await supabaseClient.from('users').select('id, username, isadmin, elo').neq('id',currentUser.id);
+    friendsList=all||[];
+
+    updateFriendBadges();
+    renderFriends();
+  }catch(e){console.error('loadFriends error',e)}
+}
+
+function updateFriendBadges(){
+  const n=friendRequests.length;
+  const reqBadge=document.getElementById('reqBadge');
+  const navBadge=document.getElementById('navFriendBadge');
+  if(reqBadge){if(n>0){reqBadge.textContent=n;reqBadge.classList.add('visible')}else{reqBadge.classList.remove('visible')}}
+  if(navBadge){if(n>0){navBadge.textContent=n;navBadge.classList.add('visible')}else{navBadge.classList.remove('visible')}}
 }
 
 function renderFriends(){
 const c=document.getElementById('friendsListContainer');
 const cnt=document.getElementById('friendsCount');
+if(!c)return;
 let f=[],isR=false;
-if(friendsTab==='friends')f=myFriends;else{isR=true;f=friendRequests}
+if(friendsTab==='friends'){f=myFriends}
+else{isR=true;f=friendRequests}
 cnt.textContent=myFriends.length+' друзей';
-if(f.length===0){c.innerHTML=`<div class="friends-empty"><i class="fas fa-user-friends"></i><p>${isR?'Нет заявок':'Нет друзей'}</p><span style="font-size:12px;color:#666;">Ищите игроков по никнейму</span></div>`;return}
+
+if(f.length===0){
+  c.innerHTML=`<div class="friends-empty"><i class="fas fa-user-friends"></i><p>${isR?'Нет входящих заявок':'Нет друзей'}</p><span style="font-size:12px;color:#666;">Ищите игроков через поиск</span></div>`;
+  return;
+}
+
 c.innerHTML=f.map(fr=>{
 const isFriend=myFriends.some(m=>m.id===fr.id);
 const isReq=friendRequests.some(r=>r.id===fr.id);
 const inP=partyFriends.some(p=>p.id===fr.id);
 let cls='none',txt='Не в друзьях',ac='';
-if(isReq&&!isFriend){cls='request';txt='Заявка';ac=`<button class="btn-accept" onclick="acceptFriend('${fr.id}')"><i class="fas fa-check"></i></button><button class="btn-decline" onclick="declineFriend('${fr.id}')"><i class="fas fa-times"></i></button>`}
-else if(isFriend){cls='friend';txt='Друг';
-if(inP)ac=`<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i></button><button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-times"></i></button>`;
-else ac=`<button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button><button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-times"></i></button>`}
-else ac=`<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`;
+
+if(isReq&&!isFriend){
+  cls='request';txt='Заявка';
+  ac=`<button class="btn-accept" onclick="acceptFriend('${fr.id}')"><i class="fas fa-check"></i> Принять</button><button class="btn-decline" onclick="declineFriend('${fr.id}')"><i class="fas fa-times"></i> Отклонить</button>`;
+}
+else if(isFriend){
+  cls='friend';txt='Друг';
+  if(inP){
+    ac=`<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i> Из пати</button><button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-user-times"></i> Удалить</button>`;
+  }else{
+    ac=`<button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button><button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-user-times"></i> Удалить</button>`;
+  }
+}
+else{
+  ac=`<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>`;
+}
+
 return `<div class="friend-item"><div class="avatar">${fr.username.charAt(0).toUpperCase()}</div><div class="info"><div class="name">${fr.username} ${fr.isadmin?'👑':''}</div><div class="status">ELO: ${fr.elo||1000}</div></div><span class="status-badge ${cls}">${txt}</span><div class="friend-actions">${ac}</div></div>`;
 }).join('');
 }
 
-function switchFriendsTab(t){friendsTab=t;document.querySelectorAll('.friends-tabs .tab').forEach(x=>x.classList.remove('active'));document.querySelector(`.friends-tabs .tab[data-tab="${t}"]`)?.classList.add('active');renderFriends()}
+function switchFriendsTab(t){
+friendsTab=t;
+document.querySelectorAll('.friends-tabs .tab').forEach(x=>x.classList.remove('active'));
+document.querySelector(`.friends-tabs .tab[data-tab="${t}"]`)?.classList.add('active');
+renderFriends();
+}
 
 function searchFriends(){
-const q=document.getElementById('friendSearchInput').value.toLowerCase();
-if(!q)return renderFriends();
+const q=document.getElementById('friendSearchInput').value.trim().toLowerCase();
 const c=document.getElementById('friendsListContainer');
+if(!q){
+  if(friendsTab==='friends'){c.innerHTML='';renderFriends();return}
+  renderFriends();return;
+}
 const f=friendsList.filter(x=>x.username.toLowerCase().includes(q));
 if(f.length===0){c.innerHTML='<div class="friends-empty"><i class="fas fa-search"></i><p>Никто не найден</p></div>';return}
 c.innerHTML=f.map(fr=>{
 const isFriend=myFriends.some(m=>m.id===fr.id);
+const isSent=sentRequests.some(r=>r.id===fr.id);
+const isReq=friendRequests.some(r=>r.id===fr.id);
 const inP=partyFriends.some(p=>p.id===fr.id);
 let cls='none',txt='Не в друзьях',ac='';
-if(isFriend){cls='friend';txt='Друг';if(inP)ac=`<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i></button>`;else ac=`<button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button>`}
-else ac=`<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`;
+
+if(isReq&&!isFriend){
+  cls='request';txt='Заявка';
+  ac=`<button class="btn-accept" onclick="acceptFriend('${fr.id}')"><i class="fas fa-check"></i> Принять</button>`;
+}
+else if(isFriend){
+  cls='friend';txt='Друг';
+  ac=inP?`<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i> Из пати</button>`:`<button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button>`;
+}
+else if(isSent){
+  cls='sent';txt='Заявка отправлена';
+  ac=`<button class="btn-remove" onclick="cancelFriendRequest('${fr.id}')"><i class="fas fa-times"></i> Отменить</button>`;
+}
+else{
+  ac=`<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`;
+}
+
 return `<div class="friend-item"><div class="avatar">${fr.username.charAt(0).toUpperCase()}</div><div class="info"><div class="name">${fr.username}</div><div class="status">ELO: ${fr.elo||1000}</div></div><span class="status-badge ${cls}">${txt}</span><div class="friend-actions">${ac}</div></div>`;
 }).join('');
 }
 
 async function sendFriendRequest(uid){
-const{data:ex}=await supabaseClient.from('friend_requests').select('*').eq('from_user_id',currentUser.id).eq('to_user_id',uid).maybeSingle();
-if(ex){if(ex.status==='pending')return showToast('info','Уже отправлено','');if(ex.status==='accepted')return showToast('info','Уже друг','')}
-const{error}=await supabaseClient.from('friend_requests').insert({from_user_id:currentUser.id,to_user_id:uid,status:'pending'});
-if(error)return showToast('error','Ошибка',error.message);
-showToast('success','Заявка отправлена','');
-await loadFriends();
+  if(!currentUser||uid===currentUser.id)return;
+  try{
+    // Проверка: уже друзья?
+    if(myFriends.some(f=>f.id===uid))return showToast('info','Уже друг','');
+    // Проверка: уже отправлял?
+    const{data:exOut}=await supabaseClient.from('friend_requests')
+      .select('*').eq('from_user_id',currentUser.id).eq('to_user_id',uid).maybeSingle();
+    if(exOut){
+      if(exOut.status==='pending')return showToast('info','Заявка уже отправлена','Ждём ответа');
+      if(exOut.status==='accepted'){
+        await supabaseClient.from('friend_requests').update({status:'pending'}).eq('from_user_id',currentUser.id).eq('to_user_id',uid);
+        showToast('success','Заявка отправлена','');
+        await loadFriends();
+        return;
+      }
+      if(exOut.status==='declined'){
+        await supabaseClient.from('friend_requests').update({status:'pending'}).eq('from_user_id',currentUser.id).eq('to_user_id',uid);
+        showToast('success','Заявка отправлена','');
+        await loadFriends();
+        return;
+      }
+    }
+    // Проверка: мне уже прислали?
+    const{data:exIn}=await supabaseClient.from('friend_requests')
+      .select('*').eq('from_user_id',uid).eq('to_user_id',currentUser.id).maybeSingle();
+    if(exIn && exIn.status==='pending'){
+      // Автоматически принимаем
+      return await acceptFriend(uid);
+    }
+    // Создаём заявку
+    const{error}=await supabaseClient.from('friend_requests').insert({from_user_id:currentUser.id,to_user_id:uid,status:'pending'});
+    if(error)return showToast('error','Ошибка',error.message);
+    showToast('success','Заявка отправлена','Ждём подтверждения');
+    await loadFriends();
+  }catch(e){showToast('error','Ошибка',e.message)}
+}
+
+async function cancelFriendRequest(uid){
+  if(!confirm('Отменить заявку?'))return;
+  await supabaseClient.from('friend_requests').delete().eq('from_user_id',currentUser.id).eq('to_user_id',uid);
+  showToast('info','Заявка отменена','');
+  await loadFriends();
 }
 
 async function acceptFriend(uid){
-await supabaseClient.from('friend_requests').update({status:'accepted'}).eq('from_user_id',uid).eq('to_user_id',currentUser.id);
-await supabaseClient.from('friends').insert([{user_id:currentUser.id,friend_id:uid},{user_id:uid,friend_id:currentUser.id}]);
-showToast('success','Друг добавлен','');
-await loadFriends();
+  try{
+    // Меняем статус заявки
+    await supabaseClient.from('friend_requests').update({status:'accepted'}).eq('from_user_id',uid).eq('to_user_id',currentUser.id);
+    // Проверяем, не друзья ли уже
+    const{data:ex}=await supabaseClient.from('friends').select('user_id').eq('user_id',currentUser.id).eq('friend_id',uid).maybeSingle();
+    if(!ex){
+      await supabaseClient.from('friends').insert([{user_id:currentUser.id,friend_id:uid},{user_id:uid,friend_id:currentUser.id}]);
+    }
+    showToast('success','Друг добавлен','');
+    await loadFriends();
+  }catch(e){showToast('error','Ошибка',e.message)}
 }
 
-async function declineFriend(uid){await supabaseClient.from('friend_requests').update({status:'declined'}).eq('from_user_id',uid).eq('to_user_id',currentUser.id);await loadFriends()}
-async function removeFriend(id){if(!confirm('Удалить?'))return;await supabaseClient.from('friends').delete().eq('user_id',currentUser.id).eq('friend_id',id);await supabaseClient.from('friends').delete().eq('user_id',id).eq('friend_id',currentUser.id);showToast('info','Удалён','');await loadFriends()}
+async function declineFriend(uid){
+  await supabaseClient.from('friend_requests').update({status:'declined'}).eq('from_user_id',uid).eq('to_user_id',currentUser.id);
+  showToast('info','Заявка отклонена','');
+  await loadFriends();
+}
+
+async function removeFriend(id){
+  if(!confirm('Удалить из друзей?'))return;
+  await supabaseClient.from('friends').delete().eq('user_id',currentUser.id).eq('friend_id',id);
+  await supabaseClient.from('friends').delete().eq('user_id',id).eq('friend_id',currentUser.id);
+  showToast('info','Удалён из друзей','');
+  await loadFriends();
+}
 
 function inviteToParty(id){
 const fr=myFriends.find(f=>f.id===id);
@@ -1461,6 +1645,21 @@ showToast('success','В пати',fr.username);
 }
 
 function removeFromParty(id){partyFriends=partyFriends.filter(f=>f.id!==id);updatePartyUI();renderFriends()}
+
+function subscribeToFriends(){
+  if(!currentUser)return;
+  if(friendsChannel){supabaseClient.removeChannel(friendsChannel);friendsChannel=null}
+  friendsChannel=supabaseClient.channel('friends_'+currentUser.id+'_'+Date.now())
+    .on('postgres_changes',{event:'*',schema:'public',table:'friend_requests'},async()=>{
+      await loadFriends();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'friends'},async()=>{
+      await loadFriends();
+    })
+    .subscribe();
+}
+
+/* ===================== ТОП ===================== */
 
 async function renderTopPage(){
 try{
@@ -1521,15 +1720,16 @@ try{
 if(isSearching){await supabaseClient.rpc('queue_heartbeat_v2',{p_user_id:currentUser.id});}
 await updateQueueCount();
 await checkActiveMatchOnLoad();
-if(isSearching&&!searchChannel)subscribeToQueue();
-if(isSearching&&!matchCreatedChannel)subscribeToMatchCreation();
+await loadFriends();
+if(isSearch);
+
+document.addEventListenering&&!searchChannel)subscribe('ToQueue();
+if(isSearching&&!DOMmatchCreatedChannel)subscribeToMatchCreation();
 }catch(e){}
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')resync()});
 window.addEventListener('pageshow',resync);
-window.addEventListener('online',resync);
-
-document.addEventListener('DOMContentLoaded',async function(){
+window.addEventListener('online',resyncContentLoaded',async function(){
 document.getElementById('tabLogin').addEventListener('click',()=>switchAuthTab('login'));
 document.getElementById('tabRegister').addEventListener('click',()=>switchAuthTab('register'));
 document.getElementById('switchToRegister').addEventListener('click',e=>{e.preventDefault();switchAuthTab('register')});
@@ -1551,6 +1751,7 @@ if(e.target.id==='editProfileModal')closeEditProfile();
 document.addEventListener('keydown',e=>{
 if(e.key==='Escape'&&document.getElementById('editProfileModal').classList.contains('active'))closeEditProfile();
 });
+document.getElementById('friendSearchInput')?.addEventListener('input',()=>searchFriends());
 
 cleanupInterval=setInterval(async()=>{
 try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}

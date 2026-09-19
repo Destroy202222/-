@@ -20,8 +20,6 @@
   --grid-size:48px;
   --grid-line:rgba(255,138,31,.09);
 }
-
-/* ===== ФОН: ровная оранжевая сетка, без шахмат ===== */
 html{scroll-behavior:smooth}
 body{
   background-color:var(--bg);
@@ -31,7 +29,6 @@ body{
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
     linear-gradient(0deg, var(--grid-line) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, var(--grid-size) var(--grid-size), var(--grid-size) var(--grid-size);
-  background-position: 0 0, 0 0, 0 0, 0 0;
   background-repeat: no-repeat, no-repeat, repeat, repeat;
   color:#fff;
   font-family:'Inter',system-ui,sans-serif;
@@ -40,37 +37,22 @@ body{
   line-height:1.5;
   position:relative;
 }
-
-/* Мягкое свечение через fixed-слой, не ломает scroll */
 body::before{
-  content:'';
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
     radial-gradient(circle at 10% 5%, rgba(255,138,31,.10), transparent 50%),
     radial-gradient(circle at 90% 95%, rgba(255,107,0,.10), transparent 50%);
 }
 body::after{
-  content:'';
-  position:fixed;
-  width:520px;height:520px;
-  border-radius:50%;
-  filter:blur(140px);
-  opacity:.22;
-  z-index:0;
-  pointer-events:none;
+  content:'';position:fixed;width:520px;height:520px;border-radius:50%;
+  filter:blur(140px);opacity:.22;z-index:0;pointer-events:none;
   background:radial-gradient(circle,#ff8a1f,transparent 70%);
-  top:-160px;left:-160px;
-  animation:blob1 22s ease-in-out infinite;
+  top:-160px;left:-160px;animation:blob1 22s ease-in-out infinite;
 }
 @keyframes blob1{
   0%,100%{transform:translate(0,0) scale(1)}
   50%{transform:translate(140px,90px) scale(1.15)}
 }
-
-/* Все контейнеры поверх фона */
 .toast,.modal-overlay,.auth-page,.main-wrapper,.bottom-nav{position:relative;z-index:1}
 .modal-overlay{z-index:9998}
 .toast{z-index:9999}
@@ -157,8 +139,6 @@ body::after{
 .auth-footer a{color:var(--accent);cursor:pointer;text-decoration:none;font-weight:600}
 
 .main-wrapper{display:none;max-width:480px;margin:0 auto;padding:0 16px}
-
-/* ===== HEADER: название как в навигации снизу ===== */
 .header{padding:20px 0 16px;text-align:center;border-bottom:1px solid rgba(255,138,31,.1);margin-bottom:8px}
 .header .logo{cursor:pointer}
 .header .logo h1{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.3px}
@@ -261,7 +241,6 @@ body::after{
 .lobby-link-display.visible{display:block}
 .lobby-link-display .link-label{font-size:12px;color:#8888aa;margin-bottom:4px}
 .lobby-link-display .link-value{font-size:13px;color:#4dabf7;text-decoration:underline;cursor:pointer}
-.lobby-link-display .link-status{font-size:12px;color:#51cf66;margin-top:4px}
 .screenshot-section{display:none;background:rgba(20,20,31,.8);backdrop-filter:blur(10px);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:16px;margin-bottom:16px}
 .screenshot-section.visible{display:block}
 .screenshot-title{font-size:14px;font-weight:700;margin-bottom:12px}
@@ -286,7 +265,6 @@ body::after{
 .profile-card{background:rgba(20,20,31,.8);backdrop-filter:blur(10px);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px}
 .profile-header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
 .profile-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#0b0b0f;flex-shrink:0;overflow:hidden;box-shadow:0 0 0 3px rgba(255,138,31,.2), 0 0 24px rgba(255,138,31,.35)}
-.profile-avatar img{width:100%;height:100%;object-fit:cover}
 .profile-info .username{font-size:20px;font-weight:800}
 .profile-info .details{font-size:12px;color:#8888aa;margin-top:4px}
 .profile-info .details span{margin-right:12px}
@@ -408,6 +386,10 @@ body::after{
 .bottom-nav .item{display:flex;flex-direction:column;align-items:center;background:transparent;border:none;color:#555;font-family:inherit;font-size:10px;cursor:pointer;padding:4px 8px;gap:2px;transition:color .2s}
 .bottom-nav .item i{font-size:20px}
 .bottom-nav .item.active{color:var(--accent)}
+
+.found-overlay{position:fixed;inset:0;z-index:9997;background:rgba(11,11,15,.94);display:grid;place-items:center;text-align:center;animation:fin .25s}
+.found-overlay h1{font-size:clamp(40px,12vw,84px);color:var(--accent);font-weight:900;letter-spacing:.02em}
+@keyframes fin{from{opacity:0}}
 </style>
 </head>
 <body>
@@ -628,19 +610,21 @@ body::after{
 </div>
 
 <script>
-const SUPABASE_URL='https://tgjltbpmuczfkikvmmde.supabase.co';
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
+const SUPABASE_URL='https://zwrczkwtzzfywgqprmrt.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3cmN6a3d0enpmeXdncXBybXJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3NjA0MzcsImV4cCI6MjEwNTMzNjQzN30.2OdASwhJVUUoG_uvKc03DKFmZtOm5GPFgBjQAkVlJ5Y';
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[];
 let isSearching=false,isStartingSearch=false,isCanceling=false,searchTimerInterval=null,searchSeconds=0;
 let currentScreenshot=null,isPlayerInMatch=false,friendsTab='friends',waitingConfirm=false;
 let confirmedPlayers=[],matchPlayers=[],confirmTimer=null,confirmTimeLeft=25,lobbyLink=null,isCaptain=false;
-let searchChannel=null,matchChannel=null,currentMatchId=null,queueUpdateInterval=null,heartbeatInterval=null;
+let searchChannel=null,matchChannel=null,matchCreatedChannel=null,currentMatchId=null;
+let queueUpdateInterval=null,heartbeatInterval=null,cleanupInterval=null;
 let isConfirming=false,heartbeatFailCount=0,searchCountdownTimer=null;
 let adminTab='matches',adminMatches=[],adminPlayers=[],adminQueue=[],adminPromos=[],adminAdmins=[];
 let adminSearchQuery='',currentSettings={team_size:'3'};
 let draftState={gameNumber:1,modeOptions:['Gem Grab','Brawl Ball','Knockout','Heist','Bounty','Hot Zone','Siege'],modeBanned:[],modeFinal:null,currentCaptain:0,isComplete:false};
+let _foundShown=0;
 
 function generateCode(){const l='ABCDEFGHIJKLMNOPQRSTUVWXYZ';let c='';for(let i=0;i<6;i++)c+=l[Math.floor(Math.random()*l.length)];return c}
 function showToast(type,title,text){const t=document.getElementById('toast');document.getElementById('toastTitle').className='ttl '+type;document.getElementById('toastTitle').textContent=title;document.getElementById('toastText').textContent=text;t.classList.add('visible');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('visible'),4000)}
@@ -662,9 +646,9 @@ if(password!==confirm){messageEl.className='auth-message show error';messageEl.t
 if(password.length<8){messageEl.className='auth-message show error';messageEl.textContent='❌ Пароль минимум 8';return}
 messageEl.className='auth-message show info';messageEl.textContent='⏳ Проверка...';
 try{
-const{data:existing}=await supabaseClient.from('users').select('username').eq('username',username).maybeSingle();
+const{data:existing}=await supabaseClient.from('users').select('id').eq('username_lower',username.toLowerCase()).maybeSingle();
 if(existing){messageEl.className='auth-message show error';messageEl.textContent='❌ Никнейм занят';return}
-const newUser={id:'user_'+Date.now().toString(),username,password,partycode:generateCode()};
+const newUser={id:'user_'+Date.now().toString(),username,username_lower:username.toLowerCase(),password,partycode:generateCode()};
 const{data,error}=await supabaseClient.from('users').insert([newUser]).select().single();
 if(error){messageEl.className='auth-message show error';messageEl.textContent='❌ '+error.message;return}
 currentUser=data;saveSession(data);
@@ -680,7 +664,7 @@ const messageEl=document.getElementById('loginMessage');
 if(!username||!password){messageEl.className='auth-message show error';messageEl.textContent='❌ Заполните поля';return}
 messageEl.className='auth-message show info';messageEl.textContent='⏳ Поиск...';
 try{
-const{data}=await supabaseClient.from('users').select('*').eq('username',username).eq('password',password).maybeSingle();
+const{data}=await supabaseClient.from('users').select('*').eq('username_lower',username.toLowerCase()).eq('password',password).maybeSingle();
 if(!data){messageEl.className='auth-message show error';messageEl.textContent='❌ Неверный ник или пароль';return}
 currentUser=data;saveSession(data);
 messageEl.className='auth-message show success';messageEl.textContent='✅ Добро пожаловать!';
@@ -722,10 +706,11 @@ document.getElementById('mainSite').style.display='none';
 
 function handleLogout(){
 if(!confirm('Выйти?'))return;
-if(currentUser&&isSearching)supabaseClient.from('queue').delete().eq('user_id',currentUser.id);
+if(currentUser&&isSearching)supabaseClient.rpc('leave_queue_v2',{p_user_id:currentUser.id});
 clearSession();currentUser=null;currentMatch=null;isPlayerInMatch=false;
 cleanupSearchState();
 if(matchChannel){supabaseClient.removeChannel(matchChannel);matchChannel=null}
+if(matchCreatedChannel){supabaseClient.removeChannel(matchCreatedChannel);matchCreatedChannel=null}
 checkAuth();showToast('info','Выход','');
 }
 
@@ -778,9 +763,9 @@ if(newName.length<3||newName.length>16){msg.className='auth-message show error';
 if(!/^[A-Za-z0-9_]+$/.test(newName)){msg.className='auth-message show error';msg.textContent='❌ Только A-Z, 0-9, _';return}
 btn.disabled=true;btn.textContent='Сохранение...';
 try{
-const{data:exist}=await supabaseClient.from('users').select('id').eq('username',newName).maybeSingle();
+const{data:exist}=await supabaseClient.from('users').select('id').eq('username_lower',newName.toLowerCase()).maybeSingle();
 if(exist&&exist.id!==currentUser.id){msg.className='auth-message show error';msg.textContent='❌ Ник занят';btn.disabled=false;btn.textContent='Сохранить';return}
-const{error}=await supabaseClient.from('users').update({username:newName}).eq('id',currentUser.id);
+const{error}=await supabaseClient.from('users').update({username:newName,username_lower:newName.toLowerCase()}).eq('id',currentUser.id);
 if(error){msg.className='auth-message show error';msg.textContent='❌ '+error.message;btn.disabled=false;btn.textContent='Сохранить';return}
 currentUser.username=newName;saveSession(currentUser);
 document.getElementById('pName').textContent=newName;
@@ -826,7 +811,7 @@ bindAdminSearch();
 else if(adminTab==='queue'){
 const{data}=await supabaseClient.from('queue').select('*').eq('status','searching').order('created_at',{ascending:true});
 adminQueue=data||[];
-body.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><div style="font-weight:700">В очереди: ${adminQueue.length}</div><button onclick="admClearQueue()" style="padding:6px 12px;background:#ff6b6b;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:11px;">🧹 Очистить</button></div>${adminQueue.length===0?'<div class="adm-empty">Пусто</div>':adminQueue.map(p=>`<div class="adm-qrow"><div class="av">${p.username.charAt(0).toUpperCase()}</div><div class="nm">${p.username}</div><div class="elo">${p.elo||1000}</div></div>`).join('')}`;
+body.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><div style="font-weight:700">В очереди: ${adminQueue.length}</div><button onclick="admClearQueue()" style="padding:6px 12px;background:#ff6b6b;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:11px;">🧹 Очистить</button></div>${adminQueue.length===0?'<div class="adm-empty">Пусто</div>':adminQueue.map(p=>`<div class="adm-qrow"><div class="av">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="nm">${p.username||'?'}</div><div class="elo">${p.elo||1000}</div></div>`).join('')}`;
 }
 else if(adminTab==='promos'){
 const{data}=await supabaseClient.from('promocodes').select('*').order('created_at',{ascending:false});
@@ -900,30 +885,45 @@ document.getElementById('totalMatchesHome').textContent=hc||0;
 }catch(e){}
 }
 
-async function checkAndCleanDuplicates(){if(!currentUser)return;try{const{data}=await supabaseClient.from('queue').select('id').eq('user_id',currentUser.id).eq('status','searching');if(data&&data.length>1){const ids=data.slice(1).map(q=>q.id);await supabaseClient.from('queue').delete().in('id',ids)}}catch(e){}}
-
-function startHeartbeat(){
-if(heartbeatInterval)clearInterval(heartbeatInterval);
-heartbeatFailCount=0;
-heartbeatInterval=setInterval(async()=>{
-if(!isSearching||!currentUser){clearInterval(heartbeatInterval);heartbeatInterval=null;return}
+async function checkAndCleanDuplicates(){
+if(!currentUser)return;
 try{
-await supabaseClient.from('queue').update({last_seen:new Date().toISOString()}).eq('user_id',currentUser.id).eq('status','searching');
-const{data,error}=await supabaseClient.rpc('check_and_create_match');
-if(error){heartbeatFailCount++;return}
-heartbeatFailCount=0;
-if(data&&data.match_created){clearInterval(heartbeatInterval);heartbeatInterval=null;await loadCreatedMatch(data.match_id)}
-else await updateQueueCount();
-}catch(e){heartbeatFailCount++}
-},20000);
+const{data}=await supabaseClient.from('queue').select('id').eq('user_id',currentUser.id).eq('status','searching');
+if(data&&data.length>1){const ids=data.slice(1).map(q=>q.id);await supabaseClient.from('queue').delete().in('id',ids)}
+}catch(e){}
+}
+
+/* ===== HEARTBEAT / TIMERS (механика Claude + fixes) ===== */
+function startHeartbeat(){
+  if(heartbeatInterval)clearInterval(heartbeatInterval);
+  heartbeatFailCount=0;
+  heartbeatInterval=setInterval(async()=>{
+    if(!currentUser){clearInterval(heartbeatInterval);heartbeatInterval=null;return}
+    try{
+      // 1) если считаем, что в очереди — стучимся в heartbeat + пробуем собрать
+      if(isSearching){
+        const{data,error}=await supabaseClient.rpc('queue_heartbeat_v2',{p_user_id:currentUser.id});
+        if(error){heartbeatFailCount++;return}
+        heartbeatFailCount=0;
+        const mid=data&&data.match_id;
+        if(mid){clearInterval(heartbeatInterval);heartbeatInterval=null;await loadCreatedMatch(mid);return}
+        await updateQueueCount();
+      }
+      // 2) если не в очереди, но и матча нет — проверяем, не собрали ли его без нас
+      if(!currentMatch && !isPlayerInMatch){
+        await checkActiveMatchOnLoad();
+      }
+    }catch(e){heartbeatFailCount++}
+  },20000);
 }
 
 async function loadCreatedMatch(id){
 try{
 const{data}=await supabaseClient.from('active_matches').select('*').eq('id',id).single();
 if(!data)return;
+if(currentMatch&&currentMatch.id===data.id&&isPlayerInMatch)return;
 const orange=JSON.parse(data.orange),blue=JSON.parse(data.blue);
-currentMatch={orange,blue};currentMatchId=id;isPlayerInMatch=true;
+currentMatch={id:data.id,orange,blue};currentMatchId=id;isPlayerInMatch=true;
 isCaptain=blue.length>0&&blue[0].id===currentUser.id;
 isSearching=false;
 if(searchTimerInterval)clearInterval(searchTimerInterval);
@@ -944,8 +944,8 @@ await checkAndCleanDuplicates();
 const{data}=await supabaseClient.from('queue').select('*').eq('user_id',currentUser.id).eq('status','searching').maybeSingle();
 if(data){
 const ls=data.last_seen?new Date(data.last_seen).getTime():0;
-if(Date.now()-ls>60000)await supabaseClient.from('queue').delete().eq('id',data.id);
-else{isSearching=true;searchSeconds=Math.floor((Date.now()-new Date(data.created_at).getTime())/1000);startHeartbeat();subscribeToQueue();startSearchTimer()}
+if(Date.now()-ls>90000)await supabaseClient.from('queue').delete().eq('id',data.id);
+else{isSearching=true;searchSeconds=Math.floor((Date.now()-new Date(data.created_at).getTime())/1000);startHeartbeat();subscribeToQueue();subscribeToMatchCreation();startSearchTimer()}
 }
 updateSearchVisibility();
 await updateQueueCount();
@@ -955,17 +955,20 @@ await updateQueueCount();
 async function checkActiveMatchOnLoad(){
 if(!currentUser)return;
 try{
-const{data}=await supabaseClient.from('active_matches').select('*').in('status',['pending','active']).order('created_at',{ascending:false}).limit(1);
+const{data}=await supabaseClient.from('active_matches').select('*').in('status',['pending','active']).order('created_at',{ascending:false}).limit(5);
 if(!data||data.length===0)return;
-const match=data[0];
-const orange=JSON.parse(match.orange),blue=JSON.parse(match.blue);
+for(const match of data){
+let orange=[],blue=[];
+try{orange=JSON.parse(match.orange);blue=JSON.parse(match.blue)}catch(e){continue}
 const isIn=orange.some(p=>p.id===currentUser.id)||blue.some(p=>p.id===currentUser.id);
-if(isIn){
-currentMatch={orange,blue};isPlayerInMatch=true;currentMatchId=match.id;
+if(!isIn)continue;
+if(currentMatch&&currentMatch.id===match.id&&isPlayerInMatch)return;
+currentMatch={id:match.id,orange,blue};isPlayerInMatch=true;currentMatchId=match.id;
 isCaptain=blue.length>0&&blue[0].id===currentUser.id;
 if(match.draft_state)draftState=JSON.parse(match.draft_state);
 if(match.status==='pending'){matchPlayers=[...orange,...blue];confirmedPlayers=[];showConfirmModal();subscribeToMatch(match.id)}
 else if(match.status==='active'){navigate('matchPage');renderMatchPage()}
+return;
 }
 }catch(e){}
 }
@@ -976,6 +979,7 @@ if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=n
 if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null}
 if(searchCountdownTimer){clearInterval(searchCountdownTimer);searchCountdownTimer=null}
 if(searchChannel){try{await supabaseClient.removeChannel(searchChannel)}catch(e){}searchChannel=null}
+if(matchCreatedChannel){try{await supabaseClient.removeChannel(matchCreatedChannel)}catch(e){}matchCreatedChannel=null}
 isSearching=false;isStartingSearch=false;isCanceling=false;
 }
 
@@ -1017,8 +1021,10 @@ await cleanupSearchState();
 isStartingSearch=true;
 const{data:dq}=await supabaseClient.from('queue').select('id').eq('user_id',currentUser.id).eq('status','searching');
 if(dq&&dq.length>0)await supabaseClient.from('queue').delete().in('id',dq.map(q=>q.id));
-const{error:qe}=await supabaseClient.from('queue').insert({user_id:currentUser.id,username:currentUser.username,elo:currentUser.elo||1000,status:'searching',party_members:partyFriends.map(f=>f.username).join(','),last_seen:new Date().toISOString(),created_at:new Date().toISOString()});
+
+const{data,error:qe}=await supabaseClient.rpc('join_queue_v2',{p_user_id:currentUser.id});
 if(qe){showToast('error','Ошибка',qe.message);isStartingSearch=false;updateSearchVisibility();return}
+
 isSearching=true;searchSeconds=0;
 updateSearchVisibility();
 await updateQueueCount();
@@ -1026,9 +1032,13 @@ await updateHomeStats();
 startSearchTimer();
 startHeartbeat();
 subscribeToQueue();
+subscribeToMatchCreation();
 if(queueUpdateInterval)clearInterval(queueUpdateInterval);
 queueUpdateInterval=setInterval(()=>{if(isSearching)updateQueueCount();else{clearInterval(queueUpdateInterval);queueUpdateInterval=null}},3000);
-showToast('info','Поиск начат','Ищем игроков...');
+
+const mid=data&&data.match_id;
+if(mid){await loadCreatedMatch(mid);}
+else{showToast('info','Поиск начат','Ищем игроков...');}
 }catch(e){showToast('error','Ошибка',e.message)}
 finally{isStartingSearch=false}
 }
@@ -1043,7 +1053,7 @@ document.getElementById('searchStatus').textContent='Поиск';
 }catch(e){}
 }
 
-/* ===== Отмена поиска с задержкой 1 сек ===== */
+/* Отмена поиска — с задержкой 1 секунда */
 async function cancelSearch(){
 if(isCanceling||!isSearching)return;
 isCanceling=true;
@@ -1053,7 +1063,7 @@ cb.innerHTML=`<i class="fas fa-hourglass-half"></i> Отмена...`;
 await new Promise(r=>setTimeout(r,1000));
 if(!isCanceling)return;
 try{
-await supabaseClient.from('queue').delete().eq('user_id',currentUser.id).eq('status','searching');
+await supabaseClient.rpc('leave_queue_v2',{p_user_id:currentUser.id});
 isSearching=false;
 await cleanupSearchState();
 updateSearchVisibility();
@@ -1078,7 +1088,31 @@ document.getElementById('searchTimerDisplay').innerHTML='<i class="fas fa-clock"
 
 function subscribeToQueue(){
 if(searchChannel){supabaseClient.removeChannel(searchChannel);searchChannel=null}
-searchChannel=supabaseClient.channel('queue_'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'queue'},async()=>{if(isSearching){await updateQueueCount();await updateHomeStats()}}).subscribe();
+searchChannel=supabaseClient.channel('queue_'+Date.now())
+.on('postgres_changes',{event:'*',schema:'public',table:'queue'},async()=>{
+if(isSearching){await updateQueueCount();await updateHomeStats()}
+}).subscribe();
+}
+
+/* Realtime: матч создан → мгновенно узнаём */
+function subscribeToMatchCreation(){
+if(matchCreatedChannel){supabaseClient.removeChannel(matchCreatedChannel);matchCreatedChannel=null}
+matchCreatedChannel=supabaseClient.channel('match_created_'+Date.now())
+.on('postgres_changes',{event:'INSERT',schema:'public',table:'active_matches'},async(payload)=>{
+const m=payload.new;
+if(!m||!currentUser)return;
+if(currentMatch&&currentMatch.id===m.id&&isPlayerInMatch)return;
+let orange=[],blue=[];
+try{orange=JSON.parse(m.orange);blue=JSON.parse(m.blue)}catch(e){return}
+const isMe=[...orange,...blue].some(p=>p.id===currentUser.id);
+if(!isMe)return;
+isSearching=false;
+if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null}
+if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null}
+if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null}
+updateSearchVisibility();
+await loadCreatedMatch(m.id);
+}).subscribe();
 }
 
 function showConfirmModal(){
@@ -1101,6 +1135,7 @@ if(confirmTimeLeft<=0){clearInterval(confirmTimer);handleConfirmTimeout()}
 },1000);
 document.getElementById('matchNavLabel').textContent='Матч';
 document.querySelector('#matchNavBtn i').className='fas fa-gamepad';
+matchFound();
 }
 
 function renderModalPlayers(){
@@ -1161,11 +1196,14 @@ checkMatchResultVisibility();checkLobbyVisibility();updateHomeStats();
 
 function subscribeToMatch(id){
 if(matchChannel){supabaseClient.removeChannel(matchChannel);matchChannel=null}
-matchChannel=supabaseClient.channel('match_'+id).on('postgres_changes',{event:'*',schema:'public',table:'active_matches',filter:`id=eq.${id}`},async(payload)=>{
+matchChannel=supabaseClient.channel('match_'+id)
+.on('postgres_changes',{event:'*',schema:'public',table:'active_matches',filter:`id=eq.${id}`},async(payload)=>{
 if(payload.eventType==='DELETE'){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;currentMatch=null;isPlayerInMatch=false;navigate('matches');return}
 if(payload.eventType==='UPDATE'){const nd=payload.new;
-if(nd.status==='active'){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;currentMatch={orange:JSON.parse(nd.orange),blue:JSON.parse(nd.blue)};if(nd.draft_state)draftState=JSON.parse(nd.draft_state);startMatchAfterConfirm()}
-}}).subscribe();
+if(nd.status==='active'&&!currentMatch){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;currentMatch={id:nd.id,orange:JSON.parse(nd.orange),blue:JSON.parse(nd.blue)};currentMatchId=nd.id;isPlayerInMatch=true;if(nd.draft_state)draftState=JSON.parse(nd.draft_state);startMatchAfterConfirm()}
+if(nd.status==='active'&&currentMatch&&currentMatch.id===nd.id){currentMatch.orange=JSON.parse(nd.orange);currentMatch.blue=JSON.parse(nd.blue)}
+}
+}).subscribe();
 }
 
 function checkLobbyVisibility(){
@@ -1412,7 +1450,7 @@ await loadFriends();
 }
 
 async function declineFriend(uid){await supabaseClient.from('friend_requests').update({status:'declined'}).eq('from_user_id',uid).eq('to_user_id',currentUser.id);await loadFriends()}
-async function removeFriend(id){if(!confirm('Удалить?'))return;await supabaseClient.from('friends').delete().or(`user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`).or(`user_id.eq.${id},friend_id.eq.${id}`);showToast('info','Удалён','');await loadFriends()}
+async function removeFriend(id){if(!confirm('Удалить?'))return;await supabaseClient.from('friends').delete().eq('user_id',currentUser.id).eq('friend_id',id);await supabaseClient.from('friends').delete().eq('user_id',id).eq('friend_id',currentUser.id);showToast('info','Удалён','');await loadFriends()}
 
 function inviteToParty(id){
 const fr=myFriends.find(f=>f.id===id);
@@ -1467,6 +1505,34 @@ if(partyFriends.length===0){c.innerHTML='<span class="party-empty">Нет уча
 c.innerHTML=partyFriends.map(f=>`<span class="party-member"><span class="avatar-small">${f.username.charAt(0).toUpperCase()}</span>${f.username}<span class="remove" onclick="removeFromParty('${f.id}')">&times;</span></span>`).join('');
 }
 
+/* ===== MATCH FOUND OVERLAY ===== */
+function matchFound(){
+const now=Date.now();
+if(now-_foundShown<3000)return;
+_foundShown=now;
+const d=document.createElement('div');
+d.className='found-overlay';
+d.innerHTML='<div><h1>МАТЧ НАЙДЕН</h1><p style="color:#8888aa;margin-top:8px">Подтвердите участие</p></div>';
+document.body.appendChild(d);
+try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}
+setTimeout(()=>d.remove(),1500);
+}
+
+/* ===== RESYNC (Claude) ===== */
+async function resync(){
+if(!currentUser)return;
+try{
+if(isSearching){await supabaseClient.rpc('queue_heartbeat_v2',{p_user_id:currentUser.id});}
+await updateQueueCount();
+await checkActiveMatchOnLoad();
+if(isSearching&&!searchChannel)subscribeToQueue();
+if(isSearching&&!matchCreatedChannel)subscribeToMatchCreation();
+}catch(e){}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')resync()});
+window.addEventListener('pageshow',resync);
+window.addEventListener('online',resync);
+
 document.addEventListener('DOMContentLoaded',async function(){
 document.getElementById('tabLogin').addEventListener('click',()=>switchAuthTab('login'));
 document.getElementById('tabRegister').addEventListener('click',()=>switchAuthTab('register'));
@@ -1489,10 +1555,16 @@ if(e.target.id==='editProfileModal')closeEditProfile();
 document.addEventListener('keydown',e=>{
 if(e.key==='Escape'&&document.getElementById('editProfileModal').classList.contains('active'))closeEditProfile();
 });
+
+// cleanup_stale_queue раз в минуту
+cleanupInterval=setInterval(async()=>{
+try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}
+},60000);
+
 const session=getSession();
 if(session){
 try{
-const{data}=await supabaseClient.from('users').select('*').eq('id',session.id).eq('username',session.username).maybeSingle();
+const{data}=await supabaseClient.from('users').select('*').eq('id',session.id).maybeSingle();
 if(data)currentUser=data;
 }catch(e){}
 }

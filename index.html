@@ -575,7 +575,7 @@ let isSearching=false,isStartingSearch=false,isCanceling=false,searchTimerInterv
 let currentScreenshot=null,isPlayerInMatch=false,friendsTab='friends',waitingConfirm=false;
 let confirmedPlayers=[],matchPlayers=[],confirmTimer=null,confirmTimeLeft=25,lobbyLink=null,isCaptain=false;
 let searchChannel=null,matchChannel=null,matchCreatedChannel=null,currentMatchId=null;
-let friendsChannel=null,matchPollInterval=null;
+let friendsChannel=null,matchPollInterval=null,globalPollInterval=null;
 let queueUpdateInterval=null,heartbeatInterval=null,cleanupInterval=null;
 let isConfirming=false,heartbeatFailCount=0,searchCountdownTimer=null;
 let adminTab='matches',adminMatches=[],adminPlayers=[],adminQueue=[],adminPromos=[],adminAdmins=[];
@@ -643,7 +643,7 @@ document.getElementById('pMvp').textContent=currentUser.mvp||0;
 document.getElementById('pElo').textContent=currentUser.elo||1000;
 document.getElementById('walletBalance').textContent=(currentUser.balance||0)+' ₽';
 const isAdmin=currentUser.isadmin===true;
-if(isAdmin){document.getElementById('adminBadge').classList.add('visible');document.getElementById('adminPanelWrap').classList.add('visible');await loadSettings();await renderAdminPanel();if(!matchCreatedChannel)subscribeToMatchCreation()}
+if(isAdmin){document.getElementById('adminBadge').classList.add('visible');document.getElementById('adminPanelWrap').classList.add('visible');await loadSettings();await renderAdminPanel()}
 else{document.getElementById('adminBadge').classList.remove('visible');document.getElementById('adminPanelWrap').classList.remove('visible')}
 await checkQueueOnLoad();
 await checkActiveMatchOnLoad();
@@ -652,6 +652,7 @@ await renderChart();
 await renderTopPage();
 await loadFriends();
 subscribeToFriends();
+startGlobalPolling();
 await updateHomeStats();
 updatePartyUI();
 navigate('home');
@@ -670,6 +671,7 @@ cleanupSearchState();
 if(matchChannel){supabaseClient.removeChannel(matchChannel);matchChannel=null}
 if(matchCreatedChannel){supabaseClient.removeChannel(matchCreatedChannel);matchCreatedChannel=null}
 if(friendsChannel){supabaseClient.removeChannel(friendsChannel);friendsChannel=null}
+if(globalPollInterval){clearInterval(globalPollInterval);globalPollInterval=null}
 checkAuth();showToast('info','Выход','');
 }
 
@@ -822,7 +824,7 @@ document.getElementById('totalMatchesHome').textContent=hc||0;
 
 async function checkAndCleanDuplicates(){if(!currentUser)return;try{const{data}=await supabaseClient.from('queue').select('id').eq('user_id',currentUser.id).eq('status','searching');if(data&&data.length>1){const ids=data.slice(1).map(q=>q.id);await supabaseClient.from('queue').delete().in('id',ids)}}catch(e){}}
 
-/* ===================== ГЛАВНЫЙ FIX: проверка "уже в матче" ===================== */
+/* ===================== ПОИСК МАТЧА ===================== */
 
 async function findMyActiveMatch(){
   if(!currentUser)return null;
@@ -837,7 +839,7 @@ async function findMyActiveMatch(){
       try{
         const orange=JSON.parse(m.orange);
         const blue=JSON.parse(m.blue);
-        const isIn=[...orange,...blue].some(p=>p.id===currentUser.id);
+        const isIn=[...orange,...blue].some(p=>String(p.id)===String(currentUser.id));
         if(isIn)return m;
       }catch(e){}
     }
@@ -845,68 +847,51 @@ async function findMyActiveMatch(){
   }catch(e){return null}
 }
 
-/* ===================== Heartbeat + polling ===================== */
-
-function startHeartbeat(){
-  if(heartbeatInterval)clearInterval(heartbeatInterval);
-  heartbeatFailCount=0;
-  heartbeatInterval=setInterval(async()=>{
-    if(!currentUser){clearInterval(heartbeatInterval);heartbeatInterval=null;return}
-    try{
-      if(isSearching){
-        const{data,error}=await supabaseClient.rpc('queue_heartbeat_v2',{p_user_id:currentUser.id});
-        if(!error){
-          heartbeatFailCount=0;
-          const mid=data&&data.match_id;
-          if(mid){clearInterval(heartbeatInterval);heartbeatInterval=null;await loadCreatedMatch(mid);return}
-        }
-        // Fallback: проверяем "не создан ли матч с моим участием"
-        const my=await findMyActiveMatch();
-        if(my){
-          isSearching=false;
-          await loadCreatedMatch(my.id);
-          return;
-        }
-        await updateQueueCount();
-      } else if(!currentMatch && !isPlayerInMatch){
-        // Проверяем "не поставили ли меня в матч, пока я не искал"
-        const my=await findMyActiveMatch();
-        if(my){await loadCreatedMatch(my.id)}
-      }
-    }catch(e){heartbeatFailCount++}
-  },20000);
-}
-
-/* Отдельный частый polling — раз в 3 секунды, пока идёт поиск */
-function startMatchPolling(){
-  if(matchPollInterval)clearInterval(matchPollInterval);
-  matchPollInterval=setInterval(async()=>{
-    if(!isSearching||!currentUser){return}
-    if(currentMatch||isPlayerInMatch)return;
+/* Глобальный polling: раз в 2 сек проверяет, нет ли для меня матча.
+   Работает всегда, независимо от того, ищу я или нет. */
+function startGlobalPolling(){
+  if(globalPollInterval)clearInterval(globalPollInterval);
+  globalPollInterval=setInterval(async()=>{
+    if(!currentUser)return;
+    // Если уже в матче и ждём подтверждения — не трогаем
+    if(isConfirming)return;
+    // Если уже в активном матче (после подтверждения) — не трогаем
+    if(currentMatch&&isPlayerInMatch&&currentMatch.status!=='pending')return;
     try{
       const my=await findMyActiveMatch();
-      if(my){
-        isSearching=false;
-        if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null}
-        if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null}
-        if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null}
-        if(matchPollInterval){clearInterval(matchPollInterval);matchPollInterval=null}
-        updateSearchVisibility();
+      if(!my)return;
+      // Матч есть, а мы о нём не знаем (или знаем, но он новый)
+      if(currentMatch&&currentMatch.id===my.id){
+        // Если уже открыта модалка — обновим список игроков
+        if(my.status==='pending'&&isConfirming){matchPlayers=[...JSON.parse(my.orange),...JSON.parse(my.blue)];renderModalPlayers()}
+        return;
+      }
+      // Нашли новый матч
+      if(my.status==='pending'){
         await loadCreatedMatch(my.id);
+      }else if(my.status==='active'){
+        await loadCreatedMatch(my.id);
+        // Автоматически переходим на страницу матча
+        document.getElementById('confirmModal').classList.remove('active');
+        waitingConfirm=false;isConfirming=false;
+        startMatchAfterConfirm();
       }
     }catch(e){}
-  },3000);
+  },2000);
 }
 
 async function loadCreatedMatch(id){
   try{
     const{data}=await supabaseClient.from('active_matches').select('*').eq('id',id).single();
     if(!data)return;
-    if(currentMatch&&currentMatch.id===data.id&&isPlayerInMatch)return;
+    if(currentMatch&&currentMatch.id===data.id&&isPlayerInMatch&&isConfirming)return;
     const orange=JSON.parse(data.orange);
     const blue=JSON.parse(data.blue);
-    currentMatch={id:data.id,orange,blue};currentMatchId=id;isPlayerInMatch=true;
-    isCaptain=blue.length>0&&blue[0].id===currentUser.id;
+    currentMatch={id:data.id,orange,blue,status:data.status};currentMatchId=id;isPlayerInMatch=true;
+    isCaptain=blue.length>0&&String(blue[0].id)===String(currentUser.id);
+    if(data.draft_state)draftState=JSON.parse(data.draft_state);
+    if(data.screenshot_url)currentScreenshot=data.screenshot_url;
+    // Стоп поиск
     isSearching=false;
     if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null}
     if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null}
@@ -915,9 +900,17 @@ async function loadCreatedMatch(id){
     updateSearchVisibility();
     if(searchChannel){supabaseClient.removeChannel(searchChannel);searchChannel=null}
     matchPlayers=[...orange,...blue];confirmedPlayers=[];
-    showConfirmModal();
     subscribeToMatch(id);
-    showToast('success','Матч найден!','Подтвердите');
+    if(data.status==='pending'){
+      showConfirmModal();
+      showToast('success','Матч найден!','Подтвердите');
+    }else if(data.status==='active'){
+      // Матч уже активен — сразу на страницу
+      document.getElementById('confirmModal').classList.remove('active');
+      waitingConfirm=false;isConfirming=false;
+      startMatchAfterConfirm();
+      showToast('success','Матч уже начался!','');
+    }
   }catch(e){console.error('loadCreatedMatch',e)}
 }
 
@@ -937,7 +930,6 @@ async function checkQueueOnLoad(){
         subscribeToQueue();
         subscribeToMatchCreation();
         startSearchTimer();
-        startMatchPolling();
       }
     }
     updateSearchVisibility();
@@ -949,22 +941,7 @@ async function checkActiveMatchOnLoad(){
   if(!currentUser)return;
   const my=await findMyActiveMatch();
   if(!my)return;
-  if(currentMatch&&currentMatch.id===my.id&&isPlayerInMatch)return;
-  const orange=JSON.parse(my.orange),blue=JSON.parse(my.blue);
-  currentMatch={id:my.id,orange,blue};isPlayerInMatch=true;currentMatchId=my.id;
-  isCaptain=blue.length>0&&blue[0].id===currentUser.id;
-  if(my.draft_state)draftState=JSON.parse(my.draft_state);
-  if(my.screenshot_url)currentScreenshot=my.screenshot_url;
-  if(my.status==='pending'){
-    matchPlayers=[...orange,...blue];
-    confirmedPlayers=[];
-    showConfirmModal();
-    subscribeToMatch(my.id);
-  }else if(my.status==='active'){
-    navigate('matchPage');
-    renderMatchPage();
-    subscribeToMatch(my.id);
-  }
+  await loadCreatedMatch(my.id);
 }
 
 async function cleanupSearchState(){
@@ -1000,7 +977,6 @@ async function startSearch(){
   if(currentMatch){navigate('matchPage');return showToast('info','Активный матч','')}
   if(!currentUser)return showToast('error','Ошибка','Авторизуйтесь');
 
-  // Уже в матче?
   const existing=await findMyActiveMatch();
   if(existing){
     await loadCreatedMatch(existing.id);
@@ -1026,7 +1002,6 @@ async function startSearch(){
 
     const{data,error:qe}=await supabaseClient.rpc('join_queue_v2',{p_user_id:currentUser.id});
     if(qe){
-      // Если уже в матче — подхватываем его
       if(String(qe.message).includes('already in match')){
         const my=await findMyActiveMatch();
         if(my){await loadCreatedMatch(my.id);return}
@@ -1044,7 +1019,6 @@ async function startSearch(){
     startHeartbeat();
     subscribeToQueue();
     subscribeToMatchCreation();
-    startMatchPolling();
     if(queueUpdateInterval)clearInterval(queueUpdateInterval);
     queueUpdateInterval=setInterval(()=>{if(isSearching)updateQueueCount();else{clearInterval(queueUpdateInterval);queueUpdateInterval=null}},3000);
 
@@ -1110,23 +1084,38 @@ function subscribeToMatchCreation(){
   matchCreatedChannel=supabaseClient.channel('match_created_'+Date.now()+'_'+Math.random())
     .on('postgres_changes',{event:'*',schema:'public',table:'active_matches'},async(payload)=>{
       if(currentUser?.isadmin&&adminTab==='matches'){await renderAdminPanel()}
-      if(payload.eventType!=='INSERT')return;
-      const m=payload.new;
+      const m=payload.new||payload.old;
       if(!m||!currentUser)return;
-      if(currentMatch&&currentMatch.id===m.id&&isPlayerInMatch)return;
+      // Проверяем, моё ли это
       let orange=[],blue=[];
       try{orange=JSON.parse(m.orange);blue=JSON.parse(m.blue)}catch(e){return}
-      const isMe=[...orange,...blue].some(p=>p.id===currentUser.id);
+      const isMe=[...orange,...blue].some(p=>String(p.id)===String(currentUser.id));
       if(!isMe)return;
-      isSearching=false;
-      if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null}
-      if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null}
-      if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null}
-      if(matchPollInterval){clearInterval(matchPollInterval);matchPollInterval=null}
-      updateSearchVisibility();
+      if(currentMatch&&currentMatch.id===m.id&&isPlayerInMatch&&isConfirming)return;
       await loadCreatedMatch(m.id);
     }).subscribe();
 }
+
+function startHeartbeat(){
+  if(heartbeatInterval)clearInterval(heartbeatInterval);
+  heartbeatFailCount=0;
+  heartbeatInterval=setInterval(async()=>{
+    if(!currentUser){clearInterval(heartbeatInterval);heartbeatInterval=null;return}
+    try{
+      if(isSearching){
+        const{data,error}=await supabaseClient.rpc('queue_heartbeat_v2',{p_user_id:currentUser.id});
+        if(!error){
+          heartbeatFailCount=0;
+          const mid=data&&data.match_id;
+          if(mid){clearInterval(heartbeatInterval);heartbeatInterval=null;await loadCreatedMatch(mid);return}
+        }
+        await updateQueueCount();
+      }
+    }catch(e){heartbeatFailCount++}
+  },20000);
+}
+
+/* ===================== МОДАЛКА ПОДТВЕРЖДЕНИЯ ===================== */
 
 function showConfirmModal(){
   if(isConfirming)return;
@@ -1152,10 +1141,11 @@ function showConfirmModal(){
 }
 
 function renderModalPlayers(){
+  if(!matchPlayers.length)return;
   document.getElementById('modalPlayers').innerHTML=matchPlayers.map(p=>{
     const c=confirmedPlayers.includes(p.id);
-    const me=p.id===currentUser.id;
-    return `<div class="modal-player ${c?'confirmed':''}" onclick="${me&&!c?'handleConfirm()':''}"><div class="avatar">${p.username.charAt(0).toUpperCase()}</div><div class="info"><div class="name">${p.username} ${me?' (Вы)':''}</div><div class="status">${c?'✅ Готов':'⏳ Ожидание...'}</div></div><div class="status-icon ${c?'confirmed':'pending'}">${c?'✅':'⏳'}</div></div>`;
+    const me=String(p.id)===String(currentUser.id);
+    return `<div class="modal-player ${c?'confirmed':''}" onclick="${me&&!c?'handleConfirm()':''}"><div class="avatar">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="info"><div class="name">${p.username||'?'} ${me?' (Вы)':''}</div><div class="status">${c?'✅ Готов':'⏳ Ожидание...'}</div></div><div class="status-icon ${c?'confirmed':'pending'}">${c?'✅':'⏳'}</div></div>`;
   }).join('');
   const all=matchPlayers.every(p=>confirmedPlayers.includes(p.id));
   const btn=document.getElementById('confirmBtn');
@@ -1163,10 +1153,10 @@ function renderModalPlayers(){
     btn.className='btn-confirm confirmed';btn.textContent='✅ Все готовы!';btn.disabled=true;
     clearInterval(confirmTimer);
     setTimeout(async()=>{
+      // Пытаемся активировать матч — у кого получилось, тот победил
+      try{await supabaseClient.from('active_matches').update({status:'active'}).eq('id',currentMatchId).eq('status','pending')}catch(e){}
       document.getElementById('confirmModal').classList.remove('active');
       waitingConfirm=false;isConfirming=false;
-      // Все клиенты пытаются активировать — RLS пропустит, второй попытке ничего не сделается
-      await supabaseClient.from('active_matches').update({status:'active'}).eq('id',currentMatchId).eq('status','pending');
       startMatchAfterConfirm();
     },800);
   }
@@ -1185,7 +1175,7 @@ function handleConfirmTimeout(){
     document.getElementById('confirmModal').classList.remove('active');
     waitingConfirm=false;isConfirming=false;
     showToast('info','Матч отменён',nc.length+' не подтвердили');
-    supabaseClient.from('active_matches').delete().eq('id',currentMatchId);
+    supabaseClient.from('active_matches').delete().eq('id',currentMatchId).then(()=>{},()=>{});
     currentMatch=null;isPlayerInMatch=false;isCaptain=false;
     document.getElementById('matchNavLabel').textContent='Поиск';
     document.querySelector('#matchNavBtn i').className='fas fa-search';
@@ -1232,16 +1222,16 @@ function subscribeToMatch(id){
         const nd=payload.new;
         if(nd.draft_state){try{draftState=JSON.parse(nd.draft_state);renderDraftUI()}catch(e){}}
         if(nd.screenshot_url){currentScreenshot=nd.screenshot_url}
-        if(nd.status==='active'&&!currentMatch){
+        if(nd.status==='active'&&isConfirming){
           document.getElementById('confirmModal').classList.remove('active');
           waitingConfirm=false;isConfirming=false;
-          currentMatch={id:nd.id,orange:JSON.parse(nd.orange),blue:JSON.parse(nd.blue)};
+          currentMatch={id:nd.id,orange:JSON.parse(nd.orange),blue:JSON.parse(nd.blue),status:'active'};
           currentMatchId=nd.id;isPlayerInMatch=true;
           startMatchAfterConfirm();
         }
-        if(nd.status==='active'&&currentMatch&&currentMatch.id===nd.id){
+        if(currentMatch&&currentMatch.id===nd.id){
           currentMatch.orange=JSON.parse(nd.orange);currentMatch.blue=JSON.parse(nd.blue);
-          renderMatchPage();
+          if(document.getElementById('pageMatch')?.classList.contains('active'))renderMatchPage();
         }
       }
     }).subscribe();
@@ -1266,8 +1256,8 @@ function renderMatchPage(){
   const canBan=ioc||ibc;
   const so=[...currentMatch.orange].sort((a,b)=>{if(a.username===oc)return -1;if(b.username===oc)return 1;return 0});
   const sb=[...currentMatch.blue].sort((a,b)=>{if(a.username===bc)return -1;if(b.username===bc)return 1;return 0});
-  document.getElementById('teamOrangePlayers').innerHTML=so.map(p=>`<div class="player-card"><div class="avatar">${p.username.charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username}</span></div>${p.username===oc?'<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>':''}</div>`).join('')||'<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
-  document.getElementById('teamBluePlayers').innerHTML=sb.map(p=>`<div class="player-card"><div class="avatar">${p.username.charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username}</span></div>${p.username===bc?'<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>':''}</div>`).join('')||'<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
+  document.getElementById('teamOrangePlayers').innerHTML=so.map(p=>`<div class="player-card"><div class="avatar">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username||'?'}</span></div>${p.username===oc?'<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>':''}</div>`).join('')||'<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
+  document.getElementById('teamBluePlayers').innerHTML=sb.map(p=>`<div class="player-card"><div class="avatar">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username||'?'}</span></div>${p.username===bc?'<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>':''}</div>`).join('')||'<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
   updateBanButtons(canBan);
   renderDraftUI();
   if(currentScreenshot){document.getElementById('screenshotPreview').innerHTML=`<img src="${currentScreenshot}">`;document.getElementById('screenshotStatus').textContent='✅ Загружено';document.getElementById('screenshotStatus').style.color='#51cf66'}
@@ -1377,8 +1367,6 @@ function endMatch(){
   document.querySelector('#matchNavBtn i').className='fas fa-search';
   navigate('matches');
 }
-
-async function updateProfile(){if(!currentUser)return;const m=currentUser.matches||0,w=currentUser.wins||0,wr=m>0?Math.round(w/m*100):0;document.getElementById('pWr').textContent=wr+'%';document.getElementById('pMatches').textContent=m;document.getElementById('pMvp').textContent=currentUser.mvp||0;document.getElementById('pElo').textContent=currentUser.elo||1000;document.getElementById('walletBalance').textContent=(currentUser.balance||0)+' ₽';await loadMatchHistory();await renderChart()}
 
 async function loadMatchHistory(){
   if(!currentUser)return;
@@ -1614,7 +1602,10 @@ document.addEventListener('DOMContentLoaded',async function(){
   document.getElementById('editProfileModal').addEventListener('click',e=>{if(e.target.id==='editProfileModal')closeEditProfile()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('editProfileModal').classList.contains('active'))closeEditProfile()});
   document.getElementById('friendSearchInput')?.addEventListener('input',()=>searchFriends());
-  cleanupInterval=setInterval(async()=>{try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}},60000);
+  cleanupInterval=setInterval(async()=>{
+    try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}
+    try{await supabaseClient.rpc('cleanup_stale_matches')}catch(e){}
+  },60000);
   const session=getSession();
   if(session){
     try{

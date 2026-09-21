@@ -27,7 +27,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.active{display:flex}
-.match-modal{background:#14121c;border:1px solid rgba(255,255,255,.06);border-radius:32px;padding:40px 28px 28px;max-width:440px;width:100%;box-shadow:0 40px 100px rgba(0,0,0,.8),0 0 60px rgba(255,59,107,.15);animation:modalIn .5s cubic-bezier(.34,1.56,.64,1);position:relative}
+.match-modal{background:#14121c;border:1px solid rgba(255,255,255,.06);border-radius:32px;padding:40px 28px 28px;max-width:440px;width:100%;box-shadow:0 40px 100px rgba(0,0,0,.8),0 0 60px rgba(255,59,107,.15);animation:modalIn .5s cubic-bezier(.34,1.56,.64,1)}
 @keyframes modalIn{from{transform:scale(.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
 .match-timer-wrap{width:170px;height:170px;margin:0 auto 24px;position:relative}
 .match-timer-svg{width:100%;height:100%;transform:rotate(-90deg)}
@@ -46,10 +46,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .match-slot.me.confirmed{border-color:var(--green);box-shadow:0 0 24px rgba(34,197,94,.5)}
 .match-counter{text-align:center;font-size:15px;font-weight:700;color:#8888aa;letter-spacing:1px;margin-bottom:22px}
 .match-counter b{color:#fff;font-weight:800;font-size:17px}
-.match-confirm-btn{width:100%;padding:18px;border:none;border-radius:18px;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;position:relative}
+.match-confirm-btn{width:100%;padding:18px;border:none;border-radius:18px;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
 .match-confirm-btn:not(:disabled){background:linear-gradient(135deg,#ff8a1f,#ff6b00);color:#0b0b0f}
-.match-confirm-btn:not(:disabled):hover{box-shadow:0 8px 24px rgba(255,138,31,.4);transform:translateY(-2px)}
-.match-confirm-btn:not(:disabled):active{transform:scale(.98)}
 .match-confirm-btn:disabled{background:rgba(34,197,94,.15);color:var(--green);cursor:default;box-shadow:inset 0 0 30px rgba(34,197,94,.08)}
 .match-confirm-btn.done{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 0 30px rgba(34,197,94,.5)}
 .match-confirm-btn .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.25);border-top-color:currentColor;border-radius:50%;animation:spin .8s linear infinite}
@@ -61,16 +59,13 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .modal-sub{text-align:center;color:#8888aa;font-size:13px;margin-bottom:6px}
 .modal-box .form-group{margin-bottom:16px}
 .modal-box .form-group label{display:block;font-size:13px;font-weight:600;color:#b0b0c0;margin-bottom:6px}
-.modal-box .input-wrap{display:flex;align-items:center;background:#1a1a2e;border-radius:12px;padding:0 14px;border:1px solid #2a2a4a;transition:border-color .2s}
-.modal-box .input-wrap:focus-within{border-color:var(--accent)}
+.modal-box .input-wrap{display:flex;align-items:center;background:#1a1a2e;border-radius:12px;padding:0 14px;border:1px solid #2a2a4a}
 .modal-box .input-wrap i{color:#666;font-size:14px;margin-right:10px}
 .modal-box .input-wrap input{background:transparent;border:none;padding:12px 0;color:#fff;font-family:inherit;font-size:14px;width:100%;outline:none}
 .modal-box .hint{font-size:11px;color:#666;margin-top:6px;display:flex;justify-content:space-between}
 .modal-box .hint .counter{color:var(--accent);font-weight:600}
-.modal-box .hint .counter.warn{color:#ff6b6b}
 .modal-actions-row{display:flex;gap:10px;margin-top:8px}
-.modal-actions-row button{flex:1;padding:14px;border:none;border-radius:14px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;transition:transform .15s}
-.modal-actions-row button:active{transform:scale(.97)}
+.modal-actions-row button{flex:1;padding:14px;border:none;border-radius:14px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer}
 .btn-save{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f}
 .btn-save:disabled{opacity:.4;cursor:not-allowed}
 .btn-cancel{background:#2a2a4a;color:#fff}
@@ -82,14 +77,13 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .auth-logo h1{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px}
 .auth-logo .sub{color:#8888aa;font-size:13px;letter-spacing:2px;text-transform:uppercase}
 .auth-tabs{display:flex;gap:8px;margin-bottom:24px;background:#1a1a2e;border-radius:12px;padding:4px}
-.auth-tabs .tab{flex:1;padding:10px;border:none;background:transparent;color:#8888aa;font-family:inherit;font-size:13px;font-weight:600;border-radius:10px;cursor:pointer;transition:all .2s}
+.auth-tabs .tab{flex:1;padding:10px;border:none;background:transparent;color:#8888aa;font-family:inherit;font-size:13px;font-weight:600;border-radius:10px;cursor:pointer}
 .auth-tabs .tab.active{background:#2a2a4a;color:#fff}
 .auth-tabs .tab i{margin-right:6px}
 .auth-form{display:none}.auth-form.active{display:block}
 .form-group{margin-bottom:16px}
 .form-group label{display:block;font-size:13px;font-weight:600;color:#b0b0c0;margin-bottom:6px}
-.input-wrap{display:flex;align-items:center;background:#1a1a2e;border-radius:12px;padding:0 14px;border:1px solid #2a2a4a;transition:border-color .2s}
-.input-wrap:focus-within{border-color:var(--accent)}
+.input-wrap{display:flex;align-items:center;background:#1a1a2e;border-radius:12px;padding:0 14px;border:1px solid #2a2a4a}
 .input-wrap i{color:#666;font-size:14px;margin-right:10px}
 .input-wrap input{background:transparent;border:none;padding:12px 0;color:#fff;font-family:inherit;font-size:14px;width:100%;outline:none}
 .input-wrap input::placeholder{color:#555}
@@ -109,6 +103,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .header .logo h1{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.3px}
 .header .logo .sub{font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
 .page{display:none;padding-bottom:20px}.page.active{display:block}
+
 .home-hero{padding-top:12px}
 .hero-badge{display:inline-block;background:rgba(255,138,31,.12);border:1px solid rgba(255,138,31,.3);padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;color:var(--accent);letter-spacing:1px;text-transform:uppercase}
 .hero-title{font-size:24px;font-weight:800;line-height:1.2;margin:16px 0 20px}
@@ -128,6 +123,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .prize-item .place{font-size:11px;color:#8888aa}.prize-item .reward{font-size:16px;font-weight:700;margin-top:4px}
 .prize-item.gold .reward{color:var(--gold)}.prize-item.silver .reward{color:#c0c0c0}.prize-item.bronze .reward{color:#cd7f32}
 .prize-premium{text-align:center;font-size:13px;color:#8888aa}
+
 .search-header-block{text-align:center;padding:16px 0 20px}
 .search-title{font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .search-sub{color:#666;font-size:13px;margin-top:4px}
@@ -153,6 +149,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .party-member .remove{color:#ff6b6b;cursor:pointer;font-size:14px;font-weight:700}
 .party-empty{color:#555;font-size:13px}
 .party-feature{font-size:11px;color:#555;margin-top:8px;padding:8px 12px;background:#1a1a2e;border-radius:8px}
+
 .match-info-bar{display:flex;flex-wrap:wrap;gap:12px;background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:16px;margin-bottom:16px}
 .info-item{font-size:13px;color:#8888aa}
 .info-item .value{color:#fff;font-weight:600}
@@ -168,6 +165,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .player-card .info{flex:1}
 .player-card .info .name{font-size:13px;font-weight:600}
 .player-card .captain-badge{font-size:10px;color:var(--gold);padding:2px 8px;background:rgba(255,215,0,.1);border-radius:10px}
+
 .bans-container{display:grid;gap:16px;margin-bottom:16px}
 .ban-section{background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:16px}
 .ban-title{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700}
@@ -182,6 +180,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .ban-btn:disabled{opacity:.5;cursor:not-allowed}
 .ban-status{display:flex;justify-content:space-between;margin-top:12px;font-size:13px;color:#8888aa}
 .ban-status .status-text.done{color:#51cf66}
+
 .lobby-section{display:none;background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:16px;margin-bottom:16px}
 .lobby-section.visible{display:block}
 .lobby-title{font-size:14px;font-weight:700;margin-bottom:8px}
@@ -195,6 +194,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .lobby-link-display .link-value{font-size:13px;color:#4dabf7;text-decoration:underline;cursor:pointer}
 .lobby-wait{font-size:13px;color:#8888aa;padding:12px;background:rgba(255,138,31,.06);border:1px solid rgba(255,138,31,.15);border-radius:10px;text-align:center}
 .lobby-wait b{color:#fff}
+
 .shot-section{display:none;background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:16px;margin-bottom:16px}
 .shot-section.visible{display:block}
 .shot-title{font-size:14px;font-weight:700;margin-bottom:12px}
@@ -206,6 +206,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .shot-preview img{width:100%;height:auto;max-height:200px;object-fit:cover}
 .shot-status{font-size:13px;color:#8888aa}
 .shot-skip-btn{width:100%;margin-top:10px;padding:12px;border:1px solid #2a2a4a;border-radius:10px;background:transparent;color:#ff6b6b;font-family:inherit;font-weight:600;cursor:pointer;font-size:13px}
+
 .match-result-section{display:none;background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:16px;margin-bottom:16px}
 .match-result-section.admin-visible{display:block}
 .result-title{font-size:14px;font-weight:700;margin-bottom:12px}
@@ -216,6 +217,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .match-actions{display:none;margin-top:8px}
 .match-actions.admin-visible{display:block}
 .btn-end{width:100%;padding:12px;border:none;border-radius:12px;background:#ff6b6b;color:#fff;font-family:inherit;font-weight:700;cursor:pointer}
+
 .profile-card{background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px}
 .profile-header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
 .profile-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#0b0b0f;flex-shrink:0}
@@ -231,6 +233,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .btn-action{flex:1;padding:10px;border:none;border-radius:10px;font-family:inherit;font-weight:600;cursor:pointer}
 .btn-action.edit{background:#2a2a4a;color:#fff}
 .btn-action.logout{background:#ff6b6b;color:#fff}
+
 .admin-panel-wrap{display:none;background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px;margin-bottom:16px}
 .admin-panel-wrap.visible{display:block}
 .adm-title{font-size:18px;font-weight:800;margin-bottom:12px;color:var(--accent)}
@@ -285,6 +288,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .adm-promo-creation{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .adm-promo-row{display:flex;gap:6px}
 .adm-promo-row input{flex:1;padding:8px 12px;background:#0b0b0f;border:1px solid #2a2a4a;border-radius:8px;color:#fff;font-family:inherit;font-size:13px;outline:none}
+
 .friends-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .friends-header h2{font-size:20px;font-weight:800}
 .friends-header .count{color:#8888aa;font-size:13px}
@@ -316,6 +320,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .friend-item .friend-actions .btn-decline{background:#ff6b6b;color:#fff}
 .friends-empty{text-align:center;padding:40px 20px;color:#555}
 .friends-empty i{font-size:40px;margin-bottom:12px;display:block;color:#2a2a4a}
+
 .top-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .top-header h2{font-size:20px;font-weight:800}
 .top-header .user-rank{background:rgba(20,20,31,.8);border:1px solid #2a2a4a;border-radius:12px;padding:6px 16px;font-size:14px;font-weight:700;color:var(--accent)}
@@ -329,15 +334,18 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .top-item .info .stats{font-size:12px;color:#8888aa}
 .top-item .elo{font-weight:800;font-size:16px;color:var(--accent)}
 .top-item .elo .elo-label{font-size:10px;color:#666;font-weight:400;display:block;text-align:right}
+
 .wallet-card{background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:24px;text-align:center;margin-bottom:16px}
 .wallet-card .balance{font-size:36px;font-weight:900;color:var(--accent)}
 .wallet-card .label{color:#8888aa;font-size:13px;margin-top:4px}
 .wallet-promo{display:flex;gap:8px}
 .wallet-promo input{flex:1;padding:10px 14px;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;color:#fff;font-family:inherit;font-size:14px;outline:none;text-transform:uppercase}
 .wallet-promo button{padding:10px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f;font-family:inherit;font-weight:700;cursor:pointer}
+
 .placeholder{text-align:center;padding:60px 20px;color:#555}
 .placeholder i{font-size:48px;margin-bottom:16px;display:block;color:#2a2a4a}
 .placeholder h2{font-size:18px;font-weight:700;color:#8888aa}
+
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;display:flex;justify-content:space-around;padding:8px 8px 12px;background:rgba(20,20,31,.95);backdrop-filter:blur(12px);border-top:1px solid rgba(255,138,31,.12);z-index:100}
 .bottom-nav .item{display:flex;flex-direction:column;align-items:center;background:transparent;border:none;color:#555;font-family:inherit;font-size:10px;cursor:pointer;padding:4px 8px;gap:2px;position:relative}
 .bottom-nav .item i{font-size:20px}
@@ -574,7 +582,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 <button class="item" data-page="wallet" onclick="navigate('wallet')"><i class="fas fa-wallet"></i><span>Кошелёк</span></button>
 </nav>
 </div>
-
 <script>
 const SUPABASE_URL='https://tgjltbpmuczfkikvmmde.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
@@ -585,7 +592,7 @@ const ALL_MODES=['Gem Grab','Brawl Ball','Knockout','Heist','Bounty','Hot Zone',
 let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[],sentRequests=[];
 let isSearching=false,isStartingSearch=false,isCanceling=false,searchTimerInterval=null,searchSeconds=0;
 let isPlayerInMatch=false,friendsTab='friends',waitingConfirm=false;
-let confirmedPlayers=[],matchPlayers=[],confirmTimer=null,confirmTimeLeft=25,isCaptain=false;
+let confirmedPlayers=[],matchPlayers=[],confirmTimer=null,confirmTimeLeft=25;
 let searchChannel=null,matchChannel=null,matchCreatedChannel=null,currentMatchId=null;
 let friendsChannel=null,settingsChannel=null,globalPollInterval=null;
 let queueUpdateInterval=null,heartbeatInterval=null,cleanupInterval=null;
@@ -602,241 +609,244 @@ function clearSession(){localStorage.removeItem('brawl_user_id');localStorage.re
 function getSession(){try{const id=localStorage.getItem('brawl_user_id'),u=localStorage.getItem('brawl_username');if(id&&u)return{id,username:u}}catch(e){}return null}
 function switchAuthTab(tab){document.querySelectorAll('.auth-tabs .tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));if(tab==='login'){document.getElementById('tabLogin').classList.add('active');document.getElementById('loginForm').classList.add('active')}else{document.getElementById('tabRegister').classList.add('active');document.getElementById('registerForm').classList.add('active')}}
 
+/* ===== AUTH ===== */
 async function registerUser(){
-const username=document.getElementById('regUsername').value.trim();
-const password=document.getElementById('regPassword').value;
-const confirm=document.getElementById('regPasswordConfirm').value;
-const messageEl=document.getElementById('registerMessage');
-if(!username||!password||!confirm){messageEl.className='auth-message show error';messageEl.textContent='❌ Заполните все поля';return}
-if(username.length<3){messageEl.className='auth-message show error';messageEl.textContent='❌ Минимум 3 символа';return}
-if(username.length>16){messageEl.className='auth-message show error';messageEl.textContent='❌ Максимум 16 символов';return}
-if(!/^[A-Za-z0-9_]+$/.test(username)){messageEl.className='auth-message show error';messageEl.textContent='❌ Только A-Z, 0-9, _';return}
-if(password!==confirm){messageEl.className='auth-message show error';messageEl.textContent='❌ Пароли не совпадают';return}
-if(password.length<8){messageEl.className='auth-message show error';messageEl.textContent='❌ Пароль минимум 8';return}
-messageEl.className='auth-message show info';messageEl.textContent='⏳ Проверка...';
-try{
-const{data:existing}=await supabaseClient.from('users').select('id').eq('username_lower',username.toLowerCase()).maybeSingle();
-if(existing){messageEl.className='auth-message show error';messageEl.textContent='❌ Никнейм занят';return}
-const newUser={id:'user_'+Date.now().toString(),username,username_lower:username.toLowerCase(),password,partycode:generateCode()};
-const{data,error}=await supabaseClient.from('users').insert([newUser]).select().single();
-if(error){messageEl.className='auth-message show error';messageEl.textContent='❌ '+error.message;return}
-currentUser=data;saveSession(data);
-messageEl.className='auth-message show success';messageEl.textContent='✅ Аккаунт создан!';
-setTimeout(()=>checkAuth(),1000);
-}catch(e){messageEl.className='auth-message show error';messageEl.textContent='❌ '+e.message}
+  const username=document.getElementById('regUsername').value.trim();
+  const password=document.getElementById('regPassword').value;
+  const confirm=document.getElementById('regPasswordConfirm').value;
+  const messageEl=document.getElementById('registerMessage');
+  if(!username||!password||!confirm){messageEl.className='auth-message show error';messageEl.textContent='❌ Заполните все поля';return}
+  if(username.length<3){messageEl.className='auth-message show error';messageEl.textContent='❌ Минимум 3 символа';return}
+  if(username.length>16){messageEl.className='auth-message show error';messageEl.textContent='❌ Максимум 16 символов';return}
+  if(!/^[A-Za-z0-9_]+$/.test(username)){messageEl.className='auth-message show error';messageEl.textContent='❌ Только A-Z, 0-9, _';return}
+  if(password!==confirm){messageEl.className='auth-message show error';messageEl.textContent='❌ Пароли не совпадают';return}
+  if(password.length<8){messageEl.className='auth-message show error';messageEl.textContent='❌ Пароль минимум 8';return}
+  messageEl.className='auth-message show info';messageEl.textContent='⏳ Проверка...';
+  try{
+    const{data:existing}=await supabaseClient.from('users').select('id').eq('username_lower',username.toLowerCase()).maybeSingle();
+    if(existing){messageEl.className='auth-message show error';messageEl.textContent='❌ Никнейм занят';return}
+    const newUser={id:'user_'+Date.now().toString(),username,username_lower:username.toLowerCase(),password,partycode:generateCode()};
+    const{data,error}=await supabaseClient.from('users').insert([newUser]).select().single();
+    if(error){messageEl.className='auth-message show error';messageEl.textContent='❌ '+error.message;return}
+    currentUser=data;saveSession(data);
+    messageEl.className='auth-message show success';messageEl.textContent='✅ Аккаунт создан!';
+    setTimeout(()=>checkAuth(),1000);
+  }catch(e){messageEl.className='auth-message show error';messageEl.textContent='❌ '+e.message}
 }
 
 async function loginUser(){
-const username=document.getElementById('loginUsername').value.trim();
-const password=document.getElementById('loginPassword').value;
-const messageEl=document.getElementById('loginMessage');
-if(!username||!password){messageEl.className='auth-message show error';messageEl.textContent='❌ Заполните поля';return}
-messageEl.className='auth-message show info';messageEl.textContent='⏳ Поиск...';
-try{
-const{data}=await supabaseClient.from('users').select('*').eq('username_lower',username.toLowerCase()).eq('password',password).maybeSingle();
-if(!data){messageEl.className='auth-message show error';messageEl.textContent='❌ Неверный ник или пароль';return}
-currentUser=data;saveSession(data);
-messageEl.className='auth-message show success';messageEl.textContent='✅ Добро пожаловать!';
-await checkAuth();
-}catch(e){messageEl.className='auth-message show error';messageEl.textContent='❌ Ошибка'}
+  const username=document.getElementById('loginUsername').value.trim();
+  const password=document.getElementById('loginPassword').value;
+  const messageEl=document.getElementById('loginMessage');
+  if(!username||!password){messageEl.className='auth-message show error';messageEl.textContent='❌ Заполните поля';return}
+  messageEl.className='auth-message show info';messageEl.textContent='⏳ Поиск...';
+  try{
+    const{data}=await supabaseClient.from('users').select('*').eq('username_lower',username.toLowerCase()).eq('password',password).maybeSingle();
+    if(!data){messageEl.className='auth-message show error';messageEl.textContent='❌ Неверный ник или пароль';return}
+    currentUser=data;saveSession(data);
+    messageEl.className='auth-message show success';messageEl.textContent='✅ Добро пожаловать!';
+    await checkAuth();
+  }catch(e){messageEl.className='auth-message show error';messageEl.textContent='❌ Ошибка'}
 }
 
 async function checkAuth(){
-if(currentUser){
-document.getElementById('authPage').style.display='none';
-document.getElementById('mainSite').style.display='block';
-document.getElementById('pName').textContent=currentUser.username;
-document.getElementById('avatar').textContent=currentUser.username.charAt(0).toUpperCase();
-if(currentUser.registered)document.getElementById('pReg').textContent=new Date(currentUser.registered).toLocaleDateString('ru-RU');
-const m=currentUser.matches||0,w=currentUser.wins||0,wr=m>0?Math.round(w/m*100):0;
-document.getElementById('pWr').textContent=wr+'%';
-document.getElementById('pMatches').textContent=m;
-document.getElementById('pMvp').textContent=currentUser.mvp||0;
-document.getElementById('pElo').textContent=currentUser.elo||1000;
-document.getElementById('walletBalance').textContent=(currentUser.balance||0)+' ₽';
-const isAdmin=currentUser.isadmin===true;
-if(isAdmin){document.getElementById('adminBadge').classList.add('visible');document.getElementById('adminPanelWrap').classList.add('visible');await loadSettings();await renderAdminPanel()}
-else{document.getElementById('adminBadge').classList.remove('visible');document.getElementById('adminPanelWrap').classList.remove('visible')}
-await loadSettings();
-subscribeToSettings();
-updateFormatLabels();
-await checkQueueOnLoad();
-await checkActiveMatchOnLoad();
-await loadMatchHistory();
-await renderTopPage();
-await loadFriends();
-subscribeToFriends();
-startGlobalPolling();
-await updateHomeStats();
-updatePartyUI();
-navigate('home');
-showToast('success','Добро пожаловать!',currentUser.username);
-}else{
-document.getElementById('authPage').style.display='flex';
-document.getElementById('mainSite').style.display='none';
-}
+  if(currentUser){
+    document.getElementById('authPage').style.display='none';
+    document.getElementById('mainSite').style.display='block';
+    document.getElementById('pName').textContent=currentUser.username;
+    document.getElementById('avatar').textContent=currentUser.username.charAt(0).toUpperCase();
+    if(currentUser.registered)document.getElementById('pReg').textContent=new Date(currentUser.registered).toLocaleDateString('ru-RU');
+    const m=currentUser.matches||0,w=currentUser.wins||0,wr=m>0?Math.round(w/m*100):0;
+    document.getElementById('pWr').textContent=wr+'%';
+    document.getElementById('pMatches').textContent=m;
+    document.getElementById('pMvp').textContent=currentUser.mvp||0;
+    document.getElementById('pElo').textContent=currentUser.elo||1000;
+    document.getElementById('walletBalance').textContent=(currentUser.balance||0)+' ₽';
+    const isAdmin=currentUser.isadmin===true;
+    if(isAdmin){document.getElementById('adminBadge').classList.add('visible');document.getElementById('adminPanelWrap').classList.add('visible');await loadSettings();await renderAdminPanel()}
+    else{document.getElementById('adminBadge').classList.remove('visible');document.getElementById('adminPanelWrap').classList.remove('visible')}
+    await loadSettings();
+    subscribeToSettings();
+    updateFormatLabels();
+    await checkQueueOnLoad();
+    await checkActiveMatchOnLoad();
+    await loadMatchHistory();
+    await renderTopPage();
+    await loadFriends();
+    subscribeToFriends();
+    startGlobalPolling();
+    await updateHomeStats();
+    updatePartyUI();
+    navigate('home');
+    showToast('success','Добро пожаловать!',currentUser.username);
+  }else{
+    document.getElementById('authPage').style.display='flex';
+    document.getElementById('mainSite').style.display='none';
+  }
 }
 
 function handleLogout(){
-if(!confirm('Выйти?'))return;
-if(currentUser&&isSearching)supabaseClient.rpc('leave_queue_v2',{p_user_id:currentUser.id});
-clearSession();currentUser=null;currentMatch=null;isPlayerInMatch=false;
-cleanupSearchState();
-if(matchChannel){supabaseClient.removeChannel(matchChannel);matchChannel=null}
-if(matchCreatedChannel){supabaseClient.removeChannel(matchCreatedChannel);matchCreatedChannel=null}
-if(friendsChannel){supabaseClient.removeChannel(friendsChannel);friendsChannel=null}
-if(settingsChannel){supabaseClient.removeChannel(settingsChannel);settingsChannel=null}
-if(globalPollInterval){clearInterval(globalPollInterval);globalPollInterval=null}
-checkAuth();showToast('info','Выход','');
+  if(!confirm('Выйти?'))return;
+  if(currentUser&&isSearching)supabaseClient.rpc('leave_queue_v2',{p_user_id:currentUser.id});
+  clearSession();currentUser=null;currentMatch=null;isPlayerInMatch=false;
+  cleanupSearchState();
+  if(matchChannel){supabaseClient.removeChannel(matchChannel);matchChannel=null}
+  if(matchCreatedChannel){supabaseClient.removeChannel(matchCreatedChannel);matchCreatedChannel=null}
+  if(friendsChannel){supabaseClient.removeChannel(friendsChannel);friendsChannel=null}
+  if(settingsChannel){supabaseClient.removeChannel(settingsChannel);settingsChannel=null}
+  if(globalPollInterval){clearInterval(globalPollInterval);globalPollInterval=null}
+  checkAuth();showToast('info','Выход','');
 }
 
+/* ===== NAV ===== */
 const pages={home:'pageHome',profile:'pageProfile',shop:'pageShop',friends:'pageFriends',matches:'pageMatches',top:'pageTop',wallet:'pageWallet',matchPage:'matchPage'};
 function navigate(page){
-if(page==='matches'&&isPlayerInMatch&&currentMatch)page='matchPage';
-document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-document.getElementById(pages[page]).classList.add('active');
-document.querySelectorAll('.bottom-nav .item').forEach(b=>b.classList.remove('active'));
-document.querySelector(`.bottom-nav .item[data-page="${page}"]`)?.classList.add('active');
-window.scrollTo({top:0,behavior:'smooth'});
+  if(page==='matches'&&isPlayerInMatch&&currentMatch)page='matchPage';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(pages[page]).classList.add('active');
+  document.querySelectorAll('.bottom-nav .item').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.bottom-nav .item[data-page="${page}"]`)?.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 document.addEventListener('click',async e=>{
-const tab=e.target.closest('[data-adm-tab]');
-if(tab){adminTab=tab.dataset.admTab;document.querySelectorAll('[data-adm-tab]').forEach(b=>b.classList.remove('on'));tab.classList.add('on');await renderAdminPanel()}
+  const tab=e.target.closest('[data-adm-tab]');
+  if(tab){adminTab=tab.dataset.admTab;document.querySelectorAll('[data-adm-tab]').forEach(b=>b.classList.remove('on'));tab.classList.add('on');await renderAdminPanel()}
 });
 
+/* ===== PROFILE EDIT ===== */
 function openEditProfile(){if(!currentUser)return;const inp=document.getElementById('editUsernameInput');inp.value=currentUser.username;document.getElementById('editMessage').className='auth-message';document.getElementById('editMessage').textContent='';updateEditCounter();document.getElementById('editProfileModal').classList.add('active');setTimeout(()=>{inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)},100)}
 function closeEditProfile(){document.getElementById('editProfileModal').classList.remove('active')}
 function updateEditCounter(){const inp=document.getElementById('editUsernameInput');const c=document.getElementById('editCounter');const btn=document.getElementById('editSaveBtn');const len=inp.value.length;c.textContent=len+'/16';c.className='counter'+(len>=14?' warn':'');const v=inp.value.trim();const valid=v.length>=3&&v.length<=16&&/^[A-Za-z0-9_]+$/.test(v)&&v!==currentUser.username;btn.disabled=!valid}
 async function saveProfileEdit(){
-const inp=document.getElementById('editUsernameInput');const msg=document.getElementById('editMessage');const btn=document.getElementById('editSaveBtn');const newName=inp.value.trim();
-if(newName===currentUser.username){msg.className='auth-message show info';msg.textContent='Это ваш текущий ник';return}
-if(newName.length<3||newName.length>16){msg.className='auth-message show error';msg.textContent='❌ 3–16 символов';return}
-if(!/^[A-Za-z0-9_]+$/.test(newName)){msg.className='auth-message show error';msg.textContent='❌ Только A-Z, 0-9, _';return}
-btn.disabled=true;btn.textContent='Сохранение...';
-try{
-const{data:exist}=await supabaseClient.from('users').select('id').eq('username_lower',newName.toLowerCase()).maybeSingle();
-if(exist&&exist.id!==currentUser.id){msg.className='auth-message show error';msg.textContent='❌ Ник занят';btn.disabled=false;btn.textContent='Сохранить';return}
-const{error}=await supabaseClient.from('users').update({username:newName,username_lower:newName.toLowerCase()}).eq('id',currentUser.id);
-if(error){msg.className='auth-message show error';msg.textContent='❌ '+error.message;btn.disabled=false;btn.textContent='Сохранить';return}
-currentUser.username=newName;saveSession(currentUser);
-document.getElementById('pName').textContent=newName;
-document.getElementById('avatar').textContent=newName.charAt(0).toUpperCase();
-msg.className='auth-message show success';msg.textContent='✅ Ник изменён!';
-showToast('success','Готово','Никнейм: '+newName);
-setTimeout(()=>{closeEditProfile();renderFriends();renderTopPage()},700);
-}catch(e){msg.className='auth-message show error';msg.textContent='❌ '+e.message;btn.disabled=false;btn.textContent='Сохранить'}
+  const inp=document.getElementById('editUsernameInput');const msg=document.getElementById('editMessage');const btn=document.getElementById('editSaveBtn');const newName=inp.value.trim();
+  if(newName===currentUser.username){msg.className='auth-message show info';msg.textContent='Это ваш текущий ник';return}
+  if(newName.length<3||newName.length>16){msg.className='auth-message show error';msg.textContent='❌ 3–16 символов';return}
+  if(!/^[A-Za-z0-9_]+$/.test(newName)){msg.className='auth-message show error';msg.textContent='❌ Только A-Z, 0-9, _';return}
+  btn.disabled=true;btn.textContent='Сохранение...';
+  try{
+    const{data:exist}=await supabaseClient.from('users').select('id').eq('username_lower',newName.toLowerCase()).maybeSingle();
+    if(exist&&exist.id!==currentUser.id){msg.className='auth-message show error';msg.textContent='❌ Ник занят';btn.disabled=false;btn.textContent='Сохранить';return}
+    const{error}=await supabaseClient.from('users').update({username:newName,username_lower:newName.toLowerCase()}).eq('id',currentUser.id);
+    if(error){msg.className='auth-message show error';msg.textContent='❌ '+error.message;btn.disabled=false;btn.textContent='Сохранить';return}
+    currentUser.username=newName;saveSession(currentUser);
+    document.getElementById('pName').textContent=newName;
+    document.getElementById('avatar').textContent=newName.charAt(0).toUpperCase();
+    msg.className='auth-message show success';msg.textContent='✅ Ник изменён!';
+    setTimeout(()=>{closeEditProfile();renderFriends();renderTopPage()},700);
+  }catch(e){msg.className='auth-message show error';msg.textContent='❌ '+e.message;btn.disabled=false;btn.textContent='Сохранить'}
 }
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='editUsernameInput')updateEditCounter()});
 
+/* ===== SETTINGS ===== */
 async function loadSettings(){
-try{const{data}=await supabaseClient.from('settings').select('*');(data||[]).forEach(r=>{currentSettings[r.key]=r.value});if(!currentSettings.team_size)currentSettings.team_size='3';updateFormatLabels()}catch(e){}
+  try{const{data}=await supabaseClient.from('settings').select('*');(data||[]).forEach(r=>{currentSettings[r.key]=r.value});if(!currentSettings.team_size)currentSettings.team_size='3';updateFormatLabels()}catch(e){}
 }
 function updateFormatLabels(){
-const s=parseInt(currentSettings.team_size)||3;const lbl=s+'×'+s;
-const sub=document.getElementById('searchSubLabel');const mode=document.getElementById('searchModeLabel');const total=document.getElementById('searchTotalPlayers');
-if(sub)sub.textContent=lbl+' режим · рейтинг';
-if(mode)mode.textContent=lbl;
-if(total)total.textContent=String(s*2);
+  const s=parseInt(currentSettings.team_size)||3;const lbl=s+'×'+s;
+  const sub=document.getElementById('searchSubLabel');const mode=document.getElementById('searchModeLabel');const total=document.getElementById('searchTotalPlayers');
+  if(sub)sub.textContent=lbl+' режим · рейтинг';
+  if(mode)mode.textContent=lbl;
+  if(total)total.textContent=String(s*2);
 }
 function subscribeToSettings(){
-if(!currentUser)return;
-if(settingsChannel){supabaseClient.removeChannel(settingsChannel);settingsChannel=null}
-settingsChannel=supabaseClient.channel('settings_'+Date.now())
-.on('postgres_changes',{event:'*',schema:'public',table:'settings'},async(payload)=>{
-const row=payload.new||payload.old;
-if(row&&row.key==='team_size'&&row.value!==currentSettings.team_size){currentSettings.team_size=row.value;updateFormatLabels()}
-}).subscribe();
+  if(!currentUser)return;
+  if(settingsChannel){supabaseClient.removeChannel(settingsChannel);settingsChannel=null}
+  settingsChannel=supabaseClient.channel('settings_'+Date.now())
+    .on('postgres_changes',{event:'*',schema:'public',table:'settings'},async(payload)=>{
+      const row=payload.new||payload.old;
+      if(row&&row.key==='team_size'&&row.value!==currentSettings.team_size){currentSettings.team_size=row.value;updateFormatLabels()}
+    }).subscribe();
 }
 
-/* ============ ADMIN ============ */
+/* ===== ADMIN ===== */
 async function renderAdminPanel(){
-if(!currentUser?.isadmin)return;
-const body=document.getElementById('admBody');if(!body)return;
-body.innerHTML='<div class="adm-empty">Загрузка...</div>';
-try{
-if(adminTab==='matches'){
-const{data}=await supabaseClient.from('active_matches').select('*').in('status',['pending','active']).order('created_at',{ascending:false});
-if(!data||data.length===0){body.innerHTML='<div class="adm-empty">Нет матчей</div>';return}
-body.innerHTML=data.map(m=>{
-let orange=[],blue=[];try{orange=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;blue=typeof m.blue==='string'?JSON.parse(m.blue):m.blue}catch(e){}
-const st=m.status==='pending'?'Ожидает':'Активен';
-const closed=Array.isArray(m.closed_by)?m.closed_by:[];
-const skipped=Array.isArray(m.skip_shots)?m.skip_shots:[];
-const shots=Array.isArray(m.shots)?m.shots:[];
-const statusIcon=(uid)=>{
-if(skipped.includes(uid))return '<span class="st skip">❌</span>';
-if(shots.some(s=>s.user_id===uid))return '<span class="st shot">📸</span>';
-return '<span class="st none">·</span>';
-};
-const rt=(list,side,avg)=>`<div class="adm-team ${side}"><h4>${side.toUpperCase()} · ELO ${avg}</h4>${list.map((p,i)=>`<div class="adm-pl"><div class="av">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="nm">${p.username||'?'}</div>${statusIcon(p.id)}${i===0?'<span class="cap">👑</span>':''}</div>`).join('')}</div>`;
-const avgO=orange.length?Math.round(orange.reduce((s,p)=>s+(p.elo||1000),0)/orange.length):0;
-const avgB=blue.length?Math.round(blue.reduce((s,p)=>s+(p.elo||1000),0)/blue.length):0;
-const shotsHtml=shots.length?`<div class="adm-shots">${shots.map(s=>{const pl=[...orange,...blue].find(p=>p.id===s.user_id);return `<div style="font-size:11px;color:#8888aa;margin-top:6px">📸 ${pl?.username||'?'}</div><img src="${s.url}" onclick="window.open('${s.url}','_blank')">`}).join('')}</div>`:'';
-const draftInfo=m.draft_state?`<div class="meta">Режим: ${m.draft_state.final||'—'} · банов: ${(m.draft_state.banned||[]).length}</div>`:'';
-return `<div class="adm-match" data-match-id="${m.id}"><div class="hdr"><h3>#${m.id.slice(-6)}</h3><span class="badge-status ${m.status==='pending'?'pending':'active'}">${st}</span></div><div class="meta">${new Date(m.created_at).toLocaleTimeString('ru-RU')} · закрыли: ${closed.length}/${orange.length+blue.length}</div>${draftInfo}${m.lobby_url?`<div class="meta">🔗 Лобби: <a href="${m.lobby_url}" target="_blank" style="color:#4dabf7">${m.lobby_url}</a></div>`:''}<div class="adm-teams">${rt(orange,'orange',avgO)}${rt(blue,'blue',avgB)}</div>${shotsHtml}<div class="adm-score-row"><input type="number" class="adm-score-a" placeholder="0" min="0" max="99"><span class="sep">:</span><input type="number" class="adm-score-b" placeholder="0" min="0" max="99"></div><div class="adm-finish-btns"><button class="btn-blue" onclick="admFinishMatch('${m.id}','blue')">🏆 BLUE</button><button class="btn-orange" onclick="admFinishMatch('${m.id}','orange')">🏆 ORANGE</button></div><button class="adm-cancel-btn" onclick="admCancelMatch('${m.id}')">❌ Удалить матч</button></div>`;
-}).join('');
-}
-else if(adminTab==='players'){
-let q=supabaseClient.from('users').select('*').order('elo',{ascending:false}).limit(50);
-if(adminSearchQuery)q=q.ilike('username','%'+adminSearchQuery+'%');
-const{data}=await q;adminPlayers=data||[];
-if(adminPlayers.length===0){body.innerHTML=`<input class="adm-search" id="admSearchInput" placeholder="Поиск..." value="${adminSearchQuery}"><div class="adm-empty">Никого</div>`;bindAdminSearch();return}
-body.innerHTML=`<input class="adm-search" id="admSearchInput" placeholder="Поиск..." value="${adminSearchQuery}">${adminPlayers.map(p=>`<div class="adm-player"><div class="av">${p.username.charAt(0).toUpperCase()}</div><div class="nm">${p.username} ${p.isadmin?'👑':''}</div><div class="elo">${p.elo||1000}</div><div class="actions"><button onclick="admSetRating('${p.id}','${p.username}',${p.elo||1000})">💰 Рейтинг</button><button class="danger" onclick="admSetBanned('${p.id}',${!p.banned})">${p.banned?'✅ Разбан':'🚫 Бан'}</button><button class="${p.isadmin?'danger':'ok'}" onclick="admSetAdmin('${p.id}',${!p.isadmin})">${p.isadmin?'❌ Снять':'👑 Админ'}</button></div></div>`).join('')}`;
-bindAdminSearch();
-}
-else if(adminTab==='queue'){
-const{data}=await supabaseClient.from('queue').select('*').eq('status','searching').order('created_at',{ascending:true});
-adminQueue=data||[];
-body.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><div style="font-weight:700">В очереди: ${adminQueue.length}</div><button onclick="admClearQueue()" style="padding:6px 12px;background:#ff6b6b;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:11px;">🧹 Очистить</button></div>${adminQueue.length===0?'<div class="adm-empty">Пусто</div>':adminQueue.map(p=>`<div class="adm-qrow"><div class="av">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="nm">${p.username||'?'}</div><div class="elo">${p.elo||1000}</div></div>`).join('')}`;
-}
-else if(adminTab==='promos'){
-const{data}=await supabaseClient.from('promocodes').select('*').order('created_at',{ascending:false});
-adminPromos=data||[];
-body.innerHTML=`<div class="adm-promo-creation"><div class="adm-promo-row"><input type="text" id="admPromoCode" placeholder="КОД" maxlength="20"></div><div class="adm-promo-row"><input type="number" id="admPromoAmount" placeholder="Сумма ₽" min="1"><input type="number" id="admPromoUses" placeholder="Активаций" min="1" value="1"></div><button onclick="admCreatePromo()" style="padding:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:8px;color:#0b0b0f;font-weight:700;cursor:pointer;">Создать</button></div>${adminPromos.length===0?'<div class="adm-empty">Нет промокодов</div>':adminPromos.map(p=>`<div class="adm-qrow" style="${p.used_count>=p.max_uses?'opacity:0.5':''}"><div class="nm"><b>${p.code}</b> — ${p.amount} ₽</div><div style="font-size:11px;color:#8888aa;">${p.used_count}/${p.max_uses}</div><button onclick="admDeletePromo('${p.id}')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;padding:0 4px;">×</button></div>`).join('')}`;
-}
-else if(adminTab==='admins'){
-const{data}=await supabaseClient.from('users').select('id, username').eq('isadmin',true);
-adminAdmins=data||[];
-body.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:12px;"><input class="adm-search" id="admNewAdmin" placeholder="Никнейм" style="margin-bottom:0"><button onclick="admAddAdmin()" style="padding:10px 14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:10px;color:#0b0b0f;font-weight:700;cursor:pointer;">+</button></div>${adminAdmins.length===0?'<div class="adm-empty">Нет админов</div>':adminAdmins.map(a=>`<div class="adm-qrow"><div class="av">${a.username.charAt(0).toUpperCase()}</div><div class="nm">${a.username} 👑</div>${a.username!=='Destro'?`<button onclick="admRemoveAdmin('${a.id}')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;">×</button>`:''}</div>`).join('')}`;
-}
-else if(adminTab==='settings'){
-body.innerHTML=`<div class="adm-settings"><div><div style="font-weight:700;font-size:13px;margin-bottom:6px;">Формат матча</div><p style="font-size:11px;color:#8888aa;margin-bottom:8px;">При смене очередь очищается.</p><select id="admTeamSize">${[1,2,3,4,5].map(n=>`<option value="${n}" ${+currentSettings.team_size===n?'selected':''}>${n} на ${n}</option>`).join('')}</select></div><button onclick="admSaveSettings()" style="padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:10px;color:#0b0b0f;font-weight:700;cursor:pointer;">Сохранить</button></div>`;
-}
-}catch(e){body.innerHTML='<div class="adm-empty">Ошибка: '+e.message+'</div>'}
+  if(!currentUser?.isadmin)return;
+  const body=document.getElementById('admBody');if(!body)return;
+  body.innerHTML='<div class="adm-empty">Загрузка...</div>';
+  try{
+    if(adminTab==='matches'){
+      const{data}=await supabaseClient.from('active_matches').select('*').in('status',['pending','active']).order('created_at',{ascending:false});
+      if(!data||data.length===0){body.innerHTML='<div class="adm-empty">Нет матчей</div>';return}
+      body.innerHTML=data.map(m=>{
+        let orange=[],blue=[];try{orange=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;blue=typeof m.blue==='string'?JSON.parse(m.blue):m.blue}catch(e){}
+        const st=m.status==='pending'?'Ожидает':'Активен';
+        const closed=Array.isArray(m.closed_by)?m.closed_by:[];
+        const skipped=Array.isArray(m.skip_shots)?m.skip_shots:[];
+        const shots=Array.isArray(m.shots)?m.shots:[];
+        const statusIcon=(uid)=>{
+          if(skipped.includes(uid))return '<span class="st skip">❌</span>';
+          if(shots.some(s=>s.user_id===uid))return '<span class="st shot">📸</span>';
+          return '<span class="st none">·</span>';
+        };
+        const rt=(list,side,avg)=>`<div class="adm-team ${side}"><h4>${side.toUpperCase()} · ELO ${avg}</h4>${list.map((p,i)=>`<div class="adm-pl"><div class="av">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="nm">${p.username||'?'}</div>${statusIcon(p.id)}${i===0?'<span class="cap">👑</span>':''}</div>`).join('')}</div>`;
+        const avgO=orange.length?Math.round(orange.reduce((s,p)=>s+(p.elo||1000),0)/orange.length):0;
+        const avgB=blue.length?Math.round(blue.reduce((s,p)=>s+(p.elo||1000),0)/blue.length):0;
+        const shotsHtml=shots.length?`<div class="adm-shots">${shots.map(s=>{const pl=[...orange,...blue].find(p=>p.id===s.user_id);return `<div style="font-size:11px;color:#8888aa;margin-top:6px">📸 ${pl?.username||'?'}</div><img src="${s.url}" onclick="window.open('${s.url}','_blank')">`}).join('')}</div>`:'';
+        const draftInfo=m.draft_state?`<div class="meta">Режим: ${m.draft_state.final||'—'} · банов: ${(m.draft_state.banned||[]).length}</div>`:'';
+        return `<div class="adm-match" data-match-id="${m.id}"><div class="hdr"><h3>#${m.id.slice(-6)}</h3><span class="badge-status ${m.status==='pending'?'pending':'active'}">${st}</span></div><div class="meta">${new Date(m.created_at).toLocaleTimeString('ru-RU')} · закрыли: ${closed.length}/${orange.length+blue.length}</div>${draftInfo}${m.lobby_url?`<div class="meta">🔗 Лобби: <a href="${m.lobby_url}" target="_blank" style="color:#4dabf7">${m.lobby_url}</a></div>`:''}<div class="adm-teams">${rt(orange,'orange',avgO)}${rt(blue,'blue',avgB)}</div>${shotsHtml}<div class="adm-score-row"><input type="number" class="adm-score-a" placeholder="0" min="0" max="99"><span class="sep">:</span><input type="number" class="adm-score-b" placeholder="0" min="0" max="99"></div><div class="adm-finish-btns"><button class="btn-blue" onclick="admFinishMatch('${m.id}','blue')">🏆 BLUE</button><button class="btn-orange" onclick="admFinishMatch('${m.id}','orange')">🏆 ORANGE</button></div><button class="adm-cancel-btn" onclick="admCancelMatch('${m.id}')">❌ Удалить матч</button></div>`;
+      }).join('');
+    }
+    else if(adminTab==='players'){
+      let q=supabaseClient.from('users').select('*').order('elo',{ascending:false}).limit(50);
+      if(adminSearchQuery)q=q.ilike('username','%'+adminSearchQuery+'%');
+      const{data}=await q;adminPlayers=data||[];
+      if(adminPlayers.length===0){body.innerHTML=`<input class="adm-search" id="admSearchInput" placeholder="Поиск..." value="${adminSearchQuery}"><div class="adm-empty">Никого</div>`;bindAdminSearch();return}
+      body.innerHTML=`<input class="adm-search" id="admSearchInput" placeholder="Поиск..." value="${adminSearchQuery}">${adminPlayers.map(p=>`<div class="adm-player"><div class="av">${p.username.charAt(0).toUpperCase()}</div><div class="nm">${p.username} ${p.isadmin?'👑':''}</div><div class="elo">${p.elo||1000}</div><div class="actions"><button onclick="admSetRating('${p.id}','${p.username}',${p.elo||1000})">💰 Рейтинг</button><button class="danger" onclick="admSetBanned('${p.id}',${!p.banned})">${p.banned?'✅ Разбан':'🚫 Бан'}</button><button class="${p.isadmin?'danger':'ok'}" onclick="admSetAdmin('${p.id}',${!p.isadmin})">${p.isadmin?'❌ Снять':'👑 Админ'}</button></div></div>`).join('')}`;
+      bindAdminSearch();
+    }
+    else if(adminTab==='queue'){
+      const{data}=await supabaseClient.from('queue').select('*').eq('status','searching').order('created_at',{ascending:true});
+      adminQueue=data||[];
+      body.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><div style="font-weight:700">В очереди: ${adminQueue.length}</div><button onclick="admClearQueue()" style="padding:6px 12px;background:#ff6b6b;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:11px;">🧹 Очистить</button></div>${adminQueue.length===0?'<div class="adm-empty">Пусто</div>':adminQueue.map(p=>`<div class="adm-qrow"><div class="av">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="nm">${p.username||'?'}</div><div class="elo">${p.elo||1000}</div></div>`).join('')}`;
+    }
+    else if(adminTab==='promos'){
+      const{data}=await supabaseClient.from('promocodes').select('*').order('created_at',{ascending:false});
+      adminPromos=data||[];
+      body.innerHTML=`<div class="adm-promo-creation"><div class="adm-promo-row"><input type="text" id="admPromoCode" placeholder="КОД" maxlength="20"></div><div class="adm-promo-row"><input type="number" id="admPromoAmount" placeholder="Сумма ₽" min="1"><input type="number" id="admPromoUses" placeholder="Активаций" min="1" value="1"></div><button onclick="admCreatePromo()" style="padding:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:8px;color:#0b0b0f;font-weight:700;cursor:pointer;">Создать</button></div>${adminPromos.length===0?'<div class="adm-empty">Нет промокодов</div>':adminPromos.map(p=>`<div class="adm-qrow" style="${p.used_count>=p.max_uses?'opacity:0.5':''}"><div class="nm"><b>${p.code}</b> — ${p.amount} ₽</div><div style="font-size:11px;color:#8888aa;">${p.used_count}/${p.max_uses}</div><button onclick="admDeletePromo('${p.id}')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;padding:0 4px;">×</button></div>`).join('')}`;
+    }
+    else if(adminTab==='admins'){
+      const{data}=await supabaseClient.from('users').select('id, username').eq('isadmin',true);
+      adminAdmins=data||[];
+      body.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:12px;"><input class="adm-search" id="admNewAdmin" placeholder="Никнейм" style="margin-bottom:0"><button onclick="admAddAdmin()" style="padding:10px 14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:10px;color:#0b0b0f;font-weight:700;cursor:pointer;">+</button></div>${adminAdmins.length===0?'<div class="adm-empty">Нет админов</div>':adminAdmins.map(a=>`<div class="adm-qrow"><div class="av">${a.username.charAt(0).toUpperCase()}</div><div class="nm">${a.username} 👑</div>${a.username!=='Destro'?`<button onclick="admRemoveAdmin('${a.id}')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;">×</button>`:''}</div>`).join('')}`;
+    }
+    else if(adminTab==='settings'){
+      body.innerHTML=`<div class="adm-settings"><div><div style="font-weight:700;font-size:13px;margin-bottom:6px;">Формат матча</div><p style="font-size:11px;color:#8888aa;margin-bottom:8px;">При смене очередь очищается.</p><select id="admTeamSize">${[1,2,3,4,5].map(n=>`<option value="${n}" ${+currentSettings.team_size===n?'selected':''}>${n} на ${n}</option>`).join('')}</select></div><button onclick="admSaveSettings()" style="padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:10px;color:#0b0b0f;font-weight:700;cursor:pointer;">Сохранить</button></div>`;
+    }
+  }catch(e){body.innerHTML='<div class="adm-empty">Ошибка: '+e.message+'</div>'}
 }
 function bindAdminSearch(){const i=document.getElementById('admSearchInput');if(!i)return;let t;i.addEventListener('input',e=>{clearTimeout(t);t=setTimeout(async()=>{adminSearchQuery=e.target.value.trim();await renderAdminPanel();const ni=document.getElementById('admSearchInput');if(ni){ni.focus();ni.setSelectionRange(ni.value.length,ni.value.length)}},400)})}
 
 async function admFinishMatch(matchId,winner){
-const card=document.querySelector(`[data-match-id="${matchId}"]`);if(!card)return;
-const scoreA=card.querySelector('.adm-score-a').value;
-const scoreB=card.querySelector('.adm-score-b').value;
-const{data:match}=await supabaseClient.from('active_matches').select('*').eq('id',matchId).single();
-if(!match)return showToast('error','Ошибка','Матч не найден');
-const orange=typeof match.orange==='string'?JSON.parse(match.orange):match.orange;
-const blue=typeof match.blue==='string'?JSON.parse(match.blue):match.blue;
-const winners=winner==='blue'?blue:orange,losers=winner==='blue'?orange:blue;
-const pids=[...orange,...blue].map(p=>p.id);
-const{data:pd}=await supabaseClient.from('users').select('id, elo').in('id',pids);
-const em={};pd.forEach(p=>em[p.id]=p.elo||1000);
-const aw=winners.reduce((s,p)=>s+(em[p.id]||1000),0)/winners.length;
-const al=losers.reduce((s,p)=>s+(em[p.id]||1000),0)/losers.length;
-const K=32,ec={};
-for(const wp of winners){const w=em[wp.id]||1000;ec[wp.id]=Math.round(K*(1-1/(1+Math.pow(10,(al-w)/400))))}
-for(const lp of losers){const l=em[lp.id]||1000;ec[lp.id]=Math.round(K*(0-1/(1+Math.pow(10,(aw-l)/400))))}
-const mn=match.draft_state?.final||'Gem Grab';
-for(const player of[...orange,...blue]){
-const isWin=winners.some(w=>w.id===player.id);
-const eloChange=ec[player.id]||0;
-try{
-const{data:ud}=await supabaseClient.from('users').select('*').eq('id',player.id).single();
-if(ud){await supabaseClient.from('users').update({matches:(ud.matches||0)+1,wins:(ud.wins||0)+(isWin?1:0),losses:(ud.losses||0)+(isWin?0:1),elo:Math.max(100,(ud.elo||1000)+eloChange),mvp:(ud.mvp||0)+(isWin?1:0),lastlogin:new Date().toISOString()}).eq('id',player.id)}
-await supabaseClient.from('match_history').insert([{id:Date.now().toString()+'_'+Math.random().toString(36).substr(2,4),user_id:player.id,username:player.username,map:mn,result:isWin?'win':'loss',elo_change:eloChange,match_date:new Date().toISOString(),server_name:'StartUp Platform',score_a:scoreA!==''?+scoreA:null,score_b:scoreB!==''?+scoreB:null,created_at:new Date().toISOString()}]);
-}catch(e){console.error(e)}
-}
-await supabaseClient.from('active_matches').delete().eq('id',matchId);
-showToast('success','Матч засчитан!',winner==='blue'?'BLUE':'ORANGE');
-await renderAdminPanel();await updateHomeStats();
+  const card=document.querySelector(`[data-match-id="${matchId}"]`);if(!card)return;
+  const scoreA=card.querySelector('.adm-score-a').value;
+  const scoreB=card.querySelector('.adm-score-b').value;
+  const{data:match}=await supabaseClient.from('active_matches').select('*').eq('id',matchId).single();
+  if(!match)return showToast('error','Ошибка','Матч не найден');
+  const orange=typeof match.orange==='string'?JSON.parse(match.orange):match.orange;
+  const blue=typeof match.blue==='string'?JSON.parse(match.blue):match.blue;
+  const winners=winner==='blue'?blue:orange,losers=winner==='blue'?orange:blue;
+  const pids=[...orange,...blue].map(p=>p.id);
+  const{data:pd}=await supabaseClient.from('users').select('id, elo').in('id',pids);
+  const em={};pd.forEach(p=>em[p.id]=p.elo||1000);
+  const aw=winners.reduce((s,p)=>s+(em[p.id]||1000),0)/winners.length;
+  const al=losers.reduce((s,p)=>s+(em[p.id]||1000),0)/losers.length;
+  const K=32,ec={};
+  for(const wp of winners){const w=em[wp.id]||1000;ec[wp.id]=Math.round(K*(1-1/(1+Math.pow(10,(al-w)/400))))}
+  for(const lp of losers){const l=em[lp.id]||1000;ec[lp.id]=Math.round(K*(0-1/(1+Math.pow(10,(aw-l)/400))))}
+  const mn=match.draft_state?.final||'Gem Grab';
+  for(const player of[...orange,...blue]){
+    const isWin=winners.some(w=>w.id===player.id);
+    const eloChange=ec[player.id]||0;
+    try{
+      const{data:ud}=await supabaseClient.from('users').select('*').eq('id',player.id).single();
+      if(ud){await supabaseClient.from('users').update({matches:(ud.matches||0)+1,wins:(ud.wins||0)+(isWin?1:0),losses:(ud.losses||0)+(isWin?0:1),elo:Math.max(100,(ud.elo||1000)+eloChange),mvp:(ud.mvp||0)+(isWin?1:0),lastlogin:new Date().toISOString()}).eq('id',player.id)}
+      await supabaseClient.from('match_history').insert([{id:Date.now().toString()+'_'+Math.random().toString(36).substr(2,4),user_id:player.id,username:player.username,map:mn,result:isWin?'win':'loss',elo_change:eloChange,match_date:new Date().toISOString(),server_name:'StartUp Platform',score_a:scoreA!==''?+scoreA:null,score_b:scoreB!==''?+scoreB:null,created_at:new Date().toISOString()}]);
+    }catch(e){console.error(e)}
+  }
+  await supabaseClient.from('active_matches').delete().eq('id',matchId);
+  showToast('success','Матч засчитан!',winner==='blue'?'BLUE':'ORANGE');
+  await renderAdminPanel();await updateHomeStats();
 }
 
 async function admCancelMatch(id){if(!confirm('Удалить матч?'))return;try{const{error}=await supabaseClient.from('active_matches').delete().eq('id',id);if(error){showToast('error','Ошибка',error.message);return}showToast('info','Удалён','');await renderAdminPanel();await updateHomeStats()}catch(e){showToast('error','Ошибка',e.message)}}
@@ -850,452 +860,460 @@ async function admAddAdmin(){const n=document.getElementById('admNewAdmin').valu
 async function admRemoveAdmin(id){if(!confirm('Снять?'))return;await supabaseClient.from('users').update({isadmin:false}).eq('id',id);await renderAdminPanel()}
 async function admSaveSettings(){const s=parseInt(document.getElementById('admTeamSize').value,10);if(!s||s<1||s>5){showToast('error','Ошибка','Размер 1-5');return}if(!confirm('Переключить формат на '+s+'×'+s+'?'))return;try{const{error}=await supabaseClient.rpc('admin_set_team_size',{p_size:s});if(error){showToast('error','Ошибка',error.message);return}currentSettings.team_size=String(s);updateFormatLabels();showToast('success','Формат обновлён',s+'×'+s)}catch(e){showToast('error','Ошибка',e.message)}}
 
+/* ===== STATS ===== */
 async function updateHomeStats(){
-try{
-const{count:qc}=await supabaseClient.from('queue').select('*',{count:'exact',head:true}).eq('status','searching');
-const{data:am}=await supabaseClient.from('active_matches').select('orange, blue').in('status',['pending','active']);
-let imp=0;(am||[]).forEach(m=>{try{const o=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;const b=typeof m.blue==='string'?JSON.parse(m.blue):m.blue;imp+=o.length+b.length}catch(e){}});
-const{count:hc}=await supabaseClient.from('match_history').select('*',{count:'exact',head:true});
-document.getElementById('activePlayersHome').textContent=qc||0;
-document.getElementById('inMatchPlayersHome').textContent=imp;
-document.getElementById('totalMatchesHome').textContent=hc||0;
-}catch(e){}
+  try{
+    const{count:qc}=await supabaseClient.from('queue').select('*',{count:'exact',head:true}).eq('status','searching');
+    const{data:am}=await supabaseClient.from('active_matches').select('orange, blue').in('status',['pending','active']);
+    let imp=0;(am||[]).forEach(m=>{try{const o=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;const b=typeof m.blue==='string'?JSON.parse(m.blue):m.blue;imp+=o.length+b.length}catch(e){}});
+    const{count:hc}=await supabaseClient.from('match_history').select('*',{count:'exact',head:true});
+    document.getElementById('activePlayersHome').textContent=qc||0;
+    document.getElementById('inMatchPlayersHome').textContent=imp;
+    document.getElementById('totalMatchesHome').textContent=hc||0;
+  }catch(e){}
 }
 async function checkAndCleanDuplicates(){if(!currentUser)return;try{const{data}=await supabaseClient.from('queue').select('id').eq('user_id',currentUser.id).eq('status','searching');if(data&&data.length>1){const ids=data.slice(1).map(q=>q.id);await supabaseClient.from('queue').delete().in('id',ids)}}catch(e){}}
 
-/* ============ MATCH LOOKUP ============ */
+/* ===== MATCH LOOKUP ===== */
 async function findMyActiveMatch(){
-if(!currentUser||!currentUser.id)return null;
-try{
-const{data,error}=await supabaseClient.rpc('get_my_active_match',{p_user_id:String(currentUser.id)});
-if(error||!data)return null;
-let m=data;if(typeof m==='string'){try{m=JSON.parse(m)}catch(e){return null}}
-if(!m||!m.id)return null;
-return m;
-}catch(e){return null}
+  if(!currentUser||!currentUser.id)return null;
+  try{
+    const{data,error}=await supabaseClient.rpc('get_my_active_match',{p_user_id:String(currentUser.id)});
+    if(error||!data)return null;
+    let m=data;if(typeof m==='string'){try{m=JSON.parse(m)}catch(e){return null}}
+    if(!m||!m.id)return null;
+    return m;
+  }catch(e){return null}
 }
 
 /* ГЛАВНОЕ: раз в 1 сек синхронизируем матч с сервером */
 function startGlobalPolling(){
-if(globalPollInterval)clearInterval(globalPollInterval);
-globalPollInterval=setInterval(async()=>{
-if(!currentUser||!currentUser.id)return;
-if(currentMatch&&isPlayerInMatch&&currentMatch.status!=='pending')return;
-try{
-const my=await findMyActiveMatch();
-if(!my||!my.id)return;
+  if(globalPollInterval)clearInterval(globalPollInterval);
+  globalPollInterval=setInterval(async()=>{
+    if(!currentUser||!currentUser.id)return;
+    if(currentMatch&&isPlayerInMatch&&currentMatch.status!=='pending')return;
+    try{
+      const my=await findMyActiveMatch();
+      if(!my||!my.id)return;
 
-if(currentMatch&&String(currentMatch.id)===String(my.id)){
-  currentMatch.status=my.status;
-  currentMatch.draft_state=my.draft_state||{banned:[],final:'',complete:false};
-  currentMatch.lobby_url=my.lobby_url||'';
-  currentMatch.orange=typeof my.orange==='string'?JSON.parse(my.orange):my.orange;
-  currentMatch.blue=typeof my.blue==='string'?JSON.parse(my.blue):my.blue;
-  if(document.getElementById('pageMatch')?.classList.contains('active')){renderMatchPage()}
-  if(Array.isArray(my.confirmed)&&isConfirming){confirmedPlayers=my.confirmed.map(String);renderModalPlayers()}
-  if(my.status==='active'&&isConfirming){
-    document.getElementById('confirmModal').classList.remove('active');
-    waitingConfirm=false;isConfirming=false;
-    startMatchAfterConfirm();
-  }
-  return;
-}
+      if(currentMatch&&String(currentMatch.id)===String(my.id)){
+        currentMatch.status=my.status;
+        currentMatch.draft_state=my.draft_state||{banned:[],final:'',complete:false};
+        currentMatch.lobby_url=my.lobby_url||'';
+        currentMatch.orange=typeof my.orange==='string'?JSON.parse(my.orange):my.orange;
+        currentMatch.blue=typeof my.blue==='string'?JSON.parse(my.blue):my.blue;
+        if(document.getElementById('pageMatch')?.classList.contains('active')){renderMatchPage()}
+        if(Array.isArray(my.confirmed)&&isConfirming){confirmedPlayers=my.confirmed.map(String);renderModalPlayers()}
+        if(my.status==='active'&&isConfirming){
+          document.getElementById('confirmModal').classList.remove('active');
+          waitingConfirm=false;isConfirming=false;
+          startMatchAfterConfirm();
+        }
+        return;
+      }
 
-await loadCreatedMatch(my.id);
-}catch(e){console.error('polling',e)}
-},1000);
+      await loadCreatedMatch(my.id);
+    }catch(e){console.error('polling',e)}
+  },1000);
 }
 
 async function loadCreatedMatch(id){
-try{
-const{data}=await supabaseClient.from('active_matches').select('*').eq('id',id).single();
-if(!data)return;
-if(currentMatch&&String(currentMatch.id)===String(data.id)&&isPlayerInMatch&&isConfirming&&data.status==='pending')return;
-const orange=typeof data.orange==='string'?JSON.parse(data.orange):data.orange;
-const blue=typeof data.blue==='string'?JSON.parse(data.blue):data.blue;
-if(!Array.isArray(orange)||!Array.isArray(blue))return;
-currentMatch={id:data.id,orange,blue,status:data.status,draft_state:data.draft_state||{banned:[],final:'',complete:false},lobby_url:data.lobby_url||''};
-currentMatchId=id;isPlayerInMatch=true;
-isCaptain=blue.length>0&&String(blue[0].id)===String(currentUser.id);
-isSearching=false;
-if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null}
-if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null}
-if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null}
-updateSearchVisibility();
-if(searchChannel){try{supabaseClient.removeChannel(searchChannel)}catch(e){}searchChannel=null}
-matchPlayers=[...orange,...blue];
-confirmedPlayers=Array.isArray(data.confirmed)?data.confirmed.map(String):[];
-subscribeToMatch(id);
-if(data.status==='pending'){showConfirmModal();showToast('success','Матч найден!','Подтвердите')}
-else if(data.status==='active'){
-document.getElementById('confirmModal').classList.remove('active');
-waitingConfirm=false;isConfirming=false;
-startMatchAfterConfirm();
-}
-}catch(e){console.error('loadCreatedMatch',e)}
+  try{
+    const{data}=await supabaseClient.from('active_matches').select('*').eq('id',id).single();
+    if(!data)return;
+    if(currentMatch&&String(currentMatch.id)===String(data.id)&&isPlayerInMatch&&isConfirming&&data.status==='pending')return;
+    const orange=typeof data.orange==='string'?JSON.parse(data.orange):data.orange;
+    const blue=typeof data.blue==='string'?JSON.parse(data.blue):data.blue;
+    if(!Array.isArray(orange)||!Array.isArray(blue))return;
+    currentMatch={id:data.id,orange,blue,status:data.status,draft_state:data.draft_state||{banned:[],final:'',complete:false},lobby_url:data.lobby_url||''};
+    currentMatchId=id;isPlayerInMatch=true;
+    isSearching=false;
+    if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null}
+    if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null}
+    if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null}
+    updateSearchVisibility();
+    if(searchChannel){try{supabaseClient.removeChannel(searchChannel)}catch(e){}searchChannel=null}
+    matchPlayers=[...orange,...blue];
+    confirmedPlayers=Array.isArray(data.confirmed)?data.confirmed.map(String):[];
+    subscribeToMatch(id);
+    if(data.status==='pending'){showConfirmModal();showToast('success','Матч найден!','Подтвердите')}
+    else if(data.status==='active'){
+      document.getElementById('confirmModal').classList.remove('active');
+      waitingConfirm=false;isConfirming=false;
+      startMatchAfterConfirm();
+    }
+  }catch(e){console.error('loadCreatedMatch',e)}
 }
 
 async function checkQueueOnLoad(){
-if(!currentUser)return;
-try{
-await checkAndCleanDuplicates();
-const{data}=await supabaseClient.from('queue').select('*').eq('user_id',currentUser.id).eq('status','searching').maybeSingle();
-if(data){const ls=data.last_seen?new Date(data.last_seen).getTime():0;if(Date.now()-ls>90000)await supabaseClient.from('queue').delete().eq('id',data.id);else{isSearching=true;searchSeconds=Math.floor((Date.now()-new Date(data.created_at).getTime())/1000);startHeartbeat();subscribeToQueue();subscribeToMatchCreation();startSearchTimer()}}
-updateSearchVisibility();await updateQueueCount();
-}catch(e){}
+  if(!currentUser)return;
+  try{
+    await checkAndCleanDuplicates();
+    const{data}=await supabaseClient.from('queue').select('*').eq('user_id',currentUser.id).eq('status','searching').maybeSingle();
+    if(data){
+      const ls=data.last_seen?new Date(data.last_seen).getTime():0;
+      if(Date.now()-ls>90000)await supabaseClient.from('queue').delete().eq('id',data.id);
+      else{isSearching=true;searchSeconds=Math.floor((Date.now()-new Date(data.created_at).getTime())/1000);startHeartbeat();subscribeToQueue();subscribeToMatchCreation();startSearchTimer()}
+    }
+    updateSearchVisibility();await updateQueueCount();
+  }catch(e){}
 }
 async function checkActiveMatchOnLoad(){if(!currentUser)return;const my=await findMyActiveMatch();if(!my||!my.id)return;await loadCreatedMatch(my.id)}
 async function cleanupSearchState(){
-if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null}
-if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null}
-if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null}
-if(searchCountdownTimer){clearInterval(searchCountdownTimer);searchCountdownTimer=null}
-if(searchChannel){try{await supabaseClient.removeChannel(searchChannel)}catch(e){}searchChannel=null}
-if(matchCreatedChannel){try{await supabaseClient.removeChannel(matchCreatedChannel)}catch(e){}matchCreatedChannel=null}
-isSearching=false;isStartingSearch=false;isCanceling=false;
+  if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null}
+  if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null}
+  if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null}
+  if(searchCountdownTimer){clearInterval(searchCountdownTimer);searchCountdownTimer=null}
+  if(searchChannel){try{await supabaseClient.removeChannel(searchChannel)}catch(e){}searchChannel=null}
+  if(matchCreatedChannel){try{await supabaseClient.removeChannel(matchCreatedChannel)}catch(e){}matchCreatedChannel=null}
+  isSearching=false;isStartingSearch=false;isCanceling=false;
 }
 function updateSearchVisibility(){
-const pb=document.getElementById('searchPlayersBlock');const tb=document.getElementById('searchTimerDisplay');const qb=document.getElementById('queueBtn');const cb=document.getElementById('cancelBtn');
-if(isSearching){pb.style.display='flex';tb.style.display='block';qb.style.display='none';cb.style.display='inline-flex';cb.disabled=false;cb.textContent='Отменить поиск'}
-else{pb.style.display='none';tb.style.display='none';qb.style.display='block';qb.disabled=false;qb.innerHTML='<i class="fas fa-search"></i> Начать поиск';cb.style.display='none'}
+  const pb=document.getElementById('searchPlayersBlock');const tb=document.getElementById('searchTimerDisplay');const qb=document.getElementById('queueBtn');const cb=document.getElementById('cancelBtn');
+  if(isSearching){pb.style.display='flex';tb.style.display='block';qb.style.display='none';cb.style.display='inline-flex';cb.disabled=false;cb.textContent='Отменить поиск'}
+  else{pb.style.display='none';tb.style.display='none';qb.style.display='block';qb.disabled=false;qb.innerHTML='<i class="fas fa-search"></i> Начать поиск';cb.style.display='none'}
 }
+
+/* ===== SEARCH ===== */
 async function startSearch(){
-if(isStartingSearch||isSearching)return;
-if(currentMatch){navigate('matchPage');return showToast('info','Активный матч','')}
-if(!currentUser)return showToast('error','Ошибка','Авторизуйтесь');
-const existing=await findMyActiveMatch();
-if(existing&&existing.id){await loadCreatedMatch(existing.id);return}
-isStartingSearch=true;
-const btn=document.getElementById('queueBtn');btn.disabled=true;
-let countdown=3;btn.innerHTML=`<i class="fas fa-hourglass-half"></i> Поиск через ${countdown}...`;
-if(searchCountdownTimer)clearInterval(searchCountdownTimer);
-searchCountdownTimer=setInterval(()=>{countdown--;if(countdown>0)btn.innerHTML=`<i class="fas fa-hourglass-half"></i> Поиск через ${countdown}...`},1000);
-await new Promise(r=>setTimeout(r,3000));clearInterval(searchCountdownTimer);searchCountdownTimer=null;
-if(!isStartingSearch)return;
-try{
-await cleanupSearchState();isStartingSearch=true;
-const{data:dq}=await supabaseClient.from('queue').select('id').eq('user_id',currentUser.id).eq('status','searching');
-if(dq&&dq.length>0)await supabaseClient.from('queue').delete().in('id',dq.map(q=>q.id));
-const{data,error:qe}=await supabaseClient.rpc('join_queue_v2',{p_user_id:currentUser.id});
-if(qe){if(String(qe.message).includes('already in match')){const my=await findMyActiveMatch();if(my&&my.id){await loadCreatedMatch(my.id);return}}showToast('error','Ошибка',qe.message);isStartingSearch=false;updateSearchVisibility();return}
-isSearching=true;searchSeconds=0;updateSearchVisibility();
-await updateQueueCount();await updateHomeStats();
-startSearchTimer();startHeartbeat();subscribeToQueue();subscribeToMatchCreation();
-if(queueUpdateInterval)clearInterval(queueUpdateInterval);
-queueUpdateInterval=setInterval(()=>{if(isSearching)updateQueueCount();else{clearInterval(queueUpdateInterval);queueUpdateInterval=null}},3000);
-const mid=data&&data.match_id;if(mid)await loadCreatedMatch(mid);else showToast('info','Поиск начат','Ищем игроков...');
-}catch(e){showToast('error','Ошибка',e.message)}finally{isStartingSearch=false}
+  if(isStartingSearch||isSearching)return;
+  if(currentMatch){navigate('matchPage');return showToast('info','Активный матч','')}
+  if(!currentUser)return showToast('error','Ошибка','Авторизуйтесь');
+  const existing=await findMyActiveMatch();
+  if(existing&&existing.id){await loadCreatedMatch(existing.id);return}
+  isStartingSearch=true;
+  const btn=document.getElementById('queueBtn');btn.disabled=true;
+  let countdown=3;btn.innerHTML=`<i class="fas fa-hourglass-half"></i> Поиск через ${countdown}...`;
+  if(searchCountdownTimer)clearInterval(searchCountdownTimer);
+  searchCountdownTimer=setInterval(()=>{countdown--;if(countdown>0)btn.innerHTML=`<i class="fas fa-hourglass-half"></i> Поиск через ${countdown}...`},1000);
+  await new Promise(r=>setTimeout(r,3000));clearInterval(searchCountdownTimer);searchCountdownTimer=null;
+  if(!isStartingSearch)return;
+  try{
+    await cleanupSearchState();isStartingSearch=true;
+    const{data:dq}=await supabaseClient.from('queue').select('id').eq('user_id',currentUser.id).eq('status','searching');
+    if(dq&&dq.length>0)await supabaseClient.from('queue').delete().in('id',dq.map(q=>q.id));
+    const{data,error:qe}=await supabaseClient.rpc('join_queue_v2',{p_user_id:currentUser.id});
+    if(qe){
+      if(String(qe.message).includes('already in match')){const my=await findMyActiveMatch();if(my&&my.id){await loadCreatedMatch(my.id);return}}
+      showToast('error','Ошибка',qe.message);isStartingSearch=false;updateSearchVisibility();return;
+    }
+    isSearching=true;searchSeconds=0;updateSearchVisibility();
+    await updateQueueCount();await updateHomeStats();
+    startSearchTimer();startHeartbeat();subscribeToQueue();subscribeToMatchCreation();
+    if(queueUpdateInterval)clearInterval(queueUpdateInterval);
+    queueUpdateInterval=setInterval(()=>{if(isSearching)updateQueueCount();else{clearInterval(queueUpdateInterval);queueUpdateInterval=null}},3000);
+    const mid=data&&data.match_id;if(mid)await loadCreatedMatch(mid);else showToast('info','Поиск начат','Ищем игроков...');
+  }catch(e){showToast('error','Ошибка',e.message)}finally{isStartingSearch=false}
 }
 async function updateQueueCount(){if(!isSearching)return;try{await checkAndCleanDuplicates();const{count}=await supabaseClient.from('queue').select('*',{count:'exact',head:true}).eq('status','searching');document.getElementById('searchCurrentPlayers').textContent=count||0;document.getElementById('searchStatus').textContent='Поиск'}catch(e){}}
 async function cancelSearch(){
-if(isCanceling||!isSearching)return;isCanceling=true;
-const cb=document.getElementById('cancelBtn');cb.disabled=true;cb.innerHTML=`<i class="fas fa-hourglass-half"></i> Отмена...`;
-await new Promise(r=>setTimeout(r,1000));
-if(!isCanceling)return;
-try{await supabaseClient.rpc('leave_queue_v2',{p_user_id:currentUser.id});isSearching=false;await cleanupSearchState();updateSearchVisibility();document.getElementById('searchCurrentPlayers').textContent='0';document.getElementById('searchTimerDisplay').innerHTML='<i class="fas fa-clock"></i> 00:00';await updateHomeStats();showToast('info','Поиск отменён','')}catch(e){showToast('error','Ошибка',e.message)}finally{isCanceling=false}
+  if(isCanceling||!isSearching)return;isCanceling=true;
+  const cb=document.getElementById('cancelBtn');cb.disabled=true;cb.innerHTML=`<i class="fas fa-hourglass-half"></i> Отмена...`;
+  await new Promise(r=>setTimeout(r,1000));
+  if(!isCanceling)return;
+  try{await supabaseClient.rpc('leave_queue_v2',{p_user_id:currentUser.id});isSearching=false;await cleanupSearchState();updateSearchVisibility();document.getElementById('searchCurrentPlayers').textContent='0';document.getElementById('searchTimerDisplay').innerHTML='<i class="fas fa-clock"></i> 00:00';await updateHomeStats();showToast('info','Поиск отменён','')}catch(e){showToast('error','Ошибка',e.message)}finally{isCanceling=false}
 }
 function startSearchTimer(){if(searchTimerInterval)clearInterval(searchTimerInterval);searchTimerInterval=setInterval(()=>{if(!isSearching){clearInterval(searchTimerInterval);searchTimerInterval=null;return}searchSeconds++;const m=String(Math.floor(searchSeconds/60)).padStart(2,'0');const s=String(searchSeconds%60).padStart(2,'0');document.getElementById('searchTimerDisplay').innerHTML='<i class="fas fa-clock"></i> '+m+':'+s},1000)}
 function subscribeToQueue(){if(searchChannel){supabaseClient.removeChannel(searchChannel);searchChannel=null}searchChannel=supabaseClient.channel('queue_'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'queue'},async()=>{if(isSearching){await updateQueueCount();await updateHomeStats()}}).subscribe()}
 function subscribeToMatchCreation(){
-if(matchCreatedChannel)return;
-matchCreatedChannel=supabaseClient.channel('match_created_'+Date.now()+'_'+Math.random())
-.on('postgres_changes',{event:'*',schema:'public',table:'active_matches'},async(payload)=>{
-if(currentUser?.isadmin&&adminTab==='matches')await renderAdminPanel();
-const m=payload.new||payload.old;if(!m||!currentUser)return;
-let orange=[],blue=[];try{orange=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;blue=typeof m.blue==='string'?JSON.parse(m.blue):m.blue}catch(e){return}
-const isMe=[...orange,...blue].some(p=>String(p.id)===String(currentUser.id));
-if(!isMe)return;
-if(currentMatch&&String(currentMatch.id)===String(m.id)&&isPlayerInMatch&&isConfirming)return;
-await loadCreatedMatch(m.id);
-}).subscribe();
+  if(matchCreatedChannel)return;
+  matchCreatedChannel=supabaseClient.channel('match_created_'+Date.now()+'_'+Math.random())
+    .on('postgres_changes',{event:'*',schema:'public',table:'active_matches'},async(payload)=>{
+      if(currentUser?.isadmin&&adminTab==='matches')await renderAdminPanel();
+      const m=payload.new||payload.old;if(!m||!currentUser)return;
+      let orange=[],blue=[];try{orange=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;blue=typeof m.blue==='string'?JSON.parse(m.blue):m.blue}catch(e){return}
+      const isMe=[...orange,...blue].some(p=>String(p.id)===String(currentUser.id));
+      if(!isMe)return;
+      if(currentMatch&&String(currentMatch.id)===String(m.id)&&isPlayerInMatch&&isConfirming)return;
+      await loadCreatedMatch(m.id);
+    }).subscribe();
 }
 function startHeartbeat(){if(heartbeatInterval)clearInterval(heartbeatInterval);heartbeatFailCount=0;heartbeatInterval=setInterval(async()=>{if(!currentUser){clearInterval(heartbeatInterval);heartbeatInterval=null;return}try{if(isSearching){const{data,error}=await supabaseClient.rpc('queue_heartbeat_v2',{p_user_id:currentUser.id});if(!error){heartbeatFailCount=0;const mid=data&&data.match_id;if(mid){clearInterval(heartbeatInterval);heartbeatInterval=null;await loadCreatedMatch(mid);return}}await updateQueueCount()}}catch(e){heartbeatFailCount++}},20000)}
 
-/* ============ CONFIRM MODAL ============ */
+/* ===== CONFIRM MODAL ===== */
 function showConfirmModal(){
-if(isConfirming)return;
-isConfirming=true;waitingConfirm=true;
-matchPlayers=[...currentMatch.orange,...currentMatch.blue];
-document.getElementById('confirmModal').classList.add('active');
-confirmTimeLeft=25;
-document.getElementById('modalTimer').textContent=confirmTimeLeft;
-const bar=document.getElementById('timerBar');if(bar){bar.style.strokeDashoffset='0'}
-const oc=currentMatch.orange[0];const bc=currentMatch.blue[0];
-const myTeam=(oc&&String(oc.id)===String(currentUser.id))?'Команда A':(bc&&String(bc.id)===String(currentUser.id))?'Команда B':'—';
-document.getElementById('matchModalTeam').innerHTML='DEFAULT · <b>'+myTeam+'</b>';
-renderModalPlayers();
-if(confirmTimer)clearInterval(confirmTimer);
-confirmTimer=setInterval(()=>{
-confirmTimeLeft--;
-document.getElementById('modalTimer').textContent=confirmTimeLeft;
-const ratio=confirmTimeLeft/25;if(bar)bar.style.strokeDashoffset=String((1-ratio)*TIMER_CIRC);
-if(confirmTimeLeft<=5)document.getElementById('modalTimer').style.color='#ff3b6b';
-if(confirmTimeLeft<=0){clearInterval(confirmTimer);handleConfirmTimeout()}
-},1000);
-document.getElementById('matchNavLabel').textContent='Матч';
-document.querySelector('#matchNavBtn i').className='fas fa-gamepad';
-matchFound();
+  if(isConfirming)return;
+  isConfirming=true;waitingConfirm=true;
+  matchPlayers=[...currentMatch.orange,...currentMatch.blue];
+  document.getElementById('confirmModal').classList.add('active');
+  confirmTimeLeft=25;
+  document.getElementById('modalTimer').textContent=confirmTimeLeft;
+  const bar=document.getElementById('timerBar');if(bar){bar.style.strokeDashoffset='0'}
+  const oc=currentMatch.orange[0];const bc=currentMatch.blue[0];
+  const myTeam=(oc&&String(oc.id)===String(currentUser.id))?'Команда A':(bc&&String(bc.id)===String(currentUser.id))?'Команда B':'—';
+  document.getElementById('matchModalTeam').innerHTML='DEFAULT · <b>'+myTeam+'</b>';
+  renderModalPlayers();
+  if(confirmTimer)clearInterval(confirmTimer);
+  confirmTimer=setInterval(()=>{
+    confirmTimeLeft--;
+    document.getElementById('modalTimer').textContent=confirmTimeLeft;
+    const ratio=confirmTimeLeft/25;if(bar)bar.style.strokeDashoffset=String((1-ratio)*TIMER_CIRC);
+    if(confirmTimeLeft<=5)document.getElementById('modalTimer').style.color='#ff3b6b';
+    if(confirmTimeLeft<=0){clearInterval(confirmTimer);handleConfirmTimeout()}
+  },1000);
+  document.getElementById('matchNavLabel').textContent='Матч';
+  document.querySelector('#matchNavBtn i').className='fas fa-gamepad';
+  matchFound();
 }
 function renderModalPlayers(){
-const wrap=document.getElementById('modalPlayers');if(!wrap||!matchPlayers.length)return;
-wrap.innerHTML=matchPlayers.map(p=>{
-const c=confirmedPlayers.includes(String(p.id));
-const me=String(p.id)===String(currentUser.id);
-let inner=c?'<svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg>':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>';
-const cls=['match-slot',c?'confirmed':'pending'];if(me)cls.push('me');
-return `<div class="${cls.join(' ')}" title="${(p.username||'?')}">${inner}</div>`;
-}).join('');
-const total=matchPlayers.length;
-const confirmedCount=matchPlayers.filter(p=>confirmedPlayers.includes(String(p.id))).length;
-document.getElementById('confirmedCount').textContent=String(confirmedCount);
-document.getElementById('totalCount').textContent=String(total);
-const btn=document.getElementById('confirmBtn');const btnText=document.getElementById('confirmBtnText');const btnIcon=document.getElementById('confirmBtnIcon');
-const meConfirmed=confirmedPlayers.includes(String(currentUser.id));
-if(confirmedCount===total&&total>0){
-btn.className='match-confirm-btn done';btn.disabled=true;
-btnText.textContent='Все готовы — запускаем матч...';
-btnIcon.innerHTML='<span class="spinner"></span>';
-clearInterval(confirmTimer);
-setTimeout(async()=>{
-try{await supabaseClient.from('active_matches').update({status:'active'}).eq('id',currentMatchId).eq('status','pending')}catch(e){}
-document.getElementById('confirmModal').classList.remove('active');
-waitingConfirm=false;isConfirming=false;
-startMatchAfterConfirm();
-},1000);
-}else if(meConfirmed){
-btn.className='match-confirm-btn';btn.disabled=true;
-btnText.textContent='Вы готовы — ждём остальных';
-btnIcon.innerHTML='<span class="spinner"></span>';
-}else{
-btn.className='match-confirm-btn';btn.disabled=false;
-btnText.textContent='Подтвердить';
-btnIcon.textContent='✓';
-}
+  const wrap=document.getElementById('modalPlayers');if(!wrap||!matchPlayers.length)return;
+  wrap.innerHTML=matchPlayers.map(p=>{
+    const c=confirmedPlayers.includes(String(p.id));
+    const me=String(p.id)===String(currentUser.id);
+    let inner=c?'<svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg>':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>';
+    const cls=['match-slot',c?'confirmed':'pending'];if(me)cls.push('me');
+    return `<div class="${cls.join(' ')}" title="${(p.username||'?')}">${inner}</div>`;
+  }).join('');
+  const total=matchPlayers.length;
+  const confirmedCount=matchPlayers.filter(p=>confirmedPlayers.includes(String(p.id))).length;
+  document.getElementById('confirmedCount').textContent=String(confirmedCount);
+  document.getElementById('totalCount').textContent=String(total);
+  const btn=document.getElementById('confirmBtn');const btnText=document.getElementById('confirmBtnText');const btnIcon=document.getElementById('confirmBtnIcon');
+  const meConfirmed=confirmedPlayers.includes(String(currentUser.id));
+  if(confirmedCount===total&&total>0){
+    btn.className='match-confirm-btn done';btn.disabled=true;
+    btnText.textContent='Все готовы — запускаем матч...';
+    btnIcon.innerHTML='<span class="spinner"></span>';
+    clearInterval(confirmTimer);
+    setTimeout(async()=>{
+      try{await supabaseClient.from('active_matches').update({status:'active'}).eq('id',currentMatchId).eq('status','pending')}catch(e){}
+      document.getElementById('confirmModal').classList.remove('active');
+      waitingConfirm=false;isConfirming=false;
+      startMatchAfterConfirm();
+    },1000);
+  }else if(meConfirmed){
+    btn.className='match-confirm-btn';btn.disabled=true;
+    btnText.textContent='Вы готовы — ждём остальных';
+    btnIcon.innerHTML='<span class="spinner"></span>';
+  }else{
+    btn.className='match-confirm-btn';btn.disabled=false;
+    btnText.textContent='Подтвердить';
+    btnIcon.textContent='✓';
+  }
 }
 async function handleConfirm(){
-if(!waitingConfirm||confirmedPlayers.includes(String(currentUser.id)))return;
-confirmedPlayers.push(String(currentUser.id));
-renderModalPlayers();
-try{
-const{data,error}=await supabaseClient.rpc('confirm_match',{p_match:String(currentMatchId),p_user_id:String(currentUser.id)});
-if(error){confirmedPlayers=confirmedPlayers.filter(id=>id!==String(currentUser.id));renderModalPlayers();showToast('error','Ошибка',error.message);return}
-if(data&&Array.isArray(data.confirmed)){confirmedPlayers=data.confirmed.map(String);renderModalPlayers()}
-}catch(e){confirmedPlayers=confirmedPlayers.filter(id=>id!==String(currentUser.id));renderModalPlayers();showToast('error','Ошибка','Не удалось подтвердить')}
+  if(!waitingConfirm||confirmedPlayers.includes(String(currentUser.id)))return;
+  confirmedPlayers.push(String(currentUser.id));
+  renderModalPlayers();
+  try{
+    const{data,error}=await supabaseClient.rpc('confirm_match',{p_match:String(currentMatchId),p_user_id:String(currentUser.id)});
+    if(error){confirmedPlayers=confirmedPlayers.filter(id=>id!==String(currentUser.id));renderModalPlayers();showToast('error','Ошибка',error.message);return}
+    if(data&&Array.isArray(data.confirmed)){confirmedPlayers=data.confirmed.map(String);renderModalPlayers()}
+  }catch(e){confirmedPlayers=confirmedPlayers.filter(id=>id!==String(currentUser.id));renderModalPlayers();showToast('error','Ошибка','Не удалось подтвердить')}
 }
 function handleConfirmTimeout(){
-const nc=matchPlayers.filter(p=>!confirmedPlayers.includes(String(p.id)));
-if(nc.length>0){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;showToast('info','Матч отменён',nc.length+' не подтвердили');supabaseClient.from('active_matches').delete().eq('id',currentMatchId).then(()=>{},()=>{});currentMatch=null;isPlayerInMatch=false;isCaptain=false;document.getElementById('matchNavLabel').textContent='Поиск';document.querySelector('#matchNavBtn i').className='fas fa-search';navigate('matches');return}
-document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;startMatchAfterConfirm();
+  const nc=matchPlayers.filter(p=>!confirmedPlayers.includes(String(p.id)));
+  if(nc.length>0){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;showToast('info','Матч отменён',nc.length+' не подтвердили');supabaseClient.from('active_matches').delete().eq('id',currentMatchId).then(()=>{},()=>{});currentMatch=null;isPlayerInMatch=false;document.getElementById('matchNavLabel').textContent='Поиск';document.querySelector('#matchNavBtn i').className='fas fa-search';navigate('matches');return}
+  document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;startMatchAfterConfirm();
 }
-
 function startMatchAfterConfirm(){
-if(!currentMatch)return;
-if(!currentMatch.draft_state)currentMatch.draft_state={banned:[],final:'',complete:false};
-document.getElementById('matchResultSection').classList.remove('admin-visible');
-document.getElementById('lobbySection').classList.remove('visible');
-document.getElementById('shotSection').classList.remove('visible');
-document.getElementById('matchActions').classList.remove('admin-visible');
-document.getElementById('shotInput').value='';
-document.getElementById('shotPreview').innerHTML='';
-document.getElementById('shotStatus').textContent='';
-navigate('matchPage');
-renderMatchPage();
-showToast('success','Матч начался!',(currentMatch.orange.length+currentMatch.blue.length)+' игроков');
-checkMatchResultVisibility();checkLobbyVisibility();checkShotVisibility();updateHomeStats();
+  if(!currentMatch)return;
+  if(!currentMatch.draft_state)currentMatch.draft_state={banned:[],final:'',complete:false};
+  document.getElementById('matchResultSection').classList.remove('admin-visible');
+  document.getElementById('lobbySection').classList.remove('visible');
+  document.getElementById('shotSection').classList.remove('visible');
+  document.getElementById('matchActions').classList.remove('admin-visible');
+  document.getElementById('shotInput').value='';
+  document.getElementById('shotPreview').innerHTML='';
+  document.getElementById('shotStatus').textContent='';
+  navigate('matchPage');
+  renderMatchPage();
+  showToast('success','Матч начался!',(currentMatch.orange.length+currentMatch.blue.length)+' игроков');
+  checkMatchResultVisibility();checkLobbyVisibility();checkShotVisibility();updateHomeStats();
 }
-
 function subscribeToMatch(id){
-if(matchChannel){supabaseClient.removeChannel(matchChannel);matchChannel=null}
-matchChannel=supabaseClient.channel('match_'+id+'_'+Date.now())
-.on('postgres_changes',{event:'*',schema:'public',table:'active_matches',filter:`id=eq.${id}`},async(payload)=>{
-if(payload.eventType==='DELETE'){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;currentMatch=null;isPlayerInMatch=false;navigate('matches');return}
-if(payload.eventType==='UPDATE'){
-const nd=payload.new;
-const orange=typeof nd.orange==='string'?JSON.parse(nd.orange):nd.orange;
-const blue=typeof nd.blue==='string'?JSON.parse(nd.blue):nd.blue;
-currentMatch={id:nd.id,orange,blue,status:nd.status,draft_state:nd.draft_state||{banned:[],final:'',complete:false},lobby_url:nd.lobby_url||''};
-currentMatchId=nd.id;isPlayerInMatch=true;
-if(Array.isArray(nd.confirmed)&&isConfirming){confirmedPlayers=nd.confirmed.map(String);renderModalPlayers()}
-if(nd.status==='active'&&isConfirming){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;startMatchAfterConfirm()}
-if(document.getElementById('pageMatch')?.classList.contains('active'))renderMatchPage();
-}
-}).subscribe();
+  if(matchChannel){supabaseClient.removeChannel(matchChannel);matchChannel=null}
+  matchChannel=supabaseClient.channel('match_'+id+'_'+Date.now())
+    .on('postgres_changes',{event:'*',schema:'public',table:'active_matches',filter:`id=eq.${id}`},async(payload)=>{
+      if(payload.eventType==='DELETE'){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;currentMatch=null;isPlayerInMatch=false;navigate('matches');return}
+      if(payload.eventType==='UPDATE'){
+        const nd=payload.new;
+        const orange=typeof nd.orange==='string'?JSON.parse(nd.orange):nd.orange;
+        const blue=typeof nd.blue==='string'?JSON.parse(nd.blue):nd.blue;
+        currentMatch={id:nd.id,orange,blue,status:nd.status,draft_state:nd.draft_state||{banned:[],final:'',complete:false},lobby_url:nd.lobby_url||''};
+        currentMatchId=nd.id;isPlayerInMatch=true;
+        if(Array.isArray(nd.confirmed)&&isConfirming){confirmedPlayers=nd.confirmed.map(String);renderModalPlayers()}
+        if(nd.status==='active'&&isConfirming){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;startMatchAfterConfirm()}
+        if(document.getElementById('pageMatch')?.classList.contains('active'))renderMatchPage();
+      }
+    }).subscribe();
 }
 
-/* ============ DRAFT / LOBBY / SHOTS ============ */
-
+/* ===== DRAFT / LOBBY / SHOTS ===== */
 function isOrangeCaptain(){if(!currentMatch||!currentMatch.orange?.length)return false;return String(currentMatch.orange[0].id)===String(currentUser.id)}
 function isAnyCaptain(){if(!currentMatch)return false;if(isOrangeCaptain())return true;if(currentMatch.blue?.length&&String(currentMatch.blue[0].id)===String(currentUser.id))return true;return false}
-
 function checkLobbyVisibility(){if(!currentMatch)return;const s=currentMatch.draft_state;if(s&&s.complete)document.getElementById('lobbySection').classList.add('visible');else document.getElementById('lobbySection').classList.remove('visible')}
 function checkShotVisibility(){if(!currentMatch)return;const s=currentMatch.draft_state;const lobby=currentMatch.lobby_url;const visible=(s&&s.complete)&&lobby;if(visible)document.getElementById('shotSection').classList.add('visible');else document.getElementById('shotSection').classList.remove('visible')}
 
 function renderDraftUI(){
-if(!currentMatch)return;
-const s=currentMatch.draft_state||{banned:[],final:'',complete:false};
-document.getElementById('matchSelectedMode').textContent=s.final||'—';
-const banned=s.banned||[];
-document.querySelectorAll('#modesBanContainer .ban-btn').forEach(btn=>{
-const v=btn.dataset.value;
-if(banned.includes(v)){btn.classList.add('banned');btn.classList.remove('selected');btn.disabled=true}
-else if(s.final===v){btn.classList.add('selected');btn.classList.remove('banned');btn.disabled=true}
-else{btn.classList.remove('banned','selected');btn.disabled=false}
-});
-const left=ALL_MODES.filter(v=>!banned.includes(v)&&v!==s.final);
-document.getElementById('modesLeft').textContent=String(left.length);
-const ms=document.getElementById('modesStatus');
-if(s.complete){ms.textContent='✅ '+s.final;ms.className='status-text done'}
-else if(isAnyCaptain()){ms.textContent='Ваш ход';ms.className='status-text done'}
-else{ms.textContent='Ход капитанов';ms.className='status-text'}
-document.getElementById('modesTurnName').textContent=s.complete?'—':'Капитаны';
-checkLobbyVisibility();
-renderLobbyBody();
-checkShotVisibility();
+  if(!currentMatch)return;
+  const s=currentMatch.draft_state||{banned:[],final:'',complete:false};
+  document.getElementById('matchSelectedMode').textContent=s.final||'—';
+  const banned=s.banned||[];
+  document.querySelectorAll('#modesBanContainer .ban-btn').forEach(btn=>{
+    const v=btn.dataset.value;
+    if(banned.includes(v)){btn.classList.add('banned');btn.classList.remove('selected');btn.disabled=true}
+    else if(s.final===v){btn.classList.add('selected');btn.classList.remove('banned');btn.disabled=true}
+    else{btn.classList.remove('banned','selected');btn.disabled=false}
+  });
+  const left=ALL_MODES.filter(v=>!banned.includes(v)&&v!==s.final);
+  document.getElementById('modesLeft').textContent=String(left.length);
+  const ms=document.getElementById('modesStatus');
+  if(s.complete){ms.textContent='✅ '+s.final;ms.className='status-text done'}
+  else if(isAnyCaptain()){ms.textContent='Ваш ход';ms.className='status-text done'}
+  else{ms.textContent='Ход капитанов';ms.className='status-text'}
+  document.getElementById('modesTurnName').textContent=s.complete?'—':'Капитаны';
+  checkLobbyVisibility();
+  renderLobbyBody();
+  checkShotVisibility();
 }
 
 function renderLobbyBody(){
-const body=document.getElementById('lobbyBody');if(!body)return;
-const url=currentMatch?.lobby_url||'';
-const orangeCap=currentMatch?.orange?.[0]?.username||'?';
-if(url){
-body.innerHTML=`<div class="lobby-link-display"><div class="link-label">🔗 Ссылка от капитана оранжевых:</div><div class="link-value" onclick="navigator.clipboard.writeText('${url}');showToast('success','Скопировано','')">${url}</div></div>`;
-return;
-}
-if(isOrangeCaptain()){
-body.innerHTML=`<div class="lobby-info"><i class="fas fa-info-circle"></i> Вы капитан оранжевых — прикрепите ссылку на лобби</div><div class="lobby-input-group"><input type="text" id="lobbyInput" placeholder="https://..." /><button onclick="sendLobbyUrl()"><i class="fas fa-paper-plane"></i></button></div>`;
-}else{
-body.innerHTML=`<div class="lobby-wait">⏳ Ждём ссылку от капитана оранжевых: <b>${orangeCap}</b></div>`;
-}
+  const body=document.getElementById('lobbyBody');if(!body)return;
+  const url=currentMatch?.lobby_url||'';
+  const orangeCap=currentMatch?.orange?.[0]?.username||'?';
+  if(url){
+    body.innerHTML=`<div class="lobby-link-display"><div class="link-label">🔗 Ссылка от капитана оранжевых:</div><div class="link-value" onclick="navigator.clipboard.writeText('${url}');showToast('success','Скопировано','')">${url}</div></div>`;
+    return;
+  }
+  if(isOrangeCaptain()){
+    body.innerHTML=`<div class="lobby-info"><i class="fas fa-info-circle"></i> Вы капитан оранжевых — прикрепите ссылку на лобби</div><div class="lobby-input-group"><input type="text" id="lobbyInput" placeholder="https://..." /><button onclick="sendLobbyUrl()"><i class="fas fa-paper-plane"></i></button></div>`;
+  }else{
+    body.innerHTML=`<div class="lobby-wait">⏳ Ждём ссылку от капитана оранжевых: <b>${orangeCap}</b></div>`;
+  }
 }
 
 async function sendLobbyUrl(){
-const inp=document.getElementById('lobbyInput');if(!inp)return;
-const url=inp.value.trim();
-if(!url||!url.startsWith('http'))return showToast('error','Ошибка','Введите http-ссылку');
-try{
-const{data,error}=await supabaseClient.rpc('set_lobby_url',{p_match:String(currentMatchId),p_user_id:String(currentUser.id),p_url:url});
-if(error||!data?.ok){showToast('error','Ошибка',error?.message||data?.reason||'fail');return}
-showToast('success','Ссылка отправлена','Все увидят её онлайн');
-await loadCreatedMatch(currentMatchId);
-}catch(e){showToast('error','Ошибка',e.message)}
+  const inp=document.getElementById('lobbyInput');if(!inp)return;
+  const url=inp.value.trim();
+  if(!url||!url.startsWith('http'))return showToast('error','Ошибка','Введите http-ссылку');
+  try{
+    const{data,error}=await supabaseClient.rpc('set_lobby_url',{p_match:String(currentMatchId),p_user_id:String(currentUser.id),p_url:url});
+    if(error||!data?.ok){showToast('error','Ошибка',error?.message||data?.reason||'fail');return}
+    showToast('success','Ссылка отправлена','Все увидят её онлайн');
+    await loadCreatedMatch(currentMatchId);
+  }catch(e){showToast('error','Ошибка',e.message)}
 }
 
 async function handleBanClick(mode){
-if(!currentMatch)return;
-const s=currentMatch.draft_state||{complete:false,banned:[]};
-if(s.complete)return showToast('info','Драфт завершён','');
-try{
-const{data,error}=await supabaseClient.rpc('ban_mode',{p_match:String(currentMatchId),p_user_id:String(currentUser.id),p_mode:mode});
-if(error){showToast('error','Ошибка',error.message);return}
-if(data&&data.ok===false){showToast('error','Ошибка',data.reason||'fail');return}
-// ГЛАВНОЕ: перечитываем матч с сервера
-await loadCreatedMatch(currentMatchId);
-if(data&&data.complete)showToast('success','Драфт завершён!','Режим: '+(data.final||''));
-else showToast('success','Забанено',mode);
-}catch(e){showToast('error','Ошибка',e.message)}
+  if(!currentMatch)return;
+  const s=currentMatch.draft_state||{complete:false,banned:[]};
+  if(s.complete)return showToast('info','Драфт завершён','');
+  try{
+    const{data,error}=await supabaseClient.rpc('ban_mode',{
+      p_match:String(currentMatchId),
+      p_user_id:String(currentUser.id),
+      p_mode:mode
+    });
+    if(error){showToast('error','Ошибка',error.message);return}
+    if(data&&data.ok===false){showToast('error','Ошибка',data.reason||'fail');return}
+    // ГЛАВНОЕ — перечитываем матч с сервера, чтобы у банившего тоже обновилось
+    await loadCreatedMatch(currentMatchId);
+    if(data&&data.complete)showToast('success','Драфт завершён!','Режим: '+(data.final||''));
+    else showToast('success','Забанено',mode);
+  }catch(e){showToast('error','Ошибка',e.message)}
 }
 
 async function handleShotUpload(){
-const inp=document.getElementById('shotInput');const st=document.getElementById('shotStatus');
-const file=inp?.files?.[0];
-if(!file){st.textContent='❌ Выберите файл';st.style.color='#ff6b6b';return}
-if(!file.type.startsWith('image/')){st.textContent='❌ Только изображения';st.style.color='#ff6b6b';return}
-if(file.size>5*1024*1024){st.textContent='❌ Больше 5MB';st.style.color='#ff6b6b';return}
-st.textContent='⏳ Загрузка...';st.style.color='#8888aa';
-try{
-const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
-const path=currentMatchId+'/'+currentUser.id+'_'+Date.now()+'.'+ext;
-const{error:upErr}=await supabaseClient.storage.from('screenshots').upload(path,file,{cacheControl:'3600',upsert:false});
-if(upErr){st.textContent='❌ '+upErr.message;st.style.color='#ff6b6b';return}
-const{data:pub}=supabaseClient.storage.from('screenshots').getPublicUrl(path);
-const url=pub.publicUrl;
-const{data,error}=await supabaseClient.rpc('submit_shot',{p_match:String(currentMatchId),p_user_id:String(currentUser.id),p_url:url});
-if(error||!data?.ok){st.textContent='❌ '+(error?.message||'fail');st.style.color='#ff6b6b';return}
-document.getElementById('shotPreview').innerHTML=`<img src="${url}">`;
-st.textContent='✅ Отправлено. Матч закрыт у вас';st.style.color='#51cf66';
-setTimeout(closeMatchForMe,1200);
-}catch(e){st.textContent='❌ '+e.message;st.style.color='#ff6b6b'}
+  const inp=document.getElementById('shotInput');const st=document.getElementById('shotStatus');
+  const file=inp?.files?.[0];
+  if(!file){st.textContent='❌ Выберите файл';st.style.color='#ff6b6b';return}
+  if(!file.type.startsWith('image/')){st.textContent='❌ Только изображения';st.style.color='#ff6b6b';return}
+  if(file.size>5*1024*1024){st.textContent='❌ Больше 5MB';st.style.color='#ff6b6b';return}
+  st.textContent='⏳ Загрузка...';st.style.color='#8888aa';
+  try{
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+    const path=currentMatchId+'/'+currentUser.id+'_'+Date.now()+'.'+ext;
+    const{error:upErr}=await supabaseClient.storage.from('screenshots').upload(path,file,{cacheControl:'3600',upsert:false});
+    if(upErr){st.textContent='❌ '+upErr.message;st.style.color='#ff6b6b';return}
+    const{data:pub}=supabaseClient.storage.from('screenshots').getPublicUrl(path);
+    const url=pub.publicUrl;
+    const{data,error}=await supabaseClient.rpc('submit_shot',{p_match:String(currentMatchId),p_user_id:String(currentUser.id),p_url:url});
+    if(error||!data?.ok){st.textContent='❌ '+(error?.message||'fail');st.style.color='#ff6b6b';return}
+    document.getElementById('shotPreview').innerHTML=`<img src="${url}">`;
+    st.textContent='✅ Отправлено. Матч закрыт у вас';st.style.color='#51cf66';
+    setTimeout(closeMatchForMe,1200);
+  }catch(e){st.textContent='❌ '+e.message;st.style.color='#ff6b6b'}
 }
 
 async function handleShotSkip(){
-if(!confirm('Вы точно не сделали скриншот? Матч закроется у вас, но админ увидит пометку.'))return;
-try{
-const{data,error}=await supabaseClient.rpc('skip_shot',{p_match:String(currentMatchId),p_user_id:String(currentUser.id)});
-if(error||!data?.ok){showToast('error','Ошибка',error?.message||'fail');return}
-showToast('info','Отмечено','Матч закрыт у вас');
-closeMatchForMe();
-}catch(e){showToast('error','Ошибка',e.message)}
+  if(!confirm('Вы точно не сделали скриншот? Матч закроется у вас, но админ увидит пометку.'))return;
+  try{
+    const{data,error}=await supabaseClient.rpc('skip_shot',{p_match:String(currentMatchId),p_user_id:String(currentUser.id)});
+    if(error||!data?.ok){showToast('error','Ошибка',error?.message||'fail');return}
+    showToast('info','Отмечено','Матч закрыт у вас');
+    closeMatchForMe();
+  }catch(e){showToast('error','Ошибка',e.message)}
 }
 
 function closeMatchForMe(){
-currentMatch=null;isPlayerInMatch=false;isCaptain=false;isConfirming=false;waitingConfirm=false;
-document.getElementById('confirmModal').classList.remove('active');
-document.getElementById('matchNavLabel').textContent='Поиск';
-document.querySelector('#matchNavBtn i').className='fas fa-search';
-navigate('matches');
+  currentMatch=null;isPlayerInMatch=false;isConfirming=false;waitingConfirm=false;
+  document.getElementById('confirmModal').classList.remove('active');
+  document.getElementById('matchNavLabel').textContent='Поиск';
+  document.querySelector('#matchNavBtn i').className='fas fa-search';
+  navigate('matches');
 }
 
-/* ============ RENDER ============ */
-
+/* ===== RENDER ===== */
 function checkMatchResultVisibility(){
-const a=currentUser?.isadmin===true;
-const complete=currentMatch?.draft_state?.complete;
-if(complete&&a){document.getElementById('matchResultSection').classList.add('admin-visible');document.getElementById('matchActions').classList.add('admin-visible');document.getElementById('endMatchBtn').disabled=false}
-else{document.getElementById('matchResultSection').classList.remove('admin-visible');document.getElementById('matchActions').classList.remove('admin-visible');document.getElementById('endMatchBtn').disabled=true}
+  const a=currentUser?.isadmin===true;
+  const complete=currentMatch?.draft_state?.complete;
+  if(complete&&a){document.getElementById('matchResultSection').classList.add('admin-visible');document.getElementById('matchActions').classList.add('admin-visible');document.getElementById('endMatchBtn').disabled=false}
+  else{document.getElementById('matchResultSection').classList.remove('admin-visible');document.getElementById('matchActions').classList.remove('admin-visible');document.getElementById('endMatchBtn').disabled=true}
 }
 
 function renderMatchPage(){
-if(!currentMatch)return;
-const oc=currentMatch.orange[0]?.username||null;
-const bc=currentMatch.blue[0]?.username||null;
-document.getElementById('teamOrangePlayers').innerHTML=currentMatch.orange.map(p=>`<div class="player-card"><div class="avatar">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username||'?'}</span></div>${p.username===oc?'<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>':''}</div>`).join('')||'<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
-document.getElementById('teamBluePlayers').innerHTML=currentMatch.blue.map(p=>`<div class="player-card"><div class="avatar">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username||'?'}</span></div>${p.username===bc?'<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>':''}</div>`).join('')||'<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
-renderDraftUI();
-checkMatchResultVisibility();
+  if(!currentMatch)return;
+  const oc=currentMatch.orange[0]?.username||null;
+  const bc=currentMatch.blue[0]?.username||null;
+  document.getElementById('teamOrangePlayers').innerHTML=currentMatch.orange.map(p=>`<div class="player-card"><div class="avatar">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username||'?'}</span></div>${p.username===oc?'<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>':''}</div>`).join('')||'<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
+  document.getElementById('teamBluePlayers').innerHTML=currentMatch.blue.map(p=>`<div class="player-card"><div class="avatar">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="info"><span class="name">${p.username||'?'}</span></div>${p.username===bc?'<span class="captain-badge"><i class="fas fa-crown"></i> Капитан</span>':''}</div>`).join('')||'<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
+  renderDraftUI();
+  checkMatchResultVisibility();
 }
 
-/* ============ PROFILE / HISTORY ============ */
+/* ===== PROFILE / HISTORY ===== */
 async function loadMatchHistory(){
-if(!currentUser)return;
-try{const{data}=await supabaseClient.from('match_history').select('*').eq('user_id',currentUser.id).order('match_date',{ascending:false}).limit(20);
-const c=document.getElementById('matchHistoryList');
-if(!data||data.length===0){c.innerHTML='<div style="color:#666;text-align:center;padding:8px 0;">Нет матчей</div>';return}
-c.innerHTML=data.map(m=>`<div style="display:flex;justify-content:space-between;padding:8px 12px;background:#1a1a2e;border-radius:8px;margin-bottom:6px;font-size:13px;"><span style="color:#8888aa;">${m.map||'—'}</span><span style="color:#666;font-size:11px;">${new Date(m.match_date).toLocaleDateString('ru-RU')}</span><span style="color:${m.result==='win'?'#51cf66':'#ff6b6b'};font-weight:600;">${m.result==='win'?'🏆':'💀'} ${m.elo_change?`(${m.elo_change>0?'+':''}${m.elo_change})`:''}</span></div>`).join('');
-}catch(e){}
+  if(!currentUser)return;
+  try{const{data}=await supabaseClient.from('match_history').select('*').eq('user_id',currentUser.id).order('match_date',{ascending:false}).limit(20);
+    const c=document.getElementById('matchHistoryList');
+    if(!data||data.length===0){c.innerHTML='<div style="color:#666;text-align:center;padding:8px 0;">Нет матчей</div>';return}
+    c.innerHTML=data.map(m=>`<div style="display:flex;justify-content:space-between;padding:8px 12px;background:#1a1a2e;border-radius:8px;margin-bottom:6px;font-size:13px;"><span style="color:#8888aa;">${m.map||'—'}</span><span style="color:#666;font-size:11px;">${new Date(m.match_date).toLocaleDateString('ru-RU')}</span><span style="color:${m.result==='win'?'#51cf66':'#ff6b6b'};font-weight:600;">${m.result==='win'?'🏆':'💀'} ${m.elo_change?`(${m.elo_change>0?'+':''}${m.elo_change})`:''}</span></div>`).join('');
+  }catch(e){}
 }
 
-/* ============ FRIENDS ============ */
+/* ===== FRIENDS ===== */
 async function loadFriends(){
-if(!currentUser)return;
-try{
-const{data:fd1}=await supabaseClient.from('friends').select('friend_id').eq('user_id',currentUser.id);
-const{data:fd2}=await supabaseClient.from('friends').select('user_id').eq('friend_id',currentUser.id);
-const ids=new Set([...(fd1||[]).map(f=>f.friend_id),...(fd2||[]).map(f=>f.user_id)]);
-if(ids.size>0){const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',[...ids]);myFriends=data||[]}else myFriends=[];
-const{data:rd}=await supabaseClient.from('friend_requests').select('from_user_id').eq('to_user_id',currentUser.id).eq('status','pending');
-const rids=(rd||[]).map(r=>r.from_user_id);
-if(rids.length>0){const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',rids);friendRequests=data||[]}else friendRequests=[];
-const{data:sd}=await supabaseClient.from('friend_requests').select('to_user_id').eq('from_user_id',currentUser.id).eq('status','pending');
-const sids=(sd||[]).map(r=>r.to_user_id);
-if(sids.length>0){const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',sids);sentRequests=data||[]}else sentRequests=[];
-const{data:all}=await supabaseClient.from('users').select('id, username, isadmin, elo').neq('id',currentUser.id);
-friendsList=all||[];updateFriendBadges();renderFriends();
-}catch(e){}
+  if(!currentUser)return;
+  try{
+    const{data:fd1}=await supabaseClient.from('friends').select('friend_id').eq('user_id',currentUser.id);
+    const{data:fd2}=await supabaseClient.from('friends').select('user_id').eq('friend_id',currentUser.id);
+    const ids=new Set([...(fd1||[]).map(f=>f.friend_id),...(fd2||[]).map(f=>f.user_id)]);
+    if(ids.size>0){const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',[...ids]);myFriends=data||[]}else myFriends=[];
+    const{data:rd}=await supabaseClient.from('friend_requests').select('from_user_id').eq('to_user_id',currentUser.id).eq('status','pending');
+    const rids=(rd||[]).map(r=>r.from_user_id);
+    if(rids.length>0){const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',rids);friendRequests=data||[]}else friendRequests=[];
+    const{data:sd}=await supabaseClient.from('friend_requests').select('to_user_id').eq('from_user_id',currentUser.id).eq('status','pending');
+    const sids=(sd||[]).map(r=>r.to_user_id);
+    if(sids.length>0){const{data}=await supabaseClient.from('users').select('id, username, isadmin, elo').in('id',sids);sentRequests=data||[]}else sentRequests=[];
+    const{data:all}=await supabaseClient.from('users').select('id, username, isadmin, elo').neq('id',currentUser.id);
+    friendsList=all||[];updateFriendBadges();renderFriends();
+  }catch(e){}
 }
 function updateFriendBadges(){const n=friendRequests.length;const reqBadge=document.getElementById('reqBadge');const navBadge=document.getElementById('navFriendBadge');if(reqBadge){if(n>0){reqBadge.textContent=n;reqBadge.classList.add('visible')}else reqBadge.classList.remove('visible')}if(navBadge){if(n>0){navBadge.textContent=n;navBadge.classList.add('visible')}else navBadge.classList.remove('visible')}}
 function renderFriends(){
-const c=document.getElementById('friendsListContainer');if(!c)return;
-let f=[],isR=false;if(friendsTab==='friends'){f=myFriends}else{isR=true;f=friendRequests}
-document.getElementById('friendsCount').textContent=myFriends.length+' друзей';
-if(f.length===0){c.innerHTML=`<div class="friends-empty"><i class="fas fa-user-friends"></i><p>${isR?'Нет входящих заявок':'Нет друзей'}</p></div>`;return}
-c.innerHTML=f.map(fr=>{
-const isFriend=myFriends.some(m=>m.id===fr.id);const isReq=friendRequests.some(r=>r.id===fr.id);const inP=partyFriends.some(p=>p.id===fr.id);
-let cls='none',txt='Не в друзьях',ac='';
-if(isReq&&!isFriend){cls='request';txt='Заявка';ac=`<button class="btn-accept" onclick="acceptFriend('${fr.id}')"><i class="fas fa-check"></i> Принять</button><button class="btn-decline" onclick="declineFriend('${fr.id}')"><i class="fas fa-times"></i> Отклонить</button>`}
-else if(isFriend){cls='friend';txt='Друг';if(inP){ac=`<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i> Из пати</button><button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-user-times"></i> Удалить</button>`}else{ac=`<button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button><button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-user-times"></i> Удалить</button>`}}
-else{ac=`<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`}
-return `<div class="friend-item"><div class="avatar">${fr.username.charAt(0).toUpperCase()}</div><div class="info"><div class="name">${fr.username} ${fr.isadmin?'👑':''}</div><div class="status">ELO: ${fr.elo||1000}</div></div><span class="status-badge ${cls}">${txt}</span><div class="friend-actions">${ac}</div></div>`;
-}).join('');
+  const c=document.getElementById('friendsListContainer');if(!c)return;
+  let f=[],isR=false;if(friendsTab==='friends'){f=myFriends}else{isR=true;f=friendRequests}
+  document.getElementById('friendsCount').textContent=myFriends.length+' друзей';
+  if(f.length===0){c.innerHTML=`<div class="friends-empty"><i class="fas fa-user-friends"></i><p>${isR?'Нет входящих заявок':'Нет друзей'}</p></div>`;return}
+  c.innerHTML=f.map(fr=>{
+    const isFriend=myFriends.some(m=>m.id===fr.id);const isReq=friendRequests.some(r=>r.id===fr.id);const inP=partyFriends.some(p=>p.id===fr.id);
+    let cls='none',txt='Не в друзьях',ac='';
+    if(isReq&&!isFriend){cls='request';txt='Заявка';ac=`<button class="btn-accept" onclick="acceptFriend('${fr.id}')"><i class="fas fa-check"></i> Принять</button><button class="btn-decline" onclick="declineFriend('${fr.id}')"><i class="fas fa-times"></i> Отклонить</button>`}
+    else if(isFriend){cls='friend';txt='Друг';if(inP){ac=`<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i> Из пати</button><button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-user-times"></i> Удалить</button>`}else{ac=`<button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button><button class="btn-remove" onclick="removeFriend('${fr.id}')"><i class="fas fa-user-times"></i> Удалить</button>`}}
+    else{ac=`<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`}
+    return `<div class="friend-item"><div class="avatar">${fr.username.charAt(0).toUpperCase()}</div><div class="info"><div class="name">${fr.username} ${fr.isadmin?'👑':''}</div><div class="status">ELO: ${fr.elo||1000}</div></div><span class="status-badge ${cls}">${txt}</span><div class="friend-actions">${ac}</div></div>`;
+  }).join('');
 }
 function switchFriendsTab(t){friendsTab=t;document.querySelectorAll('.friends-tabs .tab').forEach(x=>x.classList.remove('active'));document.querySelector(`.friends-tabs .tab[data-tab="${t}"]`)?.classList.add('active');renderFriends()}
 function searchFriends(){const q=document.getElementById('friendSearchInput').value.trim().toLowerCase();if(!q)return renderFriends();const c=document.getElementById('friendsListContainer');const f=friendsList.filter(x=>x.username.toLowerCase().includes(q));if(f.length===0){c.innerHTML='<div class="friends-empty"><i class="fas fa-search"></i><p>Никто не найден</p></div>';return}c.innerHTML=f.map(fr=>{const isFriend=myFriends.some(m=>m.id===fr.id);const isSent=sentRequests.some(r=>r.id===fr.id);const isReq=friendRequests.some(r=>r.id===fr.id);const inP=partyFriends.some(p=>p.id===fr.id);let cls='none',txt='Не в друзьях',ac='';if(isReq&&!isFriend){cls='request';txt='Заявка';ac=`<button class="btn-accept" onclick="acceptFriend('${fr.id}')"><i class="fas fa-check"></i> Принять</button>`}else if(isFriend){cls='friend';txt='Друг';ac=inP?`<button class="btn-remove" onclick="removeFromParty('${fr.id}')"><i class="fas fa-user-minus"></i> Из пати</button>`:`<button class="btn-invite" onclick="inviteToParty('${fr.id}')"><i class="fas fa-user-plus"></i> В пати</button>`}else if(isSent){cls='sent';txt='Заявка отправлена';ac=`<button class="btn-remove" onclick="cancelFriendRequest('${fr.id}')"><i class="fas fa-times"></i> Отменить</button>`}else{ac=`<button class="btn-add" onclick="sendFriendRequest('${fr.id}')"><i class="fas fa-user-plus"></i> Добавить</button>`}return `<div class="friend-item"><div class="avatar">${fr.username.charAt(0).toUpperCase()}</div><div class="info"><div class="name">${fr.username}</div><div class="status">ELO: ${fr.elo||1000}</div></div><span class="status-badge ${cls}">${txt}</span><div class="friend-actions">${ac}</div></div>`}).join('')}
@@ -1308,7 +1326,7 @@ function inviteToParty(id){const fr=myFriends.find(f=>f.id===id);if(!fr)return;i
 function removeFromParty(id){partyFriends=partyFriends.filter(f=>f.id!==id);updatePartyUI();renderFriends()}
 function subscribeToFriends(){if(!currentUser)return;if(friendsChannel){supabaseClient.removeChannel(friendsChannel);friendsChannel=null}friendsChannel=supabaseClient.channel('friends_'+currentUser.id+'_'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'friend_requests'},async()=>{await loadFriends()}).on('postgres_changes',{event:'*',schema:'public',table:'friends'},async()=>{await loadFriends()}).subscribe()}
 
-/* ============ TOP / WALLET ============ */
+/* ===== TOP / WALLET ===== */
 async function renderTopPage(){try{const{data}=await supabaseClient.from('users').select('*').order('elo',{ascending:false}).limit(10);const c=document.getElementById('topList');const ur=data.findIndex(u=>u.id===currentUser?.id)+1;document.getElementById('userRank').textContent='#'+(ur||0);if(!data||data.length===0){c.innerHTML='<div class="friends-empty">Нет данных</div>';return}c.innerHTML=data.map((u,i)=>{const n=i+1;let rc='';if(n===1)rc='gold';else if(n===2)rc='silver';else if(n===3)rc='bronze';const wr=u.matches>0?Math.round(u.wins/u.matches*100):0;return `<div class="top-item"><div class="rank ${rc}">#${n}</div><div class="avatar">${u.username.charAt(0).toUpperCase()}</div><div class="info"><div class="name">${u.username} ${u.isadmin?'👑':''}</div><div class="stats">${u.matches||0} матчей | ${wr}%</div></div><div class="elo">${u.elo||1000}<span class="elo-label">ELO</span></div></div>`}).join('')}catch(e){}}
 async function applyPromo(){const inp=document.getElementById('promoInput');const code=inp.value.trim().toUpperCase();if(!code)return showToast('error','Ошибка','Введите промокод');try{const{data}=await supabaseClient.from('promocodes').select('*').eq('code',code).single();if(!data)return showToast('error','Ошибка','Не найден');if(data.used_count>=data.max_uses)return showToast('error','Ошибка','Использован');await supabaseClient.from('promocodes').update({used_count:data.used_count+1}).eq('id',data.id);const nb=(currentUser.balance||0)+data.amount;await supabaseClient.from('users').update({balance:nb}).eq('id',currentUser.id);currentUser.balance=nb;saveSession(currentUser);document.getElementById('walletBalance').textContent=nb+' ₽';showToast('success','Применён!','+'+data.amount+' ₽');inp.value=''}catch(e){showToast('error','Ошибка',e.message)}}
 
@@ -1316,54 +1334,54 @@ function updatePartyUI(){document.getElementById('partyCount').textContent=party
 function matchFound(){const now=Date.now();if(now-_foundShown<3000)return;_foundShown=now;try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}}
 
 async function resync(){
-if(!currentUser)return;
-try{
-if(isSearching)await supabaseClient.rpc('queue_heartbeat_v2',{p_user_id:currentUser.id});
-const my=await findMyActiveMatch();
-if(my&&my.id&&(!currentMatch||String(currentMatch.id)!==String(my.id)))await loadCreatedMatch(my.id);
-await updateQueueCount();await loadFriends();
-if(isSearching&&!searchChannel)subscribeToQueue();
-if(!matchCreatedChannel)subscribeToMatchCreation();
-}catch(e){}
+  if(!currentUser)return;
+  try{
+    if(isSearching)await supabaseClient.rpc('queue_heartbeat_v2',{p_user_id:currentUser.id});
+    const my=await findMyActiveMatch();
+    if(my&&my.id&&(!currentMatch||String(currentMatch.id)!==String(my.id)))await loadCreatedMatch(my.id);
+    await updateQueueCount();await loadFriends();
+    if(isSearching&&!searchChannel)subscribeToQueue();
+    if(!matchCreatedChannel)subscribeToMatchCreation();
+  }catch(e){}
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')resync()});
 window.addEventListener('pageshow',resync);
 window.addEventListener('online',resync);
 
 async function finishMatch(winner){
-if(!currentMatch||!currentUser?.isadmin)return;
-await admFinishMatch(currentMatchId,winner);
-closeMatchForMe();
+  if(!currentMatch||!currentUser?.isadmin)return;
+  await admFinishMatch(currentMatchId,winner);
+  closeMatchForMe();
 }
 function endMatch(){
-if(!currentMatch||!currentUser?.isadmin)return showToast('error','Доступ','');
-if(!confirm('Закрыть матч у всех?'))return;
-supabaseClient.from('active_matches').delete().eq('id',currentMatchId);
-closeMatchForMe();
+  if(!currentMatch||!currentUser?.isadmin)return showToast('error','Доступ','');
+  if(!confirm('Закрыть матч у всех?'))return;
+  supabaseClient.from('active_matches').delete().eq('id',currentMatchId);
+  closeMatchForMe();
 }
 
-/* ============ INIT ============ */
+/* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',async function(){
-document.getElementById('tabLogin').addEventListener('click',()=>switchAuthTab('login'));
-document.getElementById('tabRegister').addEventListener('click',()=>switchAuthTab('register'));
-document.getElementById('switchToRegister').addEventListener('click',e=>{e.preventDefault();switchAuthTab('register')});
-document.getElementById('switchToLogin').addEventListener('click',e=>{e.preventDefault();switchAuthTab('login')});
-document.getElementById('loginBtn').addEventListener('click',loginUser);
-document.getElementById('registerBtn').addEventListener('click',registerUser);
-document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(document.getElementById('loginForm').classList.contains('active'))loginUser();else if(document.getElementById('registerForm').classList.contains('active'))registerUser()}});
-document.getElementById('modesBanContainer').addEventListener('click',e=>{const btn=e.target.closest('.ban-btn');if(!btn||btn.disabled)return;handleBanClick(btn.dataset.value)});
-document.getElementById('promoInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')applyPromo()});
-document.getElementById('editProfileModal').addEventListener('click',e=>{if(e.target.id==='editProfileModal')closeEditProfile()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('editProfileModal').classList.contains('active'))closeEditProfile()});
-document.getElementById('friendSearchInput')?.addEventListener('input',()=>searchFriends());
-document.getElementById('shotUploadBtn').addEventListener('click',handleShotUpload);
-document.getElementById('shotSkipBtn').addEventListener('click',handleShotSkip);
-document.getElementById('blueWinBtn').addEventListener('click',()=>{if(!currentUser?.isadmin)return showToast('error','Доступ','');finishMatch('blue')});
-document.getElementById('orangeWinBtn').addEventListener('click',()=>{if(!currentUser?.isadmin)return showToast('error','Доступ','');finishMatch('orange')});
-cleanupInterval=setInterval(async()=>{try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}},60000);
-const session=getSession();
-if(session){try{const{data}=await supabaseClient.from('users').select('*').eq('id',session.id).maybeSingle();if(data)currentUser=data}catch(e){}}
-await checkAuth();
+  document.getElementById('tabLogin').addEventListener('click',()=>switchAuthTab('login'));
+  document.getElementById('tabRegister').addEventListener('click',()=>switchAuthTab('register'));
+  document.getElementById('switchToRegister').addEventListener('click',e=>{e.preventDefault();switchAuthTab('register')});
+  document.getElementById('switchToLogin').addEventListener('click',e=>{e.preventDefault();switchAuthTab('login')});
+  document.getElementById('loginBtn').addEventListener('click',loginUser);
+  document.getElementById('registerBtn').addEventListener('click',registerUser);
+  document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(document.getElementById('loginForm').classList.contains('active'))loginUser();else if(document.getElementById('registerForm').classList.contains('active'))registerUser()}});
+  document.getElementById('modesBanContainer').addEventListener('click',e=>{const btn=e.target.closest('.ban-btn');if(!btn||btn.disabled)return;handleBanClick(btn.dataset.value)});
+  document.getElementById('promoInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')applyPromo()});
+  document.getElementById('editProfileModal').addEventListener('click',e=>{if(e.target.id==='editProfileModal')closeEditProfile()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('editProfileModal').classList.contains('active'))closeEditProfile()});
+  document.getElementById('friendSearchInput')?.addEventListener('input',()=>searchFriends());
+  document.getElementById('shotUploadBtn').addEventListener('click',handleShotUpload);
+  document.getElementById('shotSkipBtn').addEventListener('click',handleShotSkip);
+  document.getElementById('blueWinBtn').addEventListener('click',()=>{if(!currentUser?.isadmin)return showToast('error','Доступ','');finishMatch('blue')});
+  document.getElementById('orangeWinBtn').addEventListener('click',()=>{if(!currentUser?.isadmin)return showToast('error','Доступ','');finishMatch('orange')});
+  cleanupInterval=setInterval(async()=>{try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}},60000);
+  const session=getSession();
+  if(session){try{const{data}=await supabaseClient.from('users').select('*').eq('id',session.id).maybeSingle();if(data)currentUser=data}catch(e){}}
+  await checkAuth();
 });
 </script>
 </body>

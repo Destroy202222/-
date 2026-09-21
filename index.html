@@ -771,7 +771,9 @@ const avgO=orange.length?Math.round(orange.reduce((s,p)=>s+(p.elo||1000),0)/oran
 const avgB=blue.length?Math.round(blue.reduce((s,p)=>s+(p.elo||1000),0)/blue.length):0;
 const screenshot=m.screenshot_url?`<div style="margin:10px 0"><div style="font-size:11px;color:#8888aa;margin-bottom:4px">📸 Скриншот от ${m.screenshot_by||'игрока'}:</div><img src="${m.screenshot_url}" style="max-width:100%;max-height:300px;border-radius:8px;cursor:pointer" onclick="window.open('${m.screenshot_url}','_blank')"></div>`:'<div style="font-size:11px;color:#666;margin:8px 0">📸 Скриншот не приложен</div>';
 let draftInfo='';try{if(m.draft_state){const d=JSON.parse(m.draft_state);draftInfo=`<div class="meta">Режим: ${d.modeFinal||'не выбран'} · банов: ${(d.modeBanned||[]).length}</div>`}}catch(e){}
-return `<div class="adm-match" data-match-id="${m.id}"><div class="hdr"><h3>#${m.id.slice(-6)}</h3><span class="badge-status ${m.status==='pending'?'pending':'active'}">${st}</span></div><div class="meta">${new Date(m.created_at).toLocaleTimeString('ru-RU')}</div>${draftInfo}<div class="adm-teams">${rt(orange,'orange',avgO)}${rt(blue,'blue',avgB)}</div>${screenshot}<div class="adm-score-row"><input type="number" class="adm-score-a" placeholder="0" min="0" max="99"><span class="sep">:</span><input type="number" class="adm-score-b" placeholder="0" min="0" max="99"></div><div class="adm-finish-btns"><button class="btn-blue" onclick="admFinishMatch('${m.id}','blue')">🏆 BLUE</button><button class="btn-orange" onclick="admFinishMatch('${m.id}','orange')">🏆 ORANGE</button></div><button class="adm-cancel-btn" onclick="admCancelMatch('${m.id}')">❌ Отменить</button></div>`;
+const confirmedCount=Array.isArray(m.confirmed)?m.confirmed.length:0;
+const totalPlayers=orange.length+blue.length;
+return `<div class="adm-match" data-match-id="${m.id}"><div class="hdr"><h3>#${m.id.slice(-6)}</h3><span class="badge-status ${m.status==='pending'?'pending':'active'}">${st}</span></div><div class="meta">${new Date(m.created_at).toLocaleTimeString('ru-RU')} · подтвердили: ${confirmedCount}/${totalPlayers}</div>${draftInfo}<div class="adm-teams">${rt(orange,'orange',avgO)}${rt(blue,'blue',avgB)}</div>${screenshot}<div class="adm-score-row"><input type="number" class="adm-score-a" placeholder="0" min="0" max="99"><span class="sep">:</span><input type="number" class="adm-score-b" placeholder="0" min="0" max="99"></div><div class="adm-finish-btns"><button class="btn-blue" onclick="admFinishMatch('${m.id}','blue')">🏆 BLUE</button><button class="btn-orange" onclick="admFinishMatch('${m.id}','orange')">🏆 ORANGE</button></div><button class="adm-cancel-btn" onclick="admCancelMatch('${m.id}')">❌ Отменить</button></div>`;
 }).join('');
 }
 else if(adminTab==='players'){
@@ -892,7 +894,6 @@ function startGlobalPolling(){
 if(globalPollInterval)clearInterval(globalPollInterval);
 globalPollInterval=setInterval(async()=>{
 if(!currentUser||!currentUser.id)return;
-if(isConfirming)return;
 if(currentMatch&&isPlayerInMatch&&currentMatch.status!=='pending')return;
 try{
 try{
@@ -903,16 +904,33 @@ if(s&&s.value&&s.value!==currentSettings.team_size){currentSettings.team_size=s.
 const my=await findMyActiveMatch();
 if(!my||!my.id)return;
 
+// если модалка открыта — обновляем confirmed
 if(currentMatch&&currentMatch.id===my.id&&isConfirming){
 const o=typeof my.orange==='string'?JSON.parse(my.orange):my.orange;
 const b=typeof my.blue==='string'?JSON.parse(my.blue):my.blue;
 if(Array.isArray(o)&&Array.isArray(b)){
 matchPlayers=[...o,...b];
+}
+if(Array.isArray(my.confirmed)){
+const serverConfirmed=my.confirmed.map(String);
+if(serverConfirmed.length!==confirmedPlayers.length||
+   serverConfirmed.some(id=>!confirmedPlayers.includes(id))){
+  confirmedPlayers=serverConfirmed;
+}
+}
 renderModalPlayers();
+
+if(my.status==='active'){
+  document.getElementById('confirmModal').classList.remove('active');
+  waitingConfirm=false;isConfirming=false;
+  currentMatch={id:my.id,orange:o,blue:b,status:'active'};
+  currentMatchId=my.id;isPlayerInMatch=true;
+  startMatchAfterConfirm();
 }
 return;
 }
 
+// если не в модалке, но матч есть — открываем
 await loadCreatedMatch(my.id);
 }catch(e){console.error('polling',e)}
 },2000);
@@ -945,7 +963,7 @@ updateSearchVisibility();
 if(searchChannel){try{supabaseClient.removeChannel(searchChannel)}catch(e){}searchChannel=null}
 
 matchPlayers=[...orange,...blue];
-confirmedPlayers=[];
+confirmedPlayers=Array.isArray(data.confirmed)?data.confirmed.map(String):[];
 subscribeToMatch(id);
 
 if(data.status==='pending'){
@@ -1186,33 +1204,47 @@ matchFound();
 function renderModalPlayers(){
 if(!matchPlayers.length)return;
 document.getElementById('modalPlayers').innerHTML=matchPlayers.map(p=>{
-const c=confirmedPlayers.includes(p.id);
+const c=confirmedPlayers.includes(String(p.id));
 const me=String(p.id)===String(currentUser.id);
 return `<div class="modal-player ${c?'confirmed':''}" onclick="${me&&!c?'handleConfirm()':''}"><div class="avatar">${(p.username||'?').charAt(0).toUpperCase()}</div><div class="info"><div class="name">${p.username||'?'} ${me?' (Вы)':''}</div><div class="status">${c?'✅ Готов':'⏳ Ожидание...'}</div></div><div class="status-icon ${c?'confirmed':'pending'}">${c?'✅':'⏳'}</div></div>`;
 }).join('');
-const all=matchPlayers.every(p=>confirmedPlayers.includes(p.id));
+const all=matchPlayers.every(p=>confirmedPlayers.includes(String(p.id)));
 const btn=document.getElementById('confirmBtn');
 if(all){
 btn.className='btn-confirm confirmed';btn.textContent='✅ Все готовы!';btn.disabled=true;
 clearInterval(confirmTimer);
-setTimeout(async()=>{
-try{await supabaseClient.from('active_matches').update({status:'active'}).eq('id',currentMatchId).eq('status','pending')}catch(e){}
+setTimeout(()=>{
 document.getElementById('confirmModal').classList.remove('active');
 waitingConfirm=false;isConfirming=false;
 startMatchAfterConfirm();
 },800);
+}else{
+btn.className='btn-confirm';
+btn.textContent=confirmedPlayers.includes(String(currentUser.id))?'⏳ Ждём остальных...':'✅ Подтвердить';
+btn.disabled=confirmedPlayers.includes(String(currentUser.id));
 }
 }
 
-function handleConfirm(){
-if(!waitingConfirm||confirmedPlayers.includes(currentUser.id))return;
-confirmedPlayers.push(currentUser.id);
+async function handleConfirm(){
+if(!waitingConfirm||confirmedPlayers.includes(String(currentUser.id)))return;
+
+confirmedPlayers.push(String(currentUser.id));
 renderModalPlayers();
-showToast('success','Подтверждено!','');
+
+try{
+await supabaseClient.rpc('confirm_match',{p_match:currentMatchId,p_user_id:String(currentUser.id)});
+}catch(e){
+console.error('confirm_match',e);
+confirmedPlayers=confirmedPlayers.filter(id=>id!==String(currentUser.id));
+renderModalPlayers();
+showToast('error','Ошибка','Не удалось подтвердить');
+return;
+}
+showToast('success','Подтверждено!','Ждём остальных');
 }
 
 function handleConfirmTimeout(){
-const nc=matchPlayers.filter(p=>!confirmedPlayers.includes(p.id));
+const nc=matchPlayers.filter(p=>!confirmedPlayers.includes(String(p.id)));
 if(nc.length>0){
 document.getElementById('confirmModal').classList.remove('active');
 waitingConfirm=false;isConfirming=false;
@@ -1262,8 +1294,19 @@ navigate('matches');return;
 }
 if(payload.eventType==='UPDATE'){
 const nd=payload.new;
+
+if(Array.isArray(nd.confirmed)&&isConfirming){
+const serverConfirmed=nd.confirmed.map(String);
+if(serverConfirmed.length!==confirmedPlayers.length||
+   serverConfirmed.some(id=>!confirmedPlayers.includes(id))){
+  confirmedPlayers=serverConfirmed;
+  renderModalPlayers();
+}
+}
+
 if(nd.draft_state){try{draftState=JSON.parse(nd.draft_state);renderDraftUI()}catch(e){}}
 if(nd.screenshot_url){currentScreenshot=nd.screenshot_url}
+
 if(nd.status==='active'&&isConfirming){
 document.getElementById('confirmModal').classList.remove('active');
 waitingConfirm=false;isConfirming=false;
@@ -1271,6 +1314,7 @@ currentMatch={id:nd.id,orange:JSON.parse(nd.orange),blue:JSON.parse(nd.blue),sta
 currentMatchId=nd.id;isPlayerInMatch=true;
 startMatchAfterConfirm();
 }
+
 if(currentMatch&&currentMatch.id===nd.id){
 currentMatch.orange=JSON.parse(nd.orange);currentMatch.blue=JSON.parse(nd.blue);
 if(document.getElementById('pageMatch')?.classList.contains('active'))renderMatchPage();

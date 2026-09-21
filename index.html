@@ -203,7 +203,12 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .match-actions{display:none;margin-top:8px}
 .match-actions.admin-visible{display:block}
 .btn-end{width:100%;padding:12px;border:none;border-radius:12px;background:#ff6b6b;color:#fff;font-family:inherit;font-weight:700;cursor:pointer}
-.profile-card{background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px}
+
+/* ===== ПРОФИЛЬ ===== */
+.profile-card{background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px;position:relative;overflow:hidden;isolation:isolate}
+.profile-card .profile-bg{position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:.55;filter:blur(1px) brightness(.85)}
+.profile-card .profile-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,15,.4),rgba(11,11,15,.85))}
+.profile-card > *{position:relative;z-index:1}
 .profile-header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
 .profile-info .username{font-size:20px;font-weight:800}
 .profile-info .details{font-size:12px;color:#8888aa;margin-top:4px}
@@ -211,13 +216,15 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .admin-badge{display:none;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);padding:2px 10px;border-radius:12px;color:var(--gold);font-size:11px;font-weight:600}
 .admin-badge.visible{display:inline-block}
 .profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px}
-.stat-item{background:#1a1a2e;border-radius:12px;padding:12px 8px;text-align:center}
+.stat-item{background:rgba(26,26,46,.85);border-radius:12px;padding:12px 8px;text-align:center}
 .stat-item .value{font-size:20px;font-weight:900;color:var(--accent)}
 .stat-item .label{font-size:10px;color:#8888aa;margin-top:2px}
 .profile-actions{display:flex;gap:8px;margin-bottom:16px}
 .btn-action{flex:1;padding:10px;border:none;border-radius:10px;font-family:inherit;font-weight:600;cursor:pointer}
 .btn-action.edit{background:#2a2a4a;color:#fff}
 .btn-action.logout{background:#ff6b6b;color:#fff}
+
+/* ===== АДМИНКА ===== */
 .admin-panel-wrap{display:none;background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px;margin-bottom:16px}
 .admin-panel-wrap.visible{display:block}
 .adm-title{font-size:18px;font-weight:800;margin-bottom:12px;color:var(--accent)}
@@ -272,6 +279,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .adm-promo-creation{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .adm-promo-row{display:flex;gap:6px}
 .adm-promo-row input{flex:1;padding:8px 12px;background:#0b0b0f;border:1px solid #2a2a4a;border-radius:8px;color:#fff;font-family:inherit;font-size:13px;outline:none}
+
+/* ===== ДРУЗЬЯ ===== */
 .friends-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .friends-header h2{font-size:20px;font-weight:800}
 .friends-header .count{color:#8888aa;font-size:13px}
@@ -302,6 +311,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .friend-item .friend-actions .btn-decline{background:#ff6b6b;color:#fff}
 .friends-empty{text-align:center;padding:40px 20px;color:#555}
 .friends-empty i{font-size:40px;margin-bottom:12px;display:block;color:#2a2a4a}
+
+/* ===== ТОП ===== */
 .top-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .top-header h2{font-size:20px;font-weight:800}
 .top-header .user-rank{background:rgba(20,20,31,.8);border:1px solid #2a2a4a;border-radius:12px;padding:6px 16px;font-size:14px;font-weight:700;color:var(--accent)}
@@ -316,12 +327,16 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .top-item .info .stats{font-size:12px;color:#8888aa}
 .top-item .elo{font-weight:800;font-size:16px;color:var(--accent)}
 .top-item .elo .elo-label{font-size:10px;color:#666;font-weight:400;display:block;text-align:right}
+
+/* ===== КОШЕЛЁК ===== */
 .wallet-card{background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:24px;text-align:center;margin-bottom:16px}
 .wallet-card .balance{font-size:36px;font-weight:900;color:var(--accent)}
 .wallet-card .label{color:#8888aa;font-size:13px;margin-top:4px}
 .wallet-promo{display:flex;gap:8px}
 .wallet-promo input{flex:1;padding:10px 14px;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;color:#fff;font-family:inherit;font-size:14px;outline:none;text-transform:uppercase}
 .wallet-promo button{padding:10px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f;font-family:inherit;font-weight:700;cursor:pointer}
+
+/* ===== ПЛЕЙСХОЛДЕР / НИЖНЯЯ НАВИГАЦИЯ ===== */
 .placeholder{text-align:center;padding:60px 20px;color:#555}
 .placeholder i{font-size:48px;margin-bottom:16px;display:block;color:#2a2a4a}
 .placeholder h2{font-size:18px;font-weight:700;color:#8888aa}
@@ -331,6 +346,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .bottom-nav .item.active{color:var(--accent)}
 .bottom-nav .item .nav-badge{display:none;position:absolute;top:0;right:8px;background:#ff6b6b;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center}
 .bottom-nav .item .nav-badge.visible{display:inline-block}
+
+/* ===== АВАТАРЫ И РАМКИ ===== */
 .av-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .av-img{width:100%;height:100%;border-radius:50%;object-fit:cover;background:#1a1a2e;display:block}
 .av-letter{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b0b0f;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
@@ -352,6 +369,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .friend-item .av-frame .av-inner{font-size:16px;font-weight:700;color:#fff}
 .player-card .av-frame{width:40px;height:40px}
 .player-card .av-frame .av-inner{font-size:15px;font-weight:700;color:#fff}
+
+/* ===== БАННЕРЫ ===== */
 .bn{position:relative;border-radius:16px;overflow:hidden;isolation:isolate;color:#fff;padding:16px 20px;display:flex;align-items:center;gap:14px;min-height:96px;background-size:cover;background-position:center;background-repeat:no-repeat;box-shadow:0 8px 24px rgba(0,0,0,.45);animation:bnZoom 10s ease-in-out infinite}
 .bn::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.75) 0%,rgba(0,0,0,.35) 55%,rgba(0,0,0,.6) 100%);pointer-events:none}
 .bn > *{position:relative;z-index:1}
@@ -368,6 +387,19 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .bn-preview{height:56px;border-radius:10px;background-size:cover;background-position:center;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:6px 10px;font-size:12px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.9);isolation:isolate}
 .bn-preview::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.7))}
 .bn-preview > span{position:relative;z-index:1}
+.player-bn-strip .bn{animation:none;min-height:44px;padding:6px 10px;border-radius:0;box-shadow:none}
+.player-bn-strip .bn .bn-elo{display:none}
+.player-bn-strip .bn .bn-sub{display:none}
+.player-bn-strip .bn .bn-name{font-size:12px}
+.player-bn-strip .bn > span.av-frame{display:none}
+.player-card-bn{display:block;padding:0;overflow:hidden;background:rgba(20,20,31,.9);border:1px solid rgba(255,255,255,.05);border-radius:12px}
+.player-card-bn .pc-inner{display:flex;align-items:center;gap:10px;padding:8px 10px}
+.player-card-bn .info{flex:1;min-width:0}
+.player-card-bn .name{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-card-bn .elo-mini{font-size:10px;color:#ff8a1f;font-weight:600;letter-spacing:.5px;margin-top:1px}
+.player-card-bn .captain-badge{font-size:10px;color:var(--gold);padding:4px 6px;background:rgba(255,215,0,.10);border-radius:8px;display:flex;align-items:center}
+
+/* ===== МАГАЗИН ===== */
 .shop-frames{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .shop-frame{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:14px;padding:14px;text-align:center;transition:transform .15s,border-color .15s}
 .shop-frame:hover{border-color:var(--accent);transform:translateY(-2px)}
@@ -384,6 +416,35 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .avatar-upload input[type=file]{display:none}
 .avatar-upload label{display:inline-block;padding:10px 16px;background:#2a2a4a;color:#fff;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer}
 .avatar-upload label:hover{background:#3a3a5a}
+
+/* ===== ФОН ПРОФИЛЯ (магазин) ===== */
+.shop-bg-preview{height:56px;border-radius:10px;background-size:cover;background-position:center;margin-bottom:10px;border:1px solid rgba(255,255,255,.05)}
+
+/* ===== ЧАТ МАТЧА ===== */
+.match-chat{display:none;background:rgba(20,20,31,.9);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:14px;margin-bottom:16px}
+.match-chat.visible{display:block}
+.chat-title{font-size:14px;font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.chat-title i{color:var(--accent);margin-right:6px}
+.chat-title .chat-online{font-size:11px;color:#51cf66;font-weight:600;display:flex;align-items:center;gap:5px}
+.chat-title .chat-online::before{content:'';width:7px;height:7px;border-radius:50%;background:#51cf66;animation:chatPulse 1.4s infinite}
+@keyframes chatPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.2)}}
+.chat-body{height:200px;overflow-y:auto;padding:8px 4px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+.chat-body::-webkit-scrollbar{width:4px}
+.chat-body::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:4px}
+.chat-msg{display:flex;gap:8px;align-items:flex-start}
+.chat-msg .av{width:28px;height:28px;border-radius:50%;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#0b0b0f}
+.chat-msg .av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.chat-msg .body{flex:1;min-width:0}
+.chat-msg .who{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:2px}
+.chat-msg .txt{font-size:13px;color:#e0e0ea;word-wrap:break-word;line-height:1.35}
+.chat-msg.me .who{color:#4dabf7}
+.chat-msg.me .txt{color:#fff}
+.chat-msg .time{font-size:9px;color:#555;margin-left:6px;font-weight:400}
+.chat-empty{color:#555;font-size:12px;text-align:center;padding:20px 0}
+.chat-input-group{display:flex;gap:8px;margin-top:8px}
+.chat-input-group input{flex:1;padding:10px 14px;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;color:#fff;font-family:inherit;font-size:13px;outline:none}
+.chat-input-group button{padding:10px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f;font-family:inherit;font-weight:700;cursor:pointer}
+.chat-input-group button:disabled{opacity:.4;cursor:not-allowed}
 
 /* ===== LOADER ===== */
 .loader-overlay{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 50% 50%,rgba(255,138,31,.10),transparent 55%),radial-gradient(circle at 12% 10%,rgba(255,138,31,.14),transparent 45%),radial-gradient(circle at 88% 88%,rgba(255,107,0,.12),transparent 45%),linear-gradient(90deg,rgba(255,138,31,.06) 1px,transparent 1px),linear-gradient(0deg,rgba(255,138,31,.06) 1px,transparent 1px),#0b0b0f;background-size:100% 100%,100% 100%,100% 100%,48px 48px,48px 48px,100% 100%;display:flex;align-items:center;justify-content:center;transition:opacity .55s ease,visibility .55s ease}
@@ -402,19 +463,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 @keyframes loaderDots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}100%{content:''}}
 .loader-ring::before{content:'';position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(255,138,31,.25),transparent 65%);animation:loaderPulse 2s ease-in-out infinite;pointer-events:none}
 @keyframes loaderPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
-
-/* Карточка игрока с баннерной полоской сверху */
-.player-card-bn{display:block;padding:0;overflow:hidden;background:rgba(20,20,31,.9);border:1px solid rgba(255,255,255,.05);border-radius:12px}
-.player-card-bn .pc-inner{display:flex;align-items:center;gap:10px;padding:8px 10px}
-.player-card-bn .info{flex:1;min-width:0}
-.player-card-bn .name{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.player-card-bn .elo-mini{font-size:10px;color:#ff8a1f;font-weight:600;letter-spacing:.5px;margin-top:1px}
-.player-card-bn .captain-badge{font-size:10px;color:var(--gold);padding:4px 6px;background:rgba(255,215,0,.10);border-radius:8px;display:flex;align-items:center}
-.player-bn-strip .bn{animation:none;min-height:44px;padding:6px 10px;border-radius:0;box-shadow:none}
-.player-bn-strip .bn .bn-elo{display:none}
-.player-bn-strip .bn .bn-sub{display:none}
-.player-bn-strip .bn .bn-name{font-size:12px}
-.player-bn-strip .bn > span.av-frame{display:none}
 </style>
 </head>
 <body>
@@ -591,6 +639,19 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 <div class="shot-status" id="shotStatus"></div>
 <button class="shot-skip-btn" id="shotSkipBtn"><i class="fas fa-times"></i> Я не сделал скриншот</button>
 </div>
+<div class="match-chat" id="matchChat">
+  <div class="chat-title">
+    <span><i class="fas fa-comments"></i> Чат матча</span>
+    <span class="chat-online" id="chatOnline">online</span>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="chat-empty">Сообщений пока нет</div>
+  </div>
+  <div class="chat-input-group">
+    <input type="text" id="chatInput" placeholder="Написать..." maxlength="300" autocomplete="off">
+    <button id="chatSendBtn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
 <div class="match-result-section" id="matchResultSection">
 <div class="result-title"><i class="fas fa-trophy"></i> Засчитать матч</div>
 <div class="result-buttons"><button class="result-btn blue-win" id="blueWinBtn"><i class="fas fa-flag"></i> Победа BLUE</button><button class="result-btn orange-win" id="orangeWinBtn"><i class="fas fa-flag"></i> Победа ORANGE</button></div>
@@ -601,6 +662,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 <div class="page" id="pageProfile">
 <div id="profileBanner" style="margin-bottom:14px"></div>
 <div class="profile-card">
+  <div class="profile-bg" id="profileBg"></div>
 <div class="profile-header">
 <div id="avatar"></div>
 <div class="profile-info"><div class="username" id="pName">Игрок</div><div class="details"><span><i class="fas fa-calendar-alt"></i> Дата: <span id="pReg">—</span></span><span class="admin-badge" id="adminBadge"><i class="fas fa-user-shield"></i> Админ</span></div></div>
@@ -695,6 +757,19 @@ const BANNERS=[
   {id:'banner_carbon',  name:'Карбон',    price:50, img:'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?w=800'}
 ];
 const BANNER_MAP=Object.fromEntries(BANNERS.map(b=>[b.id,b]));
+const PROFILE_BGS=[
+  {id:'bg_anime_1', name:'Аниме 1',   price:100, img:'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200'},
+  {id:'bg_anime_2', name:'Аниме 2',   price:100, img:'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1200'},
+  {id:'bg_anime_3', name:'Аниме 3',   price:100, img:'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=1200'},
+  {id:'bg_city',    name:'Город',     price:100, img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200'},
+  {id:'bg_nature',  name:'Природа',   price:100, img:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200'},
+  {id:'bg_space',   name:'Космос',    price:100, img:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200'},
+  {id:'bg_neon',    name:'Неон',      price:100, img:'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200'},
+  {id:'bg_dark',    name:'Тьма',      price:100, img:'https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?w=1200'},
+  {id:'bg_sunset',  name:'Закат',     price:100, img:'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1200'},
+  {id:'bg_water',   name:'Вода',      price:100, img:'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200'}
+];
+const BG_MAP=Object.fromEntries(PROFILE_BGS.map(b=>[b.id,b]));
 let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[],sentRequests=[];
 let isSearching=false,isStartingSearch=false,isCanceling=false,searchTimerInterval=null,searchSeconds=0;
 let isPlayerInMatch=false,friendsTab='friends',waitingConfirm=false;
@@ -706,6 +781,7 @@ let isConfirming=false,heartbeatFailCount=0,searchCountdownTimer=null;
 let adminTab='matches',adminPlayers=[],adminQueue=[],adminPromos=[],adminAdmins=[];
 let adminSearchQuery='',currentSettings={team_size:'3'};
 let _foundShown=0,viewingUserId=null;
+let chatChannel=null,chatMessages=[];
 const TIMER_CIRC=2*Math.PI*76;
 
 /* ===== LOADER ===== */
@@ -817,6 +893,12 @@ function bannerHtml(user,size){
     ${isSm?'':`<div class="bn-elo">${user.elo||1000}<small>ELO</small></div>`}
   </div>`;
 }
+function applyProfileBg(user){
+  const el=document.getElementById('profileBg');
+  if(!el)return;
+  const bg=user&&user.avatar_bg?BG_MAP[user.avatar_bg]:null;
+  el.style.backgroundImage=bg?`url('${bg.img}')`:'';
+}
 
 async function registerUser(){
   const username=document.getElementById('regUsername').value.trim();
@@ -862,6 +944,7 @@ async function checkAuth(){
     document.getElementById('pName').textContent=currentUser.username;
     document.getElementById('avatar').innerHTML=avatarHtml(currentUser,80);
     document.getElementById('profileBanner').innerHTML=bannerHtml(currentUser,'lg');
+    applyProfileBg(currentUser);
     if(currentUser.registered)document.getElementById('pReg').textContent=new Date(currentUser.registered).toLocaleDateString('ru-RU');
     const m=currentUser.matches||0,w=currentUser.wins||0,wr=m>0?Math.round(w/m*100):0;
     document.getElementById('pWr').textContent=wr+'%';
@@ -900,6 +983,7 @@ function handleLogout(){
   if(matchCreatedChannel){supabaseClient.removeChannel(matchCreatedChannel);matchCreatedChannel=null}
   if(friendsChannel){supabaseClient.removeChannel(friendsChannel);friendsChannel=null}
   if(settingsChannel){supabaseClient.removeChannel(settingsChannel);settingsChannel=null}
+  if(chatChannel){supabaseClient.removeChannel(chatChannel);chatChannel=null}
   if(globalPollInterval){clearInterval(globalPollInterval);globalPollInterval=null}
   checkAuth();showToast('info','Выход','');
 }
@@ -917,6 +1001,7 @@ document.addEventListener('click',async e=>{
   const tab=e.target.closest('[data-adm-tab]');
   if(tab){adminTab=tab.dataset.admTab;document.querySelectorAll('[data-adm-tab]').forEach(b=>b.classList.remove('on'));tab.classList.add('on');await renderAdminPanel()}
 });
+
 function renderShop(){
   document.getElementById('shopPlaceholder').style.display='none';
   const wrap=document.getElementById('shopContent');
@@ -925,6 +1010,8 @@ function renderShop(){
   const active=currentUser.avatar_frame||'';
   const ownedB=currentUser.owned_banners||[];
   const activeB=currentUser.avatar_banner||'';
+  const ownedBg=currentUser.owned_bgs||[];
+  const activeBg=currentUser.avatar_bg||'';
   wrap.innerHTML=`
     <div style="background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px;margin-bottom:12px">
       <div style="font-size:16px;font-weight:800;margin-bottom:10px"><i class="fas fa-user-circle"></i> Ваш аватар</div>
@@ -981,6 +1068,27 @@ function renderShop(){
         }).join('')}
       </div>
     </div>
+    <div style="background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px;margin-bottom:12px">
+      <div style="font-size:16px;font-weight:800;margin-bottom:6px"><i class="fas fa-image"></i> Фоны профиля</div>
+      <div style="font-size:12px;color:#8888aa;margin-bottom:12px">Все по 100 ₽</div>
+      ${activeBg?`<button onclick="removeProfileBg()" style="margin-bottom:12px;padding:8px 12px;background:#2a2a4a;color:#ff6b6b;border:none;border-radius:10px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;width:100%"><i class="fas fa-times"></i> Снять фон</button>`:''}
+      <div class="shop-frames">
+        ${PROFILE_BGS.map(b=>{
+          const isOwned=ownedBg.includes(b.id);
+          const isActive=activeBg===b.id;
+          let btn;
+          if(isActive)btn=`<button class="btn active" disabled>Активен</button>`;
+          else if(isOwned)btn=`<button class="btn use" onclick="useProfileBg('${b.id}')">Использовать</button>`;
+          else btn=`<button class="btn buy" onclick="buyProfileBg('${b.id}')">Купить · ${b.price} ₽</button>`;
+          return `<div class="shop-frame ${isOwned?'owned':''} ${isActive?'active':''}">
+            <div class="shop-bg-preview" style="background-image:url('${b.img}')"></div>
+            <div class="name">${b.name}</div>
+            <div class="price">${b.price} ₽</div>
+            ${btn}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
   `;
   document.getElementById('avatarFileInput').addEventListener('change',handleAvatarUpload);
 }
@@ -1014,7 +1122,6 @@ async function removeAvatar(){
   showToast('success','Готово','Аватар удалён');
   renderShop();
   document.getElementById('avatar').innerHTML=avatarHtml(currentUser,80);
-  document.getElementById('profileBanner').innerHTML=bannerHtml(currentUser,'lg');
   await renderTopPage();
 }
 async function buyFrame(frameId){
@@ -1072,6 +1179,35 @@ async function removeBanner(){
   const pb=document.getElementById('profileBanner');if(pb)pb.innerHTML='';
   await renderTopPage();
 }
+async function buyProfileBg(bgId){
+  if(!confirm('Купить фон за 100 ₽?'))return;
+  const{data,error}=await supabaseClient.rpc('buy_bg',{p_user_id:currentUser.id,p_bg:bgId});
+  if(error||!data?.ok){
+    const msg=data?.reason==='not enough money'?'Недостаточно средств':data?.reason==='already owned'?'Уже куплено':(data?.reason||error?.message||'Ошибка');
+    showToast('error','Ошибка',msg);return;
+  }
+  currentUser.balance=data.balance;
+  currentUser.owned_bgs=[...(currentUser.owned_bgs||[]),bgId];
+  document.getElementById('walletBalance').textContent=data.balance+' ₽';
+  showToast('success','Куплено!','Активируем фон...');
+  await useProfileBg(bgId);
+}
+async function useProfileBg(bgId){
+  const{data,error}=await supabaseClient.rpc('set_bg',{p_user_id:currentUser.id,p_bg:bgId});
+  if(error||!data?.ok){showToast('error','Ошибка',data?.reason||error?.message||'fail');return}
+  currentUser.avatar_bg=bgId;
+  showToast('success','Готово','Фон профиля активен');
+  applyProfileBg(currentUser);
+  renderShop();
+}
+async function removeProfileBg(){
+  const{data,error}=await supabaseClient.rpc('set_bg',{p_user_id:currentUser.id,p_bg:''});
+  if(error||!data?.ok){showToast('error','Ошибка',data?.reason||error?.message||'fail');return}
+  currentUser.avatar_bg='';
+  showToast('info','Фон снят','');
+  applyProfileBg(currentUser);
+  renderShop();
+}
 
 function openEditProfile(){if(!currentUser)return;const inp=document.getElementById('editUsernameInput');inp.value=currentUser.username;document.getElementById('editMessage').className='auth-message';document.getElementById('editMessage').textContent='';updateEditCounter();document.getElementById('editProfileModal').classList.add('active');setTimeout(()=>{inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)},100)}
 function closeEditProfile(){document.getElementById('editProfileModal').classList.remove('active')}
@@ -1115,7 +1251,6 @@ function subscribeToSettings(){
       if(row&&row.key==='team_size'&&row.value!==currentSettings.team_size){currentSettings.team_size=row.value;updateFormatLabels()}
     }).subscribe();
 }
-
 /* ===== ADMIN ===== */
 async function renderAdminPanel(){
   if(!currentUser?.isadmin)return;
@@ -1455,6 +1590,8 @@ function startMatchAfterConfirm(){
   document.getElementById('shotStatus').textContent='';
   navigate('matchPage');
   renderMatchPage();
+  showChatPanel();
+  subscribeToChat(currentMatchId);
   showToast('success','Матч начался!',(currentMatch.orange.length+currentMatch.blue.length)+' игроков');
   checkMatchResultVisibility();checkLobbyVisibility();checkShotVisibility();updateHomeStats();
 }
@@ -1462,7 +1599,7 @@ function subscribeToMatch(id){
   if(matchChannel){supabaseClient.removeChannel(matchChannel);matchChannel=null}
   matchChannel=supabaseClient.channel('match_'+id+'_'+Date.now())
     .on('postgres_changes',{event:'*',schema:'public',table:'active_matches',filter:`id=eq.${id}`},async(payload)=>{
-      if(payload.eventType==='DELETE'){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;currentMatch=null;isPlayerInMatch=false;navigate('matches');return}
+      if(payload.eventType==='DELETE'){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;currentMatch=null;isPlayerInMatch=false;hideChatPanel();unsubscribeFromChat();navigate('matches');return}
       if(payload.eventType==='UPDATE'){
         const nd=payload.new;
         const orange=typeof nd.orange==='string'?JSON.parse(nd.orange):nd.orange;
@@ -1578,6 +1715,7 @@ function closeMatchForMe(){
   document.getElementById('confirmModal').classList.remove('active');
   document.getElementById('matchNavLabel').textContent='Поиск';
   document.querySelector('#matchNavBtn i').className='fas fa-search';
+  hideChatPanel();unsubscribeFromChat();
   navigate('matches');
 }
 function checkMatchResultVisibility(){
@@ -1614,6 +1752,103 @@ async function renderMatchPage(){
     ||'<p style="color:#888;text-align:center;padding:8px 0;font-size:13px;">Нет игроков</p>';
   renderDraftUI();
   checkMatchResultVisibility();
+}
+
+/* ===== ЧАТ МАТЧА В РЕАЛТАЙМЕ ===== */
+function showChatPanel(){
+  const el=document.getElementById('matchChat');
+  if(el)el.classList.add('visible');
+}
+function hideChatPanel(){
+  const el=document.getElementById('matchChat');
+  if(el)el.classList.remove('visible');
+}
+function renderChatMessages(){
+  const body=document.getElementById('chatBody');
+  if(!body)return;
+  if(!chatMessages.length){
+    body.innerHTML='<div class="chat-empty">Сообщений пока нет</div>';
+    return;
+  }
+  body.innerHTML=chatMessages.map(m=>{
+    const me=String(m.user_id)===String(currentUser.id);
+    const letter=(m.username||'?').charAt(0).toUpperCase();
+    const avInner=m.avatar_url
+      ? `<img src="${m.avatar_url}" alt="">`
+      : `<span style="color:#0b0b0f">${letter}</span>`;
+    const t=new Date(m.created_at);
+    const hh=String(t.getHours()).padStart(2,'0');
+    const mm=String(t.getMinutes()).padStart(2,'0');
+    return `<div class="chat-msg ${me?'me':''}">
+      <div class="av">${avInner}</div>
+      <div class="body">
+        <div class="who">${m.username||'?'}<span class="time">${hh}:${mm}</span></div>
+        <div class="txt">${escapeHtml(m.text)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  body.scrollTop=body.scrollHeight;
+}
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+async function loadChatHistory(matchId){
+  try{
+    const{data,error}=await supabaseClient
+      .from('match_messages')
+      .select('*')
+      .eq('match_id',String(matchId))
+      .order('created_at',{ascending:true})
+      .limit(200);
+    if(error){console.warn('chat history failed',error);return}
+    chatMessages=data||[];
+    renderChatMessages();
+  }catch(e){console.warn('chat history',e)}
+}
+function subscribeToChat(matchId){
+  unsubscribeFromChat();
+  if(!matchId)return;
+  chatMessages=[];
+  renderChatMessages();
+  loadChatHistory(matchId);
+  chatChannel=supabaseClient.channel('chat_'+matchId)
+    .on('postgres_changes',
+      {event:'INSERT',schema:'public',table:'match_messages',filter:`match_id=eq.${matchId}`},
+      (payload)=>{
+        if(!payload.new)return;
+        // не дублируем
+        if(chatMessages.some(m=>m.id===payload.new.id))return;
+        chatMessages.push(payload.new);
+        if(chatMessages.length>300)chatMessages.shift();
+        renderChatMessages();
+      })
+    .subscribe();
+}
+function unsubscribeFromChat(){
+  if(chatChannel){try{supabaseClient.removeChannel(chatChannel)}catch(e){}chatChannel=null}
+  chatMessages=[];
+}
+async function sendChatMessage(){
+  if(!currentUser||!currentMatchId)return;
+  const inp=document.getElementById('chatInput');
+  const text=(inp?.value||'').trim();
+  if(!text)return;
+  if(text.length>300)return showToast('error','Ошибка','Максимум 300 символов');
+  const btn=document.getElementById('chatSendBtn');
+  if(btn)btn.disabled=true;
+  inp.value='';
+  try{
+    const{error}=await supabaseClient.from('match_messages').insert([{
+      match_id:String(currentMatchId),
+      user_id:String(currentUser.id),
+      username:currentUser.username,
+      avatar_url:currentUser.avatar_url||'',
+      avatar_frame:currentUser.avatar_frame||'',
+      text
+    }]);
+    if(error){showToast('error','Ошибка',error.message);inp.value=text}
+  }catch(e){showToast('error','Ошибка',e.message);inp.value=text}
+  finally{if(btn)btn.disabled=false;inp.focus()}
 }
 
 /* ===== HISTORY ===== */
@@ -1670,7 +1905,7 @@ function inviteToParty(id){const fr=myFriends.find(f=>f.id===id);if(!fr)return;i
 function removeFromParty(id){partyFriends=partyFriends.filter(f=>f.id!==id);updatePartyUI();renderFriends()}
 function subscribeToFriends(){if(!currentUser)return;if(friendsChannel){supabaseClient.removeChannel(friendsChannel);friendsChannel=null}friendsChannel=supabaseClient.channel('friends_'+currentUser.id+'_'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'friend_requests'},async()=>{await loadFriends()}).on('postgres_changes',{event:'*',schema:'public',table:'friends'},async()=>{await loadFriends()}).subscribe()}
 
-/* ===== TOP + VIEW PROFILE ===== */
+/* ===== TOP ===== */
 async function renderTopPage(){
   try{
     const{data}=await supabaseClient.from('users').select('*').order('elo',{ascending:false}).limit(10);
@@ -1717,33 +1952,37 @@ async function openViewProfile(userId){
     if(!isMe&&isFriend){actionBtn=`<button class="btn-action edit" style="background:#2a2a4a;color:#ff6b6b" onclick="removeFriend('${p.id}');closeViewProfile()">Удалить из друзей</button>`}
     else if(!isMe){actionBtn=`<button class="btn-action edit" style="background:#4dabf7;color:#fff" onclick="sendFriendRequest('${p.id}')">Добавить в друзья</button>`}
     const histHtml=(hist&&hist.length)?hist.map(h=>{const won=h.result==='win';const d=h.elo_change||0;return `<div style="display:flex;justify-content:space-between;padding:8px 12px;background:#1a1a2e;border-radius:8px;margin-bottom:6px;font-size:13px;"><span style="color:#8888aa">${h.map||'—'}</span><span style="color:#666;font-size:11px">${new Date(h.match_date).toLocaleDateString('ru-RU')}</span><span style="color:${won?'#51cf66':'#ff6b6b'};font-weight:600">${won?'🏆':'💀'} ${d>0?'+':''}${d}</span></div>`}).join(''):'<div style="color:#666;text-align:center;padding:8px 0;font-size:13px">Нет матчей</div>';
+    const bgHtml=p.avatar_bg&&BG_MAP[p.avatar_bg]?`<div style="position:absolute;inset:0;background-image:url('${BG_MAP[p.avatar_bg].img}');background-size:cover;background-position:center;opacity:.2;z-index:0;pointer-events:none"></div>`:'';
     body.innerHTML=`
-      ${bannerHtml(p,'lg')?`<div style="margin-bottom:14px">${bannerHtml(p,'lg')}</div>`:''}
-      <div class="profile-header" style="margin-bottom:16px">
-        ${avatarHtml(p,80)}
-        <div class="profile-info">
-          <div class="username">${p.username} ${p.isadmin?'👑':''} ${p.banned?'<span style="color:#ff6b6b;font-size:12px">[БАН]</span>':''}</div>
-          <div class="details">
-            <span><i class="fas fa-trophy" style="color:#ffd700"></i> ELO: ${p.elo||1000}</span>
-            ${p.registered?`<span><i class="fas fa-calendar-alt"></i> ${new Date(p.registered).toLocaleDateString('ru-RU')}</span>`:''}
+      <div style="position:relative;z-index:1">
+        ${bgHtml}
+        ${bannerHtml(p,'lg')?`<div style="margin-bottom:14px">${bannerHtml(p,'lg')}</div>`:''}
+        <div class="profile-header" style="margin-bottom:16px">
+          ${avatarHtml(p,80)}
+          <div class="profile-info">
+            <div class="username">${p.username} ${p.isadmin?'👑':''} ${p.banned?'<span style="color:#ff6b6b;font-size:12px">[БАН]</span>':''}</div>
+            <div class="details">
+              <span><i class="fas fa-trophy" style="color:#ffd700"></i> ELO: ${p.elo||1000}</span>
+              ${p.registered?`<span><i class="fas fa-calendar-alt"></i> ${new Date(p.registered).toLocaleDateString('ru-RU')}</span>`:''}
+            </div>
           </div>
         </div>
+        <div class="profile-stats" style="margin-bottom:14px">
+          <div class="stat-item"><div class="value">${m}</div><div class="label">Матчей</div></div>
+          <div class="stat-item"><div class="value" style="color:#51cf66">${w}</div><div class="label">Побед</div></div>
+          <div class="stat-item"><div class="value" style="color:#ff6b6b">${l}</div><div class="label">Поражений</div></div>
+          <div class="stat-item"><div class="value">${wr}%</div><div class="label">Винрейт</div></div>
+        </div>
+        ${!isMe?`<div style="margin-bottom:14px">${actionBtn}</div>`:''}
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px"><i class="fas fa-history"></i> Последние матчи</div>
+        <div>${histHtml}</div>
       </div>
-      <div class="profile-stats" style="margin-bottom:14px">
-        <div class="stat-item"><div class="value">${m}</div><div class="label">Матчей</div></div>
-        <div class="stat-item"><div class="value" style="color:#51cf66">${w}</div><div class="label">Побед</div></div>
-        <div class="stat-item"><div class="value" style="color:#ff6b6b">${l}</div><div class="label">Поражений</div></div>
-        <div class="stat-item"><div class="value">${wr}%</div><div class="label">Винрейт</div></div>
-      </div>
-      ${!isMe?`<div style="margin-bottom:14px">${actionBtn}</div>`:''}
-      <div style="font-size:14px;font-weight:700;margin-bottom:8px"><i class="fas fa-history"></i> Последние матчи</div>
-      <div>${histHtml}</div>
     `;
   }catch(e){console.error('openViewProfile',e);body.innerHTML='<div class="adm-empty">Ошибка: '+e.message+'</div>'}
 }
 function closeViewProfile(){document.getElementById('viewProfileModal').classList.remove('active');viewingUserId=null}
 
-/* ===== WALLET / PROMO ===== */
+/* ===== WALLET ===== */
 async function applyPromo(){const inp=document.getElementById('promoInput');const code=inp.value.trim().toUpperCase();if(!code)return showToast('error','Ошибка','Введите промокод');try{const{data}=await supabaseClient.from('promocodes').select('*').eq('code',code).single();if(!data)return showToast('error','Ошибка','Не найден');if(data.used_count>=data.max_uses)return showToast('error','Ошибка','Использован');await supabaseClient.from('promocodes').update({used_count:data.used_count+1}).eq('id',data.id);const nb=(currentUser.balance||0)+data.amount;await supabaseClient.from('users').update({balance:nb}).eq('id',currentUser.id);currentUser.balance=nb;saveSession(currentUser);document.getElementById('walletBalance').textContent=nb+' ₽';showToast('success','Применён!','+'+data.amount+' ₽');inp.value=''}catch(e){showToast('error','Ошибка',e.message)}}
 function updatePartyUI(){document.getElementById('partyCount').textContent=partyFriends.length+'/2';const c=document.getElementById('partyMembers');if(partyFriends.length===0){c.innerHTML='<span class="party-empty">Нет участников</span>';return}c.innerHTML=partyFriends.map(f=>`<span class="party-member"><span class="avatar-small">${f.username.charAt(0).toUpperCase()}</span>${f.username}<span class="remove" onclick="removeFromParty('${f.id}')">&times;</span></span>`).join('')}
 function matchFound(){const now=Date.now();if(now-_foundShown<3000)return;_foundShown=now;try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}}
@@ -1756,20 +1995,21 @@ async function resync(){
     await updateQueueCount();await loadFriends();
     if(isSearching&&!searchChannel)subscribeToQueue();
     if(!matchCreatedChannel)subscribeToMatchCreation();
+    if(currentMatchId&&currentMatch&&currentMatch.status==='active'&&!chatChannel)subscribeToChat(currentMatchId);
   }catch(e){}
 }
 async function finishMatch(winner){if(!currentMatch||!currentUser?.isadmin)return;await admFinishMatch(currentMatchId,winner);closeMatchForMe()}
 function endMatch(){if(!currentMatch||!currentUser?.isadmin)return showToast('error','Доступ','');if(!confirm('Закрыть матч у всех?'))return;supabaseClient.from('active_matches').delete().eq('id',currentMatchId);closeMatchForMe()}
 
 /* ===== INIT ===== */
-document.addEventListener('DOMContentLoaded',async function(){
-  document.getElementById('tabLogin').addEventListener('click',()=>switchAuthTab('login'));
-  document.getElementById('tabRegister').addEventListener('click',()=>switchAuthTab('register'));
+document.addEventListener('DOMContentEnterLoaded',async function(){
+  document.getElementById('tab')Login').addEventListener('{click',()=>switchAuthTab('login'));
+if  document.getElementById('tabRegister').addEventListener('(documentclick',()=>switchAuthTab('register'));
   document.getElementById('switchToRegister').addEventListener('click',e=>{e.preventDefault();switchAuthTab('register')});
   document.getElementById('switchToLogin').addEventListener('click',e=>{e.preventDefault();switchAuthTab('login')});
   document.getElementById('loginBtn').addEventListener('click',loginUser);
   document.getElementById('registerBtn').addEventListener('click',registerUser);
-  document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(document.getElementById('loginForm').classList.contains('active'))loginUser();else if(document.getElementById('registerForm').classList.contains('active'))registerUser()}});
+  document.addEventListener('keydown',e=>{if(e.key==='.getElementById('loginForm').classList.contains('active'))loginUser();else if(document.getElementById('registerForm').classList.contains('active'))registerUser()}});
   document.getElementById('modesBanContainer').addEventListener('click',e=>{const btn=e.target.closest('.ban-btn');if(!btn||btn.disabled)return;handleBanClick(btn.dataset.value)});
   document.getElementById('promoInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')applyPromo()});
   document.getElementById('editProfileModal').addEventListener('click',e=>{if(e.target.id==='editProfileModal')closeEditProfile()});
@@ -1785,6 +2025,7 @@ document.addEventListener('DOMContentLoaded',async function(){
   document.getElementById('shotSkipBtn').addEventListener('click',handleShotSkip);
   document.getElementById('blueWinBtn').addEventListener('click',()=>{if(!currentUser?.isadmin)return showToast('error','Доступ','');finishMatch('blue')});
   document.getElementById('orangeWinBtn').addEventListener('click',()=>{if(!currentUser?.isadmin)return showToast('error','Доступ','');finishMatch('orange')});
+  document.getElementById('chatInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChatMessage()}});
   cleanupInterval=setInterval(async()=>{try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}},60000);
   const session=getSession();
   if(session){try{const{data}=await supabaseClient.from('users').select('*').eq('id',session.id).maybeSingle();if(data)currentUser=data}catch(e){}}

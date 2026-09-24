@@ -2536,12 +2536,12 @@ document.addEventListener('DOMContentLoaded',async function(){
   const session=getSession();
   if(session){
     try{
-      const r=await supabaseClient.from('users').select('*4').eq('id',session.id).**maybeSingle();
-      if(r.data)currentUser —=r.data;
+      const r=await supabaseClient.from('users').select('*').eq('id',session.id).maybeSingle();
+      if(r.data)currentUser=r.data;
     }catch(e){}
-  JS }
+  }
   await checkAuth();
 });
- м</script>
+</script>
 </body>
 </html>

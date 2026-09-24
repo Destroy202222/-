@@ -247,7 +247,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .btn-action.logout{background:#ff6b6b;color:#fff}
 /* ==== ПРОФИЛЬ: ОДИН НИК + БАННЕР СВЕРХУ ==== */
 .profile-hero{position:relative;border-radius:14px;overflow:hidden;margin-bottom:16px;isolation:isolate;min-height:104px}
-.profile-hero .bn{width:100%}
 .profile-hero-inner{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding:14px 16px}
 .profile-hero-name{font-size:18px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .profile-hero-sub{font-size:11px;color:#e0e0ea;opacity:.9;text-shadow:0 1px 4px rgba(0,0,0,.95);margin-top:3px;letter-spacing:.5px}
@@ -258,6 +257,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .profile-hero .av-frame .av-inner{font-size:22px !important}
 .profile-hero-admin{display:inline-block;background:rgba(255,215,0,.15);border:1px solid rgba(255,215,0,.35);padding:2px 8px;border-radius:10px;color:var(--gold);font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle}
 .profile-hero-name-row{display:flex;align-items:center;min-width:0}
+.profile-hero .bn{width:100%;border-radius:0;box-shadow:none;animation:none;min-height:104px;padding:0}
+.profile-hero .bn::after{background:linear-gradient(90deg,rgba(0,0,0,.75) 0%,rgba(0,0,0,.35) 55%,rgba(0,0,0,.6) 100%)}
 /* ==== /ПРОФИЛЬ ==== */
 .brawl-verified-card{margin-top:14px;padding:14px;background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(20,20,31,.9));border:1px solid rgba(34,197,94,.3);border-radius:16px;display:flex;align-items:center;gap:12px}
 .brawl-verified-card .icon{width:48px;height:48px;border-radius:12px;background:#1a1a2e;flex-shrink:0;object-fit:cover;border:2px solid rgba(34,197,94,.5)}
@@ -393,8 +394,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .av-frame.frame_neon{background:linear-gradient(135deg,#22c55e,#00d4ff);box-shadow:0 0 15px rgba(34,197,94,.6)}
 .av-frame.frame_fire{background:linear-gradient(135deg,#ff3b6b,#ffb238);box-shadow:0 0 18px rgba(255,59,107,.6)}
 .av-frame.frame_diamond{background:linear-gradient(135deg,#7dd3fc,#a78bfa,#f0abfc);box-shadow:0 0 20px rgba(167,139,250,.6)}
-#avatar .av-frame{width:80px;height:80px}
-#avatar .av-frame .av-inner{font-size:32px;font-weight:900;color:#fff}
 #viewProfileBody .av-frame{width:80px;height:80px}
 #viewProfileBody .av-frame .av-inner{font-size:30px;font-weight:900;color:#fff}
 .top-item .av-frame{width:44px;height:44px}
@@ -734,55 +733,56 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
   </div>
   <!-- /ЕДИНЫЙ БАННЕР -->
 
-<div class="profile-info" style="margin-bottom:16px">
-  <div class="details">
-    <span><i class="fas fa-calendar-alt"></i> Дата: <span id="pReg">—</span></span>
-  </div>
-</div>
-
-<div class="profile-stats">
-<div class="stat-item"><div class="value" id="pWr">0%</div><div class="label">Винрейт</div></div>
-<div class="stat-item"><div class="value" id="pMatches">0</div><div class="label">Матчей</div></div>
-<div class="stat-item"><div class="value" id="pMvp">0</div><div class="label">MVP</div></div>
-<div class="stat-item"><div class="value" id="pElo">300</div><div class="label">ELO</div></div>
-</div>
-<div class="profile-actions">
-<button class="btn-action logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
-</div>
-
-<!-- LVL SYSTEM BLOCK -->
-<div class="level-card" id="levelCard" style="background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px;margin-bottom:16px">
-  <div style="display:flex;align-items:center;gap:16px">
-    <div id="levelRingWrap"></div>
-    <div style="flex:1;min-width:0">
-      <div style="font-size:11px;color:#8888aa;letter-spacing:2px;text-transform:uppercase;font-weight:700">Уровень</div>
-      <div id="levelRangeText" style="font-size:16px;font-weight:800;color:#fff;margin-top:6px">—</div>
+  <div class="profile-info" style="margin-bottom:16px">
+    <div class="details">
+      <span><i class="fas fa-calendar-alt"></i> Дата: <span id="pReg">—</span></span>
+      <span class="admin-badge" id="adminBadge"><i class="fas fa-user-shield"></i> Админ</span>
     </div>
   </div>
-  <div class="level-progress-line">
-    <div class="level-progress-track"><div class="level-progress-fill" id="levelProgressFill"></div></div>
-    <div class="level-progress-label" id="levelProgressLabel">—</div>
-  </div>
-</div>
-<!-- /LVL SYSTEM BLOCK -->
 
-<div id="brawlProfileBlock"></div>
-<div class="admin-panel-wrap" id="adminPanelWrap">
-<div class="adm-title"><i class="fas fa-user-shield"></i> Админ-меню</div>
-<div class="adm-tabs">
-<button class="on" data-adm-tab="matches">Матчи</button>
-<button data-adm-tab="players">Игроки</button>
-<button data-adm-tab="queue">Очередь</button>
-<button data-adm-tab="promos">Промокоды</button>
-<button data-adm-tab="admins">Админы</button>
-<button data-adm-tab="settings">Настройки</button>
-</div>
-<div class="adm-body" id="admBody"></div>
-</div>
-<div class="match-history">
-<div style="font-size:14px;font-weight:700;margin-bottom:8px;"><i class="fas fa-history"></i> История матчей</div>
-<div id="matchHistoryList"><div style="color:#666;text-align:center;padding:8px 0;">Нет матчей</div></div>
-</div>
+  <div class="profile-stats">
+    <div class="stat-item"><div class="value" id="pWr">0%</div><div class="label">Винрейт</div></div>
+    <div class="stat-item"><div class="value" id="pMatches">0</div><div class="label">Матчей</div></div>
+    <div class="stat-item"><div class="value" id="pMvp">0</div><div class="label">MVP</div></div>
+    <div class="stat-item"><div class="value" id="pElo">300</div><div class="label">ELO</div></div>
+  </div>
+  <div class="profile-actions">
+    <button class="btn-action logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+  </div>
+
+  <!-- LVL SYSTEM BLOCK -->
+  <div class="level-card" id="levelCard" style="background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div id="levelRingWrap"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;color:#8888aa;letter-spacing:2px;text-transform:uppercase;font-weight:700">Уровень</div>
+        <div id="levelRangeText" style="font-size:16px;font-weight:800;color:#fff;margin-top:6px">—</div>
+      </div>
+    </div>
+    <div class="level-progress-line">
+      <div class="level-progress-track"><div class="level-progress-fill" id="levelProgressFill"></div></div>
+      <div class="level-progress-label" id="levelProgressLabel">—</div>
+    </div>
+  </div>
+  <!-- /LVL SYSTEM BLOCK -->
+
+  <div id="brawlProfileBlock"></div>
+  <div class="admin-panel-wrap" id="adminPanelWrap">
+    <div class="adm-title"><i class="fas fa-user-shield"></i> Админ-меню</div>
+    <div class="adm-tabs">
+      <button class="on" data-adm-tab="matches">Матчи</button>
+      <button data-adm-tab="players">Игроки</button>
+      <button data-adm-tab="queue">Очередь</button>
+      <button data-adm-tab="promos">Промокоды</button>
+      <button data-adm-tab="admins">Админы</button>
+      <button data-adm-tab="settings">Настройки</button>
+    </div>
+    <div class="adm-body" id="admBody"></div>
+  </div>
+  <div class="match-history">
+    <div style="font-size:14px;font-weight:700;margin-bottom:8px;"><i class="fas fa-history"></i> История матчей</div>
+    <div id="matchHistoryList"><div style="color:#666;text-align:center;padding:8px 0;">Нет матчей</div></div>
+  </div>
 </div>
 </div>
 
@@ -939,14 +939,12 @@ function renderProfileHero(){
   if(subEl) subEl.textContent='ELO: '+(currentUser.elo||300)+' · '+(currentUser.matches||0)+' матчей';
   if(avEl) avEl.innerHTML=avatarHtml(currentUser,56);
   if(adminEl) adminEl.style.display=currentUser.isadmin?'inline-block':'none';
-
-  // Фон — либо баннер, либо градиент
   if(bnEl){
     const b=currentUser.avatar_banner?BANNER_MAP[currentUser.avatar_banner]:null;
     if(b){
-      bnEl.innerHTML='<div class="bn bn-lg" style="background-image:url(\''+b.img+'\');border-radius:0;box-shadow:none;min-height:104px;animation:none;padding:0"></div>';
+      bnEl.innerHTML='<div class="bn bn-lg" style="background-image:url(\''+b.img+'\');border-radius:14px;box-shadow:none;min-height:104px;animation:none;padding:0;position:absolute;inset:0"></div>';
     }else{
-      bnEl.innerHTML='<div class="bn bn-lg" style="background:linear-gradient(135deg,rgba(255,138,31,.25),rgba(20,20,31,.9));border-radius:0;box-shadow:none;min-height:104px;animation:none;padding:0"></div>';
+      bnEl.innerHTML='<div class="bn bn-lg" style="background:linear-gradient(135deg,rgba(255,138,31,.25),rgba(20,20,31,.9));border-radius:14px;box-shadow:none;min-height:104px;animation:none;padding:0;position:absolute;inset:0"></div>';
     }
   }
 }
@@ -1360,42 +1358,57 @@ function renderBrawlProfile(){
 }
 
 async function checkAuth(){
-  if(currentUser){
-    document.getElementById('authPage').style.display='none';
-    document.getElementById('mainSite').style.display='block';
-    document.getElementById('pName').textContent=currentUser.username;
-    document.getElementById('avatar').innerHTML=avatarHtml(currentUser,80);
-    renderProfileHero();
-    applyProfileBg(currentUser);
-    renderBrawlProfile();
-    renderLevelProfile();
-    if(currentUser.registered)document.getElementById('pReg').textContent=new Date(currentUser.registered).toLocaleDateString('ru-RU');
-    const m=currentUser.matches||0,w=currentUser.wins||0,wr=m>0?Math.round(w/m*100):0;
-    document.getElementById('pWr').textContent=wr+'%';
-    document.getElementById('pMatches').textContent=m;
-    document.getElementById('pMvp').textContent=currentUser.mvp||0;
-    document.getElementById('pElo').textContent=currentUser.elo||300;
-    document.getElementById('walletBalance').textContent=(currentUser.balance||0)+' ₽';
-    const isAdmin=currentUser.isadmin===true;
-    if(isAdmin){document.getElementById('adminBadge').classList.add('visible');document.getElementById('adminPanelWrap').classList.add('visible');await loadSettings();await renderAdminPanel()}
-    else{document.getElementById('adminBadge').classList.remove('visible');document.getElementById('adminPanelWrap').classList.remove('visible')}
-    await loadSettings();
-    subscribeToSettings();
-    updateFormatLabels();
-    await checkQueueOnLoad();
-    await checkActiveMatchOnLoad();
-    await loadMatchHistory();
-    await renderTopPage();
-    await loadFriends();
-    subscribeToFriends();
-    startGlobalPolling();
-    await updateHomeStats();
-    updatePartyUI();
-    navigate('home');
-    showToast('success','Добро пожаловать, '+currentUser.username+'!','');
-  }else{
-    document.getElementById('authPage').style.display='flex';
-    document.getElementById('mainSite').style.display='none';
+  try{
+    if(currentUser){
+      document.getElementById('authPage').style.display='none';
+      document.getElementById('mainSite').style.display='block';
+
+      // 1) Сначала всё критичное и независимое от старых элементов
+      renderProfileHero();
+      applyProfileBg(currentUser);
+      renderBrawlProfile();
+      renderLevelProfile();
+
+      if(currentUser.registered)document.getElementById('pReg').textContent=new Date(currentUser.registered).toLocaleDateString('ru-RU');
+      const m=currentUser.matches||0,w=currentUser.wins||0,wr=m>0?Math.round(w/m*100):0;
+      document.getElementById('pWr').textContent=wr+'%';
+      document.getElementById('pMatches').textContent=m;
+      document.getElementById('pMvp').textContent=currentUser.mvp||0;
+      document.getElementById('pElo').textContent=currentUser.elo||300;
+      document.getElementById('walletBalance').textContent=(currentUser.balance||0)+' ₽';
+
+      const isAdmin=currentUser.isadmin===true;
+      if(isAdmin){
+        document.getElementById('adminBadge').classList.add('visible');
+        document.getElementById('adminPanelWrap').classList.add('visible');
+      }else{
+        document.getElementById('adminBadge').classList.remove('visible');
+        document.getElementById('adminPanelWrap').classList.remove('visible');
+      }
+
+      await loadSettings();
+      subscribeToSettings();
+      updateFormatLabels();
+
+      try{await checkQueueOnLoad()}catch(e){console.warn('checkQueueOnLoad',e)}
+      try{await checkActiveMatchOnLoad()}catch(e){console.warn('checkActiveMatchOnLoad',e)}
+      try{await loadMatchHistory()}catch(e){console.warn('loadMatchHistory',e)}
+      try{await renderTopPage()}catch(e){console.warn('renderTopPage',e)}
+      try{await loadFriends()}catch(e){console.warn('loadFriends',e)}
+      subscribeToFriends();
+      startGlobalPolling();
+      try{await updateHomeStats()}catch(e){console.warn('updateHomeStats',e)}
+      updatePartyUI();
+      if(isAdmin){try{await renderAdminPanel()}catch(e){console.warn('renderAdminPanel',e)}}
+
+      navigate('home');
+      showToast('success','Добро пожаловать, '+currentUser.username+'!','');
+    }else{
+      document.getElementById('authPage').style.display='flex';
+      document.getElementById('mainSite').style.display='none';
+    }
+  }catch(e){
+    console.error('checkAuth fatal',e);
   }
 }
 

@@ -115,6 +115,10 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .prize-item .place{font-size:11px;color:#8888aa}.prize-item .reward{font-size:16px;font-weight:700;margin-top:4px}
 .prize-item.gold .reward{color:var(--gold)}.prize-item.silver .reward{color:#c0c0c0}.prize-item.bronze .reward{color:#cd7f32}
 .prize-premium{text-align:center;font-size:13px;color:#8888aa}
+.avatar-picker{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:4px;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px}
+.avatar-opt{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:#0b0b0f;border:2px solid #2a2a4a;border-radius:10px;font-size:14px;font-weight:800;color:#666;cursor:pointer;transition:all .15s;user-select:none}
+.avatar-opt:hover{border-color:var(--accent);color:#fff}
+.avatar-opt.selected{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,138,31,.2),rgba(255,107,0,.1));color:var(--accent);box-shadow:0 0 12px rgba(255,138,31,.4);transform:scale(1.05)}
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;display:flex;justify-content:space-around;padding:10px 8px calc(14px + env(safe-area-inset-bottom,0px));background:rgba(20,20,31,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,138,31,.12);z-index:1000;box-sizing:border-box;box-shadow:0 -6px 20px rgba(0,0,0,.4)}
 .bottom-nav .item{display:flex;flex-direction:column;align-items:center;background:transparent;border:none;color:#555;font-family:inherit;font-size:10px;cursor:pointer;padding:4px 8px;gap:2px;position:relative}
 .bottom-nav .item i{font-size:20px}
@@ -350,7 +354,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .top-item:hover{border-color:var(--accent);transform:translateY(-1px)}
 .top-item.me{border-color:var(--accent);background:rgba(255,138,31,.06)}
 .top-item .rank{font-size:16px;font-weight:800;min-width:36px;color:#666}
-.top-item .rank.gold{color:var(--gold)}.top-item .rank.silver{bncolor:#c0c0c0}.top-item .rank.bronze{color:#cd7f32}
+.top-item .rank.gold{color:var(--gold)}.top-item .rank.silver{color:#c0c0c0}.top-item .rank.bronze{color:#cd7f32}
 .top-item .info{flex:1}
 .top-item .info .name{font-weight:600;font-size:14px}
 .top-item .info .stats{font-size:12px;color:#8888aa}
@@ -391,7 +395,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .bn.bn-sm .bn-sub{font-size:10px}
 .bn.bn-sm .bn-elo{font-size:15px}
 .bn .bn-meta{flex:1;min-width:0}
-.bn .-name{font-weight:800;font-size:20px;letter-spacing:.3px;text-shadow:0 2px 10px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bn .bn-name{font-weight:800;font-size:20px;letter-spacing:.3px;text-shadow:0 2px 10px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bn .bn-sub{font-size:12px;opacity:.9;text-shadow:0 1px 6px rgba(0,0,0,.9);margin-top:3px}
 .bn .bn-elo{font-weight:900;font-size:24px;text-shadow:0 2px 12px rgba(0,0,0,.9);text-align:right;line-height:1}
 .bn .bn-elo small{display:block;font-size:9px;font-weight:500;opacity:.75;letter-spacing:1.5px;margin-top:2px}
@@ -506,7 +510,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
       <div class="verify-title"><i class="fas fa-shield-alt"></i> Подтверди через иконку</div>
       <div class="verify-text">
         1. Открой Brawl Stars → <b>Профиль</b><br>
-        2. Смени иконку на <b id="verifyIconLabel">№42</b><br>
+        2. Смени иконку на <b>любую другую</b><br>
         3. Сохрани и вернись сюда<br>
         4. Нажми кнопку ниже
       </div>
@@ -515,7 +519,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     </div>
     <div class="modal-actions-row">
       <button class="btn-cancel" onclick="closeVerifyModal()">Отмена</button>
-      <button class="btn-save" id="verifyConfirmBtn" onclick="confirmVerification()">Я поставил иконку</button>
+      <button class="btn-save" id="verifyConfirmBtn" onclick="confirmVerification()">Я поменял иконку</button>
     </div>
   </div>
 </div>
@@ -760,28 +764,22 @@ const FRAMES=[
 ];
 const BANNERS=[
   {id:'banner_anime_1', name:'Аниме 1',   price:50, img:'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800'},
-  {id:'banner_anime_2', name:'Аниме 2',   price:50, img:'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800'},
-  {id:'banner_anime_3', name:'Аниме 3',   price:50, img:'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=800'},
   {id:'banner_cyber',   name:'Киберпанк', price:50, img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800'},
   {id:'banner_sakura',  name:'Сакура',    price:50, img:'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800'},
   {id:'banner_neon',    name:'Неон',      price:50, img:'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800'},
   {id:'banner_fire',    name:'Огонь',     price:50, img:'https://images.unsplash.com/photo-1517999349371-c43520457b23?w=800'},
   {id:'banner_ocean',   name:'Океан',     price:50, img:'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800'},
-  {id:'banner_diamond', name:'Алмаз',     price:50, img:'https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?w=800'},
-  {id:'banner_carbon',  name:'Карбон',    price:50, img:'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?w=800'}
+  {id:'banner_diamond', name:'Алмаз',     price:50, img:'https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?w=800'}
 ];
 const BANNER_MAP=Object.fromEntries(BANNERS.map(function(b){return [b.id,b]}));
 const PROFILE_BGS=[
   {id:'bg_anime_1', name:'Аниме 1',   price:100, img:'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200'},
-  {id:'bg_anime_2', name:'Аниме 2',   price:100, img:'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1200'},
-  {id:'bg_anime_3', name:'Аниме 3',   price:100, img:'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=1200'},
-  {id:'bg_city',    name:'Город',     price:100, img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200'},
-  {id:'bg_nature',  name:'Природа',   price:100, img:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200'},
-  {id:'bg_space',   name:'Космос',    price:100, img:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200'},
+  {id:'bg_cyber',   name:'Киберпанк', price:100, img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200'},
+  {id:'bg_sakura',  name:'Сакура',    price:100, img:'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1200'},
   {id:'bg_neon',    name:'Неон',      price:100, img:'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200'},
-  {id:'bg_dark',    name:'Тьма',      price:100, img:'https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?w=1200'},
-  {id:'bg_sunset',  name:'Закат',     price:100, img:'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1200'},
-  {id:'bg_water',   name:'Вода',      price:100, img:'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200'}
+  {id:'bg_fire',    name:'Огонь',     price:100, img:'https://images.unsplash.com/photo-1517999349371-c43520457b23?w=1200'},
+  {id:'bg_ocean',   name:'Океан',     price:100, img:'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200'},
+  {id:'bg_diamond', name:'Алмаз',     price:100, img:'https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?w=1200'}
 ];
 const BG_MAP=Object.fromEntries(PROFILE_BGS.map(function(b){return [b.id,b]}));
 
@@ -959,8 +957,6 @@ async function registerUser(){
     }
 
     const userId='user_brawl_'+data.tag.replace('#','');
-
-    // Чистим недоделанную регистрацию с тем же ID, если есть
     await supabaseClient.rpc('cancel_brawl_registration',{p_user_id:userId});
 
     messageEl.className='auth-message show info';
@@ -983,6 +979,7 @@ async function registerUser(){
     pendingBrawlName=data.name;
     pendingBrawlUserId=userId;
     pendingBrawlPassword=password;
+    pendingBrawlIcon=data.iconId;
     openVerifyModal();
 
   }catch(e){
@@ -1028,14 +1025,14 @@ async function loginUser(){
   }
 }
 
-/* ===== ВЕРИФИКАЦИЯ ЧЕРЕЗ ИКОНКУ ===== */
+/* ===== ВЕРИФИКАЦИЯ: СМЕНА ИКОНКИ НА ЛЮБУЮ ДРУГУЮ ===== */
 function openVerifyModal(){
-  pendingBrawlIcon=Math.floor(Math.random()*100)+1;
-  document.getElementById('verifyIconLabel').textContent='№'+pendingBrawlIcon;
+  // pendingBrawlIcon уже хранит текущую иконку игрока (получена при регистрации)
+  document.getElementById('verifyIconLabel').textContent='любую другую';
   const det=document.getElementById('verifyDetected');
   det.textContent='';det.style.color='#8888aa';
   const btn=document.getElementById('verifyConfirmBtn');
-  btn.disabled=false;btn.innerHTML='Я поставил иконку';
+  btn.disabled=false;btn.innerHTML='Я поменял иконку';
   document.getElementById('verifyModal').classList.add('active');
   startVerifyCountdown(600);
 }
@@ -1049,6 +1046,7 @@ function closeVerifyModal(){
     pendingBrawlTag='';
     pendingBrawlName='';
     pendingBrawlPassword='';
+    pendingBrawlIcon=0;
   }
 }
 
@@ -1069,7 +1067,6 @@ function startVerifyCountdown(seconds){
       if(det){det.style.color='#ff6b6b';det.textContent='⏰ Время вышло. Попробуй заново.'}
       const btn=document.getElementById('verifyConfirmBtn');
       if(btn)btn.disabled=true;
-      // Удаляем недоделанную регистрацию
       if(pendingBrawlUserId){
         supabaseClient.rpc('cancel_brawl_registration',{p_user_id:pendingBrawlUserId}).then(function(){},function(){});
       }
@@ -1098,17 +1095,19 @@ async function confirmVerification(){
     if(!data.ok){
       info.style.color='#ff6b6b';
       info.textContent='❌ '+data.reason;
-      btn.disabled=false;btn.innerHTML='Я поставил иконку';
+      btn.disabled=false;btn.innerHTML='Я поменял иконку';
       return;
     }
 
-    if(data.iconId!==pendingBrawlIcon){
+    // Если иконка не изменилась — значит игрок не поменял
+    if(data.iconId===pendingBrawlIcon){
       info.style.color='#ff6b6b';
-      info.textContent='❌ Иконка не совпадает. Поставь №'+pendingBrawlIcon+' и подожди 30 сек.';
+      info.textContent='❌ Иконка не изменилась. Смени на любую другую и попробуй снова.';
       btn.disabled=false;btn.innerHTML='Попробовать снова';
       return;
     }
 
+    // Иконка изменилась — сохраняем
     const upd=await supabaseClient.rpc('set_brawl_verified',{
       p_user_id:pendingBrawlUserId,
       p_tag:pendingBrawlTag,
@@ -1131,6 +1130,7 @@ async function confirmVerification(){
       pendingBrawlTag='';
       pendingBrawlName='';
       pendingBrawlPassword='';
+      pendingBrawlIcon=0;
       if(verifyTimer){clearInterval(verifyTimer);verifyTimer=null}
       document.getElementById('verifyModal').classList.remove('active');
       showToast('success','Аккаунт подтверждён!','Добро пожаловать, '+ur.data.username);
@@ -1139,7 +1139,7 @@ async function confirmVerification(){
   }catch(e){
     info.style.color='#ff6b6b';
     info.textContent='❌ '+e.message;
-    btn.disabled=false;btn.innerHTML='Я поставил иконку';
+    btn.disabled=false;btn.innerHTML='Я поменял иконку';
   }
 }
 
@@ -2522,7 +2522,6 @@ document.addEventListener('DOMContentLoaded',async function(){
   const ci=document.getElementById('chatInput');
   if(ci)ci.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sendChatMessage()}});
   cleanupInterval=setInterval(async function(){try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}},60000);
-  // Автоочистка зависших регистраций
   try{await supabaseClient.rpc('cleanup_unverified_users')}catch(e){}
   const session=getSession();
   if(session){

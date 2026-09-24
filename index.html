@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#0b0b0f" />
+<meta name="color-scheme" content="dark" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="mobile-web-app-capable" content="yes" />
 <title>StartUp Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,8 +17,8 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0b0b0f;--accent:#ff8a1f;--accent-2:#ff6b00;--gold:#ffd700;--green:#22c55e;--red:#ff3b6b;--grid-size:48px;--grid-line:rgba(255,138,31,.09);}
-html{scroll-behavior:smooth}
-body{background-color:var(--bg);background-image:radial-gradient(circle at 12% 10%,rgba(255,138,31,.14),transparent 45%),radial-gradient(circle at 88% 88%,rgba(255,107,0,.12),transparent 45%),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px),linear-gradient(0deg,var(--grid-line) 1px,transparent 1px);background-size:100% 100%,100% 100%,var(--grid-size) var(--grid-size),var(--grid-size) var(--grid-size);background-repeat:no-repeat,no-repeat,repeat,repeat;color:#fff;font-family:'Inter',system-ui,sans-serif;padding-bottom:90px;min-height:100vh;line-height:1.5;position:relative}
+html{scroll-behavior:smooth;background:#0b0b0f;height:100%;overscroll-behavior:none}
+body{background-color:var(--bg);background-image:radial-gradient(circle at 12% 10%,rgba(255,138,31,.14),transparent 45%),radial-gradient(circle at 88% 88%,rgba(255,107,0,.12),transparent 45%),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px),linear-gradient(0deg,var(--grid-line) 1px,transparent 1px);background-size:100% 100%,100% 100%,var(--grid-size) var(--grid-size),var(--grid-size) var(--grid-size);background-repeat:no-repeat,no-repeat,repeat,repeat;background-attachment:fixed;color:#fff;font-family:'Inter',system-ui,sans-serif;padding-bottom:90px;min-height:100vh;min-height:100dvh;line-height:1.5;position:relative}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 10% 5%,rgba(255,138,31,.10),transparent 50%),radial-gradient(circle at 90% 95%,rgba(255,107,0,.10),transparent 50%)}
 body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%;filter:blur(140px);opacity:.22;z-index:0;pointer-events:none;background:radial-gradient(circle,#ff8a1f,transparent 70%);top:-160px;left:-160px;animation:blob1 22s ease-in-out infinite}
 @keyframes blob1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(140px,90px) scale(1.15)}}
@@ -721,8 +726,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     <div id="levelRingWrap"></div>
     <div style="flex:1;min-width:0">
       <div style="font-size:11px;color:#8888aa;letter-spacing:2px;text-transform:uppercase;font-weight:700">Уровень</div>
-      <div id="levelTier" style="font-size:20px;font-weight:900;color:#fff;margin-top:2px">—</div>
-      <div id="levelRangeText" style="font-size:12px;color:#8888aa;margin-top:4px">—</div>
+      <div id="levelRangeText" style="font-size:16px;font-weight:800;color:#fff;margin-top:6px">—</div>
     </div>
   </div>
   <div class="level-progress-line">
@@ -836,7 +840,6 @@ const LEVELS=[
   {lvl:10,min:2000, max:Infinity}
 ];
 const LEVEL_COLORS={1:'#ffffff',2:'#22c55e',3:'#22c55e',4:'#ffd700',5:'#ffd700',6:'#ff8a1f',7:'#ff8a1f',8:'#ff6b00',9:'#ff3b00',10:'#ff1a1a'};
-const LEVEL_TIER={1:'Новичок',2:'Новичок',3:'Любитель',4:'Любитель',5:'Профи',6:'Профи',7:'Мастер',8:'Мастер',9:'Гранд-мастер',10:'Легенда'};
 function getLevel(elo){
   elo=Math.max(0,parseInt(elo)||0);
   for(let i=0;i<LEVELS.length;i++) if(elo<=LEVELS[i].max) return LEVELS[i];
@@ -855,14 +858,13 @@ function levelRingHtml(elo,size){
   const p=getLevelProgress(elo);
   const col=LEVEL_COLORS[L.lvl];
   const off=LVL_C*(1-p);
-  const pct=Math.round(p*100);
   const cls=size==='sm'?'level-ring lvl-sm':'level-ring';
   return '<div class="'+cls+'" style="--lvl-color:'+col+';--lvl-glow:'+col+'66">'+
     '<svg viewBox="0 0 110 110">'+
       '<circle class="lvl-track" cx="55" cy="55" r="'+LVL_R+'"></circle>'+
       '<circle class="lvl-bar" cx="55" cy="55" r="'+LVL_R+'" stroke-dasharray="'+LVL_C.toFixed(2)+'" stroke-dashoffset="'+off.toFixed(2)+'"></circle>'+
     '</svg>'+
-    '<div class="lvl-inner"><div class="lvl-num">'+L.lvl+'</div><div class="lvl-pct">'+pct+'%</div></div>'+
+    '<div class="lvl-inner"><div class="lvl-num">'+L.lvl+'</div></div>'+
   '</div>';
 }
 function renderLevelProfile(){
@@ -871,8 +873,6 @@ function renderLevelProfile(){
   const L=getLevel(elo);
   const wrap=document.getElementById('levelRingWrap');
   if(wrap) wrap.innerHTML=levelRingHtml(elo,'lg');
-  const tierEl=document.getElementById('levelTier');
-  if(tierEl) tierEl.textContent=LEVEL_TIER[L.lvl];
   const rangeEl=document.getElementById('levelRangeText');
   if(rangeEl){
     if(L.max===Infinity) rangeEl.textContent='Максимальный уровень';
@@ -887,7 +887,10 @@ function renderLevelProfile(){
   const lbl=document.getElementById('levelProgressLabel');
   if(lbl){
     if(L.max===Infinity) lbl.textContent='Максимум достигнут';
-    else lbl.textContent=Math.round(getLevelProgress(elo)*100)+'% до уровня '+(L.lvl+1);
+    else{
+      const need=(L.max+1)-elo;
+      lbl.textContent=need+' до уровня '+(L.lvl+1);
+    }
   }
 }
 /* === /LVL SYSTEM === */
@@ -996,30 +999,64 @@ function scheduleAutoLeave(){
   },AUTO_LEAVE_DELAY);
 }
 function cancelAutoLeave(){if(_autoLeaveTimer){clearTimeout(_autoLeaveTimer);_autoLeaveTimer=null}}
+
+function forceRepaint(){
+  try{
+    document.documentElement.style.background='#0b0b0f';
+    document.body.style.background='#0b0b0f';
+    void document.body.offsetHeight;
+    document.body.style.willChange='transform';
+    requestAnimationFrame(function(){document.body.style.willChange=''});
+  }catch(e){}
+}
+
 function handleVisibilityChange(){
-  if(document.visibilityState==='visible'){cancelAutoLeave();resync()}
-  else scheduleAutoLeave();
+  if(document.visibilityState==='visible'){
+    cancelAutoLeave();
+    forceRepaint();
+    setTimeout(forceRepaint,80);
+    resync();
+  }else{
+    scheduleAutoLeave();
+  }
 }
 document.addEventListener('visibilitychange',handleVisibilityChange);
 window.addEventListener('pagehide',scheduleAutoLeave);
-window.addEventListener('pageshow',function(){cancelAutoLeave();resync()});
+window.addEventListener('pageshow',function(){cancelAutoLeave();forceRepaint();resync()});
+window.addEventListener('focus',function(){setTimeout(forceRepaint,50)});
 window.addEventListener('online',function(){resync()});
 window.addEventListener('offline',function(){if(isSearching)scheduleAutoLeave()});
 
 (function(){
   const tg=window.Telegram&&window.Telegram.WebApp;if(!tg)return;
   try{
-    tg.ready();if(tg.expand)tg.expand();
+    tg.ready();
+    if(tg.expand)tg.expand();
+    if(tg.setHeaderColor){try{tg.setHeaderColor('#0b0b0f')}catch(e){}}
+    if(tg.setBackgroundColor){try{tg.setBackgroundColor('#0b0b0f')}catch(e){}}
+    if(tg.disableVerticalSwipes){try{tg.disableVerticalSwipes()}catch(e){}}
     tg.onEvent('visibilityChanged',function(e){
-      if(e&&e.isVisible===false)scheduleAutoLeave();
-      else{cancelAutoLeave();resync()}
+      if(e&&e.isVisible===false){
+        scheduleAutoLeave();
+      }else{
+        cancelAutoLeave();
+        forceRepaint();
+        setTimeout(forceRepaint,50);
+        setTimeout(forceRepaint,200);
+        resync();
+      }
     });
     tg.onEvent('viewportChanged',function(e){
-      if(e&&e.isExpanded===false)scheduleAutoLeave();
-      else cancelAutoLeave();
+      if(e&&e.isExpanded===false){
+        scheduleAutoLeave();
+      }else{
+        cancelAutoLeave();
+        forceRepaint();
+      }
     });
   }catch(e){console.warn('tg init failed',e)}
 })();
+
 /* ===== РЕГИСТРАЦИЯ ПО ТЕГУ ===== */
 async function registerUser(){
   const tagRaw=document.getElementById('regTag').value.trim();

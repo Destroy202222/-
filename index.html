@@ -2522,7 +2522,6 @@ document.addEventListener('DOMContentLoaded',async function(){
   const ci=document.getElementById('chatInput');
   if(ci)ci.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sendChatMessage()}});
   cleanupInterval=setInterval(async function(){try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}},60000);
-  try{await supabaseClient.rpc('cleanup_unverified_users')}catch(e){}
   const session=getSession();
   if(session){
     try{

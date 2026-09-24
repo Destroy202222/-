@@ -13,12 +13,12 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0b0b0f;--accent:#ff8a1f;--accent-2:#ff6b00;--gold:#ffd700;--green:#22c55e;--red:#ff3b6b;--grid-size:48px;--grid-line:rgba(255,138,31,.09);}
 html{scroll-behavior:smooth}
-body{background-color:var(--bg);background-image:radial-gradient(circle at 12% 10%,rgba(255,138,31,.14),transparent 45%),radial-gradient(circle at 88% 88%,rgba(255,107,0,.12),transparent 45%),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px),linear-gradient(0deg,var(--grid-line) 1px,transparent 1px);background-size:100% 100%,100% 100%,var(--grid-size) var(--grid-size),var(--grid-size) var(--grid-size);background-repeat:no-repeat,no-repeat,repeat,repeat;color:#fff;font-family:'Inter',system-ui,sans-serif;padding-bottom:80px;min-height:100vh;line-height:1.5;position:relative}
+body{background-color:var(--bg);background-image:radial-gradient(circle at 12% 10%,rgba(255,138,31,.14),transparent 45%),radial-gradient(circle at 88% 88%,rgba(255,107,0,.12),transparent 45%),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px),linear-gradient(0deg,var(--grid-line) 1px,transparent 1px);background-size:100% 100%,100% 100%,var(--grid-size) var(--grid-size),var(--grid-size) var(--grid-size);background-repeat:no-repeat,no-repeat,repeat,repeat;color:#fff;font-family:'Inter',system-ui,sans-serif;padding-bottom:90px;min-height:100vh;line-height:1.5;position:relative}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 10% 5%,rgba(255,138,31,.10),transparent 50%),radial-gradient(circle at 90% 95%,rgba(255,107,0,.10),transparent 50%)}
 body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%;filter:blur(140px);opacity:.22;z-index:0;pointer-events:none;background:radial-gradient(circle,#ff8a1f,transparent 70%);top:-160px;left:-160px;animation:blob1 22s ease-in-out infinite}
 @keyframes blob1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(140px,90px) scale(1.15)}}
 .toast,.modal-overlay,.auth-page,.main-wrapper,.bottom-nav{position:relative;z-index:1}
-.modal-overlay{z-index:9998}.toast{z-index:9999}.bottom-nav{z-index:100}
+.modal-overlay{z-index:9998}.toast{z-index:9999}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#1a1a2e;border:1px solid rgba(255,138,31,0.3);border-radius:16px;padding:16px 24px;max-width:400px;width:90%;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .4s;opacity:0;box-shadow:0 20px 60px rgba(0,0,0,.8)}
 .toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
 .toast .ttl{font-weight:700;font-size:15px;margin-bottom:4px}
@@ -59,8 +59,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .modal-box .input-wrap{display:flex;align-items:center;background:#1a1a2e;border-radius:12px;padding:0 14px;border:1px solid #2a2a4a}
 .modal-box .input-wrap i{color:#666;font-size:14px;margin-right:10px}
 .modal-box .input-wrap input{background:transparent;border:none;padding:12px 0;color:#fff;font-family:inherit;font-size:14px;width:100%;outline:none}
-.modal-box .hint{font-size:11px;color:#666;margin-top:6px;display:flex;justify-content:space-between}
-.modal-box .hint .counter{color:var(--accent);font-weight:600}
 .modal-actions-row{display:flex;gap:10px;margin-top:8px}
 .modal-actions-row button{flex:1;padding:14px;border:none;border-radius:14px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer}
 .btn-save{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f}
@@ -92,7 +90,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .auth-message.info{color:var(--accent);background:rgba(255,138,31,.1)}
 .auth-footer{margin-top:16px;text-align:center;font-size:13px;color:#666}
 .auth-footer a{color:var(--accent);cursor:pointer;text-decoration:none;font-weight:600}
-.main-wrapper{display:none;max-width:480px;margin:0 auto;padding:0 16px}
+.main-wrapper{display:none;max-width:480px;margin:0 auto;padding:0 16px 100px}
 .header{padding:20px 0 16px;text-align:center;border-bottom:1px solid rgba(255,138,31,.1);margin-bottom:8px}
 .header .logo{cursor:pointer}
 .header .logo h1{font-size:20px;font-weight:700;color:#fff}
@@ -142,8 +140,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .party-member .remove{color:#ff6b6b;cursor:pointer;font-size:14px;font-weight:700}
 .party-empty{color:#555;font-size:13px}
 .party-feature{font-size:11px;color:#555;margin-top:8px;padding:8px 12px;background:#1a1a2e;border-radius:8px}
-
-/* ===== МАТЧ (новая версия) ===== */
 .match-info-bar{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:linear-gradient(135deg,rgba(30,20,10,.9),rgba(20,20,31,.9));border:1px solid rgba(255,138,31,.2);border-radius:18px;padding:14px;margin-bottom:18px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
 .info-item{display:flex;flex-direction:column;gap:3px;font-size:10px;color:#8888aa;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;padding:8px 12px;background:rgba(0,0,0,.25);border-radius:12px}
 .info-item i{color:var(--accent);margin-right:4px}
@@ -174,8 +170,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .player-bn-strip .bn .bn-name{font-size:11px;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.9)}
 .player-bn-strip .bn > span.av-frame{display:none}
 .player-bn-strip .bn::after{background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(15,15,22,.95))}
-
-/* ===== БАНЫ ===== */
 .bans-container{display:grid;gap:14px;margin-bottom:16px}
 .ban-section{background:rgba(20,20,31,.9);border:1px solid rgba(255,138,31,.18);border-radius:18px;padding:16px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
 .ban-title{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:800;letter-spacing:.3px}
@@ -190,8 +184,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .ban-btn:disabled{opacity:.45;cursor:not-allowed}
 .ban-status{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,138,31,.12);font-size:12px;color:#8888aa;font-weight:600;letter-spacing:.5px}
 .ban-status .status-text.done{color:#51cf66;font-weight:800}
-
-/* ===== ЛОББИ ===== */
 .lobby-section{display:none;background:rgba(20,20,31,.9);border:1px solid rgba(255,138,31,.18);border-radius:18px;padding:16px;margin-bottom:16px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
 .lobby-section.visible{display:block}
 .lobby-title{display:flex;align-items:center;font-size:14px;font-weight:800;margin-bottom:12px}
@@ -208,8 +200,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .lobby-link-display .link-value::after{content:'📋';font-size:16px;flex-shrink:0}
 .lobby-wait{font-size:13px;color:#8888aa;padding:12px;background:rgba(255,138,31,.06);border:1px solid rgba(255,138,31,.15);border-radius:10px;text-align:center}
 .lobby-wait b{color:#fff}
-
-/* ===== СКРИНЫ ===== */
 .shot-section{display:none;background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:16px;margin-bottom:16px}
 .shot-section.visible{display:block}
 .shot-title{font-size:14px;font-weight:700;margin-bottom:12px}
@@ -221,8 +211,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .shot-preview img{width:100%;height:auto;max-height:200px;object-fit:cover}
 .shot-status{font-size:13px;color:#8888aa}
 .shot-skip-btn{width:100%;margin-top:10px;padding:12px;border:1px solid #2a2a4a;border-radius:10px;background:transparent;color:#ff6b6b;font-family:inherit;font-weight:600;cursor:pointer;font-size:13px}
-
-/* ===== РЕЗУЛЬТАТ ===== */
 .match-result-section{display:none;background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:16px;margin-bottom:16px}
 .match-result-section.admin-visible{display:block}
 .result-title{font-size:14px;font-weight:700;margin-bottom:12px}
@@ -233,8 +221,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .match-actions{display:none;margin-top:8px}
 .match-actions.admin-visible{display:block}
 .btn-end{width:100%;padding:12px;border:none;border-radius:12px;background:#ff6b6b;color:#fff;font-family:inherit;font-weight:700;cursor:pointer}
-
-/* ===== ПРОФИЛЬ ===== */
 .profile-card{background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px;position:relative;overflow:hidden;isolation:isolate}
 .profile-card .profile-bg{position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:.55;filter:blur(1px) brightness(.85)}
 .profile-card .profile-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,15,.4),rgba(11,11,15,.85))}
@@ -253,15 +239,12 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .btn-action{flex:1;padding:10px;border:none;border-radius:10px;font-family:inherit;font-weight:600;cursor:pointer}
 .btn-action.edit{background:#2a2a4a;color:#fff}
 .btn-action.logout{background:#ff6b6b;color:#fff}
-
-/* ===== BRAWL STARS UI ===== */
 .brawl-verified-card{margin-top:14px;padding:14px;background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(20,20,31,.9));border:1px solid rgba(34,197,94,.3);border-radius:16px;display:flex;align-items:center;gap:12px}
 .brawl-verified-card .icon{width:48px;height:48px;border-radius:12px;background:#1a1a2e;flex-shrink:0;object-fit:cover;border:2px solid rgba(34,197,94,.5)}
 .brawl-verified-card .info{flex:1;min-width:0}
 .brawl-verified-card .name{font-size:15px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .brawl-verified-card .tag{font-size:11px;color:#51cf66;font-weight:700;letter-spacing:1px;margin-top:2px}
 .brawl-verified-card .unlink-btn{padding:8px 12px;border:1px solid #2a2a4a;background:transparent;color:#ff6b6b;border-radius:10px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer}
-
 .verify-block{margin-top:14px;padding:16px;background:linear-gradient(135deg,rgba(255,138,31,.08),rgba(20,20,31,.9));border:1px solid rgba(255,138,31,.3);border-radius:16px}
 .verify-title{font-size:14px;font-weight:800;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .verify-text{font-size:13px;color:#b0b0c0;line-height:1.6;margin-bottom:12px}
@@ -269,8 +252,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .verify-timer{display:block;text-align:center;font-size:24px;font-weight:900;color:var(--accent);font-variant-numeric:tabular-nums;margin:12px 0;padding:10px;background:rgba(0,0,0,.3);border-radius:10px}
 .verify-timer.warn{color:#ff6b6b;animation:verifyPulse 1s infinite}
 @keyframes verifyPulse{0%,100%{opacity:1}50%{opacity:.5}}
-
-/* ===== ДРУЗЬЯ ===== */
 .friends-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .friends-header h2{font-size:20px;font-weight:800}
 .friends-header .count{color:#8888aa;font-size:13px}
@@ -301,8 +282,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .friend-item .friend-actions .btn-decline{background:#ff6b6b;color:#fff}
 .friends-empty{text-align:center;padding:40px 20px;color:#555}
 .friends-empty i{font-size:40px;margin-bottom:12px;display:block;color:#2a2a4a}
-
-/* ===== АДМИНКА ===== */
 .admin-panel-wrap{display:none;background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px;margin-bottom:16px}
 .admin-panel-wrap.visible{display:block}
 .adm-title{font-size:18px;font-weight:800;margin-bottom:12px;color:var(--accent)}
@@ -357,8 +336,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .adm-promo-creation{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .adm-promo-row{display:flex;gap:6px}
 .adm-promo-row input{flex:1;padding:8px 12px;background:#0b0b0f;border:1px solid #2a2a4a;border-radius:8px;color:#fff;font-family:inherit;font-size:13px;outline:none}
-
-/* ===== ТОП ===== */
 .top-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .top-header h2{font-size:20px;font-weight:800}
 .top-header .user-rank{background:rgba(20,20,31,.8);border:1px solid #2a2a4a;border-radius:12px;padding:6px 16px;font-size:14px;font-weight:700;color:var(--accent)}
@@ -373,16 +350,15 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .top-item .info .stats{font-size:12px;color:#8888aa}
 .top-item .elo{font-weight:800;font-size:16px;color:var(--accent)}
 .top-item .elo .elo-label{font-size:10px;color:#666;font-weight:400;display:block;text-align:right}
-
-/* ===== КОШЕЛЁК ===== */
 .wallet-card{background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:24px;text-align:center;margin-bottom:16px}
 .wallet-card .balance{font-size:36px;font-weight:900;color:var(--accent)}
 .wallet-card .label{color:#8888aa;font-size:13px;margin-top:4px}
 .wallet-promo{display:flex;gap:8px}
 .wallet-promo input{flex:1;padding:10px 14px;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;color:#fff;font-family:inherit;font-size:14px;outline:none;text-transform:uppercase}
 .wallet-promo button{padding:10px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f;font-family:inherit;font-weight:700;cursor:pointer}
-
-/* ===== АВАТАРЫ, БАННЕРЫ, МАГАЗИН ===== */
+.placeholder{text-align:center;padding:60px 20px;color:#555}
+.placeholder i{font-size:48px;margin-bottom:16px;display:block;color:#2a2a4a}
+.placeholder h2{font-size:18px;font-weight:700;color:#8888aa}
 .av-img{width:100%;height:100%;border-radius:50%;object-fit:cover;background:#1a1a2e;display:block}
 .av-letter{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b0b0f;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
 .av-frame{position:relative;border-radius:50%;padding:3px;display:inline-block;flex-shrink:0}
@@ -434,8 +410,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .avatar-upload label{display:inline-block;padding:10px 16px;background:#2a2a4a;color:#fff;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer}
 .avatar-upload label:hover{background:#3a3a5a}
 .shop-bg-preview{height:56px;border-radius:10px;background-size:cover;background-position:center;margin-bottom:10px;border:1px solid rgba(255,255,255,.05)}
-
-/* ===== ЧАТ МАТЧА ===== */
 .match-chat{display:none;background:rgba(20,20,31,.9);border:1px solid rgba(255,138,31,.18);border-radius:18px;padding:14px;margin-bottom:16px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
 .match-chat.visible{display:block}
 .chat-title{font-size:14px;font-weight:800;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
@@ -460,8 +434,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .chat-input-group input{flex:1;padding:10px 14px;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;color:#fff;font-family:inherit;font-size:13px;outline:none}
 .chat-input-group button{padding:10px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f;font-family:inherit;font-weight:700;cursor:pointer}
 .chat-input-group button:disabled{opacity:.4;cursor:not-allowed}
-
-/* ===== LOADER ===== */
 .loader-overlay{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 50% 50%,rgba(255,138,31,.10),transparent 55%),radial-gradient(circle at 12% 10%,rgba(255,138,31,.14),transparent 45%),radial-gradient(circle at 88% 88%,rgba(255,107,0,.12),transparent 45%),linear-gradient(90deg,rgba(255,138,31,.06) 1px,transparent 1px),linear-gradient(0deg,rgba(255,138,31,.06) 1px,transparent 1px),#0b0b0f;background-size:100% 100%,100% 100%,100% 100%,48px 48px,48px 48px,100% 100%;display:flex;align-items:center;justify-content:center;transition:opacity .55s ease,visibility .55s ease}
 .loader-overlay.hide{opacity:0;visibility:hidden;pointer-events:none}
 .loader-wrap{display:flex;flex-direction:column;align-items:center;gap:22px}
@@ -478,6 +450,12 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 @keyframes loaderDots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}100%{content:''}}
 .loader-ring::before{content:'';position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(255,138,31,.25),transparent 65%);animation:loaderPulse 2s ease-in-out infinite;pointer-events:none}
 @keyframes loaderPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;display:flex;justify-content:space-around;padding:10px 8px calc(14px + env(safe-area-inset-bottom,0px));background:rgba(20,20,31,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,138,31,.12);z-index:1000;box-sizing:border-box;box-shadow:0 -6px 20px rgba(0,0,0,.4)}
+.bottom-nav .item{display:flex;flex-direction:column;align-items:center;background:transparent;border:none;color:#555;font-family:inherit;font-size:10px;cursor:pointer;padding:4px 8px;gap:2px;position:relative}
+.bottom-nav .item i{font-size:20px}
+.bottom-nav .item.active{color:var(--accent)}
+.bottom-nav .item .nav-badge{display:none;position:absolute;top:0;right:8px;background:#ff6b6b;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center}
+.bottom-nav .item .nav-badge.visible{display:inline-block}
 </style>
 </head>
 <body>
@@ -576,14 +554,14 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     <div style="font-size:11px;color:#666;margin-top:4px;">Тег можно скопировать из профиля в игре</div>
   </div>
   <div class="form-group">
-    <label>Пароль <span style="color:#ff6b6b;">*</span></label>
+    <label>Пароль <span style="датьcolor:#ff6b6b аккаунт;">*</span></label>
     <div class="input-wrap"><i class="fas fa-lock"></i><input type="password" id="regPassword" placeholder="Минимум 8 символов" /></div>
   </div>
   <div class="form-group">
     <label>Подтверждение пароля <span style="color:#ff6b6b;">*</span></label>
     <div class="input-wrap"><i class="fas fa-check-circle"></i><input type="password" id="regPasswordConfirm" placeholder="Повторите пароль" /></div>
   </div>
-  <button class="btn-auth" id="registerBtn"><i class="fas fa-user-plus"></i> Создать аккаунт</button>
+  <button class="btn-auth" id="registerBtn"><i class="fas fa-user-plus"></i> Соз</button>
   <div class="auth-message" id="registerMessage"></div>
   <div class="auth-footer">Уже есть аккаунт? <a id="switchToLogin">Войти</a></div>
 </div>
@@ -1502,7 +1480,8 @@ async function renderAdminPanel(){
       const r=await q;adminPlayers=r.data||[];
       if(adminPlayers.length===0){body.innerHTML='<input class="adm-search" id="admSearchInput" placeholder="Поиск..." value="'+adminSearchQuery+'"><div class="adm-empty">Никого</div>';bindAdminSearch();return}
       body.innerHTML='<input class="adm-search" id="admSearchInput" placeholder="Поиск..." value="'+adminSearchQuery+'">'+adminPlayers.map(function(p){
-        return '<div class="adm-player"><div class="av">'+(p.username||'?').charAt(0).toUpperCase()+'</div><div class="nm">'+(p.username||'?')+' '+(p.isadmin?'👑':'')+'</div><div class="elo">'+(p.elo||1000)+'</div><div class="actions"><button onclick="admSetRating(\''+p.id+'\',\''+(p.username||'').replace(/'/g,'')+'\','+(p.elo||1000)+')">💰 Рейтинг</button><button class="danger" onclick="admSetBanned(\''+p.id+'\','+(!p.banned)+')">'+(p.banned?'✅ Разбан':'🚫 Бан')+'</button><button class="'+(p.isadmin?'danger':'ok')+'" onclick="admSetAdmin(\''+p.id+'\','+(!p.isadmin)+')">'+(p.isadmin?'❌ Снять':'👑 Админ')+'</button></div></div>';
+        const nick=(p.username||'?');
+        return '<div class="adm-player"><div class="av">'+nick.charAt(0).toUpperCase()+'</div><div class="nm">'+nick+' '+(p.isadmin?'👑':'')+'</div><div class="elo">'+(p.elo||1000)+'</div><div class="actions"><button onclick="admSetRating(\''+p.id+'\','+JSON.stringify(nick)+','+(p.elo||1000)+')">💰 Рейтинг</button><button class="danger" onclick="admSetBanned(\''+p.id+'\','+(!p.banned)+')">'+(p.banned?'✅ Разбан':'🚫 Бан')+'</button><button class="'+(p.isadmin?'danger':'ok')+'" onclick="admSetAdmin(\''+p.id+'\','+(!p.isadmin)+')">'+(p.isadmin?'❌ Снять':'👑 Админ')+'</button></div></div>';
       }).join('');
       bindAdminSearch();
     }
@@ -2328,7 +2307,7 @@ function searchFriends(){
   const q=document.getElementById('friendSearchInput').value.trim().toLowerCase();
   if(!q)return renderFriends();
   const c=document.getElementById('friendsListContainer');
-  const f=friendsList.filter(function(x){return x.username.toLowerCase().indexOf(q)>=0});
+  const f=friendsList.filter(function(x){return (x.username||'').toLowerCase().indexOf(q)>=0});
   if(f.length===0){c.innerHTML='<div class="friends-empty"><i class="fas fa-search"></i><p>Никто не найден</p></div>';return}
   c.innerHTML=f.map(function(fr){
     const isFriend=myFriends.some(function(m){return m.id===fr.id});

@@ -459,6 +459,24 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 @keyframes loaderDots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}100%{content:''}}
 .loader-ring::before{content:'';position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(255,138,31,.25),transparent 65%);animation:loaderPulse 2s ease-in-out infinite;pointer-events:none}
 @keyframes loaderPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+
+/* === LVL SYSTEM CSS === */
+.level-ring{position:relative;width:100px;height:100px;flex-shrink:0;filter:drop-shadow(0 0 12px var(--lvl-glow,rgba(255,255,255,.35)));transition:filter .4s}
+.level-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.level-ring .lvl-track{fill:none;stroke:rgba(255,255,255,.07);stroke-width:9}
+.level-ring .lvl-bar{fill:none;stroke:var(--lvl-color,#fff);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .7s cubic-bezier(.22,1,.36,1),stroke .3s}
+.level-ring .lvl-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;pointer-events:none}
+.level-ring .lvl-num{font-size:36px;font-weight:900;color:var(--lvl-color,#fff);font-variant-numeric:tabular-nums;text-shadow:0 0 16px var(--lvl-glow,rgba(255,255,255,.4));letter-spacing:-1px;transition:color .3s}
+.level-ring .lvl-pct{font-size:10px;font-weight:800;color:#fff;opacity:.8;margin-top:2px}
+.level-ring.lvl-sm{width:56px;height:56px}
+.level-ring.lvl-sm .lvl-track,.level-ring.lvl-sm .lvl-bar{stroke-width:6}
+.level-ring.lvl-sm .lvl-num{font-size:20px}
+.level-ring.lvl-sm .lvl-pct{display:none}
+.level-progress-line{margin:10px 0 0}
+.level-progress-track{height:6px;border-radius:6px;background:rgba(255,255,255,.06);overflow:hidden}
+.level-progress-fill{height:100%;width:0%;border-radius:6px;background:var(--lvl-color,#fff);box-shadow:0 0 12px var(--lvl-color,#fff);transition:width .7s cubic-bezier(.22,1,.36,1)}
+.level-progress-label{font-size:11px;color:#8888aa;margin-top:6px;font-weight:600;letter-spacing:.5px;text-align:center}
+/* === /LVL SYSTEM CSS === */
 </style>
 </head>
 <body>
@@ -691,11 +709,29 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 <div class="stat-item"><div class="value" id="pWr">0%</div><div class="label">Винрейт</div></div>
 <div class="stat-item"><div class="value" id="pMatches">0</div><div class="label">Матчей</div></div>
 <div class="stat-item"><div class="value" id="pMvp">0</div><div class="label">MVP</div></div>
-<div class="stat-item"><div class="value" id="pElo">1000</div><div class="label">ELO</div></div>
+<div class="stat-item"><div class="value" id="pElo">300</div><div class="label">ELO</div></div>
 </div>
 <div class="profile-actions">
 <button class="btn-action logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
 </div>
+
+<!-- LVL SYSTEM BLOCK -->
+<div class="level-card" id="levelCard" style="background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:20px;margin-bottom:16px">
+  <div style="display:flex;align-items:center;gap:16px">
+    <div id="levelRingWrap"></div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:11px;color:#8888aa;letter-spacing:2px;text-transform:uppercase;font-weight:700">Уровень</div>
+      <div id="levelTier" style="font-size:20px;font-weight:900;color:#fff;margin-top:2px">—</div>
+      <div id="levelRangeText" style="font-size:12px;color:#8888aa;margin-top:4px">—</div>
+    </div>
+  </div>
+  <div class="level-progress-line">
+    <div class="level-progress-track"><div class="level-progress-fill" id="levelProgressFill"></div></div>
+    <div class="level-progress-label" id="levelProgressLabel">—</div>
+  </div>
+</div>
+<!-- /LVL SYSTEM BLOCK -->
+
 <div id="brawlProfileBlock"></div>
 <div class="admin-panel-wrap" id="adminPanelWrap">
 <div class="adm-title"><i class="fas fa-user-shield"></i> Админ-меню</div>
@@ -786,6 +822,76 @@ const PROFILE_BGS=[
 ];
 const BG_MAP=Object.fromEntries(PROFILE_BGS.map(function(b){return [b.id,b]}));
 
+/* === LVL SYSTEM === */
+const LEVELS=[
+  {lvl:1, min:0,    max:199},
+  {lvl:2, min:200,  max:249},
+  {lvl:3, min:250,  max:399},
+  {lvl:4, min:400,  max:599},
+  {lvl:5, min:600,  max:799},
+  {lvl:6, min:800,  max:999},
+  {lvl:7, min:1000, max:1399},
+  {lvl:8, min:1400, max:1699},
+  {lvl:9, min:1700, max:1999},
+  {lvl:10,min:2000, max:Infinity}
+];
+const LEVEL_COLORS={1:'#ffffff',2:'#22c55e',3:'#22c55e',4:'#ffd700',5:'#ffd700',6:'#ff8a1f',7:'#ff8a1f',8:'#ff6b00',9:'#ff3b00',10:'#ff1a1a'};
+const LEVEL_TIER={1:'Новичок',2:'Новичок',3:'Любитель',4:'Любитель',5:'Профи',6:'Профи',7:'Мастер',8:'Мастер',9:'Гранд-мастер',10:'Легенда'};
+function getLevel(elo){
+  elo=Math.max(0,parseInt(elo)||0);
+  for(let i=0;i<LEVELS.length;i++) if(elo<=LEVELS[i].max) return LEVELS[i];
+  return LEVELS[LEVELS.length-1];
+}
+function getLevelProgress(elo){
+  const L=getLevel(elo);
+  if(L.max===Infinity) return 1;
+  const span=(L.max-L.min)+1;
+  return Math.min(1,Math.max(0,((parseInt(elo)||0)-L.min)/span));
+}
+const LVL_R=44;
+const LVL_C=2*Math.PI*LVL_R;
+function levelRingHtml(elo,size){
+  const L=getLevel(elo);
+  const p=getLevelProgress(elo);
+  const col=LEVEL_COLORS[L.lvl];
+  const off=LVL_C*(1-p);
+  const pct=Math.round(p*100);
+  const cls=size==='sm'?'level-ring lvl-sm':'level-ring';
+  return '<div class="'+cls+'" style="--lvl-color:'+col+';--lvl-glow:'+col+'66">'+
+    '<svg viewBox="0 0 110 110">'+
+      '<circle class="lvl-track" cx="55" cy="55" r="'+LVL_R+'"></circle>'+
+      '<circle class="lvl-bar" cx="55" cy="55" r="'+LVL_R+'" stroke-dasharray="'+LVL_C.toFixed(2)+'" stroke-dashoffset="'+off.toFixed(2)+'"></circle>'+
+    '</svg>'+
+    '<div class="lvl-inner"><div class="lvl-num">'+L.lvl+'</div><div class="lvl-pct">'+pct+'%</div></div>'+
+  '</div>';
+}
+function renderLevelProfile(){
+  if(!currentUser)return;
+  const elo=currentUser.elo||300;
+  const L=getLevel(elo);
+  const wrap=document.getElementById('levelRingWrap');
+  if(wrap) wrap.innerHTML=levelRingHtml(elo,'lg');
+  const tierEl=document.getElementById('levelTier');
+  if(tierEl) tierEl.textContent=LEVEL_TIER[L.lvl];
+  const rangeEl=document.getElementById('levelRangeText');
+  if(rangeEl){
+    if(L.max===Infinity) rangeEl.textContent='Максимальный уровень';
+    else rangeEl.textContent='ELO '+elo+' / '+(L.max+1);
+  }
+  const fill=document.getElementById('levelProgressFill');
+  if(fill){
+    const p=getLevelProgress(elo);
+    fill.style.width=(p*100).toFixed(1)+'%';
+    fill.style.setProperty('--lvl-color',LEVEL_COLORS[L.lvl]);
+  }
+  const lbl=document.getElementById('levelProgressLabel');
+  if(lbl){
+    if(L.max===Infinity) lbl.textContent='Максимум достигнут';
+    else lbl.textContent=Math.round(getLevelProgress(elo)*100)+'% до уровня '+(L.lvl+1);
+  }
+}
+/* === /LVL SYSTEM === */
+
 let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[],sentRequests=[];
 let isSearching=false,isStartingSearch=false,isCanceling=false,searchTimerInterval=null,searchSeconds=0;
 let isPlayerInMatch=false,friendsTab='friends',waitingConfirm=false;
@@ -863,7 +969,7 @@ function bannerHtml(user,size){
   const letter=(user.username||'?').charAt(0).toUpperCase();
   const avInner=user.avatar_url?('<img src="'+user.avatar_url+'" class="av-img" alt="">'):('<div class="av-letter" style="font-size:'+Math.round(avSize*0.45)+'px">'+letter+'</div>');
   const avFrame=user.avatar_frame?'av-frame '+user.avatar_frame:'av-frame';
-  return '<div class="'+cls+'" style="background-image:url(\''+b.img+'\')"><span class="'+avFrame+'" style="width:'+avSize+'px;height:'+avSize+'px"><span class="av-inner">'+avInner+'</span></span><div class="bn-meta"><div class="bn-name">'+(user.username||'?')+' '+(user.isadmin?'👑':'')+'</div><div class="bn-sub">ELO: '+(user.elo||1000)+' · '+(user.matches||0)+' матчей</div></div>'+(isSm?'':('<div class="bn-elo">'+(user.elo||1000)+'<small>ELO</small></div>'))+'</div>';
+  return '<div class="'+cls+'" style="background-image:url(\''+b.img+'\')"><span class="'+avFrame+'" style="width:'+avSize+'px;height:'+avSize+'px"><span class="av-inner">'+avInner+'</span></span><div class="bn-meta"><div class="bn-name">'+(user.username||'?')+' '+(user.isadmin?'👑':'')+'</div><div class="bn-sub">ELO: '+(user.elo||300)+' · '+(user.matches||0)+' матчей</div></div>'+(isSm?'':('<div class="bn-elo">'+(user.elo||300)+'<small>ELO</small></div>'))+'</div>';
 }
 function applyProfileBg(user){
   const el=document.getElementById('profileBg');
@@ -1030,22 +1136,16 @@ async function loginUser(){
 
 /* ===== ВЕРИФИКАЦИЯ: СМЕНА ИКОНКИ НА ЛЮБУЮ ДРУГУЮ ===== */
 function openVerifyModal(){
-  // Показываем ник игрока (для красоты и чтобы он убедился — это его аккаунт)
   const nameEl=document.getElementById('verifyPlayerName');
   const tagEl=document.getElementById('verifyPlayerTag');
   if(nameEl)nameEl.textContent=pendingBrawlName||'?';
   if(tagEl)tagEl.textContent=pendingBrawlTag||'?';
-
-  // Показываем подсказку про иконку
   const iconLabel=document.getElementById('verifyIconLabel');
   if(iconLabel)iconLabel.textContent='любую другую';
-
   const det=document.getElementById('verifyDetected');
   if(det){det.textContent='';det.style.color='#8888aa'}
-
   const btn=document.getElementById('verifyConfirmBtn');
   if(btn){btn.disabled=false;btn.innerHTML='Я поменял иконку'}
-
   document.getElementById('verifyModal').classList.add('active');
   startVerifyCountdown(600);
 }
@@ -1199,12 +1299,13 @@ async function checkAuth(){
     document.getElementById('profileBanner').innerHTML=bannerHtml(currentUser,'lg');
     applyProfileBg(currentUser);
     renderBrawlProfile();
+    renderLevelProfile();
     if(currentUser.registered)document.getElementById('pReg').textContent=new Date(currentUser.registered).toLocaleDateString('ru-RU');
     const m=currentUser.matches||0,w=currentUser.wins||0,wr=m>0?Math.round(w/m*100):0;
     document.getElementById('pWr').textContent=wr+'%';
     document.getElementById('pMatches').textContent=m;
     document.getElementById('pMvp').textContent=currentUser.mvp||0;
-    document.getElementById('pElo').textContent=currentUser.elo||1000;
+    document.getElementById('pElo').textContent=currentUser.elo||300;
     document.getElementById('walletBalance').textContent=(currentUser.balance||0)+' ₽';
     const isAdmin=currentUser.isadmin===true;
     if(isAdmin){document.getElementById('adminBadge').classList.add('visible');document.getElementById('adminPanelWrap').classList.add('visible');await loadSettings();await renderAdminPanel()}
@@ -1492,8 +1593,8 @@ async function renderAdminPanel(){
         const shots=Array.isArray(m.shots)?m.shots:[];
         const statusIcon=function(uid){if(skipped.indexOf(uid)>=0)return '<span class="st skip">❌</span>';if(shots.some(function(s){return s.user_id===uid}))return '<span class="st shot">📸</span>';return '<span class="st none">·</span>'};
         const rt=function(list,side,avg){return '<div class="adm-team '+side+'"><h4>'+side.toUpperCase()+' · ELO '+avg+'</h4>'+list.map(function(p,i){return '<div class="adm-pl"><div class="av">'+(p.username||'?').charAt(0).toUpperCase()+'</div><div class="nm">'+(p.username||'?')+'</div>'+statusIcon(p.id)+(i===0?'<span class="cap">👑</span>':'')+'</div>'}).join('')+'</div>'};
-        const avgO=orange.length?Math.round(orange.reduce(function(s,p){return s+(p.elo||1000)},0)/orange.length):0;
-        const avgB=blue.length?Math.round(blue.reduce(function(s,p){return s+(p.elo||1000)},0)/blue.length):0;
+        const avgO=orange.length?Math.round(orange.reduce(function(s,p){return s+(p.elo||300)},0)/orange.length):0;
+        const avgB=blue.length?Math.round(blue.reduce(function(s,p){return s+(p.elo||300)},0)/blue.length):0;
         const shotsHtml=shots.length?('<div class="adm-shots">'+shots.map(function(s){const pl=[].concat(orange,blue).find(function(p){return p.id===s.user_id});return '<div style="font-size:11px;color:#8888aa;margin-top:6px">📸 '+((pl&&pl.username)||'?')+'</div><img src="'+s.url+'" onclick="window.open(\''+s.url+'\',\'_blank\')">'}).join('')+'</div>'):'';
         return '<div class="adm-match" data-match-id="'+m.id+'"><div class="hdr"><h3>#'+String(m.id).slice(-6)+'</h3><span class="badge-status '+(m.status==='pending'?'pending':'active')+'">'+st+'</span></div><div class="meta">'+new Date(m.created_at).toLocaleTimeString('ru-RU')+' · закрыли: '+closed.length+'/'+(orange.length+blue.length)+'</div>'+(m.lobby_url?('<div class="meta">🔗 <a href="'+m.lobby_url+'" target="_blank" style="color:#4dabf7">'+m.lobby_url+'</a></div>'):'')+'<div class="adm-teams">'+rt(orange,'orange',avgO)+rt(blue,'blue',avgB)+'</div>'+shotsHtml+'<div class="adm-score-row"><input type="number" class="adm-score-a" placeholder="0" min="0" max="99"><span class="sep">:</span><input type="number" class="adm-score-b" placeholder="0" min="0" max="99"></div><div class="adm-finish-btns"><button class="btn-blue" onclick="admFinishMatch(\''+m.id+'\',\'blue\')">🏆 BLUE</button><button class="btn-orange" onclick="admFinishMatch(\''+m.id+'\',\'orange\')">🏆 ORANGE</button></div><button class="adm-cancel-btn" onclick="admCancelMatch(\''+m.id+'\')">❌ Удалить матч</button></div>';
       }).join('');
@@ -1505,14 +1606,14 @@ async function renderAdminPanel(){
       if(adminPlayers.length===0){body.innerHTML='<input class="adm-search" id="admSearchInput" placeholder="Поиск..." value="'+adminSearchQuery+'"><div class="adm-empty">Никого</div>';bindAdminSearch();return}
       body.innerHTML='<input class="adm-search" id="admSearchInput" placeholder="Поиск..." value="'+adminSearchQuery+'">'+adminPlayers.map(function(p){
         const nick=(p.username||'?');
-        return '<div class="adm-player"><div class="av">'+nick.charAt(0).toUpperCase()+'</div><div class="nm">'+nick+' '+(p.isadmin?'👑':'')+'</div><div class="elo">'+(p.elo||1000)+'</div><div class="actions"><button onclick="admSetRating(\''+p.id+'\','+JSON.stringify(nick)+','+(p.elo||1000)+')">💰 Рейтинг</button><button class="danger" onclick="admSetBanned(\''+p.id+'\','+(!p.banned)+')">'+(p.banned?'✅ Разбан':'🚫 Бан')+'</button><button class="'+(p.isadmin?'danger':'ok')+'" onclick="admSetAdmin(\''+p.id+'\','+(!p.isadmin)+')">'+(p.isadmin?'❌ Снять':'👑 Админ')+'</button></div></div>';
+        return '<div class="adm-player"><div class="av">'+nick.charAt(0).toUpperCase()+'</div><div class="nm">'+nick+' '+(p.isadmin?'👑':'')+'</div><div class="elo">'+(p.elo||300)+'</div><div class="actions"><button onclick="admSetRating(\''+p.id+'\','+JSON.stringify(nick)+','+(p.elo||300)+')">💰 Рейтинг</button><button class="danger" onclick="admSetBanned(\''+p.id+'\','+(!p.banned)+')">'+(p.banned?'✅ Разбан':'🚫 Бан')+'</button><button class="'+(p.isadmin?'danger':'ok')+'" onclick="admSetAdmin(\''+p.id+'\','+(!p.isadmin)+')">'+(p.isadmin?'❌ Снять':'👑 Админ')+'</button></div></div>';
       }).join('');
       bindAdminSearch();
     }
     else if(adminTab==='queue'){
       const r=await supabaseClient.from('queue').select('*').eq('status','searching').order('created_at',{ascending:true});
       adminQueue=r.data||[];
-      body.innerHTML='<div style="display:flex;justify-content:space-between;margin-bottom:10px"><div style="font-weight:700">В очереди: '+adminQueue.length+'</div><button onclick="admClearQueue()" style="padding:6px 12px;background:#ff6b6b;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:11px">🧹 Очистить</button></div>'+(adminQueue.length===0?'<div class="adm-empty">Пусто</div>':adminQueue.map(function(p){return '<div class="adm-qrow"><div class="av">'+(p.username||'?').charAt(0).toUpperCase()+'</div><div class="nm">'+(p.username||'?')+'</div><div class="elo">'+(p.elo||1000)+'</div></div>'}).join(''));
+      body.innerHTML='<div style="display:flex;justify-content:space-between;margin-bottom:10px"><div style="font-weight:700">В очереди: '+adminQueue.length+'</div><button onclick="admClearQueue()" style="padding:6px 12px;background:#ff6b6b;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:11px">🧹 Очистить</button></div>'+(adminQueue.length===0?'<div class="adm-empty">Пусто</div>':adminQueue.map(function(p){return '<div class="adm-qrow"><div class="av">'+(p.username||'?').charAt(0).toUpperCase()+'</div><div class="nm">'+(p.username||'?')+'</div><div class="elo">'+(p.elo||300)+'</div></div>'}).join(''));
     }
     else if(adminTab==='promos'){
       const r=await supabaseClient.from('promocodes').select('*').order('created_at',{ascending:false});
@@ -1570,7 +1671,7 @@ async function admFinishMatch(matchId,winner){
           matches:(ud.matches||0)+1,
           wins:(ud.wins||0)+(isWin?1:0),
           losses:(ud.losses||0)+(isWin?0:1),
-          elo:Math.max(100,(ud.elo||1000)+eloChange),
+          elo:Math.max(100,(ud.elo||300)+eloChange),
           mvp:(ud.mvp||0)+(isWin?1:0),
           lastlogin:new Date().toISOString()
         }).eq('id',player.id);
@@ -2184,7 +2285,7 @@ async function renderMatchPage(){
       avatarHtml(p,42)+
       '<div class="info">'+
         '<div class="name">'+(p.username||'?')+'</div>'+
-        '<div class="elo-mini">ELO '+(p.elo||1000)+'</div>'+
+        '<div class="elo-mini">ELO '+(p.elo||300)+'</div>'+
       '</div>'+
       (isCaptain?'<span class="captain-badge"><i class="fas fa-crown"></i></span>':'')+
     '</div></div>';
@@ -2323,7 +2424,7 @@ function renderFriends(){
       if(inP)ac='<button class="btn-remove" onclick="removeFromParty(\''+fr.id+'\')"><i class="fas fa-user-minus"></i> Из пати</button><button class="btn-remove" onclick="removeFriend(\''+fr.id+'\')"><i class="fas fa-user-times"></i> Удалить</button>';
       else ac='<button class="btn-invite" onclick="inviteToParty(\''+fr.id+'\')"><i class="fas fa-user-plus"></i> В пати</button><button class="btn-remove" onclick="removeFriend(\''+fr.id+'\')"><i class="fas fa-user-times"></i> Удалить</button>';
     }else ac='<button class="btn-add" onclick="sendFriendRequest(\''+fr.id+'\')"><i class="fas fa-user-plus"></i> Добавить</button>';
-    return '<div class="friend-item">'+avatarHtml(fr,44)+'<div class="info"><div class="name">'+(fr.username||'')+' '+(fr.isadmin?'👑':'')+'</div><div class="status">ELO: '+(fr.elo||1000)+'</div></div><span class="status-badge '+cls+'">'+txt+'</span><div class="friend-actions">'+ac+'</div></div>';
+    return '<div class="friend-item">'+avatarHtml(fr,44)+'<div class="info"><div class="name">'+(fr.username||'')+' '+(fr.isadmin?'👑':'')+'</div><div class="status">ELO: '+(fr.elo||300)+'</div></div><span class="status-badge '+cls+'">'+txt+'</span><div class="friend-actions">'+ac+'</div></div>';
   }).join('');
 }
 function switchFriendsTab(t){friendsTab=t;document.querySelectorAll('.friends-tabs .tab').forEach(function(x){x.classList.remove('active')});const el=document.querySelector('.friends-tabs .tab[data-tab="'+t+'"]');if(el)el.classList.add('active');renderFriends()}
@@ -2343,7 +2444,7 @@ function searchFriends(){
     else if(isFriend){cls='friend';txt='Друг';ac=inP?'<button class="btn-remove" onclick="removeFromParty(\''+fr.id+'\')"><i class="fas fa-user-minus"></i> Из пати</button>':'<button class="btn-invite" onclick="inviteToParty(\''+fr.id+'\')"><i class="fas fa-user-plus"></i> В пати</button>'}
     else if(isSent){cls='sent';txt='Заявка отправлена';ac='<button class="btn-remove" onclick="cancelFriendRequest(\''+fr.id+'\')"><i class="fas fa-times"></i> Отменить</button>'}
     else ac='<button class="btn-add" onclick="sendFriendRequest(\''+fr.id+'\')"><i class="fas fa-user-plus"></i> Добавить</button>';
-    return '<div class="friend-item">'+avatarHtml(fr,44)+'<div class="info"><div class="name">'+(fr.username||'')+'</div><div class="status">ELO: '+(fr.elo||1000)+'</div></div><span class="status-badge '+cls+'">'+txt+'</span><div class="friend-actions">'+ac+'</div></div>';
+    return '<div class="friend-item">'+avatarHtml(fr,44)+'<div class="info"><div class="name">'+(fr.username||'')+'</div><div class="status">ELO: '+(fr.elo||300)+'</div></div><span class="status-badge '+cls+'">'+txt+'</span><div class="friend-actions">'+ac+'</div></div>';
   }).join('');
 }
 async function sendFriendRequest(uid){
@@ -2413,7 +2514,7 @@ async function renderTopPage(){
       if(u.avatar_banner&&BANNER_MAP[u.avatar_banner]){
         return '<div class="top-item '+me+'" style="padding:6px;overflow:hidden;cursor:pointer" onclick="openViewProfile(\''+u.id+'\')"><div class="rank '+rc+'" style="padding-left:8px">#'+n+'</div><div style="flex:1;min-width:0">'+bannerHtml(u,'sm')+'</div></div>';
       }
-      return '<div class="top-item '+me+'" style="cursor:pointer" onclick="openViewProfile(\''+u.id+'\')"><div class="rank '+rc+'">#'+n+'</div>'+avatarHtml(u,44)+'<div class="info"><div class="name">'+(u.username||'')+' '+(u.isadmin?'👑':'')+'</div><div class="stats">'+(u.matches||0)+' матчей | '+wr+'%</div></div><div class="elo">'+(u.elo||1000)+'<span class="elo-label">ELO</span></div></div>';
+      return '<div class="top-item '+me+'" style="cursor:pointer" onclick="openViewProfile(\''+u.id+'\')"><div class="rank '+rc+'">#'+n+'</div>'+avatarHtml(u,44)+'<div class="info"><div class="name">'+(u.username||'')+' '+(u.isadmin?'👑':'')+'</div><div class="stats">'+(u.matches||0)+' матчей | '+wr+'%</div></div><div class="elo">'+(u.elo||300)+'<span class="elo-label">ELO</span></div></div>';
     }).join('');
   }catch(e){console.error(e)}
 }
@@ -2442,7 +2543,7 @@ async function openViewProfile(userId){
     }).join(''):'<div style="color:#666;text-align:center;padding:8px 0;font-size:13px">Нет матчей</div>';
     const bgHtml=(p.avatar_bg&&BG_MAP[p.avatar_bg])?'<div style="position:absolute;inset:0;background-image:url(\''+BG_MAP[p.avatar_bg].img+'\');background-size:cover;background-position:center;opacity:.2;z-index:0;pointer-events:none"></div>':'';
     const brawlBadge=p.brawl_tag?('<div style="font-size:11px;color:#51cf66;font-weight:800;letter-spacing:1px;margin-top:4px">'+p.brawl_tag+' ✓</div>'):'';
-    body.innerHTML='<div style="position:relative;z-index:1">'+bgHtml+(bannerHtml(p,'lg')?'<div style="margin-bottom:14px">'+bannerHtml(p,'lg')+'</div>':'')+'<div class="profile-header" style="margin-bottom:16px">'+avatarHtml(p,80)+'<div class="profile-info"><div class="username">'+p.username+' '+(p.isadmin?'👑':'')+' '+(p.banned?'<span style="color:#ff6b6b;font-size:12px">[БАН]</span>':'')+'</div><div class="details"><span><i class="fas fa-trophy" style="color:#ffd700"></i> ELO: '+(p.elo||1000)+'</span></div>'+brawlBadge+'</div></div><div class="profile-stats" style="margin-bottom:14px"><div class="stat-item"><div class="value">'+m+'</div><div class="label">Матчей</div></div><div class="stat-item"><div class="value" style="color:#51cf66">'+w+'</div><div class="label">Побед</div></div><div class="stat-item"><div class="value" style="color:#ff6b6b">'+l+'</div><div class="label">Поражений</div></div><div class="stat-item"><div class="value">'+wr+'%</div><div class="label">Винрейт</div></div></div>'+(!isMe?'<div style="margin-bottom:14px">'+actionBtn+'</div>':'')+'<div style="font-size:14px;font-weight:700;margin-bottom:8px"><i class="fas fa-history"></i> Последние матчи</div><div>'+histHtml+'</div></div>';
+    body.innerHTML='<div style="position:relative;z-index:1">'+bgHtml+(bannerHtml(p,'lg')?'<div style="margin-bottom:14px">'+bannerHtml(p,'lg')+'</div>':'')+'<div class="profile-header" style="margin-bottom:16px">'+avatarHtml(p,80)+'<div class="profile-info"><div class="username">'+p.username+' '+(p.isadmin?'👑':'')+' '+(p.banned?'<span style="color:#ff6b6b;font-size:12px">[БАН]</span>':'')+'</div><div class="details"><span><i class="fas fa-trophy" style="color:#ffd700"></i> ELO: '+(p.elo||300)+'</span></div>'+brawlBadge+'</div></div><div class="profile-stats" style="margin-bottom:14px"><div class="stat-item"><div class="value">'+m+'</div><div class="label">Матчей</div></div><div class="stat-item"><div class="value" style="color:#51cf66">'+w+'</div><div class="label">Побед</div></div><div class="stat-item"><div class="value" style="color:#ff6b6b">'+l+'</div><div class="label">Поражений</div></div><div class="stat-item"><div class="value">'+wr+'%</div><div class="label">Винрейт</div></div></div>'+(!isMe?'<div style="margin-bottom:14px">'+actionBtn+'</div>':'')+'<div style="font-size:14px;font-weight:700;margin-bottom:8px"><i class="fas fa-history"></i> Последние матчи</div><div>'+histHtml+'</div></div>';
   }catch(e){console.error('openViewProfile',e);body.innerHTML='<div class="adm-empty">Ошибка: '+e.message+'</div>'}
 }
 function closeViewProfile(){document.getElementById('viewProfileModal').classList.remove('active');viewingUserId=null}

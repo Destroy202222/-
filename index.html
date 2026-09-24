@@ -17,7 +17,7 @@ body{background-color:var(--bg);background-image:radial-gradient(circle at 12% 1
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 10% 5%,rgba(255,138,31,.10),transparent 50%),radial-gradient(circle at 90% 95%,rgba(255,107,0,.10),transparent 50%)}
 body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%;filter:blur(140px);opacity:.22;z-index:0;pointer-events:none;background:radial-gradient(circle,#ff8a1f,transparent 70%);top:-160px;left:-160px;animation:blob1 22s ease-in-out infinite}
 @keyframes blob1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(140px,90px) scale(1.15)}}
-.toast,.modal-overlay,.auth-page,.main-wrapper,.bottom-nav{position:relative;z-index:1}
+.toast,.modal-overlay,.auth-page,.main-wrapper{position:relative;z-index:1}
 .modal-overlay{z-index:9998}.toast{z-index:9999}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#1a1a2e;border:1px solid rgba(255,138,31,0.3);border-radius:16px;padding:16px 24px;max-width:400px;width:90%;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .4s;opacity:0;box-shadow:0 20px 60px rgba(0,0,0,.8)}
 .toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
@@ -81,8 +81,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .input-wrap i{color:#666;font-size:14px;margin-right:10px}
 .input-wrap input{background:transparent;border:none;padding:12px 0;color:#fff;font-family:inherit;font-size:14px;width:100%;outline:none;text-transform:uppercase}
 .input-wrap input::placeholder{color:#555;text-transform:none}
-.btn-auth{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
-.btn-auth i{margin-right:8px}
+.btn-auth{width:100%;padding:14px 16px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0b0f;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;line-height:1.2}
+.btn-auth i{margin-right:0}
 .auth-message{margin-top:12px;font-size:13px;text-align:center;min-height:20px}
 .auth-message.show{padding:8px;border-radius:8px}
 .auth-message.error{color:#ff6b6b;background:rgba(255,107,107,.1)}
@@ -115,6 +115,12 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .prize-item .place{font-size:11px;color:#8888aa}.prize-item .reward{font-size:16px;font-weight:700;margin-top:4px}
 .prize-item.gold .reward{color:var(--gold)}.prize-item.silver .reward{color:#c0c0c0}.prize-item.bronze .reward{color:#cd7f32}
 .prize-premium{text-align:center;font-size:13px;color:#8888aa}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;display:flex;justify-content:space-around;padding:10px 8px calc(14px + env(safe-area-inset-bottom,0px));background:rgba(20,20,31,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,138,31,.12);z-index:1000;box-sizing:border-box;box-shadow:0 -6px 20px rgba(0,0,0,.4)}
+.bottom-nav .item{display:flex;flex-direction:column;align-items:center;background:transparent;border:none;color:#555;font-family:inherit;font-size:10px;cursor:pointer;padding:4px 8px;gap:2px;position:relative}
+.bottom-nav .item i{font-size:20px}
+.bottom-nav .item.active{color:var(--accent)}
+.bottom-nav .item .nav-badge{display:none;position:absolute;top:0;right:8px;background:#ff6b6b;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center}
+.bottom-nav .item .nav-badge.visible{display:inline-block}
 .search-header-block{text-align:center;padding:16px 0 20px}
 .search-title{font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .search-sub{color:#666;font-size:13px;margin-top:4px}
@@ -344,7 +350,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .top-item:hover{border-color:var(--accent);transform:translateY(-1px)}
 .top-item.me{border-color:var(--accent);background:rgba(255,138,31,.06)}
 .top-item .rank{font-size:16px;font-weight:800;min-width:36px;color:#666}
-.top-item .rank.gold{color:var(--gold)}.top-item .rank.silver{color:#c0c0c0}.top-item .rank.bronze{color:#cd7f32}
+.top-item .rank.gold{color:var(--gold)}.top-item .rank.silver{bncolor:#c0c0c0}.top-item .rank.bronze{color:#cd7f32}
 .top-item .info{flex:1}
 .top-item .info .name{font-weight:600;font-size:14px}
 .top-item .info .stats{font-size:12px;color:#8888aa}
@@ -385,7 +391,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .bn.bn-sm .bn-sub{font-size:10px}
 .bn.bn-sm .bn-elo{font-size:15px}
 .bn .bn-meta{flex:1;min-width:0}
-.bn .bn-name{font-weight:800;font-size:20px;letter-spacing:.3px;text-shadow:0 2px 10px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bn .-name{font-weight:800;font-size:20px;letter-spacing:.3px;text-shadow:0 2px 10px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bn .bn-sub{font-size:12px;opacity:.9;text-shadow:0 1px 6px rgba(0,0,0,.9);margin-top:3px}
 .bn .bn-elo{font-weight:900;font-size:24px;text-shadow:0 2px 12px rgba(0,0,0,.9);text-align:right;line-height:1}
 .bn .bn-elo small{display:block;font-size:9px;font-weight:500;opacity:.75;letter-spacing:1.5px;margin-top:2px}
@@ -450,12 +456,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 @keyframes loaderDots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}100%{content:''}}
 .loader-ring::before{content:'';position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(255,138,31,.25),transparent 65%);animation:loaderPulse 2s ease-in-out infinite;pointer-events:none}
 @keyframes loaderPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;display:flex;justify-content:space-around;padding:10px 8px calc(14px + env(safe-area-inset-bottom,0px));background:rgba(20,20,31,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,138,31,.12);z-index:1000;box-sizing:border-box;box-shadow:0 -6px 20px rgba(0,0,0,.4)}
-.bottom-nav .item{display:flex;flex-direction:column;align-items:center;background:transparent;border:none;color:#555;font-family:inherit;font-size:10px;cursor:pointer;padding:4px 8px;gap:2px;position:relative}
-.bottom-nav .item i{font-size:20px}
-.bottom-nav .item.active{color:var(--accent)}
-.bottom-nav .item .nav-badge{display:none;position:absolute;top:0;right:8px;background:#ff6b6b;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center}
-.bottom-nav .item .nav-badge.visible{display:inline-block}
 </style>
 </head>
 <body>
@@ -554,14 +554,14 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     <div style="font-size:11px;color:#666;margin-top:4px;">Тег можно скопировать из профиля в игре</div>
   </div>
   <div class="form-group">
-    <label>Пароль <span style="датьcolor:#ff6b6b аккаунт;">*</span></label>
+    <label>Пароль <span style="color:#ff6b6b;">*</span></label>
     <div class="input-wrap"><i class="fas fa-lock"></i><input type="password" id="regPassword" placeholder="Минимум 8 символов" /></div>
   </div>
   <div class="form-group">
     <label>Подтверждение пароля <span style="color:#ff6b6b;">*</span></label>
     <div class="input-wrap"><i class="fas fa-check-circle"></i><input type="password" id="regPasswordConfirm" placeholder="Повторите пароль" /></div>
   </div>
-  <button class="btn-auth" id="registerBtn"><i class="fas fa-user-plus"></i> Соз</button>
+  <button class="btn-auth" id="registerBtn"><i class="fas fa-user-plus"></i> Зарегистрироваться</button>
   <div class="auth-message" id="registerMessage"></div>
   <div class="auth-footer">Уже есть аккаунт? <a id="switchToLogin">Войти</a></div>
 </div>
@@ -959,12 +959,9 @@ async function registerUser(){
     }
 
     const userId='user_brawl_'+data.tag.replace('#','');
-    const ex2=await supabaseClient.from('users').select('id').eq('id',userId).maybeSingle();
-    if(ex2.data){
-      messageEl.className='auth-message show error';
-      messageEl.textContent='❌ Этот тег уже зарегистрирован';
-      return;
-    }
+
+    // Чистим недоделанную регистрацию с тем же ID, если есть
+    await supabaseClient.rpc('cancel_brawl_registration',{p_user_id:userId});
 
     messageEl.className='auth-message show info';
     messageEl.textContent='⏳ Создаём аккаунт...';
@@ -1046,6 +1043,13 @@ function openVerifyModal(){
 function closeVerifyModal(){
   if(verifyTimer){clearInterval(verifyTimer);verifyTimer=null}
   document.getElementById('verifyModal').classList.remove('active');
+  if(pendingBrawlUserId){
+    supabaseClient.rpc('cancel_brawl_registration',{p_user_id:pendingBrawlUserId}).then(function(){},function(){});
+    pendingBrawlUserId='';
+    pendingBrawlTag='';
+    pendingBrawlName='';
+    pendingBrawlPassword='';
+  }
 }
 
 function startVerifyCountdown(seconds){
@@ -1065,6 +1069,10 @@ function startVerifyCountdown(seconds){
       if(det){det.style.color='#ff6b6b';det.textContent='⏰ Время вышло. Попробуй заново.'}
       const btn=document.getElementById('verifyConfirmBtn');
       if(btn)btn.disabled=true;
+      // Удаляем недоделанную регистрацию
+      if(pendingBrawlUserId){
+        supabaseClient.rpc('cancel_brawl_registration',{p_user_id:pendingBrawlUserId}).then(function(){},function(){});
+      }
       return;
     }
     left--;
@@ -1119,7 +1127,12 @@ async function confirmVerification(){
     if(ur.data){
       currentUser=ur.data;
       saveSession(ur.data);
-      closeVerifyModal();
+      pendingBrawlUserId='';
+      pendingBrawlTag='';
+      pendingBrawlName='';
+      pendingBrawlPassword='';
+      if(verifyTimer){clearInterval(verifyTimer);verifyTimer=null}
+      document.getElementById('verifyModal').classList.remove('active');
       showToast('success','Аккаунт подтверждён!','Добро пожаловать, '+ur.data.username);
       await checkAuth();
     }
@@ -2509,6 +2522,8 @@ document.addEventListener('DOMContentLoaded',async function(){
   const ci=document.getElementById('chatInput');
   if(ci)ci.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sendChatMessage()}});
   cleanupInterval=setInterval(async function(){try{await supabaseClient.rpc('cleanup_stale_queue')}catch(e){}},60000);
+  // Автоочистка зависших регистраций
+  try{await supabaseClient.rpc('cleanup_unverified_users')}catch(e){}
   const session=getSession();
   if(session){
     try{

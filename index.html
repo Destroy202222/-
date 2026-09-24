@@ -115,10 +115,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .prize-item .place{font-size:11px;color:#8888aa}.prize-item .reward{font-size:16px;font-weight:700;margin-top:4px}
 .prize-item.gold .reward{color:var(--gold)}.prize-item.silver .reward{color:#c0c0c0}.prize-item.bronze .reward{color:#cd7f32}
 .prize-premium{text-align:center;font-size:13px;color:#8888aa}
-.avatar-picker{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:4px;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px}
-.avatar-opt{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:#0b0b0f;border:2px solid #2a2a4a;border-radius:10px;font-size:14px;font-weight:800;color:#666;cursor:pointer;transition:all .15s;user-select:none}
-.avatar-opt:hover{border-color:var(--accent);color:#fff}
-.avatar-opt.selected{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,138,31,.2),rgba(255,107,0,.1));color:var(--accent);box-shadow:0 0 12px rgba(255,138,31,.4);transform:scale(1.05)}
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;display:flex;justify-content:space-around;padding:10px 8px calc(14px + env(safe-area-inset-bottom,0px));background:rgba(20,20,31,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,138,31,.12);z-index:1000;box-sizing:border-box;box-shadow:0 -6px 20px rgba(0,0,0,.4)}
 .bottom-nav .item{display:flex;flex-direction:column;align-items:center;background:transparent;border:none;color:#555;font-family:inherit;font-size:10px;cursor:pointer;padding:4px 8px;gap:2px;position:relative}
 .bottom-nav .item i{font-size:20px}
@@ -259,6 +255,9 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .verify-title{font-size:14px;font-weight:800;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .verify-text{font-size:13px;color:#b0b0c0;line-height:1.6;margin-bottom:12px}
 .verify-text b{color:#fff;background:rgba(255,138,31,.2);padding:2px 8px;border-radius:6px;font-family:monospace}
+.verify-account-question{text-align:center;font-size:15px;font-weight:700;color:#fff;margin-bottom:14px;padding:14px;background:rgba(0,0,0,.3);border-radius:12px;line-height:1.5}
+.verify-account-question .nick{display:block;font-size:20px;font-weight:900;color:var(--accent);margin-top:6px;text-shadow:0 0 15px rgba(255,138,31,.5);word-break:break-word}
+.verify-account-question .sub{display:block;font-size:11px;color:#8888aa;font-weight:600;margin-top:6px;letter-spacing:1px;text-transform:uppercase}
 .verify-timer{display:block;text-align:center;font-size:24px;font-weight:900;color:var(--accent);font-variant-numeric:tabular-nums;margin:12px 0;padding:10px;background:rgba(0,0,0,.3);border-radius:10px}
 .verify-timer.warn{color:#ff6b6b;animation:verifyPulse 1s infinite}
 @keyframes verifyPulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -505,12 +504,16 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 <div class="modal-overlay" id="verifyModal">
   <div class="modal-box">
     <div class="modal-title">🛡️ <span class="highlight">Подтверждение</span></div>
-    <div class="modal-sub">Это точно твой аккаунт?</div>
+    <div class="modal-sub">Проверка принадлежности аккаунта</div>
     <div class="verify-block">
-      <div class="verify-title"><i class="fas fa-shield-alt"></i> Подтверди через иконку</div>
+      <div class="verify-account-question">
+        Это твой аккаунт?
+        <span class="nick" id="verifyPlayerName">...</span>
+        <span class="sub">Тег: <span id="verifyPlayerTag">...</span></span>
+      </div>
       <div class="verify-text">
         1. Открой Brawl Stars → <b>Профиль</b><br>
-        2. Смени иконку на <b>любую другую</b><br>
+        2. Смени иконку на <b id="verifyIconLabel">любую другую</b><br>
         3. Сохрани и вернись сюда<br>
         4. Нажми кнопку ниже
       </div>
@@ -1027,12 +1030,22 @@ async function loginUser(){
 
 /* ===== ВЕРИФИКАЦИЯ: СМЕНА ИКОНКИ НА ЛЮБУЮ ДРУГУЮ ===== */
 function openVerifyModal(){
-  // pendingBrawlIcon уже хранит текущую иконку игрока (получена при регистрации)
-  document.getElementById('verifyIconLabel').textContent='любую другую';
+  // Показываем ник игрока (для красоты и чтобы он убедился — это его аккаунт)
+  const nameEl=document.getElementById('verifyPlayerName');
+  const tagEl=document.getElementById('verifyPlayerTag');
+  if(nameEl)nameEl.textContent=pendingBrawlName||'?';
+  if(tagEl)tagEl.textContent=pendingBrawlTag||'?';
+
+  // Показываем подсказку про иконку
+  const iconLabel=document.getElementById('verifyIconLabel');
+  if(iconLabel)iconLabel.textContent='любую другую';
+
   const det=document.getElementById('verifyDetected');
-  det.textContent='';det.style.color='#8888aa';
+  if(det){det.textContent='';det.style.color='#8888aa'}
+
   const btn=document.getElementById('verifyConfirmBtn');
-  btn.disabled=false;btn.innerHTML='Я поменял иконку';
+  if(btn){btn.disabled=false;btn.innerHTML='Я поменял иконку'}
+
   document.getElementById('verifyModal').classList.add('active');
   startVerifyCountdown(600);
 }
@@ -1099,7 +1112,6 @@ async function confirmVerification(){
       return;
     }
 
-    // Если иконка не изменилась — значит игрок не поменял
     if(data.iconId===pendingBrawlIcon){
       info.style.color='#ff6b6b';
       info.textContent='❌ Иконка не изменилась. Смени на любую другую и попробуй снова.';
@@ -1107,7 +1119,6 @@ async function confirmVerification(){
       return;
     }
 
-    // Иконка изменилась — сохраняем
     const upd=await supabaseClient.rpc('set_brawl_verified',{
       p_user_id:pendingBrawlUserId,
       p_tag:pendingBrawlTag,
@@ -2525,12 +2536,12 @@ document.addEventListener('DOMContentLoaded',async function(){
   const session=getSession();
   if(session){
     try{
-      const r=await supabaseClient.from('users').select('*').eq('id',session.id).maybeSingle();
-      if(r.data)currentUser=r.data;
+      const r=await supabaseClient.from('users').select('*4').eq('id',session.id).**maybeSingle();
+      if(r.data)currentUser —=r.data;
     }catch(e){}
-  }
+  JS }
   await checkAuth();
 });
-</script>
+ м</script>
 </body>
 </html>

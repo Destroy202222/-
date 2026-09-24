@@ -3,11 +3,6 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<meta name="theme-color" content="#0b0b0f" />
-<meta name="color-scheme" content="dark" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="mobile-web-app-capable" content="yes" />
 <title>StartUp Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,8 +12,8 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0b0b0f;--accent:#ff8a1f;--accent-2:#ff6b00;--gold:#ffd700;--green:#22c55e;--red:#ff3b6b;--grid-size:48px;--grid-line:rgba(255,138,31,.09);}
-html{scroll-behavior:smooth;background:#0b0b0f;height:100%;overscroll-behavior:none}
-body{background-color:var(--bg);background-image:radial-gradient(circle at 12% 10%,rgba(255,138,31,.14),transparent 45%),radial-gradient(circle at 88% 88%,rgba(255,107,0,.12),transparent 45%),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px),linear-gradient(0deg,var(--grid-line) 1px,transparent 1px);background-size:100% 100%,100% 100%,var(--grid-size) var(--grid-size),var(--grid-size) var(--grid-size);background-repeat:no-repeat,no-repeat,repeat,repeat;background-attachment:fixed;color:#fff;font-family:'Inter',system-ui,sans-serif;padding-bottom:90px;min-height:100vh;min-height:100dvh;line-height:1.5;position:relative}
+html{scroll-behavior:smooth}
+body{background-color:var(--bg);background-image:radial-gradient(circle at 12% 10%,rgba(255,138,31,.14),transparent 45%),radial-gradient(circle at 88% 88%,rgba(255,107,0,.12),transparent 45%),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px),linear-gradient(0deg,var(--grid-line) 1px,transparent 1px);background-size:100% 100%,100% 100%,var(--grid-size) var(--grid-size),var(--grid-size) var(--grid-size);background-repeat:no-repeat,no-repeat,repeat,repeat;color:#fff;font-family:'Inter',system-ui,sans-serif;padding-bottom:90px;min-height:100vh;line-height:1.5;position:relative}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 10% 5%,rgba(255,138,31,.10),transparent 50%),radial-gradient(circle at 90% 95%,rgba(255,107,0,.10),transparent 50%)}
 body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%;filter:blur(140px);opacity:.22;z-index:0;pointer-events:none;background:radial-gradient(circle,#ff8a1f,transparent 70%);top:-160px;left:-160px;animation:blob1 22s ease-in-out infinite}
 @keyframes blob1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(140px,90px) scale(1.15)}}
@@ -250,6 +245,20 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .btn-action{flex:1;padding:10px;border:none;border-radius:10px;font-family:inherit;font-weight:600;cursor:pointer}
 .btn-action.edit{background:#2a2a4a;color:#fff}
 .btn-action.logout{background:#ff6b6b;color:#fff}
+/* ==== ПРОФИЛЬ: ОДИН НИК + БАННЕР СВЕРХУ ==== */
+.profile-hero{position:relative;border-radius:14px;overflow:hidden;margin-bottom:16px;isolation:isolate;min-height:104px}
+.profile-hero .bn{width:100%}
+.profile-hero-inner{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding:14px 16px}
+.profile-hero-name{font-size:18px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-hero-sub{font-size:11px;color:#e0e0ea;opacity:.9;text-shadow:0 1px 4px rgba(0,0,0,.95);margin-top:3px;letter-spacing:.5px}
+.profile-hero-elo{margin-left:auto;text-align:right}
+.profile-hero-elo .num{font-size:22px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95);line-height:1}
+.profile-hero-elo .lbl{font-size:9px;color:#e0e0ea;opacity:.85;letter-spacing:1.5px;margin-top:2px;text-shadow:0 1px 4px rgba(0,0,0,.95)}
+.profile-hero .av-frame{width:56px !important;height:56px !important}
+.profile-hero .av-frame .av-inner{font-size:22px !important}
+.profile-hero-admin{display:inline-block;background:rgba(255,215,0,.15);border:1px solid rgba(255,215,0,.35);padding:2px 8px;border-radius:10px;color:var(--gold);font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle}
+.profile-hero-name-row{display:flex;align-items:center;min-width:0}
+/* ==== /ПРОФИЛЬ ==== */
 .brawl-verified-card{margin-top:14px;padding:14px;background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(20,20,31,.9));border:1px solid rgba(34,197,94,.3);border-radius:16px;display:flex;align-items:center;gap:12px}
 .brawl-verified-card .icon{width:48px;height:48px;border-radius:12px;background:#1a1a2e;flex-shrink:0;object-fit:cover;border:2px solid rgba(34,197,94,.5)}
 .brawl-verified-card .info{flex:1;min-width:0}
@@ -364,6 +373,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .top-item .info .stats{font-size:12px;color:#8888aa}
 .top-item .elo{font-weight:800;font-size:16px;color:var(--accent)}
 .top-item .elo .elo-label{font-size:10px;color:#666;font-weight:400;display:block;text-align:right}
+.top-item .lvl-inline{flex-shrink:0}
 .wallet-card{background:rgba(20,20,31,.8);border:1px solid rgba(255,138,31,.15);border-radius:16px;padding:24px;text-align:center;margin-bottom:16px}
 .wallet-card .balance{font-size:36px;font-weight:900;color:var(--accent)}
 .wallet-card .label{color:#8888aa;font-size:13px;margin-top:4px}
@@ -472,11 +482,9 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .level-ring .lvl-bar{fill:none;stroke:var(--lvl-color,#fff);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .7s cubic-bezier(.22,1,.36,1),stroke .3s}
 .level-ring .lvl-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;pointer-events:none}
 .level-ring .lvl-num{font-size:36px;font-weight:900;color:var(--lvl-color,#fff);font-variant-numeric:tabular-nums;text-shadow:0 0 16px var(--lvl-glow,rgba(255,255,255,.4));letter-spacing:-1px;transition:color .3s}
-.level-ring .lvl-pct{font-size:10px;font-weight:800;color:#fff;opacity:.8;margin-top:2px}
-.level-ring.lvl-sm{width:56px;height:56px}
+.level-ring.lvl-sm{width:52px;height:52px}
 .level-ring.lvl-sm .lvl-track,.level-ring.lvl-sm .lvl-bar{stroke-width:6}
-.level-ring.lvl-sm .lvl-num{font-size:20px}
-.level-ring.lvl-sm .lvl-pct{display:none}
+.level-ring.lvl-sm .lvl-num{font-size:18px}
 .level-progress-line{margin:10px 0 0}
 .level-progress-track{height:6px;border-radius:6px;background:rgba(255,255,255,.06);overflow:hidden}
 .level-progress-fill{height:100%;width:0%;border-radius:6px;background:var(--lvl-color,#fff);box-shadow:0 0 12px var(--lvl-color,#fff);transition:width .7s cubic-bezier(.22,1,.36,1)}
@@ -703,13 +711,35 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 </div>
 
 <div class="page" id="pageProfile">
-<div id="profileBanner" style="margin-bottom:14px"></div>
 <div class="profile-card">
   <div class="profile-bg" id="profileBg"></div>
-<div class="profile-header">
-<div id="avatar"></div>
-<div class="profile-info"><div class="username" id="pName">Игрок</div><div class="details"><span><i class="fas fa-calendar-alt"></i> Дата: <span id="pReg">—</span></span><span class="admin-badge" id="adminBadge"><i class="fas fa-user-shield"></i> Админ</span></div></div>
+
+  <!-- ЕДИНЫЙ БАННЕР + НИК -->
+  <div class="profile-hero" id="profileHero">
+    <div id="profileHeroBn"></div>
+    <div class="profile-hero-inner">
+      <div id="profileHeroAvatar"></div>
+      <div style="flex:1;min-width:0">
+        <div class="profile-hero-name-row">
+          <span class="profile-hero-name" id="profileHeroName">Игрок</span>
+          <span class="profile-hero-admin" id="profileHeroAdmin" style="display:none">👑 Админ</span>
+        </div>
+        <div class="profile-hero-sub" id="profileHeroSub">ELO: 300 · 0 матчей</div>
+      </div>
+      <div class="profile-hero-elo">
+        <div class="num" id="profileHeroElo">300</div>
+        <div class="lbl">ELO</div>
+      </div>
+    </div>
+  </div>
+  <!-- /ЕДИНЫЙ БАННЕР -->
+
+<div class="profile-info" style="margin-bottom:16px">
+  <div class="details">
+    <span><i class="fas fa-calendar-alt"></i> Дата: <span id="pReg">—</span></span>
+  </div>
 </div>
+
 <div class="profile-stats">
 <div class="stat-item"><div class="value" id="pWr">0%</div><div class="label">Винрейт</div></div>
 <div class="stat-item"><div class="value" id="pMatches">0</div><div class="label">Матчей</div></div>
@@ -895,6 +925,33 @@ function renderLevelProfile(){
 }
 /* === /LVL SYSTEM === */
 
+/* === ПРОФИЛЬ-ГЕРОЙ (единый баннер + ник) === */
+function renderProfileHero(){
+  if(!currentUser)return;
+  const nameEl=document.getElementById('profileHeroName');
+  const eloEl=document.getElementById('profileHeroElo');
+  const subEl=document.getElementById('profileHeroSub');
+  const avEl=document.getElementById('profileHeroAvatar');
+  const adminEl=document.getElementById('profileHeroAdmin');
+  const bnEl=document.getElementById('profileHeroBn');
+  if(nameEl) nameEl.textContent=currentUser.username||'Игрок';
+  if(eloEl) eloEl.textContent=currentUser.elo||300;
+  if(subEl) subEl.textContent='ELO: '+(currentUser.elo||300)+' · '+(currentUser.matches||0)+' матчей';
+  if(avEl) avEl.innerHTML=avatarHtml(currentUser,56);
+  if(adminEl) adminEl.style.display=currentUser.isadmin?'inline-block':'none';
+
+  // Фон — либо баннер, либо градиент
+  if(bnEl){
+    const b=currentUser.avatar_banner?BANNER_MAP[currentUser.avatar_banner]:null;
+    if(b){
+      bnEl.innerHTML='<div class="bn bn-lg" style="background-image:url(\''+b.img+'\');border-radius:0;box-shadow:none;min-height:104px;animation:none;padding:0"></div>';
+    }else{
+      bnEl.innerHTML='<div class="bn bn-lg" style="background:linear-gradient(135deg,rgba(255,138,31,.25),rgba(20,20,31,.9));border-radius:0;box-shadow:none;min-height:104px;animation:none;padding:0"></div>';
+    }
+  }
+}
+/* === /ПРОФИЛЬ-ГЕРОЙ === */
+
 let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[],sentRequests=[];
 let isSearching=false,isStartingSearch=false,isCanceling=false,searchTimerInterval=null,searchSeconds=0;
 let isPlayerInMatch=false,friendsTab='friends',waitingConfirm=false;
@@ -994,27 +1051,15 @@ function scheduleAutoLeave(){
       const sp=document.getElementById('searchCurrentPlayers');if(sp)sp.textContent='0';
       const st=document.getElementById('searchTimerDisplay');if(st)st.innerHTML='<i class="fas fa-clock"></i> 00:00';
       await updateHomeStats();
-      showToast('info','Поиск отменён','Приложение свёрнуто');
+      showToast('info','Поиск отменён','Вы свернули приложение');
     }catch(e){console.warn('auto-leave failed',e)}
   },AUTO_LEAVE_DELAY);
 }
 function cancelAutoLeave(){if(_autoLeaveTimer){clearTimeout(_autoLeaveTimer);_autoLeaveTimer=null}}
 
-function forceRepaint(){
-  try{
-    document.documentElement.style.background='#0b0b0f';
-    document.body.style.background='#0b0b0f';
-    void document.body.offsetHeight;
-    document.body.style.willChange='transform';
-    requestAnimationFrame(function(){document.body.style.willChange=''});
-  }catch(e){}
-}
-
 function handleVisibilityChange(){
   if(document.visibilityState==='visible'){
     cancelAutoLeave();
-    forceRepaint();
-    setTimeout(forceRepaint,80);
     resync();
   }else{
     scheduleAutoLeave();
@@ -1022,8 +1067,7 @@ function handleVisibilityChange(){
 }
 document.addEventListener('visibilitychange',handleVisibilityChange);
 window.addEventListener('pagehide',scheduleAutoLeave);
-window.addEventListener('pageshow',function(){cancelAutoLeave();forceRepaint();resync()});
-window.addEventListener('focus',function(){setTimeout(forceRepaint,50)});
+window.addEventListener('pageshow',function(){cancelAutoLeave();resync()});
 window.addEventListener('online',function(){resync()});
 window.addEventListener('offline',function(){if(isSearching)scheduleAutoLeave()});
 
@@ -1034,25 +1078,13 @@ window.addEventListener('offline',function(){if(isSearching)scheduleAutoLeave()}
     if(tg.expand)tg.expand();
     if(tg.setHeaderColor){try{tg.setHeaderColor('#0b0b0f')}catch(e){}}
     if(tg.setBackgroundColor){try{tg.setBackgroundColor('#0b0b0f')}catch(e){}}
-    if(tg.disableVerticalSwipes){try{tg.disableVerticalSwipes()}catch(e){}}
     tg.onEvent('visibilityChanged',function(e){
-      if(e&&e.isVisible===false){
-        scheduleAutoLeave();
-      }else{
-        cancelAutoLeave();
-        forceRepaint();
-        setTimeout(forceRepaint,50);
-        setTimeout(forceRepaint,200);
-        resync();
-      }
+      if(e&&e.isVisible===false) scheduleAutoLeave();
+      else {cancelAutoLeave();resync();}
     });
     tg.onEvent('viewportChanged',function(e){
-      if(e&&e.isExpanded===false){
-        scheduleAutoLeave();
-      }else{
-        cancelAutoLeave();
-        forceRepaint();
-      }
+      if(e&&e.isExpanded===false) scheduleAutoLeave();
+      else cancelAutoLeave();
     });
   }catch(e){console.warn('tg init failed',e)}
 })();
@@ -1333,7 +1365,7 @@ async function checkAuth(){
     document.getElementById('mainSite').style.display='block';
     document.getElementById('pName').textContent=currentUser.username;
     document.getElementById('avatar').innerHTML=avatarHtml(currentUser,80);
-    document.getElementById('profileBanner').innerHTML=bannerHtml(currentUser,'lg');
+    renderProfileHero();
     applyProfileBg(currentUser);
     renderBrawlProfile();
     renderLevelProfile();
@@ -1484,8 +1516,7 @@ async function handleAvatarUpload(e){
     currentUser.avatar_url=url;
     showToast('success','Готово','Аватар обновлён');
     renderShop();
-    document.getElementById('avatar').innerHTML=avatarHtml(currentUser,80);
-    document.getElementById('profileBanner').innerHTML=bannerHtml(currentUser,'lg');
+    renderProfileHero();
     await renderTopPage();
   }catch(err){showToast('error','Ошибка',err.message)}
 }
@@ -1497,7 +1528,7 @@ async function removeAvatar(){
   currentUser.avatar_url='';
   showToast('success','Готово','Аватар удалён');
   renderShop();
-  document.getElementById('avatar').innerHTML=avatarHtml(currentUser,80);
+  renderProfileHero();
   await renderTopPage();
 }
 
@@ -1521,8 +1552,7 @@ async function useFrame(frameId){
   currentUser.avatar_frame=frameId;
   showToast('success','Готово','Рамка активна');
   renderShop();
-  document.getElementById('avatar').innerHTML=avatarHtml(currentUser,80);
-  document.getElementById('profileBanner').innerHTML=bannerHtml(currentUser,'lg');
+  renderProfileHero();
   await renderTopPage();
 }
 async function buyBanner(bannerId){
@@ -1544,7 +1574,7 @@ async function useBanner(bannerId){
   currentUser.avatar_banner=bannerId;
   showToast('success','Готово','Баннер активен');
   renderShop();
-  const pb=document.getElementById('profileBanner');if(pb)pb.innerHTML=bannerHtml(currentUser,'lg');
+  renderProfileHero();
   await renderTopPage();
 }
 async function removeBanner(){
@@ -1553,7 +1583,7 @@ async function removeBanner(){
   currentUser.avatar_banner='';
   showToast('info','Баннер снят','');
   renderShop();
-  const pb=document.getElementById('profileBanner');if(pb)pb.innerHTML='';
+  renderProfileHero();
   await renderTopPage();
 }
 async function buyProfileBg(bgId){
@@ -2534,7 +2564,7 @@ function subscribeToFriends(){
     .subscribe();
 }
 
-/* ===== ТОП-100 ===== */
+/* ===== ТОП-100 (С КОЛЬЦОМ УРОВНЯ) ===== */
 async function renderTopPage(){
   try{
     const r=await supabaseClient.from('users').select('*').order('elo',{ascending:false}).limit(100);
@@ -2548,10 +2578,11 @@ async function renderTopPage(){
       if(n===1)rc='gold';else if(n===2)rc='silver';else if(n===3)rc='bronze';
       const wr=u.matches>0?Math.round(u.wins/u.matches*100):0;
       const me=u.id===(currentUser&&currentUser.id)?'me':'';
+      const lvlRing='<div class="lvl-inline">'+levelRingHtml(u.elo||300,'sm')+'</div>';
       if(u.avatar_banner&&BANNER_MAP[u.avatar_banner]){
-        return '<div class="top-item '+me+'" style="padding:6px;overflow:hidden;cursor:pointer" onclick="openViewProfile(\''+u.id+'\')"><div class="rank '+rc+'" style="padding-left:8px">#'+n+'</div><div style="flex:1;min-width:0">'+bannerHtml(u,'sm')+'</div></div>';
+        return '<div class="top-item '+me+'" style="padding:6px;overflow:hidden;cursor:pointer" onclick="openViewProfile(\''+u.id+'\')"><div class="rank '+rc+'" style="padding-left:8px">#'+n+'</div><div style="flex:1;min-width:0">'+bannerHtml(u,'sm')+'</div>'+lvlRing+'</div>';
       }
-      return '<div class="top-item '+me+'" style="cursor:pointer" onclick="openViewProfile(\''+u.id+'\')"><div class="rank '+rc+'">#'+n+'</div>'+avatarHtml(u,44)+'<div class="info"><div class="name">'+(u.username||'')+' '+(u.isadmin?'👑':'')+'</div><div class="stats">'+(u.matches||0)+' матчей | '+wr+'%</div></div><div class="elo">'+(u.elo||300)+'<span class="elo-label">ELO</span></div></div>';
+      return '<div class="top-item '+me+'" style="cursor:pointer" onclick="openViewProfile(\''+u.id+'\')"><div class="rank '+rc+'">#'+n+'</div>'+avatarHtml(u,44)+'<div class="info"><div class="name">'+(u.username||'')+' '+(u.isadmin?'👑':'')+'</div><div class="stats">'+(u.matches||0)+' матчей | '+wr+'%</div></div>'+lvlRing+'<div class="elo">'+(u.elo||300)+'<span class="elo-label">ELO</span></div></div>';
     }).join('');
   }catch(e){console.error(e)}
 }
@@ -2580,7 +2611,20 @@ async function openViewProfile(userId){
     }).join(''):'<div style="color:#666;text-align:center;padding:8px 0;font-size:13px">Нет матчей</div>';
     const bgHtml=(p.avatar_bg&&BG_MAP[p.avatar_bg])?'<div style="position:absolute;inset:0;background-image:url(\''+BG_MAP[p.avatar_bg].img+'\');background-size:cover;background-position:center;opacity:.2;z-index:0;pointer-events:none"></div>':'';
     const brawlBadge=p.brawl_tag?('<div style="font-size:11px;color:#51cf66;font-weight:800;letter-spacing:1px;margin-top:4px">'+p.brawl_tag+' ✓</div>'):'';
-    body.innerHTML='<div style="position:relative;z-index:1">'+bgHtml+(bannerHtml(p,'lg')?'<div style="margin-bottom:14px">'+bannerHtml(p,'lg')+'</div>':'')+'<div class="profile-header" style="margin-bottom:16px">'+avatarHtml(p,80)+'<div class="profile-info"><div class="username">'+p.username+' '+(p.isadmin?'👑':'')+' '+(p.banned?'<span style="color:#ff6b6b;font-size:12px">[БАН]</span>':'')+'</div><div class="details"><span><i class="fas fa-trophy" style="color:#ffd700"></i> ELO: '+(p.elo||300)+'</span></div>'+brawlBadge+'</div></div><div class="profile-stats" style="margin-bottom:14px"><div class="stat-item"><div class="value">'+m+'</div><div class="label">Матчей</div></div><div class="stat-item"><div class="value" style="color:#51cf66">'+w+'</div><div class="label">Побед</div></div><div class="stat-item"><div class="value" style="color:#ff6b6b">'+l+'</div><div class="label">Поражений</div></div><div class="stat-item"><div class="value">'+wr+'%</div><div class="label">Винрейт</div></div></div>'+(!isMe?'<div style="margin-bottom:14px">'+actionBtn+'</div>':'')+'<div style="font-size:14px;font-weight:700;margin-bottom:8px"><i class="fas fa-history"></i> Последние матчи</div><div>'+histHtml+'</div></div>';
+    const heroBanner=(p.avatar_banner&&BANNER_MAP[p.avatar_banner])?
+      '<div style="position:relative;border-radius:14px;overflow:hidden;margin-bottom:14px;min-height:96px;background-image:url(\''+BANNER_MAP[p.avatar_banner].img+'\');background-size:cover;background-position:center">'+
+        '<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.75),rgba(0,0,0,.35) 55%,rgba(0,0,0,.6))"></div>'+
+        '<div style="position:relative;display:flex;align-items:center;gap:12px;padding:14px 16px">'+
+          avatarHtml(p,56)+
+          '<div style="flex:1;min-width:0">'+
+            '<div style="font-size:16px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+p.username+(p.isadmin?' 👑':'')+'</div>'+
+            '<div style="font-size:11px;color:#e0e0ea;opacity:.9;text-shadow:0 1px 4px rgba(0,0,0,.9);margin-top:3px">ELO: '+(p.elo||300)+'</div>'+
+          '</div>'+
+          '<div style="text-align:right"><div style="font-size:22px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.9);line-height:1">'+(p.elo||300)+'</div><div style="font-size:9px;color:#e0e0ea;opacity:.85;letter-spacing:1.5px;margin-top:2px">ELO</div></div>'+
+        '</div>'+
+      '</div>':
+      ('<div class="profile-header" style="margin-bottom:16px">'+avatarHtml(p,80)+'<div class="profile-info"><div class="username">'+p.username+' '+(p.isadmin?'👑':'')+' '+(p.banned?'<span style="color:#ff6b6b;font-size:12px">[БАН]</span>':'')+'</div><div class="details"><span><i class="fas fa-trophy" style="color:#ffd700"></i> ELO: '+(p.elo||300)+'</span></div>'+brawlBadge+'</div></div>');
+    body.innerHTML='<div style="position:relative;z-index:1">'+bgHtml+heroBanner+'<div class="profile-stats" style="margin-bottom:14px"><div class="stat-item"><div class="value">'+m+'</div><div class="label">Матчей</div></div><div class="stat-item"><div class="value" style="color:#51cf66">'+w+'</div><div class="label">Побед</div></div><div class="stat-item"><div class="value" style="color:#ff6b6b">'+l+'</div><div class="label">Поражений</div></div><div class="stat-item"><div class="value">'+wr+'%</div><div class="label">Винрейт</div></div></div>'+(!isMe?'<div style="margin-bottom:14px">'+actionBtn+'</div>':'')+'<div style="font-size:14px;font-weight:700;margin-bottom:8px"><i class="fas fa-history"></i> Последние матчи</div><div>'+histHtml+'</div></div>';
   }catch(e){console.error('openViewProfile',e);body.innerHTML='<div class="adm-empty">Ошибка: '+e.message+'</div>'}
 }
 function closeViewProfile(){document.getElementById('viewProfileModal').classList.remove('active');viewingUserId=null}

@@ -472,7 +472,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .pf-score .v{font-size:18px;font-weight:900;color:#c084fc;line-height:1}
 .pf-score .k{font-size:10px;color:#a89ec4;font-weight:700;letter-spacing:.5px}
 
-/* === ИСТОРИЯ РЕЙТИНГА === */
 .rh-card{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.20);border-radius:16px;padding:16px 16px 12px;margin-bottom:12px;overflow:hidden;position:relative}
 .rh-card::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 90% 20%,rgba(34,197,94,.12),transparent 55%);opacity:.7}
 .rh-card > *{position:relative;z-index:1}
@@ -484,8 +483,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .rh-elo .delta.up{color:#51cf66;background:rgba(81,207,102,.12)}
 .rh-elo .delta.down{color:#ff6b6b;background:rgba(255,107,107,.12)}
 .rh-date-end{font-size:11px;color:#a89ec4;font-weight:700}
-.rh-chart{position:relative;height:120px;margin:6px 0 4px}
-.rh-chart svg{width:100%;height:100%;display:block;overflow:visible}
+.rh-chart{position:relative;height:120px;margin:6px 0 4px;touch-action:none}
+.rh-chart svg{width:100%;height:100%;display:block;overflow:visible;cursor:crosshair}
 .rh-chart .area{fill:url(#rhGrad);stroke:none}
 .rh-chart .line{fill:none;stroke:#51cf66;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 8px rgba(81,207,102,.55))}
 .rh-chart .dash{stroke:#a89ec4;stroke-width:1;stroke-dasharray:4 5;opacity:.55}
@@ -493,7 +492,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .rh-chart .dot-inner{fill:#0b0812}
 .rh-bottom{display:flex;justify-content:space-between;font-size:10px;color:#a89ec4;font-weight:700;letter-spacing:.5px}
 
-/* === ПОСЛЕДНИЕ МАТЧИ === */
 .ph-list{display:flex;flex-direction:column;gap:8px}
 .ph-item{display:flex;align-items:center;gap:12px;background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.15);border-radius:16px;padding:10px 12px;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
 .ph-item:hover{transform:translateY(-1px);border-color:rgba(168,85,247,.35)}
@@ -514,6 +512,36 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .ph-chev{color:#5a4a7a;font-size:12px}
 .ph-empty{text-align:center;color:#5a4a7a;font-size:13px;padding:18px 0}
 .ph-all{font-size:12px;color:#ff6b8a;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:4px}
+
+/* === ДЕТАЛИ МАТЧА === */
+.md-head{text-align:center;margin-bottom:16px}
+.md-title{font-size:20px;font-weight:900;color:#fff;letter-spacing:.5px}
+.md-sub{font-size:12px;color:#a89ec4;margin-top:4px;font-weight:600;letter-spacing:.5px}
+.md-map{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:6px 12px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);border-radius:10px;font-size:12px;font-weight:800;color:#c084fc}
+.md-map img{width:24px;height:24px;border-radius:6px;object-fit:cover}
+.md-score{display:flex;align-items:center;justify-content:center;gap:14px;margin:14px 0;padding:14px;background:rgba(0,0,0,.28);border-radius:12px;font-size:28px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
+.md-score .win{color:#51cf66}
+.md-score .lose{color:#ff6b6b}
+.md-score .sep{color:#7c6a9c}
+.md-teams{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.md-team{padding:10px;border-radius:12px}
+.md-team.blue{background:rgba(77,171,247,.08);border:1px solid rgba(77,171,247,.3)}
+.md-team.orange{background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.3)}
+.md-team.win{border-color:rgba(81,207,102,.55);box-shadow:0 0 18px rgba(81,207,102,.15)}
+.md-team h4{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#a89ec4;margin-bottom:8px;font-weight:800}
+.md-team.blue h4{color:#4dabf7}
+.md-team.orange h4{color:#c084fc}
+.md-team.win h4::after{content:' 🏆'}
+.md-pl{display:flex;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.04)}
+.md-pl:last-child{border-bottom:none}
+.md-pl .av{width:26px;height:26px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff}
+.md-pl .av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.md-pl .info{flex:1;min-width:0}
+.md-pl .nm{font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.md-pl .sub{font-size:10px;color:#a89ec4;font-weight:600;margin-top:2px}
+.md-pl .elo-p{color:#51cf66;font-weight:900}
+.md-pl .elo-n{color:#ff6b6b;font-weight:900}
+.md-empty{text-align:center;color:#5a4a7a;font-size:13px;padding:24px 0}
 </style>
 </head>
 <body>
@@ -558,6 +586,13 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
   <div class="modal-box" style="position:relative">
     <button onclick="closeViewProfile()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:#a89ec4;font-size:24px;cursor:pointer;padding:4px 10px;border-radius:8px">×</button>
     <div id="viewProfileBody"><div class="adm-empty">Загрузка...</div></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="matchDetailsModal">
+  <div class="modal-box" style="position:relative;max-width:460px">
+    <button onclick="closeMatchDetails()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:#a89ec4;font-size:24px;cursor:pointer;padding:4px 10px;border-radius:8px">×</button>
+    <div id="matchDetailsBody"><div class="adm-empty">Загрузка...</div></div>
   </div>
 </div>
 
@@ -803,7 +838,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     </div>
   </div>
 
-  <!-- ИСТОРИЯ РЕЙТИНГА -->
   <div class="rh-card" id="rhCard">
     <div class="rh-title">История рейтинга</div>
     <div class="rh-top">
@@ -834,7 +868,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     </div>
   </div>
 
-  <!-- ПОСЛЕДНИЕ МАТЧИ -->
   <div class="rh-card" style="padding:14px 16px">
     <div class="rh-title" style="display:flex;justify-content:space-between;align-items:center">
       <span>Последние матчи</span>
@@ -978,13 +1011,11 @@ function renderClanBlock(){
   if(name) name.textContent=currentUser.clan;if(sub) sub.textContent='Участник';if(status) status.textContent='В клане';
 }
 
-/* ===== ИСТОРИЯ РЕЙТИНГА (новый график) ===== */
+/* ===== ИНТЕРАКТИВНЫЙ ГРАФИК ===== */
+let rhChartData=[];
 async function renderEloChart(){
   const line=document.getElementById('rhLine');
   const area=document.getElementById('rhArea');
-  const dash=document.getElementById('rhDash');
-  const dotOuter=document.getElementById('rhDotOuter');
-  const dotInner=document.getElementById('rhDotInner');
   if(!line)return;
   try{
     const r=await supabaseClient.from('match_history')
@@ -996,13 +1027,12 @@ async function renderEloChart(){
     const arr=rows.map(function(x){return parseInt(x.elo_change)||0;});
     if(!arr.length){
       line.setAttribute('d','');area.setAttribute('d','');
-      if(dash)dash.style.display='none';
-      if(dotOuter)dotOuter.style.display='none';
-      if(dotInner)dotInner.style.display='none';
+      document.querySelectorAll('.rh-chart .dash,.rh-chart .dot-outer,.rh-chart .dot-inner').forEach(function(el){el.style.display='none';});
       setText('rhEloNum',currentUser.elo||300);
       const d0=document.getElementById('rhEloDelta');
       if(d0){d0.textContent='+0';d0.className='delta';}
       setText('rhDateEnd','—');setText('rhDateStart','—');setText('rhDateEndBottom','—');
+      rhChartData=[];
       return;
     }
     let base=(currentUser.elo||300)-arr.reduce(function(a,b){return a+b;},0);
@@ -1016,34 +1046,73 @@ async function renderEloChart(){
     const areaD=lineD+' L'+xs[xs.length-1].toFixed(1)+' '+(H-padBottom)+' L'+xs[0].toFixed(1)+' '+(H-padBottom)+' Z';
     line.setAttribute('d',lineD);
     area.setAttribute('d',areaD);
-    const lastX=xs[xs.length-1];
-    const lastY=ys[ys.length-1];
-    if(dash){
-      dash.setAttribute('x1',lastX);dash.setAttribute('x2',lastX);
-      dash.setAttribute('y1',0);dash.setAttribute('y2',H-padBottom);
-      dash.style.display='block';
-    }
-    if(dotOuter){dotOuter.setAttribute('cx',lastX);dotOuter.setAttribute('cy',lastY);dotOuter.style.display='block';}
-    if(dotInner){dotInner.setAttribute('cx',lastX);dotInner.setAttribute('cy',lastY);dotInner.style.display='block';}
+
+    rhChartData=pts.map(function(v,i){
+      return {x:xs[i],y:ys[i],elo:v,delta:arr[i],date:rows[i].match_date};
+    });
+
+    const last=rhChartData[rhChartData.length-1];
+    moveChartCursor(last.x,last.y,last.elo,last.date);
+
     setText('rhEloNum',currentUser.elo||300);
     const sum=arr.reduce(function(a,b){return a+b;},0);
     const delta=document.getElementById('rhEloDelta');
     if(delta){delta.textContent=(sum>=0?'+':'')+sum;delta.className='delta '+(sum>=0?'up':'down');}
-    const fmt=function(iso){
-      const d=new Date(iso);
-      const day=d.getDate();
-      const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
-      return day+' '+mon;
-    };
-    const startLbl=fmt(rows[0].match_date);
-    const endLbl=fmt(rows[rows.length-1].match_date);
-    setText('rhDateStart',startLbl);
-    setText('rhDateEnd',endLbl);
-    setText('rhDateEndBottom',endLbl);
+    const fmt=function(iso){const d=new Date(iso);const day=d.getDate();const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];return day+' '+mon;};
+    setText('rhDateStart',fmt(rows[0].match_date));
+    setText('rhDateEnd',fmt(rows[rows.length-1].match_date));
+    setText('rhDateEndBottom',fmt(rows[rows.length-1].match_date));
+
+    attachChartInteraction();
   }catch(e){console.warn('rh chart',e);}
 }
+function moveChartCursor(x,y,elo,date){
+  const dash=document.getElementById('rhDash');
+  const dotOuter=document.getElementById('rhDotOuter');
+  const dotInner=document.getElementById('rhDotInner');
+  const H=120,padBottom=16;
+  if(dash){
+    dash.setAttribute('x1',x);dash.setAttribute('x2',x);
+    dash.setAttribute('y1',0);dash.setAttribute('y2',H-padBottom);
+    dash.style.display='block';
+  }
+  if(dotOuter){dotOuter.setAttribute('cx',x);dotOuter.setAttribute('cy',y);dotOuter.style.display='block';}
+  if(dotInner){dotInner.setAttribute('cx',x);dotInner.setAttribute('cy',y);dotInner.style.display='block';}
+  if(date){
+    const d=new Date(date);
+    const day=d.getDate();
+    const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+    setText('rhDateEnd',day+' '+mon);
+  }
+}
+let _chartTouchBound=false;
+function attachChartInteraction(){
+  if(_chartTouchBound)return;
+  _chartTouchBound=true;
+  const wrap=document.querySelector('.rh-chart');
+  if(!wrap)return;
+  const svg=wrap.querySelector('svg');
+  if(!svg)return;
+  function pick(ev){
+    if(!rhChartData.length)return;
+    const rect=svg.getBoundingClientRect();
+    let clientX=0;
+    if(ev.touches&&ev.touches.length)clientX=ev.touches[0].clientX;
+    else if(ev.changedTouches&&ev.changedTouches.length)clientX=ev.changedTouches[0].clientX;
+    else clientX=ev.clientX;
+    const xPx=clientX-rect.left;
+    const xSvg=xPx*(320/rect.width);
+    let best=rhChartData[0];let bd=Math.abs(best.x-xSvg);
+    rhChartData.forEach(function(p){const d=Math.abs(p.x-xSvg);if(d<bd){bd=d;best=p;}});
+    moveChartCursor(best.x,best.y,best.elo,best.date);
+  }
+  wrap.addEventListener('touchstart',pick,{passive:true});
+  wrap.addEventListener('touchmove',pick,{passive:true});
+  wrap.addEventListener('mousemove',function(e){if(e.buttons)pick(e);});
+  wrap.addEventListener('mousedown',pick);
+}
 
-/* ===== ПОСЛЕДНИЕ МАТЧИ (с картинками карт) ===== */
+/* ===== ПОСЛЕДНИЕ МАТЧИ ===== */
 async function renderRecentMatches(){
   const list=document.getElementById('phList');
   if(!list)return;
@@ -1071,7 +1140,8 @@ async function renderRecentMatches(){
         ? ('<img src="'+m.img+'" alt="" onerror="this.style.display=\'none\';var f=this.parentNode.querySelector(\'.fallback\');if(f)f.style.display=\'block\'"><span class="fallback" style="display:none">'+(m.emoji||'🗺️')+'</span>')
         : ('<span class="fallback">'+(m.emoji||'🗺️')+'</span>');
       const resultLabel=win?'Победа':'Поражение';
-      return '<div class="ph-item '+(win?'win':'lose')+'">'+
+      const mid=String(x.id||'');
+      return '<div class="ph-item '+(win?'win':'lose')+'" onclick="openMatchDetails(\''+mid+'\')">'+
         '<div class="ph-icon '+(win?'win':'lose')+'">'+imgHtml+'</div>'+
         '<div class="ph-body">'+
           '<div class="ph-name">'+resultLabel+' · '+escapeHtml(mapName)+'</div>'+
@@ -1085,6 +1155,84 @@ async function renderRecentMatches(){
     }).join('');
   }catch(e){console.warn('recent matches',e);}
 }
+async function openMatchDetails(historyId){
+  if(!historyId)return;
+  const modal=document.getElementById('matchDetailsModal');
+  const body=document.getElementById('matchDetailsBody');
+  body.innerHTML='<div class="adm-empty">Загрузка...</div>';
+  modal.classList.add('active');
+  try{
+    const r=await supabaseClient.from('match_history').select('*').eq('id',historyId).maybeSingle();
+    const h=r.data;
+    if(!h){body.innerHTML='<div class="md-empty">Матч не найден</div>';return;}
+    const win=h.result==='win';
+    const d=parseInt(h.elo_change)||0;
+    const m=mapBySlug(h.map||'');
+    const imgHtml=(m&&m.img)?('<img src="'+m.img+'" alt="">'):'';
+    const dt=new Date(h.match_date);
+    const dateStr=dt.toLocaleDateString('ru-RU',{day:'2-digit',month:'short',year:'numeric'});
+
+    let blue=[],orange=[],scoreA=h.score_a,scoreB=h.score_b,winner=h.winner;
+    if(h.match_id){
+      try{
+        const mr=await supabaseClient.from('active_matches').select('*').eq('id',h.match_id).maybeSingle();
+        if(mr.data){
+          try{blue=typeof mr.data.blue==='string'?JSON.parse(mr.data.blue):(mr.data.blue||[]);}catch(e){}
+          try{orange=typeof mr.data.orange==='string'?JSON.parse(mr.data.orange):(mr.data.orange||[]);}catch(e){}
+          scoreA=scoreA!=null?scoreA:mr.data.score_a;
+          scoreB=scoreB!=null?scoreB:mr.data.score_b;
+          winner=winner||mr.data.winner;
+        }
+      }catch(e){}
+    }
+    if(!blue.length&&!orange.length){
+      if(Array.isArray(h.team_blue))blue=h.team_blue;
+      if(Array.isArray(h.team_orange))orange=h.team_orange;
+    }
+
+    let html='<div class="md-head">'+
+      '<div class="md-title">'+(win?'🏆 Победа':'💀 Поражение')+'</div>'+
+      '<div class="md-sub">'+dateStr+' · '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0')+'</div>';
+    if(h.map){
+      html+='<div class="md-map">'+imgHtml+escapeHtml(h.map)+'</div>';
+    }
+    html+='</div>';
+
+    if(scoreA!=null&&scoreB!=null){
+      html+='<div class="md-score">'+
+        '<span class="'+(winner==='blue'?'win':'')+'">'+scoreA+'</span>'+
+        '<span class="sep">:</span>'+
+        '<span class="'+(winner==='orange'?'win':'')+'">'+scoreB+'</span>'+
+      '</div>';
+    }else{
+      html+='<div class="md-score" style="font-size:18px">Твоё ELO: <span class="'+(d>=0?'win':'lose')+'" style="margin-left:8px">'+(d>=0?'+':'')+d+'</span></div>';
+    }
+
+    if(blue.length||orange.length){
+      const teamBlock=function(list,side,label,isWin){
+        return '<div class="md-team '+side+(isWin?' win':'')+'">'+
+          '<h4>'+label+'</h4>'+
+          (list.length?list.map(function(p){
+            const pe=p.elo_change!=null?parseInt(p.elo_change):null;
+            const peHtml=pe!=null?('<span class="'+(pe>=0?'elo-p':'elo-n')+'">'+(pe>=0?'+':'')+pe+'</span>'):'';
+            const letter=(p.username||'?').charAt(0).toUpperCase();
+            const av=p.avatar_url?('<img src="'+p.avatar_url+'" alt="">'):letter;
+            return '<div class="md-pl"><div class="av">'+av+'</div><div class="info"><div class="nm">'+escapeHtml(p.username||'?')+'</div><div class="sub">ELO '+(p.elo||300)+' '+peHtml+'</div></div></div>';
+          }).join(''):'<div class="md-empty" style="padding:8px 0;font-size:11px">Пусто</div>')+
+        '</div>';
+      };
+      html+='<div class="md-teams">'+
+        teamBlock(blue,'blue','Синие',winner==='blue'||(!winner&&win))+
+        teamBlock(orange,'orange','Оранжевые',winner==='orange'||(!winner&&!win))+
+      '</div>';
+    }else{
+      html+='<div class="md-empty">Детали команд недоступны (матч был давно или удалён)</div>';
+    }
+
+    body.innerHTML=html;
+  }catch(e){body.innerHTML='<div class="md-empty">Ошибка: '+e.message+'</div>';}
+}
+function closeMatchDetails(){document.getElementById('matchDetailsModal').classList.remove('active');}
 
 let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[],sentRequests=[];
 let isSearching=false,isStartingSearch=false,isCanceling=false,searchTimerInterval=null,searchSeconds=0;
@@ -1968,13 +2116,37 @@ async function admFinishMatch(matchId,winner){
   const totalPlayers=winners.length+losers.length;const teamSize=totalPlayers/2;
   let winPoints=35,losePoints=-15;if(teamSize<=1){winPoints=15;losePoints=-10;}else if(teamSize<=2){winPoints=20;losePoints=-12;}
   const ec={};winners.forEach(function(wp){ec[wp.id]=winPoints;});losers.forEach(function(lp){ec[lp.id]=losePoints;});
-  const mn=(match.draft_state&&match.draft_state.final)||'—';const all=[].concat(orange,blue);
+  const mn=(match.draft_state&&match.draft_state.final)||'—';
+  const all=[].concat(orange,blue);
+  // Подтянем актуальные avatar_url для игроков
+  const ids=all.map(function(p){return p.id;});
+  let extra={};
+  try{
+    const ur=await supabaseClient.from('users').select('id, avatar_url').in('id',ids);
+    (ur.data||[]).forEach(function(u){extra[u.id]=u;});
+  }catch(e){}
+  const blueEnriched=blue.map(function(p){return Object.assign({},p,extra[p.id]||{}, {elo_change:ec[p.id]||0});});
+  const orangeEnriched=orange.map(function(p){return Object.assign({},p,extra[p.id]||{}, {elo_change:ec[p.id]||0});});
   for(let i=0;i<all.length;i++){
     const player=all[i];const isWin=winners.some(function(w){return w.id===player.id;});const eloChange=ec[player.id]||0;
     try{
       const ur=await supabaseClient.from('users').select('*').eq('id',player.id).single();const ud=ur.data;
       if(ud){await supabaseClient.from('users').update({matches:(ud.matches||0)+1,wins:(ud.wins||0)+(isWin?1:0),losses:(ud.losses||0)+(isWin?0:1),elo:Math.max(100,(ud.elo||300)+eloChange),mvp:(ud.mvp||0)+(isWin?1:0),lastlogin:new Date().toISOString()}).eq('id',player.id);}
-      await supabaseClient.from('match_history').insert([{id:Date.now().toString()+'_'+Math.random().toString(36).substr(2,4),user_id:player.id,username:player.username,map:mn,result:isWin?'win':'loss',elo_change:eloChange,match_date:new Date().toISOString(),server_name:'Aliance Faceit',created_at:new Date().toISOString()}]);
+      await supabaseClient.from('match_history').insert([{
+        id:Date.now().toString()+'_'+Math.random().toString(36).substr(2,4),
+        user_id:player.id,
+        username:player.username,
+        map:mn,
+        result:isWin?'win':'loss',
+        elo_change:eloChange,
+        match_date:new Date().toISOString(),
+        server_name:'Aliance Faceit',
+        team_blue:blueEnriched,
+        team_orange:orangeEnriched,
+        winner:winner,
+        match_id:matchId,
+        created_at:new Date().toISOString()
+      }]);
     }catch(e){}
   }
   await supabaseClient.from('active_matches').delete().eq('id',matchId);
@@ -2039,6 +2211,7 @@ document.addEventListener('DOMContentLoaded',async function(){
   });
   const pi=document.getElementById('promoInput');if(pi)pi.addEventListener('keydown',function(e){if(e.key==='Enter')applyPromo();});
   document.getElementById('viewProfileModal').addEventListener('click',function(e){if(e.target.id==='viewProfileModal')closeViewProfile();});
+  document.getElementById('matchDetailsModal').addEventListener('click',function(e){if(e.target.id==='matchDetailsModal')closeMatchDetails();});
   const fs=document.getElementById('friendSearchInput');if(fs)fs.addEventListener('input',function(){searchFriends();});
   const ci=document.getElementById('chatInput');if(ci)ci.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sendChatMessage();}});
   cleanupInterval=setInterval(async function(){

@@ -141,7 +141,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .party-empty{color:#5a4a7a;font-size:13px}
 .party-feature{font-size:11px;color:#5a4a7a;margin-top:8px;padding:8px 12px;background:#1a1230;border-radius:8px}
 
-/* ===== СТРАНИЦА МАТЧА ===== */
 .m-page{padding-top:6px}
 .m-top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .m-top .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#1a1230,#2a2050);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -155,7 +154,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 @keyframes pulseLive{0%,100%{opacity:1}50%{opacity:.35}}
 .m-top .copy{width:38px;height:38px;border-radius:10px;background:#1a1230;border:1px solid #2a2050;color:#a89ec4;cursor:pointer;font-size:14px;flex-shrink:0}
 
-/* Карта-герой (показывается ПОСЛЕ драфта) */
 .m-map-hero{position:relative;border-radius:16px;overflow:hidden;margin-bottom:12px;min-height:180px;background:#0f0a1a}
 .m-map-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.55) saturate(1.1)}
 .m-map-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,8,18,.35) 0%,rgba(11,8,18,.85) 100%)}
@@ -174,8 +172,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-host .id .lbl{text-align:right}
 .m-host .id .val{color:var(--accent-3)}
 .m-host .copy-id{width:34px;height:34px;border-radius:10px;background:rgba(168,85,247,.2);border:1px solid rgba(168,85,247,.4);color:#fff;font-size:12px;cursor:pointer;flex-shrink:0;margin-left:6px}
-
-/* Таймер захода (после драфта) */
 .m-timer{margin-bottom:12px;padding:12px 14px;background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.22);border-radius:14px;display:flex;align-items:center;gap:12px}
 .m-timer .ico{width:40px;height:40px;border-radius:10px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.35);display:flex;align-items:center;justify-content:center;color:var(--accent-3);font-size:16px;flex-shrink:0}
 .m-timer .body{flex:1;min-width:0}
@@ -183,7 +179,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-timer .ttl b{color:#fff;font-size:14px;letter-spacing:0;font-weight:900;margin-left:6px}
 .m-timer .txt{font-size:11px;color:#a89ec4;margin-top:3px;line-height:1.4}
 
-/* Команды — красивее */
 .m-teams{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .m-team{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.18);border-radius:16px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.35)}
 .m-team.blue{border-color:rgba(77,171,247,.30)}
@@ -196,11 +191,9 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-team.orange .th .ic{background:rgba(192,132,252,.22);color:var(--accent-3)}
 .m-team .th .nm{font-size:10px;font-weight:800;color:#a89ec4;letter-spacing:1px;text-transform:uppercase;line-height:1.2}
 .m-team .th .sub{font-size:12px;font-weight:900;color:#fff;margin-top:2px}
-
 .m-team .pl{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(168,85,247,.08);cursor:pointer;transition:background .15s}
 .m-team .pl:last-child{border-bottom:none}
 .m-team .pl:hover{background:rgba(168,85,247,.06)}
-
 .m-team .pl .av{width:34px;height:34px;border-radius:10px;overflow:hidden;flex-shrink:0;position:relative}
 .m-team .pl .av img{width:100%;height:100%;object-fit:cover;display:block}
 .m-team .pl .av .let{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;background:linear-gradient(135deg,#7c3aed,#a855f7)}
@@ -208,7 +201,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-team .pl .av .badge{position:absolute;bottom:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:#0b0812;border:1.5px solid var(--accent-3);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff}
 .m-team.blue .pl .av .badge{border-color:#4dabf7}
 .m-team .pl .av .badge.gold{background:rgba(255,215,0,.15);border-color:var(--gold);color:var(--gold)}
-
 .m-team .pl .body{flex:1;min-width:0}
 .m-team .pl .nm{font-size:13px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
 .m-team.blue .pl .nm{color:#b6ddff}
@@ -216,11 +208,9 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-team .pl .kd b{color:var(--accent-3);font-weight:900}
 .m-team.blue .pl .kd b{color:#4dabf7}
 .m-team .pl .chev{color:#5a4a7a;font-size:11px;flex-shrink:0}
-
 .m-teams-note{font-size:10px;color:#5a4a7a;margin-bottom:14px;padding:0 4px;line-height:1.4;display:flex;gap:6px;align-items:flex-start}
 .m-teams-note i{color:#7c6a9c;margin-top:2px}
 
-/* Чат */
 .m-chat{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.22);border-radius:14px;padding:12px 14px;margin-bottom:14px}
 .m-chat .hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .m-chat .hdr .ic{width:36px;height:36px;border-radius:10px;background:#1a1230;display:flex;align-items:center;justify-content:center;color:#c084fc;font-size:16px;flex-shrink:0}
@@ -242,7 +232,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-chat-input button{padding:10px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-family:inherit;font-weight:700;cursor:pointer}
 .m-chat-input button:disabled{opacity:.4}
 
-/* ===== БАНЫ КАРТ ===== */
 .b-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .b-top h2{font-size:14px;font-weight:900;letter-spacing:1px;color:#c4b5d8;text-transform:uppercase}
 .b-top .cnt{font-size:12px;font-weight:800;color:#ff6b8a;font-variant-numeric:tabular-nums}
@@ -261,8 +250,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .b-item.banned{opacity:.55;border-color:rgba(255,107,107,.35);position:relative;overflow:hidden}
 .b-item.banned .b-img{filter:grayscale(1) brightness(.5)}
 .b-item.banned::before{content:'';position:absolute;top:50%;left:0;right:0;height:2px;background:#ff6b6b;transform:rotate(-8deg);pointer-events:none;box-shadow:0 0 8px rgba(255,107,107,.6);z-index:3}
-.b-img{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#2a1a4a,#1a1230);flex-shrink:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;font-size:22px}
-.b-img img{width:100%;height:100%;object-fit:cover}
+.b-img{width:72px;height:52px;border-radius:10px;background:linear-gradient(135deg,#2a1a4a,#1a1230);flex-shrink:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;font-size:22px}
+.b-img img{width:100%;height:100%;object-fit:cover;display:block}
 .b-body{flex:1;min-width:0}
 .b-name{font-size:14px;font-weight:800;color:#fff;line-height:1.2}
 .b-sub{font-size:11px;color:#a89ec4;margin-top:3px}
@@ -271,11 +260,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .b-btn{flex-shrink:0;padding:6px 14px;border:1px solid rgba(255,59,107,.5);border-radius:8px;background:rgba(255,59,107,.12);color:#ff6b8a;font-family:inherit;font-weight:800;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
 .b-item.clickable .b-btn:hover{background:rgba(255,59,107,.25)}
 .b-loading{font-size:12px;color:#7c6a9c;text-align:center;padding:14px 0}
-
-/* Скрытие блоков до/после драфта */
 .m-stage{display:block}
 .m-stage.hidden{display:none}
-
 .m-actions{display:none;gap:8px;margin-top:8px}
 .m-actions.admin-visible{display:flex}
 .m-actions .btn{flex:1;padding:12px;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer}
@@ -283,7 +269,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-actions .btn.orange{background:var(--accent-2);color:#fff}
 .m-actions .btn.red{background:#ff6b6b;color:#fff}
 
-/* ===== ПРОФИЛЬ ===== */
 .profile-card{background:rgba(20,15,34,.8);border:1px solid rgba(168,85,247,.20);border-radius:16px;padding:20px;position:relative;overflow:hidden;isolation:isolate}
 .profile-card .profile-bg{position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:.55;filter:blur(1px) brightness(.85)}
 .profile-card .profile-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,8,18,.4),rgba(11,8,18,.85))}
@@ -661,7 +646,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     <button class="copy" onclick="copyMatchId()" title="Копировать ID"><i class="fas fa-copy"></i></button>
   </div>
 
-  <!-- СТАДИЯ 1: ТОЛЬКО БАНЫ -->
   <div class="m-stage" id="stageBan">
     <div class="b-top">
       <h2>Бан карт</h2>
@@ -678,7 +662,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     <div class="b-list" id="bList"><div class="b-loading">Загрузка карт...</div></div>
   </div>
 
-  <!-- СТАДИЯ 2: МАТЧ -->
   <div class="m-stage hidden" id="stageMatch">
     <div class="m-map-hero" id="mMapHero">
       <div class="m-map-bg" id="mMapBg"></div>
@@ -734,7 +717,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     </div>
   </div>
 
-  <!-- Админ-кнопки -->
   <div class="m-actions" id="matchActions">
     <button class="btn blue" onclick="finishMatch('blue')">🏆 BLUE</button>
     <button class="btn orange" onclick="finishMatch('orange')">🏆 ORANGE</button>
@@ -803,7 +785,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     </div>
     <div class="pf-card" style="padding:12px">
       <div class="pf-hd"><h3>Популярность</h3></div>
-      <div class="pf-score"><span class="fire">🔥</span><div><div class="v" id="pfPop">0</div><div class="k">Очков</div></div></div>
+      <div class="pf-score"><span style="font-size:20px">🔥</span><div><div class="v" id="pfPop">0</div><div class="k">Очков</div></div></div>
     </div>
   </div>
 
@@ -1020,7 +1002,7 @@ let _autoLeaveTimer=null;
 const AUTO_LEAVE_DELAY=5000;
 const TIMER_CIRC=2*Math.PI*76;
 let draftTimerInterval=null,draftSeconds=30;
-let lobbyTimerInterval=null,lobbySecondsLeft=300;
+let lobbyTimerInterval=null,lobbyEndTimestamp=0;
 
 (function(){
   const overlay=document.getElementById('loaderOverlay');const bar=document.getElementById('loaderBar');const percentEl=document.getElementById('loaderPercent');const statusEl=document.getElementById('loaderStatus');
@@ -1055,7 +1037,6 @@ function avatarHtml(user,size){
 }
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 
-/* Регистрация / вход / выход */
 async function registerUser(){
   const nick=document.getElementById('regNick').value.trim();
   const gameId=document.getElementById('regGameId').value.trim();
@@ -1156,7 +1137,6 @@ document.addEventListener('click',async function(e){
   if(tab){adminTab=tab.dataset.admTab;document.querySelectorAll('[data-adm-tab]').forEach(function(b){b.classList.remove('on');});tab.classList.add('on');await renderAdminPanel();}
 });
 
-/* Магазин */
 function renderShop(){
   document.getElementById('shopPlaceholder').style.display='none';
   const wrap=document.getElementById('shopContent');wrap.style.display='block';
@@ -1229,6 +1209,8 @@ function startGlobalPolling(){
         currentMatch.status=my.status;
         currentMatch.draft_state=my.draft_state||{banned:[],final:'',complete:false};
         currentMatch.lobby_url=my.lobby_url||'';
+        currentMatch.draft_finished_at=my.draft_finished_at||null;
+        currentMatch.match_number=my.match_number||null;
         currentMatch.orange=typeof my.orange==='string'?JSON.parse(my.orange):my.orange;
         currentMatch.blue=typeof my.blue==='string'?JSON.parse(my.blue):my.blue;
         if(document.getElementById('pageMatch')&&document.getElementById('pageMatch').classList.contains('active'))renderMatchPage();
@@ -1248,7 +1230,7 @@ async function loadCreatedMatch(id){
     const orange=typeof data.orange==='string'?JSON.parse(data.orange):data.orange;
     const blue=typeof data.blue==='string'?JSON.parse(data.blue):data.blue;
     if(!Array.isArray(orange)||!Array.isArray(blue))return;
-    currentMatch={id:data.id,orange:orange,blue:blue,status:data.status,draft_state:data.draft_state||{banned:[],final:'',complete:false,turn:0},lobby_url:data.lobby_url||''};
+    currentMatch={id:data.id,orange:orange,blue:blue,status:data.status,draft_state:data.draft_state||{banned:[],final:'',complete:false,turn:0},lobby_url:data.lobby_url||'',draft_finished_at:data.draft_finished_at||null,match_number:data.match_number||null};
     currentMatchId=id;isPlayerInMatch=true;isSearching=false;
     if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null;}
     if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null;}
@@ -1370,7 +1352,6 @@ function startHeartbeat(){
   },20000);
 }
 
-/* Модалка подтверждения */
 function showConfirmModal(){
   if(isConfirming)return;
   isConfirming=true;waitingConfirm=true;
@@ -1457,7 +1438,7 @@ function subscribeToMatch(id){
       const nd=payload.new;
       const orange=typeof nd.orange==='string'?JSON.parse(nd.orange):nd.orange;
       const blue=typeof nd.blue==='string'?JSON.parse(nd.blue):nd.blue;
-      currentMatch={id:nd.id,orange:orange,blue:blue,status:nd.status,draft_state:nd.draft_state||{banned:[],final:'',complete:false,turn:0},lobby_url:nd.lobby_url||''};
+      currentMatch={id:nd.id,orange:orange,blue:blue,status:nd.status,draft_state:nd.draft_state||{banned:[],final:'',complete:false,turn:0},lobby_url:nd.lobby_url||'',draft_finished_at:nd.draft_finished_at||null,match_number:nd.match_number||null};
       currentMatchId=nd.id;isPlayerInMatch=true;
       if(Array.isArray(nd.confirmed)&&isConfirming){confirmedPlayers=nd.confirmed.map(String);renderModalPlayers();}
       if(nd.status==='active'&&isConfirming){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;startMatchAfterConfirm();}
@@ -1466,7 +1447,6 @@ function subscribeToMatch(id){
   }).subscribe();
 }
 
-/* ===== Страница матча: 2 стадии ===== */
 function matchStatusLabel(){
   if(!currentMatch)return'ОЖИДАНИЕ';
   const s=currentMatch.draft_state||{};
@@ -1488,16 +1468,6 @@ function isMyTurnToBan(){
   const turnSide=turn===0?'blue':'orange';
   return side===turnSide;
 }
-function matchNumberLabel(){
-  if(!currentMatchId)return'#—';
-  // Используем последние 4-5 символов id как «номер», если нет сохранённого номера
-  const stored=localStorage.getItem('aliance_match_num_'+currentMatchId);
-  if(stored)return stored;
-  // Генерируем номер по времени создания + случайно
-  const num='#'+String(Math.floor(Date.now()/1000)%10000);
-  try{localStorage.setItem('aliance_match_num_'+currentMatchId,num);}catch(e){}
-  return num;
-}
 function renderMatchPage(){
   if(!currentMatch)return;
   renderMatchTop();
@@ -1507,7 +1477,7 @@ function renderMatchPage(){
   if(s.complete){
     if(stageBan)stageBan.classList.add('hidden');
     if(stageMatch)stageMatch.classList.remove('hidden');
-    renderMapHero();renderTeams();applyMapBackground();showLobbyHostBlock();startLobbyTimerOnce();
+    renderMapHero();renderTeams();applyMapBackground();showLobbyHostBlock();startLobbyTimer();
   }else{
     if(stageBan)stageBan.classList.remove('hidden');
     if(stageMatch)stageMatch.classList.add('hidden');
@@ -1517,7 +1487,12 @@ function renderMatchPage(){
   checkMatchResultVisibility();
 }
 function renderMatchTop(){
-  const el=document.getElementById('mMatchNum');if(el)el.textContent=matchNumberLabel();
+  const el=document.getElementById('mMatchNum');
+  if(el){
+    if(currentMatch&&currentMatch.match_number){el.textContent='#'+currentMatch.match_number;}
+    else if(currentMatchId){el.textContent='#'+String(currentMatchId).slice(-4);}
+    else{el.textContent='#—';}
+  }
   const st=document.getElementById('mStatus');
   if(st){const lbl=matchStatusLabel();st.textContent=lbl;st.className='pill'+(lbl==='ИДЁТ ИГРА'?' live':'');}
 }
@@ -1540,23 +1515,33 @@ function showLobbyHostBlock(){
   if(av){if(host.avatar_url){av.innerHTML='<img src="'+host.avatar_url+'" alt="">';}else{av.innerHTML='<div class="let">'+((host.username||'?').charAt(0).toUpperCase())+'</div>';}}
   setText('mHostName',host.username||'—');setText('mHostId',host.game_id||'—');
 }
-function startLobbyTimerOnce(){
+function startLobbyTimer(){
   if(lobbyTimerInterval)return;
-  const s=currentMatch.draft_state||{};
-  if(!s.complete)return;
-  lobbySecondsLeft=300;
+  // Момент завершения драфта: из БД (draft_finished_at) или текущее время
+  let startedAt;
+  if(currentMatch&&currentMatch.draft_finished_at){
+    startedAt=new Date(currentMatch.draft_finished_at).getTime();
+  }else{
+    startedAt=Date.now();
+    // Сохраняем в БД, чтобы после перезагрузки все видели одно и то же время
+    if(currentMatchId){
+      supabaseClient.from('active_matches').update({draft_finished_at:new Date(startedAt).toISOString()}).eq('id',currentMatchId).then(function(){},function(){});
+      if(currentMatch)currentMatch.draft_finished_at=new Date(startedAt).toISOString();
+    }
+  }
   const el=document.getElementById('mTimerVal');
   function tick(){
-    const m=String(Math.floor(lobbySecondsLeft/60)).padStart(1,'0');
-    const sec=String(lobbySecondsLeft%60).padStart(2,'0');
-    if(el)el.textContent=m+':'+sec;
-    lobbySecondsLeft--;
-    if(lobbySecondsLeft<0){clearInterval(lobbyTimerInterval);lobbyTimerInterval=null;}
+    const now=Date.now();
+    let left=Math.floor((startedAt+300000-now)/1000);
+    if(left<0)left=0;
+    const m=Math.floor(left/60);const s=left%60;
+    if(el)el.textContent=m+':'+String(s).padStart(2,'0');
+    if(left<=0){clearInterval(lobbyTimerInterval);lobbyTimerInterval=null;}
   }
-  tick();lobbyTimerInterval=setInterval(tick,1000);
+  tick();
+  lobbyTimerInterval=setInterval(tick,1000);
 }
 
-/* Баны карт */
 function renderBansUI(){
   if(!currentMatch)return;
   const s=currentMatch.draft_state||{banned:[],final:'',complete:false,turn:0};
@@ -1586,7 +1571,7 @@ function renderBansUI(){
   list.innerHTML=MAPS.map(function(m){
     const isBanned=banned.indexOf(m.id)>=0;const isFinal=(s.final===m.id);
     const clickable=!isBanned&&!s.complete&&isMyTurnToBan();
-    const img=m.img?('<img src="'+m.img+'" alt="">'):('<span>'+m.emoji+'</span>');
+    const img=m.img?('<img src="'+m.img+'" alt="" onerror="this.style.display=\'none\'">'):('<span>'+m.emoji+'</span>');
     let sub,btn;
     if(isBanned){sub='Забанено';btn='';}
     else if(isFinal){sub='Выбрана';btn='';}
@@ -1617,14 +1602,15 @@ async function handleBanClick(slug){
   const left=MAPS.filter(function(m){return banned.indexOf(m.id)<0;});
   const complete=left.length<=1;
   const newState={banned:banned,final:complete?(left[0]?left[0].id:''):'',complete:complete,turn:s.turn===0?1:0};
-  const r=await supabaseClient.from('active_matches').update({draft_state:newState}).eq('id',currentMatchId);
+  const upd={draft_state:newState};
+  if(complete)upd.draft_finished_at=new Date().toISOString();
+  const r=await supabaseClient.from('active_matches').update(upd).eq('id',currentMatchId);
   if(r.error){showToast('error','Ошибка',r.error.message);return;}
   await loadCreatedMatch(currentMatchId);
 }
 function copyMatchId(){const t=String(currentMatchId||'');if(!t)return;navigator.clipboard.writeText(t).then(function(){showToast('success','Скопировано',t);},function(){});}
 function copyHostId(){if(!currentMatch)return;const host=currentMatch.blue[0]||currentMatch.orange[0]||{};const id=host.game_id||'';if(!id)return;navigator.clipboard.writeText(id).then(function(){showToast('success','Скопировано',id);},function(){});}
 
-/* Команды — красивее */
 function renderTeams(){
   if(!currentMatch)return;
   const a=document.getElementById('mTeamA');const b=document.getElementById('mTeamB');
@@ -1649,7 +1635,6 @@ function playerRowHtml(p,side,isCap){
   '</div>';
 }
 
-/* Чат */
 function renderChatMessages(){
   const body=document.getElementById('chatBody');if(!body)return;
   if(!chatMessages.length){body.innerHTML='<div class="m-chat-empty">Сообщений пока нет</div>';return;}
@@ -1830,7 +1815,6 @@ async function updateHomeStats(){
   }catch(e){}
 }
 
-/* Админка */
 async function renderAdminPanel(){
   if(!currentUser||!currentUser.isadmin)return;
   const body=document.getElementById('admBody');if(!body)return;
@@ -1845,7 +1829,8 @@ async function renderAdminPanel(){
         try{orange=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;blue=typeof m.blue==='string'?JSON.parse(m.blue):m.blue;}catch(e){}
         const st=m.status==='pending'?'Ожидает':'Активен';
         const rt=function(list,side){return '<div class="adm-team '+side+'"><h4>'+side.toUpperCase()+'</h4>'+list.map(function(p,i){return '<div class="adm-pl"><div class="av">'+(p.username||'?').charAt(0).toUpperCase()+'</div><div class="nm">'+escapeHtml(p.username||'?')+'</div>'+(i===0?'<span class="cap">👑</span>':'')+'</div>';}).join('')+'</div>';};
-        return '<div class="adm-match" data-match-id="'+m.id+'"><div class="hdr"><h3>#'+String(m.id).slice(-6)+'</h3><span class="badge-status '+(m.status==='pending'?'pending':'active')+'">'+st+'</span></div><div class="adm-teams">'+rt(orange,'orange')+rt(blue,'blue')+'</div><div class="adm-score-row"><input type="number" class="adm-score-a" placeholder="0"><span class="sep">:</span><input type="number" class="adm-score-b" placeholder="0"></div><div class="adm-finish-btns"><button class="btn-blue" onclick="admFinishMatch(\''+m.id+'\',\'blue\')">🏆 BLUE</button><button class="btn-orange" onclick="admFinishMatch(\''+m.id+'\',\'orange\')">🏆 ORANGE</button></div><button class="adm-cancel-btn" onclick="admCancelMatch(\''+m.id+'\')">❌ Удалить</button></div>';
+        const mn=m.match_number?('#'+m.match_number):('#'+String(m.id).slice(-6));
+        return '<div class="adm-match" data-match-id="'+m.id+'"><div class="hdr"><h3>'+mn+'</h3><span class="badge-status '+(m.status==='pending'?'pending':'active')+'">'+st+'</span></div><div class="adm-teams">'+rt(orange,'orange')+rt(blue,'blue')+'</div><div class="adm-score-row"><input type="number" class="adm-score-a" placeholder="0"><span class="sep">:</span><input type="number" class="adm-score-b" placeholder="0"></div><div class="adm-finish-btns"><button class="btn-blue" onclick="admFinishMatch(\''+m.id+'\',\'blue\')">🏆 BLUE</button><button class="btn-orange" onclick="admFinishMatch(\''+m.id+'\',\'orange\')">🏆 ORANGE</button></div><button class="adm-cancel-btn" onclick="admCancelMatch(\''+m.id+'\')">❌ Удалить</button></div>';
       }).join('');
     }
     else if(adminTab==='players'){

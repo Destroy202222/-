@@ -154,8 +154,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-top .pill.live::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff3b6b;margin-right:5px;vertical-align:middle;animation:pulseLive 1.2s infinite}
 @keyframes pulseLive{0%,100%{opacity:1}50%{opacity:.35}}
 .m-top .copy{width:38px;height:38px;border-radius:10px;background:#1a1230;border:1px solid #2a2050;color:#a89ec4;cursor:pointer;font-size:14px;flex-shrink:0}
-
-/* Карта */
 .m-map-hero{position:relative;border-radius:16px;overflow:hidden;margin-bottom:12px;min-height:180px;background:#0f0a1a}
 .m-map-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.55) saturate(1.1)}
 .m-map-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,8,18,.35) 0%,rgba(11,8,18,.85) 100%)}
@@ -163,8 +161,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-map-meta{font-size:10px;font-weight:800;color:#c4b5d8;letter-spacing:1.5px;text-transform:uppercase;opacity:.85;margin-bottom:6px}
 .m-map-meta .dot{color:#ff3b6b;margin:0 6px}
 .m-map-name{font-size:34px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;line-height:1;margin-bottom:10px;text-shadow:0 4px 24px rgba(0,0,0,.8)}
-
-/* Хост лобби */
 .m-host{position:relative;z-index:2;margin-top:14px;padding:12px 14px;background:rgba(0,0,0,.55);border:1px solid rgba(168,85,247,.25);border-radius:14px;display:flex;align-items:center;gap:12px;backdrop-filter:blur(8px)}
 .m-host .av{width:48px;height:48px;border-radius:12px;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#7c3aed,#a855f7)}
 .m-host .av img{width:100%;height:100%;object-fit:cover}
@@ -176,23 +172,17 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-host .id .lbl{text-align:right}
 .m-host .id .val{color:var(--accent-3)}
 .m-host .copy-id{width:34px;height:34px;border-radius:10px;background:rgba(168,85,247,.2);border:1px solid rgba(168,85,247,.4);color:#fff;font-size:12px;cursor:pointer;flex-shrink:0;margin-left:6px}
-
-/* Таймер */
 .m-timer{margin-bottom:12px;padding:12px 14px;background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.22);border-radius:14px;display:flex;align-items:center;gap:12px}
 .m-timer .ico{width:40px;height:40px;border-radius:10px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.35);display:flex;align-items:center;justify-content:center;color:var(--accent-3);font-size:16px;flex-shrink:0}
 .m-timer .body{flex:1;min-width:0}
 .m-timer .ttl{font-size:10px;font-weight:800;color:#a89ec4;letter-spacing:1.5px;text-transform:uppercase}
 .m-timer .ttl b{color:#fff;font-size:14px;letter-spacing:0;font-weight:900;margin-left:6px}
 .m-timer .txt{font-size:11px;color:#a89ec4;margin-top:3px;line-height:1.4}
-
-/* Голос */
 .m-voice{margin-bottom:14px;padding:12px 14px;background:rgba(20,15,34,.85);border:1px solid rgba(34,197,94,.25);border-radius:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s}
 .m-voice:hover{border-color:rgba(34,197,94,.5)}
 .m-voice .ico{width:40px;height:40px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0}
 .m-voice .lbl{flex:1;font-size:14px;font-weight:800;color:#fff;letter-spacing:.3px}
 .m-voice .arrow{color:#7c6a9c}
-
-/* Команды 5х5 */
 .m-teams{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .m-team{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.15);border-radius:14px;overflow:hidden}
 .m-team .th{padding:10px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(168,85,247,.15)}
@@ -214,8 +204,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-team .pl .chev{color:#5a4a7a;font-size:11px;flex-shrink:0}
 .m-teams-note{font-size:10px;color:#5a4a7a;margin-bottom:14px;padding:0 4px;line-height:1.4;display:flex;gap:6px;align-items:flex-start}
 .m-teams-note i{color:#7c6a9c;margin-top:2px}
-
-/* Чат лобби */
 .m-chat{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.22);border-radius:14px;padding:12px 14px;margin-bottom:14px}
 .m-chat .hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .m-chat .hdr .ic{width:36px;height:36px;border-radius:10px;background:#1a1230;display:flex;align-items:center;justify-content:center;color:#c084fc;font-size:16px;flex-shrink:0}
@@ -265,9 +253,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .b-item.banned .b-sub{color:#ff6b6b}
 .b-btn{flex-shrink:0;padding:6px 14px;border:1px solid rgba(255,59,107,.5);border-radius:8px;background:rgba(255,59,107,.12);color:#ff6b8a;font-family:inherit;font-weight:800;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
 .b-item.clickable .b-btn:hover{background:rgba(255,59,107,.25)}
-.b-btn.used{display:none}
-
-/* Кнопка «начать игру» (админ) */
+.b-loading{font-size:12px;color:#7c6a9c;text-align:center;padding:14px 0}
 .m-actions{display:none;gap:8px;margin-top:8px}
 .m-actions.admin-visible{display:flex}
 .m-actions .btn{flex:1;padding:12px;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer}
@@ -516,9 +502,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
         <circle class="loader-track" cx="100" cy="100" r="88"/>
         <circle class="loader-bar" id="loaderBar" cx="100" cy="100" r="88"/>
       </svg>
-      <div class="loader-center">
-        <div class="loader-percent" id="loaderPercent">0<span>%</span></div>
-      </div>
+      <div class="loader-center"><div class="loader-percent" id="loaderPercent">0<span>%</span></div></div>
     </div>
     <div class="loader-logo">🚀 Aliance Faceit</div>
     <div class="loader-status" id="loaderStatus">Инициализация</div>
@@ -644,11 +628,9 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 </div>
 </div>
 
-<!-- ================== НОВАЯ СТРАНИЦА МАТЧА ================== -->
 <div class="page match-page" id="matchPage">
 <div class="m-page">
 
-  <!-- Шапка -->
   <div class="m-top">
     <div class="logo"><i class="fas fa-shield-alt"></i></div>
     <div class="info">
@@ -659,14 +641,12 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     <button class="copy" onclick="copyMatchId()" title="Копировать ID"><i class="fas fa-copy"></i></button>
   </div>
 
-  <!-- Карта-герой -->
   <div class="m-map-hero" id="mMapHero">
     <div class="m-map-bg" id="mMapBg"></div>
     <div class="m-map-inner">
       <div class="m-map-meta" id="mMapMeta">DEFAULT · СЕЗОН 1 <span class="dot">·</span> <span id="mMapState">ВЫБОР КАРТЫ</span></div>
       <div class="m-map-name" id="mMapName">—</div>
 
-      <!-- Хост лобби -->
       <div class="m-host" id="mHostBox" style="display:none">
         <div class="av" id="mHostAv"><div class="let">?</div></div>
         <div class="meta">
@@ -682,7 +662,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     </div>
   </div>
 
-  <!-- Таймер захода -->
   <div class="m-timer" id="mTimerBox" style="display:none">
     <div class="ico"><i class="fas fa-hourglass-half"></i></div>
     <div class="body">
@@ -691,17 +670,15 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     </div>
   </div>
 
-  <!-- Голос -->
   <div class="m-voice" id="mVoiceBtn">
     <div class="ico"><i class="fas fa-phone"></i></div>
     <div class="lbl">Подключиться к голосу</div>
     <div class="arrow"><i class="fas fa-chevron-right"></i></div>
   </div>
 
-  <!-- ===== БАНЫ КАРТ ===== -->
   <div class="b-top">
     <h2>Бан карт</h2>
-    <div class="cnt" id="bCount">7 / 7</div>
+    <div class="cnt" id="bCount">— / —</div>
   </div>
   <div class="b-turn" id="bTurn">
     <div class="ico"><i class="fas fa-crosshairs"></i></div>
@@ -711,9 +688,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     </div>
     <div class="time" id="bTurnTimer">0:30</div>
   </div>
-  <div class="b-list" id="bList"></div>
+  <div class="b-list" id="bList"><div class="b-loading">Загрузка карт...</div></div>
 
-  <!-- Команды -->
   <div class="m-teams" id="mTeams">
     <div class="m-team blue">
       <div class="th"><div class="ic"><i class="fas fa-shield"></i></div><div><div class="nm">Команда A</div><div class="sub">Спецназ</div></div></div>
@@ -726,7 +702,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
   </div>
   <div class="m-teams-note"><i class="fas fa-link"></i><span>Одинаковый цвет — искали матч одной пати. От состава пати зависят пороги заявлений.</span></div>
 
-  <!-- Чат лобби -->
   <div class="m-chat">
     <div class="hdr">
       <div class="ic"><i class="fas fa-comments"></i></div>
@@ -739,7 +714,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     </div>
   </div>
 
-  <!-- Админ-кнопки -->
   <div class="m-actions" id="matchActions">
     <button class="btn blue" onclick="finishMatch('blue')">🏆 BLUE</button>
     <button class="btn orange" onclick="finishMatch('orange')">🏆 ORANGE</button>
@@ -748,7 +722,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 
 </div>
 </div>
-<!-- ================== /НОВАЯ СТРАНИЦА МАТЧА ================== -->
 
 <div class="page" id="pageProfile">
 <div class="pf-wrap">
@@ -905,26 +878,30 @@ const SUPABASE_URL='https://tgjltbpmuczfkikvmmde.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-/* ===== КАРТЫ ===== */
-const MAPS=[
-  {id:'Sandstone', name:'Sandstone', emoji:'🏜️', img:''},
-  {id:'Province',  name:'Province',  emoji:'🏘️', img:''},
-  {id:'Breeze',    name:'Breeze',    emoji:'🌊', img:''},
-  {id:'Dune',      name:'Dune',      emoji:'🌅', img:''},
-  {id:'Rust',      name:'Rust',      emoji:'🔩', img:''},
-  {id:'Hanami',    name:'Hanami',    emoji:'🌸', img:''},
-  {id:'Prison',    name:'Prison',    emoji:'🏚️', img:''}
-];
-/*
-  ВАЖНО: чтобы картинки карт появились — замени поле img на прямую ссылку.
-  Например:
-    {id:'Sandstone', name:'Sandstone', emoji:'🏜️', img:'https://tgjltbpmuczfkikvmmde.supabase.co/storage/v1/object/public/maps/sandstone.png'},
-  Или через нашу функцию mapImgUrl('sandstone'), если зальёшь в bucket maps.
-*/
-function mapImgUrl(slug){
-  return SUPABASE_URL+'/storage/v1/object/public/maps/'+slug+'.png';
+/* ===== КАРТЫ (читаются из БД, таблица maps) ===== */
+let MAPS=[];
+
+async function loadMaps(){
+  try{
+    const r=await supabaseClient.from('maps').select('*').order('sort_order',{ascending:true});
+    if(r.error){
+      console.error('maps load error:',r.error);
+      MAPS=[];
+      return;
+    }
+    MAPS=(r.data||[]).map(function(m){
+      return {id:m.id,name:m.name,emoji:m.emoji||'🗺️',img:m.img||''};
+    });
+  }catch(e){
+    console.error('loadMaps',e);
+    MAPS=[];
+  }
 }
-function mapBySlug(slug){return MAPS.find(function(m){return m.id===slug})||{id:slug,name:slug,emoji:'🗺️',img:''}}
+function mapBySlug(slug){
+  const m=MAPS.find(function(x){return x.id===slug;});
+  if(m)return m;
+  return {id:slug,name:slug,emoji:'🗺️',img:''};
+}
 
 const FRAMES=[
   {id:'frame_bronze',  name:'Бронзовая',  price:25},
@@ -977,7 +954,7 @@ function levelRingHtml(elo,size){
   '</div>';
 }
 
-/* ===== ПРОФИЛЬ-РЕНДЕР ===== */
+/* ===== ПРОФИЛЬ ===== */
 function renderProfileHero(){
   if(!currentUser)return;
   const nameEl=document.getElementById('profileHeroName');
@@ -991,7 +968,7 @@ function renderProfileHero(){
   if(subEl) subEl.innerHTML='<i class="fas fa-id-badge"></i> ID: <b>'+(currentUser.game_id||'—')+'</b>';
   if(bnEl) bnEl.innerHTML='<div class="bn bn-lg" style="background:linear-gradient(135deg,rgba(168,85,247,.35),rgba(20,15,34,.9));border-radius:14px;box-shadow:none;min-height:104px;animation:none;padding:0;position:absolute;inset:0"></div>';
 }
-function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v}
+function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
 function renderLevelProfile(){
   if(!currentUser)return;
   const elo=currentUser.elo||300;
@@ -1040,24 +1017,24 @@ async function renderEloChart(){
   if(!line)return;
   try{
     const r=await supabaseClient.from('match_history').select('elo_change,match_date').eq('user_id',currentUser.id).order('match_date',{ascending:true}).limit(20);
-    const arr=(r.data||[]).map(function(x){return parseInt(x.elo_change)||0});
+    const arr=(r.data||[]).map(function(x){return parseInt(x.elo_change)||0;});
     if(!arr.length){
       line.setAttribute('d','');area.setAttribute('d','');
       setText('pfChartInfo','Нет данных');setText('pfChartFrom','—');setText('pfChartTo','—');return;
     }
-    let base=(currentUser.elo||300)-arr.reduce(function(a,b){return a+b},0);
-    const pts=arr.map(function(d){base+=d;return base});
+    let base=(currentUser.elo||300)-arr.reduce(function(a,b){return a+b;},0);
+    const pts=arr.map(function(d){base+=d;return base;});
     const min=Math.min.apply(null,pts),max=Math.max.apply(null,pts);
     const W=320,H=70,pad=6;const range=(max-min)||1;
-    const xs=pts.map(function(_,i){return pad+(W-2*pad)*(i/(pts.length-1||1))});
-    const ys=pts.map(function(v){return H-pad-((v-min)/range)*(H-2*pad)});
-    const lineD=xs.map(function(x,i){return (i?'L':'M')+x.toFixed(1)+' '+ys[i].toFixed(1)}).join(' ');
+    const xs=pts.map(function(_,i){return pad+(W-2*pad)*(i/(pts.length-1||1));});
+    const ys=pts.map(function(v){return H-pad-((v-min)/range)*(H-2*pad);});
+    const lineD=xs.map(function(x,i){return (i?'L':'M')+x.toFixed(1)+' '+ys[i].toFixed(1);}).join(' ');
     const areaD=lineD+' L'+xs[xs.length-1].toFixed(1)+' '+(H-pad)+' L'+xs[0].toFixed(1)+' '+(H-pad)+' Z';
     line.setAttribute('d',lineD);area.setAttribute('d',areaD);
     setText('pfChartInfo','за '+arr.length+' матчей');
     setText('pfChartFrom','старт '+pts[0]);
     setText('pfChartTo','сейчас '+pts[pts.length-1]);
-  }catch(e){console.warn('elo chart',e)}
+  }catch(e){}
 }
 async function renderRecentMatches(){
   const body=document.getElementById('pfRecentBody');
@@ -1079,7 +1056,7 @@ async function renderRecentMatches(){
       const uca=x.uca||'—';const map=x.map||'—';
       return '<tr><td>'+day+'.'+mon+'</td><td><span class="'+(win?'win-badge':'lose-badge')+'">'+(win?'W':'L')+'</span></td><td>'+(currentUser.elo||300)+'</td><td>'+kd+'</td><td>'+uca+'</td><td><span class="map-badge">'+map+'</span></td><td class="r"><span class="'+(d>=0?'elo-p':'elo-n')+'">'+(d>=0?'+':'')+d+'</span></td></tr>';
     }).join('');
-  }catch(e){console.warn('recent matches',e)}
+  }catch(e){}
 }
 
 let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[],sentRequests=[];
@@ -1099,14 +1076,14 @@ const AUTO_LEAVE_DELAY=5000;
 const TIMER_CIRC=2*Math.PI*76;
 let draftTimerInterval=null,draftSeconds=30;
 
-/* ===== LOADER ===== */
+/* LOADER */
 (function(){
   const overlay=document.getElementById('loaderOverlay');
   const bar=document.getElementById('loaderBar');
   const percentEl=document.getElementById('loaderPercent');
   const statusEl=document.getElementById('loaderStatus');
   if(!overlay)return;
-  function hideOverlay(){if(!overlay||overlay.classList.contains('hide'))return;overlay.classList.add('hide');setTimeout(function(){try{overlay.remove()}catch(e){}},650);}
+  function hideOverlay(){if(!overlay||overlay.classList.contains('hide'))return;overlay.classList.add('hide');setTimeout(function(){try{overlay.remove();}catch(e){}},650);}
   setTimeout(hideOverlay,4000);
   const DURATION=3000,CIRC=552.9,start=performance.now();
   const steps=[{t:0,s:'Инициализация'},{t:0.15,s:'Подключение к серверу'},{t:0.40,s:'Синхронизация профиля'},{t:0.65,s:'Загрузка данных'},{t:0.85,s:'Почти готово'},{t:1,s:'Добро пожаловать'}];
@@ -1117,16 +1094,16 @@ let draftTimerInterval=null,draftSeconds=30;
       if(percentEl)percentEl.innerHTML=val+'<span>%</span>';
       for(let i=steps.length-1;i>=0;i--){if(p>=steps[i].t){if(statusEl)statusEl.textContent=steps[i].s;break;}}
       if(p<1)requestAnimationFrame(tick);else setTimeout(hideOverlay,300);
-    }catch(e){console.error('loader',e);hideOverlay();}
+    }catch(e){hideOverlay();}
   }
   requestAnimationFrame(tick);
 })();
 
-function showToast(type,title,text){const t=document.getElementById('toast');if(!t)return;document.getElementById('toastTitle').className='ttl '+type;document.getElementById('toastTitle').textContent=title;document.getElementById('toastText').textContent=text;t.classList.add('visible');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('visible')},4000);}
+function showToast(type,title,text){const t=document.getElementById('toast');if(!t)return;document.getElementById('toastTitle').className='ttl '+type;document.getElementById('toastTitle').textContent=title;document.getElementById('toastText').textContent=text;t.classList.add('visible');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('visible');},4000);}
 function saveSession(u){try{localStorage.setItem('aliance_user_id',u.id);localStorage.setItem('aliance_username',u.username);}catch(e){}}
 function clearSession(){try{localStorage.removeItem('aliance_user_id');localStorage.removeItem('aliance_username');}catch(e){}}
 function getSession(){try{const id=localStorage.getItem('aliance_user_id'),u=localStorage.getItem('aliance_username');if(id&&u)return{id:id,username:u};}catch(e){}return null;}
-function switchAuthTab(tab){document.querySelectorAll('.auth-tabs .tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.auth-form').forEach(function(f){f.classList.remove('active')});if(tab==='login'){document.getElementById('tabLogin').classList.add('active');document.getElementById('loginForm').classList.add('active');}else{document.getElementById('tabRegister').classList.add('active');document.getElementById('registerForm').classList.add('active');}}
+function switchAuthTab(tab){document.querySelectorAll('.auth-tabs .tab').forEach(function(t){t.classList.remove('active');});document.querySelectorAll('.auth-form').forEach(function(f){f.classList.remove('active');});if(tab==='login'){document.getElementById('tabLogin').classList.add('active');document.getElementById('loginForm').classList.add('active');}else{document.getElementById('tabRegister').classList.add('active');document.getElementById('registerForm').classList.add('active');}}
 function avatarHtml(user,size){
   if(!user)user={username:'?',avatar_url:'',avatar_frame:''};
   const letter=(user.username||'?').charAt(0).toUpperCase();
@@ -1136,7 +1113,7 @@ function avatarHtml(user,size){
 }
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 
-/* ===== РЕГИСТРАЦИЯ / ВХОД / ВЫХОД ===== */
+/* ===== РЕГИСТРАЦИЯ / ВХОД ===== */
 async function registerUser(){
   const nick=document.getElementById('regNick').value.trim();
   const gameId=document.getElementById('regGameId').value.trim();
@@ -1155,11 +1132,7 @@ async function registerUser(){
     const ex=await supabaseClient.from('users').select('id').ilike('username',nick).maybeSingle();
     if(ex.data){messageEl.className='auth-message show error';messageEl.textContent='❌ Этот никнейм уже занят';return;}
     const userId='user_'+nick.toLowerCase().replace(/[^a-z0-9а-яё]/g,'_')+'_'+Date.now().toString(36);
-    const reg=await supabaseClient.from('users').insert([{
-      id:userId,username:nick,game_id:gameId,password:password,
-      elo:300,matches:0,wins:0,losses:0,mvp:0,balance:0,
-      isadmin:false,banned:false,registered:new Date().toISOString()
-    }]).select().single();
+    const reg=await supabaseClient.from('users').insert([{id:userId,username:nick,game_id:gameId,password:password,elo:300,matches:0,wins:0,losses:0,mvp:0,balance:0,isadmin:false,banned:false,registered:new Date().toISOString()}]).select().single();
     if(reg.error){messageEl.className='auth-message show error';messageEl.textContent='❌ '+(reg.error.message.indexOf('duplicate')>=0?'Ник занят':reg.error.message);return;}
     currentUser=reg.data;saveSession(reg.data);
     messageEl.className='auth-message show success';messageEl.textContent='✅ Добро пожаловать, '+reg.data.username+'!';
@@ -1194,17 +1167,18 @@ async function checkAuth(){
       const adb=document.getElementById('adminBadge');
       if(adb){if(isAdmin)adb.classList.add('visible');else adb.classList.remove('visible');}
       document.getElementById('walletBalance').textContent=(currentUser.balance||0)+' ₽';
+      await loadMaps();
       await loadSettings();subscribeToSettings();updateFormatLabels();
-      try{await checkQueueOnLoad();}catch(e){console.warn(e);}
-      try{await checkActiveMatchOnLoad();}catch(e){console.warn(e);}
-      try{await loadMatchHistory();}catch(e){console.warn(e);}
-      try{await renderTopPage();}catch(e){console.warn(e);}
-      try{await loadFriends();}catch(e){console.warn(e);}
+      try{await checkQueueOnLoad();}catch(e){}
+      try{await checkActiveMatchOnLoad();}catch(e){}
+      try{await loadMatchHistory();}catch(e){}
+      try{await renderTopPage();}catch(e){}
+      try{await loadFriends();}catch(e){}
       subscribeToFriends();
       startGlobalPolling();
-      try{await updateHomeStats();}catch(e){console.warn(e);}
+      try{await updateHomeStats();}catch(e){}
       updatePartyUI();
-      if(isAdmin){try{await renderAdminPanel();}catch(e){console.warn(e);}}
+      if(isAdmin){try{await renderAdminPanel();}catch(e){}}
       navigate('home');
       showToast('success','Добро пожаловать, '+currentUser.username+'!','');
     }else{
@@ -1230,9 +1204,9 @@ function handleLogout(){
 const pages={home:'pageHome',profile:'pageProfile',shop:'pageShop',friends:'pageFriends',matches:'pageMatches',top:'pageTop',wallet:'pageWallet',matchPage:'matchPage'};
 function navigate(page){
   if(page==='matches'&&isPlayerInMatch&&currentMatch)page='matchPage';
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.getElementById(pages[page]).classList.add('active');
-  document.querySelectorAll('.bottom-nav .item').forEach(function(b){b.classList.remove('active')});
+  document.querySelectorAll('.bottom-nav .item').forEach(function(b){b.classList.remove('active');});
   const btn=document.querySelector('.bottom-nav .item[data-page="'+page+'"]');
   if(btn)btn.classList.add('active');
   if(page==='shop')renderShop();
@@ -1243,7 +1217,7 @@ document.addEventListener('click',async function(e){
   const tab=e.target.closest('[data-adm-tab]');
   if(tab){
     adminTab=tab.dataset.admTab;
-    document.querySelectorAll('[data-adm-tab]').forEach(function(b){b.classList.remove('on')});
+    document.querySelectorAll('[data-adm-tab]').forEach(function(b){b.classList.remove('on');});
     tab.classList.add('on');
     await renderAdminPanel();
   }
@@ -1292,8 +1266,7 @@ async function handleAvatarUpload(e){
     const url=pub.data.publicUrl;
     const r=await supabaseClient.from('users').update({avatar_url:url}).eq('id',currentUser.id);
     if(r.error){showToast('error','Ошибка',r.error.message);return;}
-    currentUser.avatar_url=url;
-    showToast('success','Готово','Аватар обновлён');
+    currentUser.avatar_url=url;showToast('success','Готово','Аватар обновлён');
     renderShop();renderProfileHero();await renderTopPage();
   }catch(err){showToast('error','Ошибка',err.message);}
 }
@@ -1350,7 +1323,7 @@ function subscribeToSettings(){
     }).subscribe();
 }
 
-/* ===== ОЧЕРЕДЬ И МАТЧ (упращённо) ===== */
+/* ===== ПОИСК ===== */
 async function findMyActiveMatch(){
   if(!currentUser||!currentUser.id)return null;
   try{
@@ -1359,7 +1332,7 @@ async function findMyActiveMatch(){
     for(let i=0;i<arr.length;i++){
       const m=arr[i];let o=[],b=[];
       try{o=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;b=typeof m.blue==='string'?JSON.parse(m.blue):m.blue;}catch(e){}
-      if([].concat(o,b).some(function(p){return String(p.id)===String(currentUser.id)}))return m;
+      if([].concat(o,b).some(function(p){return String(p.id)===String(currentUser.id);}))return m;
     }
     return null;
   }catch(e){return null;}
@@ -1384,18 +1357,8 @@ function startGlobalPolling(){
         return;
       }
       await loadCreatedMatch(my.id);
-    }catch(e){console.error('polling',e);}
+    }catch(e){}
   },1000);
-}
-async function enrichPlayersWithCosmetics(players){
-  if(!players||!players.length)return players;
-  const ids=players.map(function(p){return p.id;});
-  try{
-    const r=await supabaseClient.from('users').select('id, avatar_url, avatar_frame, kd').in('id',ids);
-    if(!r.data)return players;
-    const map={};r.data.forEach(function(u){map[u.id]=u;});
-    return players.map(function(p){return Object.assign({},p,map[p.id]||{});});
-  }catch(e){return players;}
 }
 async function loadCreatedMatch(id){
   try{
@@ -1405,7 +1368,7 @@ async function loadCreatedMatch(id){
     const orange=typeof data.orange==='string'?JSON.parse(data.orange):data.orange;
     const blue=typeof data.blue==='string'?JSON.parse(data.blue):data.blue;
     if(!Array.isArray(orange)||!Array.isArray(blue))return;
-    currentMatch={id:data.id,orange:orange,blue:blue,status:data.status,draft_state:data.draft_state||{banned:[],final:'',complete:false},lobby_url:data.lobby_url||''};
+    currentMatch={id:data.id,orange:orange,blue:blue,status:data.status,draft_state:data.draft_state||{banned:[],final:'',complete:false,turn:0},lobby_url:data.lobby_url||''};
     currentMatchId=id;isPlayerInMatch=true;isSearching=false;
     if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null;}
     if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null;}
@@ -1417,7 +1380,7 @@ async function loadCreatedMatch(id){
     subscribeToMatch(id);
     if(data.status==='pending'){showConfirmModal();showToast('success','Матч найден!','Подтвердите');}
     else if(data.status==='active'){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;startMatchAfterConfirm();}
-  }catch(e){console.error('loadCreatedMatch',e);}
+  }catch(e){console.error(e);}
 }
 async function checkQueueOnLoad(){
   if(!currentUser)return;
@@ -1510,7 +1473,7 @@ async function cancelSearch(){
     document.getElementById('searchCurrentPlayers').textContent='0';
     document.getElementById('searchTimerDisplay').innerHTML='<i class="fas fa-clock"></i> 00:00';
     await updateHomeStats();showToast('info','Поиск отменён','');
-  }catch(e){showToast('error','Ошибка',e.message);}
+  }catch(e){}
   finally{isCanceling=false;}
 }
 function startSearchTimer(){
@@ -1527,9 +1490,8 @@ function startSearchTimer(){
 function subscribeToQueue(){
   if(searchChannel){try{supabaseClient.removeChannel(searchChannel);}catch(e){}searchChannel=null;}
   searchChannel=supabaseClient.channel('queue_'+Date.now())
-    .on('postgres_changes',{event:'*',schema:'public',table:'queue'},async function(){
-      if(isSearching){await updateQueueCount();await updateHomeStats();}
-    }).subscribe();
+    .on('postgres_changes',{event:'*',schema:'public',table:'queue'},async function(){if(isSearching){await updateQueueCount();await updateHomeStats();}})
+    .subscribe();
 }
 function subscribeToMatchCreation(){
   if(matchCreatedChannel)return;
@@ -1538,7 +1500,7 @@ function subscribeToMatchCreation(){
       const m=payload.new||payload.old;if(!m||!currentUser)return;
       let orange=[],blue=[];
       try{orange=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;blue=typeof m.blue==='string'?JSON.parse(m.blue):m.blue;}catch(e){return;}
-      const isMe=[].concat(orange,blue).some(function(p){return String(p.id)===String(currentUser.id)});
+      const isMe=[].concat(orange,blue).some(function(p){return String(p.id)===String(currentUser.id);});
       if(!isMe)return;
       if(currentMatch&&String(currentMatch.id)===String(m.id)&&isPlayerInMatch&&isConfirming)return;
       await loadCreatedMatch(m.id);
@@ -1548,9 +1510,7 @@ function startHeartbeat(){
   if(heartbeatInterval)clearInterval(heartbeatInterval);
   heartbeatInterval=setInterval(async function(){
     if(!currentUser){clearInterval(heartbeatInterval);heartbeatInterval=null;return;}
-    try{
-      if(isSearching){await supabaseClient.from('queue').update({last_seen:new Date().toISOString()}).eq('user_id',currentUser.id).eq('status','searching');}
-    }catch(e){}
+    try{if(isSearching){await supabaseClient.from('queue').update({last_seen:new Date().toISOString()}).eq('user_id',currentUser.id).eq('status','searching');}}catch(e){}
   },20000);
 }
 
@@ -1576,17 +1536,15 @@ function showConfirmModal(){
   },1000);
   document.getElementById('matchNavLabel').textContent='Матч';
   document.querySelector('#matchNavBtn i').className='fas fa-gamepad';
-  matchFound();
+  try{if(navigator.vibrate)navigator.vibrate([120,60,120]);}catch(e){}
 }
 function renderModalPlayers(){
-  const wrap=document.getElementById('modalPlayers');
-  if(!wrap||!matchPlayers.length)return;
+  const wrap=document.getElementById('modalPlayers');if(!wrap||!matchPlayers.length)return;
   wrap.innerHTML=matchPlayers.map(function(p){
     const c=confirmedPlayers.indexOf(String(p.id))>=0;
     const me=String(p.id)===String(currentUser.id);
     const inner=c?'<svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg>':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>';
-    const cls=['match-slot',c?'confirmed':'pending'];
-    if(me)cls.push('me');
+    const cls=['match-slot',c?'confirmed':'pending'];if(me)cls.push('me');
     return '<div class="'+cls.join(' ')+'" title="'+(p.username||'?')+'">'+inner+'</div>';
   }).join('');
   const total=matchPlayers.length;
@@ -1674,7 +1632,7 @@ function subscribeToMatch(id){
     }).subscribe();
 }
 
-/* ===== СТРАНИЦА МАТЧА — РЕНДЕР ===== */
+/* ===== СТРАНИЦА МАТЧА ===== */
 function matchStatusLabel(){
   if(!currentMatch)return'ОЖИДАНИЕ';
   const s=currentMatch.draft_state||{};
@@ -1683,8 +1641,8 @@ function matchStatusLabel(){
 }
 function mySide(){
   if(!currentMatch||!currentUser)return null;
-  if(currentMatch.blue.some(function(p){return String(p.id)===String(currentUser.id)}))return'blue';
-  if(currentMatch.orange.some(function(p){return String(p.id)===String(currentUser.id)}))return'orange';
+  if(currentMatch.blue.some(function(p){return String(p.id)===String(currentUser.id);}))return'blue';
+  if(currentMatch.orange.some(function(p){return String(p.id)===String(currentUser.id);}))return'orange';
   return null;
 }
 function isMyTurnToBan(){
@@ -1692,15 +1650,12 @@ function isMyTurnToBan(){
   const s=currentMatch.draft_state||{};
   if(s.complete)return false;
   const turn=typeof s.turn==='number'?s.turn:0;
-  const side=mySide();
-  if(!side)return false;
-  // turn 0 = blue, turn 1 = orange
+  const side=mySide();if(!side)return false;
   const turnSide=turn===0?'blue':'orange';
   return side===turnSide;
 }
 function renderMatchPage(){
   if(!currentMatch)return;
-  currentMatch.orange=currentMatch.orange.map(function(p){return p;});
   renderMatchTop();
   renderMapHero();
   renderBansUI();
@@ -1713,44 +1668,31 @@ function renderMatchPage(){
 }
 function renderMatchTop(){
   const el=document.getElementById('mMatchNum');if(el)el.textContent='#'+String(currentMatchId||'').slice(-5);
-  const st=document.getElementById('mStatus');if(st){
-    const lbl=matchStatusLabel();
-    st.textContent=lbl;
-    st.className='pill'+(lbl==='ИДЁТ ИГРА'?' live':'');
-  }
+  const st=document.getElementById('mStatus');
+  if(st){const lbl=matchStatusLabel();st.textContent=lbl;st.className='pill'+(lbl==='ИДЁТ ИГРА'?' live':'');}
 }
 function applyMapBackground(){
   const s=currentMatch.draft_state||{};
   const mapSlug=s.final||'';
-  const bg=document.getElementById('mMapBg');
-  if(!bg)return;
+  const bg=document.getElementById('mMapBg');if(!bg)return;
   const m=mapBySlug(mapSlug);
-  if(m&&m.img){
-    bg.style.backgroundImage='url(\''+m.img+'\')';
-  }else{
-    bg.style.backgroundImage='linear-gradient(135deg,#2a1a4a 0%,#0f0a1a 100%)';
-  }
+  if(m&&m.img){bg.style.backgroundImage='url(\''+m.img+'\')';}
+  else{bg.style.backgroundImage='linear-gradient(135deg,#2a1a4a 0%,#0f0a1a 100%)';}
 }
 function renderMapHero(){
   const s=currentMatch.draft_state||{};
   const nameEl=document.getElementById('mMapName');
-  const metaEl=document.getElementById('mMapMeta');
   const stateEl=document.getElementById('mMapState');
   if(nameEl) nameEl.textContent=(s.complete&&s.final)?s.final.toUpperCase():'—';
   if(stateEl) stateEl.textContent=(s.complete)?'КАРТА ВЫБРАНА':'ВЫБОР КАРТЫ';
-  if(metaEl) metaEl.innerHTML='DEFAULT · СЕЗОН 1 <span class="dot">·</span> <span id="mMapState">'+((s.complete)?'КАРТА ВЫБРАНА':'ВЫБОР КАРТЫ')+'</span>';
 }
 function showLobbyHostBlock(){
-  const box=document.getElementById('mHostBox');
-  const tbox=document.getElementById('mTimerBox');
+  const box=document.getElementById('mHostBox');const tbox=document.getElementById('mTimerBox');
   if(box)box.style.display='flex';
   if(tbox)tbox.style.display='flex';
   const host=currentMatch.blue[0]||currentMatch.orange[0]||{};
   const av=document.getElementById('mHostAv');
-  if(av){
-    if(host.avatar_url){av.innerHTML='<img src="'+host.avatar_url+'" alt="">';}
-    else{av.innerHTML='<div class="let">'+((host.username||'?').charAt(0).toUpperCase())+'</div>';}
-  }
+  if(av){if(host.avatar_url){av.innerHTML='<img src="'+host.avatar_url+'" alt="">';}else{av.innerHTML='<div class="let">'+((host.username||'?').charAt(0).toUpperCase())+'</div>';}}
   setText('mHostName',host.username||'—');
   setText('mHostId',host.game_id||'—');
 }
@@ -1760,15 +1702,11 @@ function renderBansUI(){
   if(!currentMatch)return;
   const s=currentMatch.draft_state||{banned:[],final:'',complete:false,turn:0};
   const banned=s.banned||[];
-
-  // счётчик
   const total=MAPS.length;
   const bannedCount=banned.length+(s.complete?1:0);
   const left=total-bannedCount;
   const cnt=document.getElementById('bCount');
-  if(cnt)cnt.textContent=left+' / '+total;
-
-  // ход
+  if(cnt)cnt.textContent=(total?left+' / '+total:'— / —');
   const turnCard=document.getElementById('bTurn');
   const turnText=document.getElementById('bTurnText');
   const turnSub=document.getElementById('bTurnSub');
@@ -1776,8 +1714,7 @@ function renderBansUI(){
   if(turnCard&&turnText&&turnSub){
     turnCard.classList.remove('me');
     if(s.complete){
-      turnText.textContent='Драфт завершён';
-      turnText.classList.remove('me');
+      turnText.textContent='Драфт завершён';turnText.classList.remove('me');
       turnSub.textContent='Карта: '+s.final;
       if(turnTimer)turnTimer.style.display='none';
     }else{
@@ -1791,10 +1728,12 @@ function renderBansUI(){
       if(turnTimer)turnTimer.style.display='block';
     }
   }
-
-  // список
   const list=document.getElementById('bList');
   if(!list)return;
+  if(!MAPS.length){
+    list.innerHTML='<div class="b-loading">Карты не загружены. Проверь таблицу maps в Supabase.</div>';
+    return;
+  }
   list.innerHTML=MAPS.map(function(m){
     const isBanned=banned.indexOf(m.id)>=0;
     const isFinal=(s.final===m.id);
@@ -1807,24 +1746,17 @@ function renderBansUI(){
     else{sub=clickable?'Нажмите, чтобы забанить':'Ещё в пуле';btn=clickable?'<button class="b-btn">БАН</button>':'';}
     return '<div class="b-item '+(isBanned?'banned ':'')+(clickable?'clickable':'')+'" data-map="'+m.id+'">'+
       '<div class="b-img">'+img+'</div>'+
-      '<div class="b-body"><div class="b-name">'+m.name+'</div><div class="b-sub">'+sub+'</div></div>'+
-      btn+
-    '</div>';
+      '<div class="b-body"><div class="b-name">'+m.name+'</div><div class="b-sub">'+sub+'</div></div>'+btn+'</div>';
   }).join('');
-
-  // делегирование клика
   list.querySelectorAll('.b-item.clickable').forEach(function(item){
     item.addEventListener('click',function(){handleBanClick(item.dataset.map);});
   });
-
-  // таймер
   startDraftTimer();
 }
 function startDraftTimer(){
   if(draftTimerInterval){clearInterval(draftTimerInterval);draftTimerInterval=null;}
   if(!currentMatch)return;
-  const s=currentMatch.draft_state||{};
-  if(s.complete)return;
+  const s=currentMatch.draft_state||{};if(s.complete)return;
   draftSeconds=30;
   const el=document.getElementById('bTurnTimer');
   if(el){el.textContent='0:'+String(draftSeconds).padStart(2,'0');el.style.display='block';}
@@ -1840,25 +1772,23 @@ async function handleBanClick(slug){
   const banned=(s.banned||[]).concat([slug]);
   const left=MAPS.filter(function(m){return banned.indexOf(m.id)<0;});
   const complete=left.length<=1;
-  const newState={banned:banned,final:complete?left[0].id:'',complete:complete,turn:s.turn===0?1:0};
+  const newState={banned:banned,final:complete?(left[0]?left[0].id:''):'',complete:complete,turn:s.turn===0?1:0};
   const r=await supabaseClient.from('active_matches').update({draft_state:newState}).eq('id',currentMatchId);
   if(r.error){showToast('error','Ошибка',r.error.message);return;}
   await loadCreatedMatch(currentMatchId);
 }
 function copyMatchId(){
-  const t=String(currentMatchId||'');
-  if(!t)return;
+  const t=String(currentMatchId||'');if(!t)return;
   navigator.clipboard.writeText(t).then(function(){showToast('success','Скопировано',t);},function(){});
 }
 function copyHostId(){
   if(!currentMatch)return;
   const host=currentMatch.blue[0]||currentMatch.orange[0]||{};
-  const id=host.game_id||'';
-  if(!id)return;
+  const id=host.game_id||'';if(!id)return;
   navigator.clipboard.writeText(id).then(function(){showToast('success','Скопировано',id);},function(){});
 }
 
-/* ===== КОМАНДЫ 5×5 ===== */
+/* ===== КОМАНДЫ ===== */
 function renderTeams(){
   if(!currentMatch)return;
   const a=document.getElementById('mTeamA');const b=document.getElementById('mTeamB');
@@ -1914,11 +1844,9 @@ function subscribeToChat(matchId){
 async function sendChatMessage(){
   if(!currentUser||!currentMatchId)return;
   const inp=document.getElementById('chatInput');
-  const text=(inp&&inp.value||'').trim();
-  if(!text)return;
+  const text=(inp&&inp.value||'').trim();if(!text)return;
   if(text.length>300)return showToast('error','Ошибка','Максимум 300 символов');
-  const btn=document.getElementById('chatSendBtn');
-  if(btn)btn.disabled=true;
+  const btn=document.getElementById('chatSendBtn');if(btn)btn.disabled=true;
   inp.value='';
   try{
     await supabaseClient.from('match_messages').insert([{match_id:String(currentMatchId),user_id:String(currentUser.id),username:currentUser.username,avatar_url:currentUser.avatar_url||'',avatar_frame:currentUser.avatar_frame||'',text:text}]);
@@ -1926,13 +1854,12 @@ async function sendChatMessage(){
   finally{if(btn)btn.disabled=false;inp.focus();}
 }
 
-/* ===== АДМИН — ЗАВЕРШЕНИЕ МАТЧА ===== */
+/* ===== АДМИН-ЗАВЕРШЕНИЕ МАТЧА ===== */
 function checkMatchResultVisibility(){
   const a=currentUser&&currentUser.isadmin===true;
   const s=currentMatch&&currentMatch.draft_state;
   const complete=s&&s.complete;
-  const el=document.getElementById('matchActions');
-  if(!el)return;
+  const el=document.getElementById('matchActions');if(!el)return;
   if(complete&&a)el.classList.add('admin-visible');
   else el.classList.remove('admin-visible');
 }
@@ -1957,18 +1884,7 @@ function closeMatchForMe(){
 }
 
 /* ===== ИСТОРИЯ / ДРУЗЬЯ / ТОП ===== */
-async function loadMatchHistory(){
-  if(!currentUser)return;
-  try{
-    const r=await supabaseClient.from('match_history').select('*').eq('user_id',currentUser.id).order('match_date',{ascending:false}).limit(20);
-    const c=document.getElementById('matchHistoryList');if(!c)return;
-    if(!r.data||r.data.length===0){c.innerHTML='<div style="color:#7c6a9c;text-align:center;padding:8px 0;">Нет матчей</div>';return;}
-    c.innerHTML=r.data.map(function(m){
-      const win=m.result==='win';const d=m.elo_change||0;
-      return '<div style="display:flex;justify-content:space-between;padding:8px 12px;background:#1a1230;border-radius:8px;margin-bottom:6px;font-size:13px;"><span style="color:#a89ec4;">'+(m.map||'—')+'</span><span style="color:#7c6a9c;font-size:11px;">'+new Date(m.match_date).toLocaleDateString('ru-RU')+'</span><span style="color:'+(win?'#51cf66':'#ff6b6b')+';font-weight:600;">'+(win?'🏆':'💀')+' '+(d?(d>0?'(+'+d+')':'('+d+')'):'')+'</span></div>';
-    }).join('');
-  }catch(e){}
-}
+async function loadMatchHistory(){}
 async function loadFriends(){
   if(!currentUser)return;
   try{
@@ -2012,7 +1928,7 @@ function renderFriends(){
     return '<div class="friend-item">'+avatarHtml(fr,44)+'<div class="info"><div class="name">'+escapeHtml(fr.username||'')+' '+(fr.isadmin?'👑':'')+'</div><div class="status">ELO: '+(fr.elo||300)+'</div></div><span class="status-badge '+cls+'">'+txt+'</span><div class="friend-actions">'+ac+'</div></div>';
   }).join('');
 }
-function switchFriendsTab(t){friendsTab=t;document.querySelectorAll('.friends-tabs .tab').forEach(function(x){x.classList.remove('active')});const el=document.querySelector('.friends-tabs .tab[data-tab="'+t+'"]');if(el)el.classList.add('active');renderFriends();}
+function switchFriendsTab(t){friendsTab=t;document.querySelectorAll('.friends-tabs .tab').forEach(function(x){x.classList.remove('active');});const el=document.querySelector('.friends-tabs .tab[data-tab="'+t+'"]');if(el)el.classList.add('active');renderFriends();}
 function searchFriends(){
   const q=document.getElementById('friendSearchInput').value.trim().toLowerCase();
   if(!q)return renderFriends();
@@ -2138,7 +2054,6 @@ function updatePartyUI(){
   if(partyFriends.length===0){c.innerHTML='<span class="party-empty">Нет участников</span>';return;}
   c.innerHTML=partyFriends.map(function(f){return '<span class="party-member"><span class="avatar-small">'+f.username.charAt(0).toUpperCase()+'</span>'+f.username+'<span class="remove" onclick="removeFromParty(\''+f.id+'\')">&times;</span></span>';}).join('');
 }
-function matchFound(){const now=Date.now();if(now-_foundShown<3000)return;_foundShown=now;try{if(navigator.vibrate)navigator.vibrate([120,60,120]);}catch(e){}}
 async function resync(){
   if(!currentUser)return;
   try{
@@ -2148,6 +2063,17 @@ async function resync(){
     if(isSearching&&!searchChannel)subscribeToQueue();
     if(!matchCreatedChannel)subscribeToMatchCreation();
     if(currentMatchId&&currentMatch&&currentMatch.status==='active'&&!chatChannel)subscribeToChat(currentMatchId);
+  }catch(e){}
+}
+async function updateHomeStats(){
+  try{
+    const q=await supabaseClient.from('queue').select('*',{count:'exact',head:true}).eq('status','searching');
+    const am=await supabaseClient.from('active_matches').select('orange, blue').in('status',['pending','active']);
+    let imp=0;(am.data||[]).forEach(function(m){try{const o=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;const b=typeof m.blue==='string'?JSON.parse(m.blue):m.blue;imp+=o.length+b.length;}catch(e){}});
+    const h=await supabaseClient.from('match_history').select('*',{count:'exact',head:true});
+    document.getElementById('activePlayersHome').textContent=q.count||0;
+    document.getElementById('inMatchPlayersHome').textContent=imp;
+    document.getElementById('totalMatchesHome').textContent=h.count||0;
   }catch(e){}
 }
 
@@ -2228,7 +2154,7 @@ async function admFinishMatch(matchId,winner){
       const ud=ur.data;
       if(ud){await supabaseClient.from('users').update({matches:(ud.matches||0)+1,wins:(ud.wins||0)+(isWin?1:0),losses:(ud.losses||0)+(isWin?0:1),elo:Math.max(100,(ud.elo||300)+eloChange),mvp:(ud.mvp||0)+(isWin?1:0),lastlogin:new Date().toISOString()}).eq('id',player.id);}
       await supabaseClient.from('match_history').insert([{id:Date.now().toString()+'_'+Math.random().toString(36).substr(2,4),user_id:player.id,username:player.username,map:mn,result:isWin?'win':'loss',elo_change:eloChange,match_date:new Date().toISOString(),server_name:'Aliance Faceit',created_at:new Date().toISOString()}]);
-    }catch(e){console.error(e);}
+    }catch(e){}
   }
   await supabaseClient.from('active_matches').delete().eq('id',matchId);
   showToast('success','Матч засчитан!',winner==='blue'?'BLUE':'ORANGE');
@@ -2267,19 +2193,8 @@ async function admSaveSettings(){
   currentSettings.team_size=String(s);updateFormatLabels();
   showToast('success','Формат обновлён',s+'×'+s);
 }
-async function updateHomeStats(){
-  try{
-    const q=await supabaseClient.from('queue').select('*',{count:'exact',head:true}).eq('status','searching');
-    const am=await supabaseClient.from('active_matches').select('orange, blue').in('status',['pending','active']);
-    let imp=0;(am.data||[]).forEach(function(m){try{const o=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;const b=typeof m.blue==='string'?JSON.parse(m.blue):m.blue;imp+=o.length+b.length;}catch(e){}});
-    const h=await supabaseClient.from('match_history').select('*',{count:'exact',head:true});
-    document.getElementById('activePlayersHome').textContent=q.count||0;
-    document.getElementById('inMatchPlayersHome').textContent=imp;
-    document.getElementById('totalMatchesHome').textContent=h.count||0;
-  }catch(e){}
-}
 
-/* ===== visibility / TG ===== */
+/* ===== VISIBILITY / TG ===== */
 function scheduleAutoLeave(){
   if(_autoLeaveTimer)clearTimeout(_autoLeaveTimer);
   _autoLeaveTimer=setTimeout(async function(){
@@ -2296,10 +2211,7 @@ function scheduleAutoLeave(){
   },AUTO_LEAVE_DELAY);
 }
 function cancelAutoLeave(){if(_autoLeaveTimer){clearTimeout(_autoLeaveTimer);_autoLeaveTimer=null;}}
-function handleVisibilityChange(){
-  if(document.visibilityState==='visible'){cancelAutoLeave();resync();}
-  else scheduleAutoLeave();
-}
+function handleVisibilityChange(){if(document.visibilityState==='visible'){cancelAutoLeave();resync();}else scheduleAutoLeave();}
 document.addEventListener('visibilitychange',handleVisibilityChange);
 window.addEventListener('pagehide',scheduleAutoLeave);
 window.addEventListener('pageshow',function(){cancelAutoLeave();resync();});
@@ -2311,10 +2223,7 @@ window.addEventListener('offline',function(){if(isSearching)scheduleAutoLeave();
     tg.ready();if(tg.expand)tg.expand();
     if(tg.setHeaderColor){try{tg.setHeaderColor('#0b0812');}catch(e){}}
     if(tg.setBackgroundColor){try{tg.setBackgroundColor('#0b0812');}catch(e){}}
-    tg.onEvent('visibilityChanged',function(e){
-      if(e&&e.isVisible===false)scheduleAutoLeave();
-      else{cancelAutoLeave();resync();}
-    });
+    tg.onEvent('visibilityChanged',function(e){if(e&&e.isVisible===false)scheduleAutoLeave();else{cancelAutoLeave();resync();}});
     tg.onEvent('viewportChanged',function(e){if(e&&e.isExpanded===false)scheduleAutoLeave();else cancelAutoLeave();});
   }catch(e){}
 })();

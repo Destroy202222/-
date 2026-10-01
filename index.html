@@ -219,6 +219,10 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .profile-info .details span{margin-right:12px}
 .admin-badge{display:none;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);padding:2px 10px;border-radius:12px;color:var(--gold);font-size:11px;font-weight:600}
 .admin-badge.visible{display:inline-block}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.stat-item{background:rgba(26,18,48,.85);border-radius:12px;padding:12px 8px;text-align:center}
+.stat-item .value{font-size:20px;font-weight:900;color:var(--accent-3)}
+.stat-item .label{font-size:10px;color:#a89ec4;margin-top:2px}
 .profile-actions{display:flex;gap:8px;margin-bottom:16px}
 .btn-action{flex:1;padding:10px;border:none;border-radius:10px;font-family:inherit;font-weight:600;cursor:pointer}
 .btn-action.edit{background:#2a2050;color:#fff}
@@ -226,8 +230,10 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 /* ==== ПРОФИЛЬ-ГЕРОЙ ==== */
 .profile-hero{position:relative;border-radius:14px;overflow:hidden;margin-bottom:16px;isolation:isolate;min-height:104px}
 .profile-hero-inner{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding:14px 16px}
-.profile-hero-name{font-size:18px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.profile-hero-sub{font-size:11px;color:#e0e0ea;opacity:.9;text-shadow:0 1px 4px rgba(0,0,0,.95);margin-top:3px;letter-spacing:.5px}
+.profile-hero-name{font-size:22px !important;font-weight:900;letter-spacing:.3px;background:linear-gradient(135deg,#ffffff 0%,#e9d5ff 55%,#c084fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:0 0 20px rgba(192,132,252,.45),0 2px 10px rgba(0,0,0,.6);filter:drop-shadow(0 0 8px rgba(168,85,247,.35));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-hero-sub{font-size:12px !important;color:#c4b5d8 !important;opacity:1 !important;text-shadow:0 1px 4px rgba(0,0,0,.9);letter-spacing:.4px;margin-top:4px;display:flex;align-items:center;gap:6px}
+.profile-hero-sub i{color:#c084fc;font-size:11px}
+.profile-hero-sub b{color:#fff;font-weight:800;letter-spacing:.6px}
 .profile-hero-admin{display:inline-block;background:rgba(255,215,0,.15);border:1px solid rgba(255,215,0,.35);padding:2px 8px;border-radius:10px;color:var(--gold);font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle}
 .profile-hero-name-row{display:flex;align-items:center;min-width:0}
 /* ==== /ПРОФИЛЬ-ГЕРОЙ ==== */
@@ -412,13 +418,12 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .loader-ring::before{content:'';position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.3),transparent 65%);animation:loaderPulse 2s ease-in-out infinite;pointer-events:none}
 @keyframes loaderPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
 
-/* ===== НОВЫЙ ПРОФИЛЬ (референс) ===== */
+/* ===== НОВЫЙ ПРОФИЛЬ ===== */
 .pf-wrap{display:flex;flex-direction:column;gap:12px}
 .pf-card{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.20);border-radius:14px;padding:14px 16px}
 .pf-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .pf-hd h3{font-size:13px;font-weight:800;letter-spacing:.5px;color:#fff;text-transform:uppercase}
 .pf-hd .pf-hd-r{font-size:11px;color:#a89ec4;font-weight:600;cursor:pointer}
-.pf-hd .pf-hd-r:hover{color:#c084fc}
 .pf-elo-box{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
 .pf-lvl-badge{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;color:#fff;box-shadow:0 0 24px rgba(168,85,247,.5)}
 .pf-lvl-badge .n{font-size:26px;line-height:1}
@@ -429,10 +434,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .pf-elo-main .bar-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#c084fc);box-shadow:0 0 10px rgba(168,85,247,.6);transition:width .6s;width:0%}
 .pf-elo-main .sub{font-size:11px;color:#a89ec4;margin-top:6px;font-weight:600}
 .pf-elo-main .sub b{color:#c084fc}
-.pf-places{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
-.pf-place{background:rgba(0,0,0,.30);border:1px solid rgba(168,85,247,.20);border-radius:10px;padding:8px 6px;text-align:center}
-.pf-place .k{font-size:10px;color:#a89ec4;letter-spacing:.5px;text-transform:uppercase;font-weight:700}
-.pf-place .v{font-size:16px;font-weight:900;color:#c084fc;margin-top:3px}
 .pf-clan{display:flex;align-items:center;gap:10px}
 .pf-clan .ico{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px}
 .pf-clan .info{flex:1;min-width:0}
@@ -444,10 +445,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .pf-stat .v{font-size:18px;font-weight:900;color:#fff;margin-top:4px;line-height:1}
 .pf-stat .v.g{color:#51cf66}
 .pf-stat .v.r{color:#ff6b6b}
-.pf-ach{display:flex;flex-wrap:wrap;gap:6px}
-.pf-ach .a{width:38px;height:38px;border-radius:10px;background:rgba(168,85,247,.10);border:1px solid rgba(168,85,247,.25);display:flex;align-items:center;justify-content:center;font-size:18px;position:relative}
-.pf-ach .a.locked{opacity:.35;filter:grayscale(1)}
-.pf-ach .more{width:38px;height:38px;border-radius:10px;background:rgba(168,85,247,.10);border:1px dashed rgba(168,85,247,.35);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#c084fc}
 .pf-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .pf-score{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.28);border:1px solid rgba(168,85,247,.15);border-radius:10px;padding:10px 12px}
 .pf-score .v{font-size:18px;font-weight:900;color:#c084fc;line-height:1}
@@ -686,7 +683,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
             <span class="profile-hero-name" id="profileHeroName">Игрок</span>
             <span class="profile-hero-admin" id="profileHeroAdmin" style="display:none">👑 Админ</span>
           </div>
-          <div class="profile-hero-sub" id="profileHeroSub">ELO: 300 · 0 матчей</div>
+          <div class="profile-hero-sub" id="profileHeroSub">ID: —</div>
         </div>
       </div>
     </div>
@@ -701,11 +698,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
         <div class="bar"><div class="bar-fill" id="pfEloBar"></div></div>
         <div class="sub" id="pfEloSub">0 до следующего уровня</div>
       </div>
-    </div>
-    <div class="pf-places">
-      <div class="pf-place"><div class="k">Default</div><div class="v" id="pfPlaceDefault">—</div></div>
-      <div class="pf-place"><div class="k">1 vs 1</div><div class="v" id="pfPlace1v1">—</div></div>
-      <div class="pf-place"><div class="k">3 vs 3</div><div class="v" id="pfPlace3v3">—</div></div>
     </div>
   </div>
 
@@ -730,11 +722,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
       <div class="pf-stat"><div class="k">Game</div><div class="v" id="pfGames">0</div></div>
       <div class="pf-stat"><div class="k">W/R</div><div class="v" id="pfWR">0%</div></div>
     </div>
-  </div>
-
-  <div class="pf-card">
-    <div class="pf-hd"><h3>Достижения</h3><span class="pf-hd-r">+</span></div>
-    <div class="pf-ach" id="pfAchWrap"></div>
   </div>
 
   <div class="pf-2col">
@@ -778,7 +765,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
   </div>
 
   <div class="pf-card" style="padding:12px 14px">
-    <div class="pf-hd"><h3>Недавние матчи</h3><span class="pf-hd-r">Все →</span></div>
+    <div class="pf-hd"><h3>Недавние матчи</h3></div>
     <table class="pf-matches">
       <thead>
         <tr>
@@ -801,7 +788,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     <button class="btn-action logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
   </div>
 
-  <div id="brawlProfileBlock"></div>
+  <!-- АДМИН-МЕНЮ (внизу профиля) -->
   <div class="admin-panel-wrap" id="adminPanelWrap">
     <div class="adm-title"><i class="fas fa-user-shield"></i> Админ-меню</div>
     <div class="adm-tabs">
@@ -866,14 +853,6 @@ const FRAMES=[
   {id:'frame_fire',    name:'Огонь',      price:25},
   {id:'frame_diamond', name:'Алмаз',      price:25}
 ];
-const ACH_LIST=[
-  {id:'first_win', ico:'🏆', label:'Первая победа'},
-  {id:'10_win',    ico:'🥇', label:'10 побед'},
-  {id:'100_game',  ico:'🎮', label:'100 матчей'},
-  {id:'mvp_5',     ico:'⭐', label:'5 MVP'},
-  {id:'lvl_5',     ico:'5',  label:'5 уровень'},
-  {id:'lvl_10',    ico:'👑', label:'10 уровень'}
-];
 
 /* === LVL SYSTEM === */
 const LEVELS=[
@@ -924,9 +903,17 @@ function renderProfileHero(){
   const avEl=document.getElementById('profileHeroAvatar');
   const adminEl=document.getElementById('profileHeroAdmin');
   const bnEl=document.getElementById('profileHeroBn');
+  const subEl=document.getElementById('profileHeroSub');
+
   if(nameEl) nameEl.textContent=currentUser.username||'Игрок';
   if(avEl) avEl.innerHTML=avatarHtml(currentUser,56);
   if(adminEl) adminEl.style.display=currentUser.isadmin?'inline-block':'none';
+
+  if(subEl){
+    const gid=currentUser.game_id||'—';
+    subEl.innerHTML='<i class="fas fa-id-badge"></i> ID: <b>'+gid+'</b>';
+  }
+
   if(bnEl){
     bnEl.innerHTML='<div class="bn bn-lg" style="background:linear-gradient(135deg,rgba(168,85,247,.35),rgba(20,15,34,.9));border-radius:14px;box-shadow:none;min-height:104px;animation:none;padding:0;position:absolute;inset:0"></div>';
   }
@@ -937,9 +924,6 @@ function renderLevelProfile(){
   const elo=currentUser.elo||300;
   const L=getLevel(elo);
   const p=getLevelProgress(elo);
-
-  const subEl=document.getElementById('profileHeroSub');
-  if(subEl) subEl.textContent='ELO: '+elo+' · '+(currentUser.matches||0)+' матчей';
 
   setText('pfLvlNum',L.lvl);
   setText('pfEloBig',elo);
@@ -957,16 +941,10 @@ function renderLevelProfile(){
   setText('pfGames',m);setText('pfWR',wr+'%');
   setText('pfKD',currentUser.kd!=null?Number(currentUser.kd).toFixed(2):'—');
   setText('pfAvg',currentUser.avg_score!=null?Number(currentUser.avg_score).toFixed(1):'—');
-
-  setText('pfPlaceDefault',currentUser.place_default?('#'+currentUser.place_default):'—');
-  setText('pfPlace1v1',currentUser.place_1v1?('#'+currentUser.place_1v1):'—');
-  setText('pfPlace3v3',currentUser.place_3v3?('#'+currentUser.place_3v3):'—');
-
-  renderClanBlock();
-  renderAchievements();
   setText('pfLikes',currentUser.likes||0);
   setText('pfPop',currentUser.popularity||0);
 
+  renderClanBlock();
   renderEloChart();
   renderRecentMatches();
 }
@@ -986,16 +964,6 @@ function renderClanBlock(){
   if(name) name.textContent=currentUser.clan;
   if(sub) sub.textContent='Участник';
   if(status) status.textContent='В клане';
-}
-function renderAchievements(){
-  const wrap=document.getElementById('pfAchWrap');
-  if(!wrap)return;
-  const have=Array.isArray(currentUser.achievements)?currentUser.achievements:[];
-  const html=ACH_LIST.slice(0,5).map(function(a){
-    const on=have.indexOf(a.id)>=0;
-    return '<div class="a '+(on?'':'locked')+'" title="'+a.label+'">'+a.ico+'</div>';
-  }).join('');
-  wrap.innerHTML=html+'<div class="more">+'+(ACH_LIST.length-5)+'</div>';
 }
 async function renderEloChart(){
   const line=document.getElementById('pfChartLine');
@@ -1038,7 +1006,6 @@ async function renderRecentMatches(){
       .order('match_date',{ascending:false})
       .limit(30);
     const data=r.data||[];
-    // Статистика 30 матчей
     let w=0,l=0,sum=0;
     data.forEach(function(x){
       if(x.result==='win')w++;else l++;
@@ -1196,31 +1163,22 @@ async function registerUser(){
       messageEl.textContent='❌ Этот никнейм уже занят';
       return;
     }
-
     const userId='user_'+nick.toLowerCase().replace(/[^a-z0-9а-яё]/g,'_')+'_'+Date.now().toString(36);
-
     const reg=await supabaseClient.from('users').insert([{
       id:userId,
       username:nick,
       game_id:gameId,
       password:password,
       elo:300,
-      matches:0,
-      wins:0,
-      losses:0,
-      mvp:0,
-      balance:0,
-      isadmin:false,
-      banned:false,
+      matches:0,wins:0,losses:0,mvp:0,balance:0,
+      isadmin:false,banned:false,
       registered:new Date().toISOString()
     }]).select().single();
-
     if(reg.error){
       messageEl.className='auth-message show error';
       messageEl.textContent='❌ '+(reg.error.message.indexOf('duplicate')>=0?'Ник занят':reg.error.message);
       return;
     }
-
     currentUser=reg.data;
     saveSession(reg.data);
     messageEl.className='auth-message show success';
@@ -1244,7 +1202,6 @@ async function loginUser(){
 
   try{
     const r=await supabaseClient.from('users').select('*').ilike('username',nick).eq('password',password).maybeSingle();
-
     if(!r.data){
       messageEl.className='auth-message show error';
       messageEl.textContent='❌ Неверный никнейм или пароль';
@@ -1255,7 +1212,6 @@ async function loginUser(){
       messageEl.textContent='❌ Аккаунт заблокирован';
       return;
     }
-
     currentUser=r.data;
     saveSession(r.data);
     messageEl.className='auth-message show success';
@@ -1274,17 +1230,14 @@ async function checkAuth(){
       document.getElementById('mainSite').style.display='block';
 
       renderProfileHero();
-      applyProfileBg(currentUser);
       renderLevelProfile();
 
       const isAdmin=currentUser.isadmin===true;
-      if(isAdmin){
-        document.getElementById('adminBadge').classList.add('visible');
-        document.getElementById('adminPanelWrap').classList.add('visible');
-      }else{
-        document.getElementById('adminBadge').classList.remove('visible');
-        document.getElementById('adminPanelWrap').classList.remove('visible');
-      }
+      const ap=document.getElementById('adminPanelWrap');
+      if(isAdmin){ if(ap) ap.classList.add('visible'); }
+      else{ if(ap) ap.classList.remove('visible'); }
+      const adb=document.getElementById('adminBadge');
+      if(adb){ if(isAdmin) adb.classList.add('visible'); else adb.classList.remove('visible'); }
       document.getElementById('walletBalance').textContent=(currentUser.balance||0)+' ₽';
 
       await loadSettings();
@@ -1309,12 +1262,6 @@ async function checkAuth(){
       document.getElementById('mainSite').style.display='none';
     }
   }catch(e){console.error('checkAuth fatal',e)}
-}
-
-function applyProfileBg(user){
-  const el=document.getElementById('profileBg');
-  if(!el)return;
-  el.style.backgroundImage='';
 }
 
 function handleLogout(){
@@ -1353,7 +1300,7 @@ document.addEventListener('click',async function(e){
   }
 });
 
-/* ===== МАГАЗИН (только аватар + рамки) ===== */
+/* ===== МАГАЗИН ===== */
 function renderShop(){
   document.getElementById('shopPlaceholder').style.display='none';
   const wrap=document.getElementById('shopContent');
@@ -1389,7 +1336,6 @@ function renderShop(){
   const af=document.getElementById('avatarFileInput');
   if(af)af.addEventListener('change',handleAvatarUpload);
 }
-
 async function handleAvatarUpload(e){
   const file=e.target.files[0];if(!file)return;
   if(!file.type.startsWith('image/')){showToast('error','Ошибка','Только изображения');return}
@@ -1406,9 +1352,7 @@ async function handleAvatarUpload(e){
     if(r.error){showToast('error','Ошибка',r.error.message);return}
     currentUser.avatar_url=url;
     showToast('success','Готово','Аватар обновлён');
-    renderShop();
-    renderProfileHero();
-    await renderTopPage();
+    renderShop();renderProfileHero();await renderTopPage();
   }catch(err){showToast('error','Ошибка',err.message)}
 }
 async function removeAvatar(){
@@ -1417,9 +1361,7 @@ async function removeAvatar(){
   if(r.error){showToast('error','Ошибка',r.error.message);return}
   currentUser.avatar_url='';
   showToast('success','Готово','Аватар удалён');
-  renderShop();
-  renderProfileHero();
-  await renderTopPage();
+  renderShop();renderProfileHero();await renderTopPage();
 }
 async function buyFrame(frameId){
   if(!confirm('Купить рамку за 25 ₽?'))return;
@@ -2333,24 +2275,36 @@ function subscribeToFriends(){
     .subscribe();
 }
 
-/* ===== ТОП ===== */
+/* ===== ТОП (починен) ===== */
 async function renderTopPage(){
+  const c=document.getElementById('topList');
   try{
-    const r=await supabaseClient.from('users').select('*').order('elo',{ascending:false}).limit(100);
-    const data=r.data;
-    const c=document.getElementById('topList');
-    const ur=(data||[]).findIndex(function(u){return u.id===(currentUser&&currentUser.id)})+1;
+    const r=await supabaseClient
+      .from('users')
+      .select('id, username, isadmin, elo, wins, losses, matches, avatar_url, avatar_frame')
+      .order('elo',{ascending:false})
+      .limit(100);
+    if(r.error){
+      console.error('top error',r.error);
+      c.innerHTML='<div class="friends-empty">Ошибка загрузки: '+r.error.message+'</div>';
+      return;
+    }
+    const data=r.data||[];
+    const ur=data.findIndex(function(u){return u.id===(currentUser&&currentUser.id)})+1;
     document.getElementById('userRank').textContent='#'+(ur||0);
-    if(!data||data.length===0){c.innerHTML='<div class="friends-empty">Нет данных</div>';return}
+    if(!data.length){c.innerHTML='<div class="friends-empty">Нет игроков</div>';return}
     c.innerHTML=data.map(function(u,i){
       const n=i+1;let rc='';
       if(n===1)rc='gold';else if(n===2)rc='silver';else if(n===3)rc='bronze';
-      const wr=u.matches>0?Math.round(u.wins/u.matches*100):0;
+      const wr=u.matches>0?Math.round((u.wins||0)/u.matches*100):0;
       const me=u.id===(currentUser&&currentUser.id)?'me':'';
       const lvlRing='<div class="lvl-inline">'+levelRingHtml(u.elo||300,'sm')+'</div>';
       return '<div class="top-item '+me+'" style="cursor:pointer" onclick="openViewProfile(\''+u.id+'\')"><div class="rank '+rc+'">#'+n+'</div>'+avatarHtml(u,44)+'<div class="info"><div class="name">'+(u.username||'')+' '+(u.isadmin?'👑':'')+'</div><div class="stats">'+(u.matches||0)+' матчей | '+wr+'%</div></div>'+lvlRing+'<div class="elo">'+(u.elo||300)+'<span class="elo-label">ELO</span></div></div>';
     }).join('');
-  }catch(e){console.error(e)}
+  }catch(e){
+    console.error('renderTopPage',e);
+    if(c) c.innerHTML='<div class="friends-empty">Ошибка загрузки</div>';
+  }
 }
 async function openViewProfile(userId){
   if(!userId)return;

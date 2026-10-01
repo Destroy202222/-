@@ -276,10 +276,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .profile-info .details{font-size:12px;color:#a89ec4;margin-top:4px}
 .admin-badge{display:none;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);padding:2px 10px;border-radius:12px;color:var(--gold);font-size:11px;font-weight:600}
 .admin-badge.visible{display:inline-block}
-.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px}
-.stat-item{background:rgba(26,18,48,.85);border-radius:12px;padding:12px 8px;text-align:center}
-.stat-item .value{font-size:20px;font-weight:900;color:var(--accent-3)}
-.stat-item .label{font-size:10px;color:#a89ec4;margin-top:2px}
 .profile-actions{display:flex;gap:8px;margin-bottom:16px}
 .btn-action{flex:1;padding:10px;border:none;border-radius:10px;font-family:inherit;font-weight:600;cursor:pointer}
 .btn-action.edit{background:#2a2050;color:#fff}
@@ -475,27 +471,49 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .pf-score{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.28);border:1px solid rgba(168,85,247,.15);border-radius:10px;padding:10px 12px}
 .pf-score .v{font-size:18px;font-weight:900;color:#c084fc;line-height:1}
 .pf-score .k{font-size:10px;color:#a89ec4;font-weight:700;letter-spacing:.5px}
-.pf-chart{height:70px;margin-top:6px}
-.pf-chart svg{width:100%;height:100%;display:block}
-.pf-chart .line{fill:none;stroke:#c084fc;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(192,132,252,.6))}
-.pf-chart .area{fill:url(#pfGrad);opacity:.35}
-.pf-30{display:flex;align-items:center;gap:14px}
-.pf-30 .grp{display:flex;align-items:center;gap:6px}
-.pf-30 .pill{padding:4px 10px;border-radius:8px;font-size:12px;font-weight:800;line-height:1}
-.pf-30 .pill.w{background:rgba(81,207,102,.18);color:#51cf66;border:1px solid rgba(81,207,102,.4)}
-.pf-30 .pill.l{background:rgba(255,107,107,.18);color:#ff6b6b;border:1px solid rgba(255,107,107,.4)}
-.pf-30 .elo-d{font-size:18px;font-weight:900;color:#ff6b6b;margin-left:auto}
-.pf-30 .elo-d.plus{color:#51cf66}
-.pf-matches{width:100%;border-collapse:collapse;font-size:12px}
-.pf-matches th{font-size:10px;color:#a89ec4;text-transform:uppercase;font-weight:800;text-align:left;padding:6px 6px;border-bottom:1px solid rgba(168,85,247,.15)}
-.pf-matches td{padding:8px 6px;border-bottom:1px solid rgba(168,85,247,.08);color:#fff}
-.pf-matches tr:last-child td{border-bottom:none}
-.pf-matches .win-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:800;background:rgba(81,207,102,.18);color:#51cf66}
-.pf-matches .lose-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:800;background:rgba(255,107,107,.18);color:#ff6b6b}
-.pf-matches .map-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;background:rgba(168,85,247,.15);color:#c084fc;border:1px solid rgba(168,85,247,.25)}
-.pf-matches .elo-p{color:#51cf66;font-weight:800}
-.pf-matches .elo-n{color:#ff6b6b;font-weight:800}
-.pf-matches .r{text-align:right}
+
+/* === ИСТОРИЯ РЕЙТИНГА === */
+.rh-card{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.20);border-radius:16px;padding:16px 16px 12px;margin-bottom:12px;overflow:hidden;position:relative}
+.rh-card::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 90% 20%,rgba(34,197,94,.12),transparent 55%);opacity:.7}
+.rh-card > *{position:relative;z-index:1}
+.rh-title{font-size:11px;font-weight:800;letter-spacing:2px;color:#a89ec4;text-transform:uppercase;margin-bottom:10px}
+.rh-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px}
+.rh-elo{display:flex;align-items:baseline;gap:10px}
+.rh-elo .num{font-size:34px;font-weight:900;color:#fff;line-height:1;letter-spacing:-.5px}
+.rh-elo .delta{font-size:16px;font-weight:800;padding:2px 8px;border-radius:8px}
+.rh-elo .delta.up{color:#51cf66;background:rgba(81,207,102,.12)}
+.rh-elo .delta.down{color:#ff6b6b;background:rgba(255,107,107,.12)}
+.rh-date-end{font-size:11px;color:#a89ec4;font-weight:700}
+.rh-chart{position:relative;height:120px;margin:6px 0 4px}
+.rh-chart svg{width:100%;height:100%;display:block;overflow:visible}
+.rh-chart .area{fill:url(#rhGrad);stroke:none}
+.rh-chart .line{fill:none;stroke:#51cf66;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 8px rgba(81,207,102,.55))}
+.rh-chart .dash{stroke:#a89ec4;stroke-width:1;stroke-dasharray:4 5;opacity:.55}
+.rh-chart .dot-outer{fill:rgba(81,207,102,.20);stroke:#51cf66;stroke-width:2}
+.rh-chart .dot-inner{fill:#0b0812}
+.rh-bottom{display:flex;justify-content:space-between;font-size:10px;color:#a89ec4;font-weight:700;letter-spacing:.5px}
+
+/* === ПОСЛЕДНИЕ МАТЧИ === */
+.ph-list{display:flex;flex-direction:column;gap:8px}
+.ph-item{display:flex;align-items:center;gap:12px;background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.15);border-radius:16px;padding:10px 12px;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
+.ph-item:hover{transform:translateY(-1px);border-color:rgba(168,85,247,.35)}
+.ph-item.win{border-color:rgba(81,207,102,.35);background:linear-gradient(90deg,rgba(34,197,94,.06),rgba(20,15,34,.85))}
+.ph-item.lose{border-color:rgba(255,59,107,.35);background:linear-gradient(90deg,rgba(255,59,107,.05),rgba(20,15,34,.85))}
+.ph-icon{width:52px;height:52px;border-radius:14px;overflow:hidden;flex-shrink:0;position:relative;background:#1a1230;display:flex;align-items:center;justify-content:center}
+.ph-icon img{width:100%;height:100%;object-fit:cover;display:block;border-radius:12px}
+.ph-icon .fallback{font-size:22px;line-height:1}
+.ph-icon.win{border:2px solid #51cf66;box-shadow:0 0 12px rgba(81,207,102,.35)}
+.ph-icon.lose{border:2px solid #ff6b6b;box-shadow:0 0 12px rgba(255,59,107,.30)}
+.ph-body{flex:1;min-width:0}
+.ph-name{font-size:15px;font-weight:900;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph-sub{font-size:11.5px;color:#a89ec4;margin-top:3px;font-weight:700;letter-spacing:.3px}
+.ph-sub .elo-p{color:#51cf66;font-weight:900}
+.ph-sub .elo-n{color:#ff6b6b;font-weight:900}
+.ph-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.ph-time{font-size:16px;font-weight:800;color:#e0e0ea;font-variant-numeric:tabular-nums}
+.ph-chev{color:#5a4a7a;font-size:12px}
+.ph-empty{text-align:center;color:#5a4a7a;font-size:13px;padding:18px 0}
+.ph-all{font-size:12px;color:#ff6b8a;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:4px}
 </style>
 </head>
 <body>
@@ -635,7 +653,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 
 <div class="page match-page" id="matchPage">
 <div class="m-page">
-
   <div class="m-top">
     <div class="logo"><i class="fas fa-shield-alt"></i></div>
     <div class="info">
@@ -668,7 +685,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
       <div class="m-map-inner">
         <div class="m-map-meta">DEFAULT · СЕЗОН 1 <span class="dot">·</span> КАРТА ВЫБРАНА</div>
         <div class="m-map-name" id="mMapName">—</div>
-
         <div class="m-host" id="mHostBox">
           <div class="av" id="mHostAv"><div class="let">?</div></div>
           <div class="meta">
@@ -722,7 +738,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     <button class="btn orange" onclick="finishMatch('orange')">🏆 ORANGE</button>
     <button class="btn red" onclick="endMatch()"><i class="fas fa-times"></i></button>
   </div>
-
 </div>
 </div>
 
@@ -744,7 +759,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
         </div>
       </div>
     </div>
-
     <div class="pf-elo-box">
       <div class="pf-lvl-badge"><div class="n" id="pfLvlNum">1</div><div class="l">LVL</div></div>
       <div class="pf-elo-main">
@@ -789,36 +803,44 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
     </div>
   </div>
 
-  <div class="pf-card">
-    <div class="pf-hd"><h3>ELO по матчам</h3><span class="pf-hd-r" id="pfChartInfo">—</span></div>
-    <div class="pf-chart" id="pfChartWrap">
-      <svg viewBox="0 0 320 70" preserveAspectRatio="none">
-        <defs><linearGradient id="pfGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#c084fc" stop-opacity="0"/></linearGradient></defs>
-        <path class="area" id="pfChartArea" d=""/>
-        <path class="line" id="pfChartLine" d=""/>
+  <!-- ИСТОРИЯ РЕЙТИНГА -->
+  <div class="rh-card" id="rhCard">
+    <div class="rh-title">История рейтинга</div>
+    <div class="rh-top">
+      <div class="rh-elo">
+        <div class="num" id="rhEloNum">300</div>
+        <div class="delta" id="rhEloDelta">+0</div>
+      </div>
+      <div class="rh-date-end" id="rhDateEnd">—</div>
+    </div>
+    <div class="rh-chart">
+      <svg viewBox="0 0 320 120" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="rhGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#51cf66" stop-opacity=".55"/>
+            <stop offset="100%" stop-color="#51cf66" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path class="area" id="rhArea" d=""/>
+        <path class="line" id="rhLine" d=""/>
+        <line class="dash" id="rhDash" x1="0" y1="0" x2="0" y2="120"/>
+        <circle class="dot-outer" id="rhDotOuter" cx="0" cy="0" r="7"/>
+        <circle class="dot-inner" id="rhDotInner" cx="0" cy="0" r="3"/>
       </svg>
     </div>
-    <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:#a89ec4;font-weight:700">
-      <span id="pfChartFrom">—</span>
-      <span id="pfChartTo">—</span>
+    <div class="rh-bottom">
+      <span id="rhDateStart">—</span>
+      <span id="rhDateEndBottom">—</span>
     </div>
   </div>
 
-  <div class="pf-card">
-    <div class="pf-hd"><h3>Последние 30 матчей</h3></div>
-    <div class="pf-30">
-      <div class="grp"><span class="pill w" id="pf30w">0</span><span style="font-size:11px;color:#a89ec4">W</span></div>
-      <div class="grp"><span class="pill l" id="pf30l">0</span><span style="font-size:11px;color:#a89ec4">L</span></div>
-      <div class="elo-d" id="pf30elo">+0</div>
+  <!-- ПОСЛЕДНИЕ МАТЧИ -->
+  <div class="rh-card" style="padding:14px 16px">
+    <div class="rh-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Последние матчи</span>
+      <span class="ph-all">Все <i class="fas fa-chevron-right"></i></span>
     </div>
-  </div>
-
-  <div class="pf-card" style="padding:12px 14px">
-    <div class="pf-hd"><h3>Недавние матчи</h3></div>
-    <table class="pf-matches">
-      <thead><tr><th>Дата</th><th>Рез.</th><th>ELO</th><th>K/D</th><th>U/C/A</th><th>Карта</th><th class="r">Δ</th></tr></thead>
-      <tbody id="pfRecentBody"><tr><td colspan="7" style="text-align:center;color:#7c6a9c;padding:14px">Нет матчей</td></tr></tbody>
-    </table>
+    <div class="ph-list" id="phList"><div class="ph-empty">Нет матчей</div></div>
   </div>
 
   <div class="profile-actions" style="margin-bottom:0">
@@ -889,7 +911,12 @@ async function loadMaps(){
     MAPS=(r.data||[]).map(function(m){return {id:m.id,name:m.name,emoji:m.emoji||'🗺️',img:m.img||''};});
   }catch(e){console.error('loadMaps',e);MAPS=[];}
 }
-function mapBySlug(slug){const m=MAPS.find(function(x){return x.id===slug;});return m||{id:slug,name:slug,emoji:'🗺️',img:''};}
+function mapBySlug(slug){
+  if(!slug)return {id:'',name:'',emoji:'🗺️',img:''};
+  const s=String(slug).trim().toLowerCase();
+  const m=MAPS.find(function(x){return String(x.id).toLowerCase()===s || String(x.name).toLowerCase()===s;});
+  return m||{id:slug,name:slug,emoji:'🗺️',img:''};
+}
 
 const FRAMES=[
   {id:'frame_bronze',  name:'Бронзовая',  price:25},
@@ -950,40 +977,113 @@ function renderClanBlock(){
   if(ico) ico.textContent=(currentUser.clan||'?').charAt(0).toUpperCase();
   if(name) name.textContent=currentUser.clan;if(sub) sub.textContent='Участник';if(status) status.textContent='В клане';
 }
+
+/* ===== ИСТОРИЯ РЕЙТИНГА (новый график) ===== */
 async function renderEloChart(){
-  const line=document.getElementById('pfChartLine');const area=document.getElementById('pfChartArea');if(!line)return;
+  const line=document.getElementById('rhLine');
+  const area=document.getElementById('rhArea');
+  const dash=document.getElementById('rhDash');
+  const dotOuter=document.getElementById('rhDotOuter');
+  const dotInner=document.getElementById('rhDotInner');
+  if(!line)return;
   try{
-    const r=await supabaseClient.from('match_history').select('elo_change,match_date').eq('user_id',currentUser.id).order('match_date',{ascending:true}).limit(20);
-    const arr=(r.data||[]).map(function(x){return parseInt(x.elo_change)||0;});
-    if(!arr.length){line.setAttribute('d','');area.setAttribute('d','');setText('pfChartInfo','Нет данных');setText('pfChartFrom','—');setText('pfChartTo','—');return;}
+    const r=await supabaseClient.from('match_history')
+      .select('elo_change,match_date')
+      .eq('user_id',currentUser.id)
+      .order('match_date',{ascending:true})
+      .limit(30);
+    const rows=r.data||[];
+    const arr=rows.map(function(x){return parseInt(x.elo_change)||0;});
+    if(!arr.length){
+      line.setAttribute('d','');area.setAttribute('d','');
+      if(dash)dash.style.display='none';
+      if(dotOuter)dotOuter.style.display='none';
+      if(dotInner)dotInner.style.display='none';
+      setText('rhEloNum',currentUser.elo||300);
+      const d0=document.getElementById('rhEloDelta');
+      if(d0){d0.textContent='+0';d0.className='delta';}
+      setText('rhDateEnd','—');setText('rhDateStart','—');setText('rhDateEndBottom','—');
+      return;
+    }
     let base=(currentUser.elo||300)-arr.reduce(function(a,b){return a+b;},0);
     const pts=arr.map(function(d){base+=d;return base;});
     const min=Math.min.apply(null,pts),max=Math.max.apply(null,pts);
-    const W=320,H=70,pad=6;const range=(max-min)||1;
-    const xs=pts.map(function(_,i){return pad+(W-2*pad)*(i/(pts.length-1||1));});
-    const ys=pts.map(function(v){return H-pad-((v-min)/range)*(H-2*pad);});
+    const W=320,H=120,padX=6,padTop=10,padBottom=16;
+    const range=(max-min)||1;
+    const xs=pts.map(function(_,i){return padX+(W-2*padX)*(i/(pts.length-1||1));});
+    const ys=pts.map(function(v){return padTop+((H-padTop-padBottom)*(1-(v-min)/range));});
     const lineD=xs.map(function(x,i){return (i?'L':'M')+x.toFixed(1)+' '+ys[i].toFixed(1);}).join(' ');
-    const areaD=lineD+' L'+xs[xs.length-1].toFixed(1)+' '+(H-pad)+' L'+xs[0].toFixed(1)+' '+(H-pad)+' Z';
-    line.setAttribute('d',lineD);area.setAttribute('d',areaD);
-    setText('pfChartInfo','за '+arr.length+' матчей');setText('pfChartFrom','старт '+pts[0]);setText('pfChartTo','сейчас '+pts[pts.length-1]);
-  }catch(e){}
+    const areaD=lineD+' L'+xs[xs.length-1].toFixed(1)+' '+(H-padBottom)+' L'+xs[0].toFixed(1)+' '+(H-padBottom)+' Z';
+    line.setAttribute('d',lineD);
+    area.setAttribute('d',areaD);
+    const lastX=xs[xs.length-1];
+    const lastY=ys[ys.length-1];
+    if(dash){
+      dash.setAttribute('x1',lastX);dash.setAttribute('x2',lastX);
+      dash.setAttribute('y1',0);dash.setAttribute('y2',H-padBottom);
+      dash.style.display='block';
+    }
+    if(dotOuter){dotOuter.setAttribute('cx',lastX);dotOuter.setAttribute('cy',lastY);dotOuter.style.display='block';}
+    if(dotInner){dotInner.setAttribute('cx',lastX);dotInner.setAttribute('cy',lastY);dotInner.style.display='block';}
+    setText('rhEloNum',currentUser.elo||300);
+    const sum=arr.reduce(function(a,b){return a+b;},0);
+    const delta=document.getElementById('rhEloDelta');
+    if(delta){delta.textContent=(sum>=0?'+':'')+sum;delta.className='delta '+(sum>=0?'up':'down');}
+    const fmt=function(iso){
+      const d=new Date(iso);
+      const day=d.getDate();
+      const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+      return day+' '+mon;
+    };
+    const startLbl=fmt(rows[0].match_date);
+    const endLbl=fmt(rows[rows.length-1].match_date);
+    setText('rhDateStart',startLbl);
+    setText('rhDateEnd',endLbl);
+    setText('rhDateEndBottom',endLbl);
+  }catch(e){console.warn('rh chart',e);}
 }
+
+/* ===== ПОСЛЕДНИЕ МАТЧИ (с картинками карт) ===== */
 async function renderRecentMatches(){
-  const body=document.getElementById('pfRecentBody');if(!body)return;
+  const list=document.getElementById('phList');
+  if(!list)return;
   try{
-    const r=await supabaseClient.from('match_history').select('*').eq('user_id',currentUser.id).order('match_date',{ascending:false}).limit(30);
+    const r=await supabaseClient.from('match_history').select('*')
+      .eq('user_id',currentUser.id)
+      .order('match_date',{ascending:false})
+      .limit(30);
     const data=r.data||[];
-    let w=0,l=0,sum=0;data.forEach(function(x){if(x.result==='win')w++;else l++;sum+=parseInt(x.elo_change)||0;});
+    let w=0,l=0,sum=0;
+    data.forEach(function(x){if(x.result==='win')w++;else l++;sum+=parseInt(x.elo_change)||0;});
     setText('pf30w',w);setText('pf30l',l);
-    const eloD=document.getElementById('pf30elo');if(eloD){eloD.textContent=(sum>=0?'+':'')+sum;eloD.className='elo-d'+(sum>=0?' plus':'');}
-    if(!data.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;color:#7c6a9c;padding:14px">Нет матчей</td></tr>';return;}
-    body.innerHTML=data.slice(0,10).map(function(x){
-      const win=x.result==='win';const d=parseInt(x.elo_change)||0;
-      const dt=new Date(x.match_date);const day=String(dt.getDate()).padStart(2,'0');const mon=String(dt.getMonth()+1).padStart(2,'0');
-      const kd=x.kd!=null?Number(x.kd).toFixed(2):'—';const uca=x.uca||'—';const map=x.map||'—';
-      return '<tr><td>'+day+'.'+mon+'</td><td><span class="'+(win?'win-badge':'lose-badge')+'">'+(win?'W':'L')+'</span></td><td>'+(currentUser.elo||300)+'</td><td>'+kd+'</td><td>'+uca+'</td><td><span class="map-badge">'+map+'</span></td><td class="r"><span class="'+(d>=0?'elo-p':'elo-n')+'">'+(d>=0?'+':'')+d+'</span></td></tr>';
+    const eloD=document.getElementById('pf30elo');
+    if(eloD){eloD.textContent=(sum>=0?'+':'')+sum;eloD.className='elo-d'+(sum>=0?' plus':'');}
+    if(!data.length){list.innerHTML='<div class="ph-empty">Нет матчей</div>';return;}
+    list.innerHTML=data.slice(0,10).map(function(x){
+      const win=x.result==='win';
+      const d=parseInt(x.elo_change)||0;
+      const dt=new Date(x.match_date);
+      const hh=String(dt.getHours()).padStart(2,'0');
+      const mm=String(dt.getMinutes()).padStart(2,'0');
+      const mapName=x.map||'—';
+      const m=mapBySlug(mapName);
+      const imgHtml=(m&&m.img)
+        ? ('<img src="'+m.img+'" alt="" onerror="this.style.display=\'none\';var f=this.parentNode.querySelector(\'.fallback\');if(f)f.style.display=\'block\'"><span class="fallback" style="display:none">'+(m.emoji||'🗺️')+'</span>')
+        : ('<span class="fallback">'+(m.emoji||'🗺️')+'</span>');
+      const resultLabel=win?'Победа':'Поражение';
+      return '<div class="ph-item '+(win?'win':'lose')+'">'+
+        '<div class="ph-icon '+(win?'win':'lose')+'">'+imgHtml+'</div>'+
+        '<div class="ph-body">'+
+          '<div class="ph-name">'+resultLabel+' · '+escapeHtml(mapName)+'</div>'+
+          '<div class="ph-sub">Default · <span class="'+(d>=0?'elo-p':'elo-n')+'">'+(d>=0?'+':'')+d+' ELO</span></div>'+
+        '</div>'+
+        '<div class="ph-right">'+
+          '<span class="ph-time">'+hh+':'+mm+'</span>'+
+          '<i class="fas fa-chevron-right ph-chev"></i>'+
+        '</div>'+
+      '</div>';
     }).join('');
-  }catch(e){}
+  }catch(e){console.warn('recent matches',e);}
 }
 
 let currentUser=null,currentMatch=null,partyFriends=[],friendsList=[],friendRequests=[],myFriends=[],sentRequests=[];
@@ -1130,6 +1230,7 @@ function navigate(page){
   document.querySelectorAll('.bottom-nav .item').forEach(function(b){b.classList.remove('active');});
   const btn=document.querySelector('.bottom-nav .item[data-page="'+page+'"]');if(btn)btn.classList.add('active');
   if(page==='shop')renderShop();
+  if(page==='profile'){try{renderEloChart();renderRecentMatches();}catch(e){}}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 document.addEventListener('click',async function(e){
@@ -1517,13 +1618,10 @@ function showLobbyHostBlock(){
 }
 function startLobbyTimer(){
   if(lobbyTimerInterval)return;
-  // Момент завершения драфта: из БД (draft_finished_at) или текущее время
   let startedAt;
-  if(currentMatch&&currentMatch.draft_finished_at){
-    startedAt=new Date(currentMatch.draft_finished_at).getTime();
-  }else{
+  if(currentMatch&&currentMatch.draft_finished_at){startedAt=new Date(currentMatch.draft_finished_at).getTime();}
+  else{
     startedAt=Date.now();
-    // Сохраняем в БД, чтобы после перезагрузки все видели одно и то же время
     if(currentMatchId){
       supabaseClient.from('active_matches').update({draft_finished_at:new Date(startedAt).toISOString()}).eq('id',currentMatchId).then(function(){},function(){});
       if(currentMatch)currentMatch.draft_finished_at=new Date(startedAt).toISOString();
@@ -1538,8 +1636,7 @@ function startLobbyTimer(){
     if(el)el.textContent=m+':'+String(s).padStart(2,'0');
     if(left<=0){clearInterval(lobbyTimerInterval);lobbyTimerInterval=null;}
   }
-  tick();
-  lobbyTimerInterval=setInterval(tick,1000);
+  tick();lobbyTimerInterval=setInterval(tick,1000);
 }
 
 function renderBansUI(){

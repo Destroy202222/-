@@ -141,7 +141,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .party-empty{color:#5a4a7a;font-size:13px}
 .party-feature{font-size:11px;color:#5a4a7a;margin-top:8px;padding:8px 12px;background:#1a1230;border-radius:8px}
 
-/* ===== НОВАЯ СТРАНИЦА МАТЧА ===== */
+/* ===== СТРАНИЦА МАТЧА ===== */
 .m-page{padding-top:6px}
 .m-top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .m-top .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#1a1230,#2a2050);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -154,6 +154,8 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-top .pill.live::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff3b6b;margin-right:5px;vertical-align:middle;animation:pulseLive 1.2s infinite}
 @keyframes pulseLive{0%,100%{opacity:1}50%{opacity:.35}}
 .m-top .copy{width:38px;height:38px;border-radius:10px;background:#1a1230;border:1px solid #2a2050;color:#a89ec4;cursor:pointer;font-size:14px;flex-shrink:0}
+
+/* Карта-герой (показывается ПОСЛЕ драфта) */
 .m-map-hero{position:relative;border-radius:16px;overflow:hidden;margin-bottom:12px;min-height:180px;background:#0f0a1a}
 .m-map-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.55) saturate(1.1)}
 .m-map-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,8,18,.35) 0%,rgba(11,8,18,.85) 100%)}
@@ -172,38 +174,53 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-host .id .lbl{text-align:right}
 .m-host .id .val{color:var(--accent-3)}
 .m-host .copy-id{width:34px;height:34px;border-radius:10px;background:rgba(168,85,247,.2);border:1px solid rgba(168,85,247,.4);color:#fff;font-size:12px;cursor:pointer;flex-shrink:0;margin-left:6px}
+
+/* Таймер захода (после драфта) */
 .m-timer{margin-bottom:12px;padding:12px 14px;background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.22);border-radius:14px;display:flex;align-items:center;gap:12px}
 .m-timer .ico{width:40px;height:40px;border-radius:10px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.35);display:flex;align-items:center;justify-content:center;color:var(--accent-3);font-size:16px;flex-shrink:0}
 .m-timer .body{flex:1;min-width:0}
 .m-timer .ttl{font-size:10px;font-weight:800;color:#a89ec4;letter-spacing:1.5px;text-transform:uppercase}
 .m-timer .ttl b{color:#fff;font-size:14px;letter-spacing:0;font-weight:900;margin-left:6px}
 .m-timer .txt{font-size:11px;color:#a89ec4;margin-top:3px;line-height:1.4}
-.m-voice{margin-bottom:14px;padding:12px 14px;background:rgba(20,15,34,.85);border:1px solid rgba(34,197,94,.25);border-radius:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s}
-.m-voice:hover{border-color:rgba(34,197,94,.5)}
-.m-voice .ico{width:40px;height:40px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0}
-.m-voice .lbl{flex:1;font-size:14px;font-weight:800;color:#fff;letter-spacing:.3px}
-.m-voice .arrow{color:#7c6a9c}
+
+/* Команды — красивее */
 .m-teams{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.m-team{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.15);border-radius:14px;overflow:hidden}
-.m-team .th{padding:10px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(168,85,247,.15)}
-.m-team.blue .th{background:linear-gradient(90deg,rgba(77,171,247,.15),transparent)}
-.m-team.orange .th{background:linear-gradient(90deg,rgba(192,132,252,.15),transparent)}
-.m-team .th .ic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.m-team.blue .th .ic{background:rgba(77,171,247,.2);color:#4dabf7}
-.m-team.orange .th .ic{background:rgba(192,132,252,.2);color:var(--accent-3)}
-.m-team .th .nm{font-size:10px;font-weight:800;color:#a89ec4;letter-spacing:.8px;text-transform:uppercase;line-height:1.2}
-.m-team .th .sub{font-size:11px;font-weight:900;color:#fff;margin-top:2px}
-.m-team .pl{padding:9px 12px;border-bottom:1px solid rgba(168,85,247,.08);display:flex;align-items:center;gap:8px;cursor:pointer;transition:background .15s}
+.m-team{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.18);border-radius:16px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.m-team.blue{border-color:rgba(77,171,247,.30)}
+.m-team.orange{border-color:rgba(192,132,252,.30)}
+.m-team .th{padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(168,85,247,.12)}
+.m-team.blue .th{background:linear-gradient(90deg,rgba(77,171,247,.18),transparent)}
+.m-team.orange .th{background:linear-gradient(90deg,rgba(192,132,252,.18),transparent)}
+.m-team .th .ic{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.m-team.blue .th .ic{background:rgba(77,171,247,.22);color:#4dabf7}
+.m-team.orange .th .ic{background:rgba(192,132,252,.22);color:var(--accent-3)}
+.m-team .th .nm{font-size:10px;font-weight:800;color:#a89ec4;letter-spacing:1px;text-transform:uppercase;line-height:1.2}
+.m-team .th .sub{font-size:12px;font-weight:900;color:#fff;margin-top:2px}
+
+.m-team .pl{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(168,85,247,.08);cursor:pointer;transition:background .15s}
 .m-team .pl:last-child{border-bottom:none}
-.m-team .pl:hover{background:rgba(168,85,247,.05)}
-.m-team .pl .lvl{width:24px;height:24px;border-radius:50%;background:#1a1230;border:1.5px solid var(--accent-3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;flex-shrink:0}
-.m-team .pl .nm{flex:1;min-width:0;font-size:13px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.m-team.blue .pl .nm{color:#8ec9fb}
-.m-team .pl .kd{font-size:11px;color:#a89ec4;font-weight:600;white-space:nowrap}
-.m-team .pl .flag{width:20px;height:20px;border-radius:6px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;color:#7c6a9c;font-size:11px;flex-shrink:0}
+.m-team .pl:hover{background:rgba(168,85,247,.06)}
+
+.m-team .pl .av{width:34px;height:34px;border-radius:10px;overflow:hidden;flex-shrink:0;position:relative}
+.m-team .pl .av img{width:100%;height:100%;object-fit:cover;display:block}
+.m-team .pl .av .let{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;background:linear-gradient(135deg,#7c3aed,#a855f7)}
+.m-team.blue .pl .av .let{background:linear-gradient(135deg,#1a7ab5,#4dabf7)}
+.m-team .pl .av .badge{position:absolute;bottom:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:#0b0812;border:1.5px solid var(--accent-3);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff}
+.m-team.blue .pl .av .badge{border-color:#4dabf7}
+.m-team .pl .av .badge.gold{background:rgba(255,215,0,.15);border-color:var(--gold);color:var(--gold)}
+
+.m-team .pl .body{flex:1;min-width:0}
+.m-team .pl .nm{font-size:13px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.m-team.blue .pl .nm{color:#b6ddff}
+.m-team .pl .kd{font-size:10px;color:#a89ec4;font-weight:700;margin-top:2px;letter-spacing:.3px}
+.m-team .pl .kd b{color:var(--accent-3);font-weight:900}
+.m-team.blue .pl .kd b{color:#4dabf7}
 .m-team .pl .chev{color:#5a4a7a;font-size:11px;flex-shrink:0}
+
 .m-teams-note{font-size:10px;color:#5a4a7a;margin-bottom:14px;padding:0 4px;line-height:1.4;display:flex;gap:6px;align-items:flex-start}
 .m-teams-note i{color:#7c6a9c;margin-top:2px}
+
+/* Чат */
 .m-chat{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.22);border-radius:14px;padding:12px 14px;margin-bottom:14px}
 .m-chat .hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .m-chat .hdr .ic{width:36px;height:36px;border-radius:10px;background:#1a1230;display:flex;align-items:center;justify-content:center;color:#c084fc;font-size:16px;flex-shrink:0}
@@ -225,7 +242,7 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .m-chat-input button{padding:10px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-family:inherit;font-weight:700;cursor:pointer}
 .m-chat-input button:disabled{opacity:.4}
 
-/* ==== БАНЫ КАРТ ==== */
+/* ===== БАНЫ КАРТ ===== */
 .b-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .b-top h2{font-size:14px;font-weight:900;letter-spacing:1px;color:#c4b5d8;text-transform:uppercase}
 .b-top .cnt{font-size:12px;font-weight:800;color:#ff6b8a;font-variant-numeric:tabular-nums}
@@ -254,14 +271,19 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .b-btn{flex-shrink:0;padding:6px 14px;border:1px solid rgba(255,59,107,.5);border-radius:8px;background:rgba(255,59,107,.12);color:#ff6b8a;font-family:inherit;font-weight:800;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
 .b-item.clickable .b-btn:hover{background:rgba(255,59,107,.25)}
 .b-loading{font-size:12px;color:#7c6a9c;text-align:center;padding:14px 0}
+
+/* Скрытие блоков до/после драфта */
+.m-stage{display:block}
+.m-stage.hidden{display:none}
+
 .m-actions{display:none;gap:8px;margin-top:8px}
 .m-actions.admin-visible{display:flex}
 .m-actions .btn{flex:1;padding:12px;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer}
 .m-actions .btn.blue{background:#4dabf7;color:#fff}
 .m-actions .btn.orange{background:var(--accent-2);color:#fff}
 .m-actions .btn.red{background:#ff6b6b;color:#fff}
-/* ===== /НОВАЯ СТРАНИЦА МАТЧА ===== */
 
+/* ===== ПРОФИЛЬ ===== */
 .profile-card{background:rgba(20,15,34,.8);border:1px solid rgba(168,85,247,.20);border-radius:16px;padding:20px;position:relative;overflow:hidden;isolation:isolate}
 .profile-card .profile-bg{position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:.55;filter:blur(1px) brightness(.85)}
 .profile-card .profile-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,8,18,.4),rgba(11,8,18,.85))}
@@ -439,7 +461,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .loader-ring::before{content:'';position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.3),transparent 65%);animation:loaderPulse 2s ease-in-out infinite;pointer-events:none}
 @keyframes loaderPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
 
-/* ===== ПРОФИЛЬ ===== */
 .pf-wrap{display:flex;flex-direction:column;gap:12px}
 .pf-card{background:rgba(20,15,34,.85);border:1px solid rgba(168,85,247,.20);border-radius:14px;padding:14px 16px}
 .pf-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
@@ -469,7 +490,6 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
 .pf-score{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.28);border:1px solid rgba(168,85,247,.15);border-radius:10px;padding:10px 12px}
 .pf-score .v{font-size:18px;font-weight:900;color:#c084fc;line-height:1}
 .pf-score .k{font-size:10px;color:#a89ec4;font-weight:700;letter-spacing:.5px}
-.pf-score .fire{font-size:20px}
 .pf-chart{height:70px;margin-top:6px}
 .pf-chart svg{width:100%;height:100%;display:block}
 .pf-chart .line{fill:none;stroke:#c084fc;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(192,132,252,.6))}
@@ -637,83 +657,84 @@ body::after{content:'';position:fixed;width:520px;height:520px;border-radius:50%
       <div class="name">Матч</div>
       <div class="num" id="mMatchNum">#—</div>
     </div>
-    <div class="pill" id="mStatus">ОЖИДАНИЕ</div>
+    <div class="pill" id="mStatus">БАН КАРТ</div>
     <button class="copy" onclick="copyMatchId()" title="Копировать ID"><i class="fas fa-copy"></i></button>
   </div>
 
-  <div class="m-map-hero" id="mMapHero">
-    <div class="m-map-bg" id="mMapBg"></div>
-    <div class="m-map-inner">
-      <div class="m-map-meta" id="mMapMeta">DEFAULT · СЕЗОН 1 <span class="dot">·</span> <span id="mMapState">ВЫБОР КАРТЫ</span></div>
-      <div class="m-map-name" id="mMapName">—</div>
+  <!-- СТАДИЯ 1: ТОЛЬКО БАНЫ -->
+  <div class="m-stage" id="stageBan">
+    <div class="b-top">
+      <h2>Бан карт</h2>
+      <div class="cnt" id="bCount">— / —</div>
+    </div>
+    <div class="b-turn" id="bTurn">
+      <div class="ico"><i class="fas fa-crosshairs"></i></div>
+      <div class="b">
+        <div class="t" id="bTurnText">Ожидание...</div>
+        <div class="s" id="bTurnSub">—</div>
+      </div>
+      <div class="time" id="bTurnTimer">0:30</div>
+    </div>
+    <div class="b-list" id="bList"><div class="b-loading">Загрузка карт...</div></div>
+  </div>
 
-      <div class="m-host" id="mHostBox" style="display:none">
-        <div class="av" id="mHostAv"><div class="let">?</div></div>
-        <div class="meta">
-          <div class="lbl">Хост лобби</div>
-          <div class="val" id="mHostName">—</div>
+  <!-- СТАДИЯ 2: МАТЧ -->
+  <div class="m-stage hidden" id="stageMatch">
+    <div class="m-map-hero" id="mMapHero">
+      <div class="m-map-bg" id="mMapBg"></div>
+      <div class="m-map-inner">
+        <div class="m-map-meta">DEFAULT · СЕЗОН 1 <span class="dot">·</span> КАРТА ВЫБРАНА</div>
+        <div class="m-map-name" id="mMapName">—</div>
+
+        <div class="m-host" id="mHostBox">
+          <div class="av" id="mHostAv"><div class="let">?</div></div>
+          <div class="meta">
+            <div class="lbl">Хост лобби</div>
+            <div class="val" id="mHostName">—</div>
+          </div>
+          <div class="id">
+            <div class="lbl">Standoff 2 ID</div>
+            <div class="val" id="mHostId">—</div>
+          </div>
+          <button class="copy-id" onclick="copyHostId()"><i class="fas fa-copy"></i></button>
         </div>
-        <div class="id">
-          <div class="lbl">Standoff 2 ID</div>
-          <div class="val" id="mHostId">—</div>
-        </div>
-        <button class="copy-id" onclick="copyHostId()"><i class="fas fa-copy"></i></button>
+      </div>
+    </div>
+
+    <div class="m-timer" id="mTimerBox">
+      <div class="ico"><i class="fas fa-hourglass-half"></i></div>
+      <div class="body">
+        <div class="ttl">ЗАХОД В ЛОББИ <b id="mTimerVal">5:00</b></div>
+        <div class="txt">Хост собирает игровое лобби. Заявления и отправка результата откроются после таймера.</div>
+      </div>
+    </div>
+
+    <div class="m-teams" id="mTeams">
+      <div class="m-team blue">
+        <div class="th"><div class="ic"><i class="fas fa-shield"></i></div><div><div class="nm">Команда A</div><div class="sub">Спецназ</div></div></div>
+        <div id="mTeamA"></div>
+      </div>
+      <div class="m-team orange">
+        <div class="th"><div class="ic"><i class="fas fa-fire"></i></div><div><div class="nm">Команда B</div><div class="sub">Террористы</div></div></div>
+        <div id="mTeamB"></div>
+      </div>
+    </div>
+    <div class="m-teams-note"><i class="fas fa-link"></i><span>Одинаковый цвет — искали матч одной пати. От состава пати зависят пороги заявлений.</span></div>
+
+    <div class="m-chat">
+      <div class="hdr">
+        <div class="ic"><i class="fas fa-comments"></i></div>
+        <div><div class="ttl">Чат лобби</div><div class="sub">Все десять игроков, обе команды</div></div>
+      </div>
+      <div class="m-chat-body" id="chatBody"><div class="m-chat-empty">Сообщений пока нет</div></div>
+      <div class="m-chat-input">
+        <input type="text" id="chatInput" placeholder="Написать..." maxlength="300" autocomplete="off">
+        <button id="chatSendBtn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
       </div>
     </div>
   </div>
 
-  <div class="m-timer" id="mTimerBox" style="display:none">
-    <div class="ico"><i class="fas fa-hourglass-half"></i></div>
-    <div class="body">
-      <div class="ttl">ЗАХОД В ЛОББИ <b id="mTimerVal">4:59</b></div>
-      <div class="txt">Хост собирает игровое лобби. Заявления и отправка результата откроются после таймера.</div>
-    </div>
-  </div>
-
-  <div class="m-voice" id="mVoiceBtn">
-    <div class="ico"><i class="fas fa-phone"></i></div>
-    <div class="lbl">Подключиться к голосу</div>
-    <div class="arrow"><i class="fas fa-chevron-right"></i></div>
-  </div>
-
-  <div class="b-top">
-    <h2>Бан карт</h2>
-    <div class="cnt" id="bCount">— / —</div>
-  </div>
-  <div class="b-turn" id="bTurn">
-    <div class="ico"><i class="fas fa-crosshairs"></i></div>
-    <div class="b">
-      <div class="t" id="bTurnText">Ожидание...</div>
-      <div class="s" id="bTurnSub">—</div>
-    </div>
-    <div class="time" id="bTurnTimer">0:30</div>
-  </div>
-  <div class="b-list" id="bList"><div class="b-loading">Загрузка карт...</div></div>
-
-  <div class="m-teams" id="mTeams">
-    <div class="m-team blue">
-      <div class="th"><div class="ic"><i class="fas fa-shield"></i></div><div><div class="nm">Команда A</div><div class="sub">Спецназ</div></div></div>
-      <div id="mTeamA"></div>
-    </div>
-    <div class="m-team orange">
-      <div class="th"><div class="ic"><i class="fas fa-fire"></i></div><div><div class="nm">Команда B</div><div class="sub">Террористы</div></div></div>
-      <div id="mTeamB"></div>
-    </div>
-  </div>
-  <div class="m-teams-note"><i class="fas fa-link"></i><span>Одинаковый цвет — искали матч одной пати. От состава пати зависят пороги заявлений.</span></div>
-
-  <div class="m-chat">
-    <div class="hdr">
-      <div class="ic"><i class="fas fa-comments"></i></div>
-      <div><div class="ttl">Чат лобби</div><div class="sub">Все десять игроков, обе команды</div></div>
-    </div>
-    <div class="m-chat-body" id="chatBody"><div class="m-chat-empty">Сообщений пока нет</div></div>
-    <div class="m-chat-input">
-      <input type="text" id="chatInput" placeholder="Написать..." maxlength="300" autocomplete="off">
-      <button id="chatSendBtn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
-    </div>
-  </div>
-
+  <!-- Админ-кнопки -->
   <div class="m-actions" id="matchActions">
     <button class="btn blue" onclick="finishMatch('blue')">🏆 BLUE</button>
     <button class="btn orange" onclick="finishMatch('orange')">🏆 ORANGE</button>
@@ -878,30 +899,15 @@ const SUPABASE_URL='https://tgjltbpmuczfkikvmmde.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-/* ===== КАРТЫ (читаются из БД, таблица maps) ===== */
 let MAPS=[];
-
 async function loadMaps(){
   try{
     const r=await supabaseClient.from('maps').select('*').order('sort_order',{ascending:true});
-    if(r.error){
-      console.error('maps load error:',r.error);
-      MAPS=[];
-      return;
-    }
-    MAPS=(r.data||[]).map(function(m){
-      return {id:m.id,name:m.name,emoji:m.emoji||'🗺️',img:m.img||''};
-    });
-  }catch(e){
-    console.error('loadMaps',e);
-    MAPS=[];
-  }
+    if(r.error){console.error('maps load error:',r.error);MAPS=[];return;}
+    MAPS=(r.data||[]).map(function(m){return {id:m.id,name:m.name,emoji:m.emoji||'🗺️',img:m.img||''};});
+  }catch(e){console.error('loadMaps',e);MAPS=[];}
 }
-function mapBySlug(slug){
-  const m=MAPS.find(function(x){return x.id===slug;});
-  if(m)return m;
-  return {id:slug,name:slug,emoji:'🗺️',img:''};
-}
+function mapBySlug(slug){const m=MAPS.find(function(x){return x.id===slug;});return m||{id:slug,name:slug,emoji:'🗺️',img:''};}
 
 const FRAMES=[
   {id:'frame_bronze',  name:'Бронзовая',  price:25},
@@ -912,49 +918,22 @@ const FRAMES=[
   {id:'frame_diamond', name:'Алмаз',      price:25}
 ];
 
-/* === LVL SYSTEM === */
 const LEVELS=[
-  {lvl:1, min:0,    max:199},
-  {lvl:2, min:200,  max:249},
-  {lvl:3, min:250,  max:399},
-  {lvl:4, min:400,  max:599},
-  {lvl:5, min:600,  max:799},
-  {lvl:6, min:800,  max:999},
-  {lvl:7, min:1000, max:1399},
-  {lvl:8, min:1400, max:1699},
-  {lvl:9, min:1700, max:1999},
+  {lvl:1, min:0,    max:199},{lvl:2, min:200,  max:249},{lvl:3, min:250,  max:399},
+  {lvl:4, min:400,  max:599},{lvl:5, min:600,  max:799},{lvl:6, min:800,  max:999},
+  {lvl:7, min:1000, max:1399},{lvl:8, min:1400, max:1699},{lvl:9, min:1700, max:1999},
   {lvl:10,min:2000, max:Infinity}
 ];
 const LEVEL_COLORS={1:'#ffffff',2:'#c084fc',3:'#a855f7',4:'#9333ea',5:'#7c3aed',6:'#8b5cf6',7:'#a855f7',8:'#c084fc',9:'#e9d5ff',10:'#f0abfc'};
-function getLevel(elo){
-  elo=Math.max(0,parseInt(elo)||0);
-  for(let i=0;i<LEVELS.length;i++) if(elo<=LEVELS[i].max) return LEVELS[i];
-  return LEVELS[LEVELS.length-1];
-}
-function getLevelProgress(elo){
-  const L=getLevel(elo);
-  if(L.max===Infinity) return 1;
-  const span=(L.max-L.min)+1;
-  return Math.min(1,Math.max(0,((parseInt(elo)||0)-L.min)/span));
-}
-const LVL_R=44;
-const LVL_C=2*Math.PI*LVL_R;
+function getLevel(elo){elo=Math.max(0,parseInt(elo)||0);for(let i=0;i<LEVELS.length;i++)if(elo<=LEVELS[i].max)return LEVELS[i];return LEVELS[LEVELS.length-1];}
+function getLevelProgress(elo){const L=getLevel(elo);if(L.max===Infinity)return 1;const span=(L.max-L.min)+1;return Math.min(1,Math.max(0,((parseInt(elo)||0)-L.min)/span));}
+const LVL_R=44;const LVL_C=2*Math.PI*LVL_R;
 function levelRingHtml(elo,size){
-  const L=getLevel(elo);
-  const p=getLevelProgress(elo);
-  const col=LEVEL_COLORS[L.lvl];
-  const off=LVL_C*(1-p);
+  const L=getLevel(elo);const p=getLevelProgress(elo);const col=LEVEL_COLORS[L.lvl];const off=LVL_C*(1-p);
   const cls=size==='sm'?'level-ring lvl-sm':'level-ring';
-  return '<div class="'+cls+'" style="--lvl-color:'+col+';--lvl-glow:'+col+'66">'+
-    '<svg viewBox="0 0 110 110">'+
-      '<circle class="lvl-track" cx="55" cy="55" r="'+LVL_R+'"></circle>'+
-      '<circle class="lvl-bar" cx="55" cy="55" r="'+LVL_R+'" stroke-dasharray="'+LVL_C.toFixed(2)+'" stroke-dashoffset="'+off.toFixed(2)+'"></circle>'+
-    '</svg>'+
-    '<div class="lvl-inner"><div class="lvl-num">'+L.lvl+'</div></div>'+
-  '</div>';
+  return '<div class="'+cls+'" style="--lvl-color:'+col+';--lvl-glow:'+col+'66"><svg viewBox="0 0 110 110"><circle class="lvl-track" cx="55" cy="55" r="'+LVL_R+'"></circle><circle class="lvl-bar" cx="55" cy="55" r="'+LVL_R+'" stroke-dasharray="'+LVL_C.toFixed(2)+'" stroke-dashoffset="'+off.toFixed(2)+'"></circle></svg><div class="lvl-inner"><div class="lvl-num">'+L.lvl+'</div></div></div>';
 }
 
-/* ===== ПРОФИЛЬ ===== */
 function renderProfileHero(){
   if(!currentUser)return;
   const nameEl=document.getElementById('profileHeroName');
@@ -971,57 +950,30 @@ function renderProfileHero(){
 function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
 function renderLevelProfile(){
   if(!currentUser)return;
-  const elo=currentUser.elo||300;
-  const L=getLevel(elo);
-  const p=getLevelProgress(elo);
-  setText('pfLvlNum',L.lvl);
-  setText('pfEloBig',elo);
-  const bar=document.getElementById('pfEloBar');
-  if(bar) bar.style.width=(p*100).toFixed(1)+'%';
+  const elo=currentUser.elo||300;const L=getLevel(elo);const p=getLevelProgress(elo);
+  setText('pfLvlNum',L.lvl);setText('pfEloBig',elo);
+  const bar=document.getElementById('pfEloBar');if(bar)bar.style.width=(p*100).toFixed(1)+'%';
   const sub=document.getElementById('pfEloSub');
-  if(sub){
-    if(L.max===Infinity) sub.innerHTML='<b>Максимум</b> достигнут';
-    else sub.innerHTML='<b>'+((L.max+1)-elo)+'</b> ELO до следующего уровня';
-  }
-  const m=currentUser.matches||0,w=currentUser.wins||0,l=currentUser.losses||0;
-  const wr=m>0?Math.round(w/m*100):0;
+  if(sub){if(L.max===Infinity)sub.innerHTML='<b>Максимум</b> достигнут';else sub.innerHTML='<b>'+((L.max+1)-elo)+'</b> ELO до следующего уровня';}
+  const m=currentUser.matches||0,w=currentUser.wins||0,l=currentUser.losses||0;const wr=m>0?Math.round(w/m*100):0;
   setText('pfWin',w);setText('pfLose',l);setText('pfGames',m);setText('pfWR',wr+'%');
   setText('pfKD',currentUser.kd!=null?Number(currentUser.kd).toFixed(2):'—');
   setText('pfAvg',currentUser.avg_score!=null?Number(currentUser.avg_score).toFixed(1):'—');
-  setText('pfLikes',currentUser.likes||0);
-  setText('pfPop',currentUser.popularity||0);
-  renderClanBlock();
-  renderEloChart();
-  renderRecentMatches();
+  setText('pfLikes',currentUser.likes||0);setText('pfPop',currentUser.popularity||0);
+  renderClanBlock();renderEloChart();renderRecentMatches();
 }
 function renderClanBlock(){
-  const ico=document.getElementById('pfClanIco');
-  const name=document.getElementById('pfClanName');
-  const sub=document.getElementById('pfClanSub');
-  const status=document.getElementById('pfClanStatus');
-  if(!currentUser||!currentUser.clan){
-    if(ico) ico.textContent='—';
-    if(name) name.textContent='Свободный агент';
-    if(sub) sub.textContent='Вступи в клан, чтобы играть клановые матчи';
-    if(status) status.textContent='Не в клане';
-    return;
-  }
+  const ico=document.getElementById('pfClanIco');const name=document.getElementById('pfClanName');const sub=document.getElementById('pfClanSub');const status=document.getElementById('pfClanStatus');
+  if(!currentUser||!currentUser.clan){if(ico)ico.textContent='—';if(name)name.textContent='Свободный агент';if(sub)sub.textContent='Вступи в клан, чтобы играть клановые матчи';if(status)status.textContent='Не в клане';return;}
   if(ico) ico.textContent=(currentUser.clan||'?').charAt(0).toUpperCase();
-  if(name) name.textContent=currentUser.clan;
-  if(sub) sub.textContent='Участник';
-  if(status) status.textContent='В клане';
+  if(name) name.textContent=currentUser.clan;if(sub) sub.textContent='Участник';if(status) status.textContent='В клане';
 }
 async function renderEloChart(){
-  const line=document.getElementById('pfChartLine');
-  const area=document.getElementById('pfChartArea');
-  if(!line)return;
+  const line=document.getElementById('pfChartLine');const area=document.getElementById('pfChartArea');if(!line)return;
   try{
     const r=await supabaseClient.from('match_history').select('elo_change,match_date').eq('user_id',currentUser.id).order('match_date',{ascending:true}).limit(20);
     const arr=(r.data||[]).map(function(x){return parseInt(x.elo_change)||0;});
-    if(!arr.length){
-      line.setAttribute('d','');area.setAttribute('d','');
-      setText('pfChartInfo','Нет данных');setText('pfChartFrom','—');setText('pfChartTo','—');return;
-    }
+    if(!arr.length){line.setAttribute('d','');area.setAttribute('d','');setText('pfChartInfo','Нет данных');setText('pfChartFrom','—');setText('pfChartTo','—');return;}
     let base=(currentUser.elo||300)-arr.reduce(function(a,b){return a+b;},0);
     const pts=arr.map(function(d){base+=d;return base;});
     const min=Math.min.apply(null,pts),max=Math.max.apply(null,pts);
@@ -1031,29 +983,22 @@ async function renderEloChart(){
     const lineD=xs.map(function(x,i){return (i?'L':'M')+x.toFixed(1)+' '+ys[i].toFixed(1);}).join(' ');
     const areaD=lineD+' L'+xs[xs.length-1].toFixed(1)+' '+(H-pad)+' L'+xs[0].toFixed(1)+' '+(H-pad)+' Z';
     line.setAttribute('d',lineD);area.setAttribute('d',areaD);
-    setText('pfChartInfo','за '+arr.length+' матчей');
-    setText('pfChartFrom','старт '+pts[0]);
-    setText('pfChartTo','сейчас '+pts[pts.length-1]);
+    setText('pfChartInfo','за '+arr.length+' матчей');setText('pfChartFrom','старт '+pts[0]);setText('pfChartTo','сейчас '+pts[pts.length-1]);
   }catch(e){}
 }
 async function renderRecentMatches(){
-  const body=document.getElementById('pfRecentBody');
-  if(!body)return;
+  const body=document.getElementById('pfRecentBody');if(!body)return;
   try{
     const r=await supabaseClient.from('match_history').select('*').eq('user_id',currentUser.id).order('match_date',{ascending:false}).limit(30);
     const data=r.data||[];
-    let w=0,l=0,sum=0;
-    data.forEach(function(x){if(x.result==='win')w++;else l++;sum+=parseInt(x.elo_change)||0;});
+    let w=0,l=0,sum=0;data.forEach(function(x){if(x.result==='win')w++;else l++;sum+=parseInt(x.elo_change)||0;});
     setText('pf30w',w);setText('pf30l',l);
-    const eloD=document.getElementById('pf30elo');
-    if(eloD){eloD.textContent=(sum>=0?'+':'')+sum;eloD.className='elo-d'+(sum>=0?' plus':'');}
+    const eloD=document.getElementById('pf30elo');if(eloD){eloD.textContent=(sum>=0?'+':'')+sum;eloD.className='elo-d'+(sum>=0?' plus':'');}
     if(!data.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;color:#7c6a9c;padding:14px">Нет матчей</td></tr>';return;}
     body.innerHTML=data.slice(0,10).map(function(x){
       const win=x.result==='win';const d=parseInt(x.elo_change)||0;
-      const dt=new Date(x.match_date);
-      const day=String(dt.getDate()).padStart(2,'0');const mon=String(dt.getMonth()+1).padStart(2,'0');
-      const kd=x.kd!=null?Number(x.kd).toFixed(2):'—';
-      const uca=x.uca||'—';const map=x.map||'—';
+      const dt=new Date(x.match_date);const day=String(dt.getDate()).padStart(2,'0');const mon=String(dt.getMonth()+1).padStart(2,'0');
+      const kd=x.kd!=null?Number(x.kd).toFixed(2):'—';const uca=x.uca||'—';const map=x.map||'—';
       return '<tr><td>'+day+'.'+mon+'</td><td><span class="'+(win?'win-badge':'lose-badge')+'">'+(win?'W':'L')+'</span></td><td>'+(currentUser.elo||300)+'</td><td>'+kd+'</td><td>'+uca+'</td><td><span class="map-badge">'+map+'</span></td><td class="r"><span class="'+(d>=0?'elo-p':'elo-n')+'">'+(d>=0?'+':'')+d+'</span></td></tr>';
     }).join('');
   }catch(e){}
@@ -1075,13 +1020,10 @@ let _autoLeaveTimer=null;
 const AUTO_LEAVE_DELAY=5000;
 const TIMER_CIRC=2*Math.PI*76;
 let draftTimerInterval=null,draftSeconds=30;
+let lobbyTimerInterval=null,lobbySecondsLeft=300;
 
-/* LOADER */
 (function(){
-  const overlay=document.getElementById('loaderOverlay');
-  const bar=document.getElementById('loaderBar');
-  const percentEl=document.getElementById('loaderPercent');
-  const statusEl=document.getElementById('loaderStatus');
+  const overlay=document.getElementById('loaderOverlay');const bar=document.getElementById('loaderBar');const percentEl=document.getElementById('loaderPercent');const statusEl=document.getElementById('loaderStatus');
   if(!overlay)return;
   function hideOverlay(){if(!overlay||overlay.classList.contains('hide'))return;overlay.classList.add('hide');setTimeout(function(){try{overlay.remove();}catch(e){}},650);}
   setTimeout(hideOverlay,4000);
@@ -1113,7 +1055,7 @@ function avatarHtml(user,size){
 }
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 
-/* ===== РЕГИСТРАЦИЯ / ВХОД ===== */
+/* Регистрация / вход / выход */
 async function registerUser(){
   const nick=document.getElementById('regNick').value.trim();
   const gameId=document.getElementById('regGameId').value.trim();
@@ -1121,16 +1063,16 @@ async function registerUser(){
   const confirm=document.getElementById('regPasswordConfirm').value;
   const messageEl=document.getElementById('registerMessage');
   if(!nick){messageEl.className='auth-message show error';messageEl.textContent='❌ Введите никнейм';return;}
-  if(nick.length<3||nick.length>20){messageEl.className='auth-message show error';messageEl.textContent='❌ Ник от 3 до 20 символов';return;}
-  if(!gameId){messageEl.className='auth-message show error';messageEl.textContent='❌ Введите ID аккаунта StandRise';return;}
-  if(gameId.length<3||gameId.length>30){messageEl.className='auth-message show error';messageEl.textContent='❌ ID от 3 до 30 символов';return;}
+  if(nick.length<3||nick.length>20){messageEl.className='auth-message show error';messageEl.textContent='❌ Ник от 3 до 20';return;}
+  if(!gameId){messageEl.className='auth-message show error';messageEl.textContent='❌ Введите ID StandRise';return;}
+  if(gameId.length<3||gameId.length>30){messageEl.className='auth-message show error';messageEl.textContent='❌ ID от 3 до 30';return;}
   if(!password||!confirm){messageEl.className='auth-message show error';messageEl.textContent='❌ Введите пароль';return;}
   if(password!==confirm){messageEl.className='auth-message show error';messageEl.textContent='❌ Пароли не совпадают';return;}
-  if(password.length<8){messageEl.className='auth-message show error';messageEl.textContent='❌ Пароль минимум 8 символов';return;}
-  messageEl.className='auth-message show info';messageEl.textContent='⏳ Создаём аккаунт...';
+  if(password.length<8){messageEl.className='auth-message show error';messageEl.textContent='❌ Пароль минимум 8';return;}
+  messageEl.className='auth-message show info';messageEl.textContent='⏳ Создаём...';
   try{
     const ex=await supabaseClient.from('users').select('id').ilike('username',nick).maybeSingle();
-    if(ex.data){messageEl.className='auth-message show error';messageEl.textContent='❌ Этот никнейм уже занят';return;}
+    if(ex.data){messageEl.className='auth-message show error';messageEl.textContent='❌ Ник занят';return;}
     const userId='user_'+nick.toLowerCase().replace(/[^a-z0-9а-яё]/g,'_')+'_'+Date.now().toString(36);
     const reg=await supabaseClient.from('users').insert([{id:userId,username:nick,game_id:gameId,password:password,elo:300,matches:0,wins:0,losses:0,mvp:0,balance:0,isadmin:false,banned:false,registered:new Date().toISOString()}]).select().single();
     if(reg.error){messageEl.className='auth-message show error';messageEl.textContent='❌ '+(reg.error.message.indexOf('duplicate')>=0?'Ник занят':reg.error.message);return;}
@@ -1143,12 +1085,12 @@ async function loginUser(){
   const nick=document.getElementById('loginTag').value.trim();
   const password=document.getElementById('loginPassword').value;
   const messageEl=document.getElementById('loginMessage');
-  if(!nick||!password){messageEl.className='auth-message show error';messageEl.textContent='❌ Заполните все поля';return;}
+  if(!nick||!password){messageEl.className='auth-message show error';messageEl.textContent='❌ Заполните поля';return;}
   messageEl.className='auth-message show info';messageEl.textContent='⏳ Входим...';
   try{
     const r=await supabaseClient.from('users').select('*').ilike('username',nick).eq('password',password).maybeSingle();
-    if(!r.data){messageEl.className='auth-message show error';messageEl.textContent='❌ Неверный никнейм или пароль';return;}
-    if(r.data.banned){messageEl.className='auth-message show error';messageEl.textContent='❌ Аккаунт заблокирован';return;}
+    if(!r.data){messageEl.className='auth-message show error';messageEl.textContent='❌ Неверные данные';return;}
+    if(r.data.banned){messageEl.className='auth-message show error';messageEl.textContent='❌ Заблокирован';return;}
     currentUser=r.data;saveSession(r.data);
     messageEl.className='auth-message show success';messageEl.textContent='✅ Добро пожаловать, '+r.data.username+'!';
     await checkAuth();
@@ -1159,8 +1101,7 @@ async function checkAuth(){
     if(currentUser){
       document.getElementById('authPage').style.display='none';
       document.getElementById('mainSite').style.display='block';
-      renderProfileHero();
-      renderLevelProfile();
+      renderProfileHero();renderLevelProfile();
       const isAdmin=currentUser.isadmin===true;
       const ap=document.getElementById('adminPanelWrap');
       if(isAdmin){if(ap)ap.classList.add('visible');}else{if(ap)ap.classList.remove('visible');}
@@ -1174,8 +1115,7 @@ async function checkAuth(){
       try{await loadMatchHistory();}catch(e){}
       try{await renderTopPage();}catch(e){}
       try{await loadFriends();}catch(e){}
-      subscribeToFriends();
-      startGlobalPolling();
+      subscribeToFriends();startGlobalPolling();
       try{await updateHomeStats();}catch(e){}
       updatePartyUI();
       if(isAdmin){try{await renderAdminPanel();}catch(e){}}
@@ -1207,50 +1147,29 @@ function navigate(page){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.getElementById(pages[page]).classList.add('active');
   document.querySelectorAll('.bottom-nav .item').forEach(function(b){b.classList.remove('active');});
-  const btn=document.querySelector('.bottom-nav .item[data-page="'+page+'"]');
-  if(btn)btn.classList.add('active');
+  const btn=document.querySelector('.bottom-nav .item[data-page="'+page+'"]');if(btn)btn.classList.add('active');
   if(page==='shop')renderShop();
   window.scrollTo({top:0,behavior:'smooth'});
 }
-
 document.addEventListener('click',async function(e){
   const tab=e.target.closest('[data-adm-tab]');
-  if(tab){
-    adminTab=tab.dataset.admTab;
-    document.querySelectorAll('[data-adm-tab]').forEach(function(b){b.classList.remove('on');});
-    tab.classList.add('on');
-    await renderAdminPanel();
-  }
+  if(tab){adminTab=tab.dataset.admTab;document.querySelectorAll('[data-adm-tab]').forEach(function(b){b.classList.remove('on');});tab.classList.add('on');await renderAdminPanel();}
 });
 
-/* ===== МАГАЗИН ===== */
+/* Магазин */
 function renderShop(){
   document.getElementById('shopPlaceholder').style.display='none';
   const wrap=document.getElementById('shopContent');wrap.style.display='block';
   const owned=currentUser.owned_frames||[];const active=currentUser.avatar_frame||'';
-  wrap.innerHTML=
-    '<div style="background:rgba(20,15,34,.8);border:1px solid rgba(168,85,247,.20);border-radius:16px;padding:20px;margin-bottom:12px">'+
-      '<div style="font-size:16px;font-weight:800;margin-bottom:10px"><i class="fas fa-user-circle"></i> Ваш аватар</div>'+
-      '<div style="display:flex;align-items:center;gap:16px">'+
-        '<div>'+avatarHtml(currentUser,80)+'</div>'+
-        '<div style="flex:1">'+
-          '<div class="avatar-upload"><input type="file" id="avatarFileInput" accept="image/*">'+
-          '<label for="avatarFileInput"><i class="fas fa-upload"></i> Загрузить аватар</label>'+
-          '<div style="font-size:11px;color:#a89ec4">JPG, PNG, WEBP, до 2 МБ</div></div>'+
-          (currentUser.avatar_url?'<button onclick="removeAvatar()" style="margin-top:8px;padding:8px 12px;background:#2a2050;color:#ff6b6b;border:none;border-radius:10px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;width:100%"><i class="fas fa-trash"></i> Удалить аватар</button>':'')+
-        '</div></div></div>'+
-    '<div style="background:rgba(20,15,34,.8);border:1px solid rgba(168,85,247,.20);border-radius:16px;padding:20px">'+
-      '<div style="font-size:16px;font-weight:800;margin-bottom:6px"><i class="fas fa-crown"></i> Рамки аватара</div>'+
-      '<div style="font-size:12px;color:#a89ec4;margin-bottom:12px">Все по 25 ₽</div>'+
-      '<div class="shop-frames">'+FRAMES.map(function(f){
-        const isOwned=owned.indexOf(f.id)>=0;const isActive=active===f.id;let btn;
-        if(isActive)btn='<button class="btn active" disabled>Активна</button>';
-        else if(isOwned)btn='<button class="btn use" onclick="useFrame(\''+f.id+'\')">Использовать</button>';
-        else btn='<button class="btn buy" onclick="buyFrame(\''+f.id+'\')">Купить · '+f.price+' ₽</button>';
-        return '<div class="shop-frame '+(isOwned?'owned':'')+' '+(isActive?'active':'')+'"><div class="preview">'+avatarHtml({username:currentUser.username,avatar_url:currentUser.avatar_url,avatar_frame:f.id},60)+'</div><div class="name">'+f.name+'</div><div class="price">'+f.price+' ₽</div>'+btn+'</div>';
-      }).join('')+'</div></div>';
-  const af=document.getElementById('avatarFileInput');
-  if(af)af.addEventListener('change',handleAvatarUpload);
+  wrap.innerHTML='<div style="background:rgba(20,15,34,.8);border:1px solid rgba(168,85,247,.20);border-radius:16px;padding:20px;margin-bottom:12px"><div style="font-size:16px;font-weight:800;margin-bottom:10px"><i class="fas fa-user-circle"></i> Ваш аватар</div><div style="display:flex;align-items:center;gap:16px"><div>'+avatarHtml(currentUser,80)+'</div><div style="flex:1"><div class="avatar-upload"><input type="file" id="avatarFileInput" accept="image/*"><label for="avatarFileInput"><i class="fas fa-upload"></i> Загрузить аватар</label><div style="font-size:11px;color:#a89ec4">JPG, PNG, WEBP, до 2 МБ</div></div>'+(currentUser.avatar_url?'<button onclick="removeAvatar()" style="margin-top:8px;padding:8px 12px;background:#2a2050;color:#ff6b6b;border:none;border-radius:10px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;width:100%"><i class="fas fa-trash"></i> Удалить</button>':'')+'</div></div></div>'+
+    '<div style="background:rgba(20,15,34,.8);border:1px solid rgba(168,85,247,.20);border-radius:16px;padding:20px"><div style="font-size:16px;font-weight:800;margin-bottom:6px"><i class="fas fa-crown"></i> Рамки</div><div style="font-size:12px;color:#a89ec4;margin-bottom:12px">Все по 25 ₽</div><div class="shop-frames">'+FRAMES.map(function(f){
+      const isOwned=owned.indexOf(f.id)>=0;const isActive=active===f.id;let btn;
+      if(isActive)btn='<button class="btn active" disabled>Активна</button>';
+      else if(isOwned)btn='<button class="btn use" onclick="useFrame(\''+f.id+'\')">Использовать</button>';
+      else btn='<button class="btn buy" onclick="buyFrame(\''+f.id+'\')">Купить · '+f.price+' ₽</button>';
+      return '<div class="shop-frame '+(isOwned?'owned':'')+' '+(isActive?'active':'')+'"><div class="preview">'+avatarHtml({username:currentUser.username,avatar_url:currentUser.avatar_url,avatar_frame:f.id},60)+'</div><div class="name">'+f.name+'</div><div class="price">'+f.price+' ₽</div>'+btn+'</div>';
+    }).join('')+'</div></div>';
+  const af=document.getElementById('avatarFileInput');if(af)af.addEventListener('change',handleAvatarUpload);
 }
 async function handleAvatarUpload(e){
   const file=e.target.files[0];if(!file)return;
@@ -1264,66 +1183,27 @@ async function handleAvatarUpload(e){
     if(up.error){showToast('error','Ошибка',up.error.message);return;}
     const pub=supabaseClient.storage.from('avatars').getPublicUrl(path);
     const url=pub.data.publicUrl;
-    const r=await supabaseClient.from('users').update({avatar_url:url}).eq('id',currentUser.id);
-    if(r.error){showToast('error','Ошибка',r.error.message);return;}
+    await supabaseClient.from('users').update({avatar_url:url}).eq('id',currentUser.id);
     currentUser.avatar_url=url;showToast('success','Готово','Аватар обновлён');
     renderShop();renderProfileHero();await renderTopPage();
   }catch(err){showToast('error','Ошибка',err.message);}
 }
-async function removeAvatar(){
-  if(!confirm('Удалить аватар?'))return;
-  const r=await supabaseClient.from('users').update({avatar_url:''}).eq('id',currentUser.id);
-  if(r.error){showToast('error','Ошибка',r.error.message);return;}
-  currentUser.avatar_url='';showToast('success','Готово','Аватар удалён');
-  renderShop();renderProfileHero();await renderTopPage();
-}
+async function removeAvatar(){if(!confirm('Удалить аватар?'))return;await supabaseClient.from('users').update({avatar_url:''}).eq('id',currentUser.id);currentUser.avatar_url='';showToast('success','Готово','Удалён');renderShop();renderProfileHero();await renderTopPage();}
 async function buyFrame(frameId){
-  if(!confirm('Купить рамку за 25 ₽?'))return;
-  const price=25;
-  if((currentUser.balance||0)<price){showToast('error','Ошибка','Недостаточно средств');return;}
-  const nb=(currentUser.balance||0)-price;
-  const ownedArr=(currentUser.owned_frames||[]).concat([frameId]);
-  const r=await supabaseClient.from('users').update({balance:nb,owned_frames:ownedArr,avatar_frame:frameId}).eq('id',currentUser.id);
-  if(r.error){showToast('error','Ошибка',r.error.message);return;}
+  if(!confirm('Купить рамку за 25 ₽?'))return;const price=25;
+  if((currentUser.balance||0)<price){showToast('error','Ошибка','Недостаточно');return;}
+  const nb=(currentUser.balance||0)-price;const ownedArr=(currentUser.owned_frames||[]).concat([frameId]);
+  await supabaseClient.from('users').update({balance:nb,owned_frames:ownedArr,avatar_frame:frameId}).eq('id',currentUser.id);
   currentUser.balance=nb;currentUser.owned_frames=ownedArr;currentUser.avatar_frame=frameId;
   document.getElementById('walletBalance').textContent=nb+' ₽';
-  showToast('success','Куплено!','Рамка активирована');
-  renderShop();renderProfileHero();await renderTopPage();
+  showToast('success','Куплено!','Рамка активирована');renderShop();renderProfileHero();await renderTopPage();
 }
-async function useFrame(frameId){
-  const r=await supabaseClient.from('users').update({avatar_frame:frameId}).eq('id',currentUser.id);
-  if(r.error){showToast('error','Ошибка',r.error.message);return;}
-  currentUser.avatar_frame=frameId;showToast('success','Готово','Рамка активна');
-  renderShop();renderProfileHero();await renderTopPage();
-}
+async function useFrame(frameId){await supabaseClient.from('users').update({avatar_frame:frameId}).eq('id',currentUser.id);currentUser.avatar_frame=frameId;showToast('success','Готово','Рамка активна');renderShop();renderProfileHero();await renderTopPage();}
 
-/* ===== НАСТРОЙКИ ===== */
-async function loadSettings(){
-  try{
-    const r=await supabaseClient.from('settings').select('*');
-    (r.data||[]).forEach(function(row){currentSettings[row.key]=row.value;});
-    if(!currentSettings.team_size)currentSettings.team_size='3';
-    updateFormatLabels();
-  }catch(e){}
-}
-function updateFormatLabels(){
-  const s=parseInt(currentSettings.team_size)||3;const lbl=s+'×'+s;
-  const sub=document.getElementById('searchSubLabel');const mode=document.getElementById('searchModeLabel');const total=document.getElementById('searchTotalPlayers');
-  if(sub)sub.textContent=lbl+' режим · рейтинг';
-  if(mode)mode.textContent=lbl;
-  if(total)total.textContent=String(s*2);
-}
-function subscribeToSettings(){
-  if(!currentUser)return;
-  if(settingsChannel){try{supabaseClient.removeChannel(settingsChannel);}catch(e){}settingsChannel=null;}
-  settingsChannel=supabaseClient.channel('settings_'+Date.now())
-    .on('postgres_changes',{event:'*',schema:'public',table:'settings'},async function(payload){
-      const row=payload.new||payload.old;
-      if(row&&row.key==='team_size'&&row.value!==currentSettings.team_size){currentSettings.team_size=row.value;updateFormatLabels();}
-    }).subscribe();
-}
+async function loadSettings(){try{const r=await supabaseClient.from('settings').select('*');(r.data||[]).forEach(function(row){currentSettings[row.key]=row.value;});if(!currentSettings.team_size)currentSettings.team_size='3';updateFormatLabels();}catch(e){}}
+function updateFormatLabels(){const s=parseInt(currentSettings.team_size)||3;const lbl=s+'×'+s;const sub=document.getElementById('searchSubLabel');const mode=document.getElementById('searchModeLabel');const total=document.getElementById('searchTotalPlayers');if(sub)sub.textContent=lbl+' режим · рейтинг';if(mode)mode.textContent=lbl;if(total)total.textContent=String(s*2);}
+function subscribeToSettings(){if(!currentUser)return;if(settingsChannel){try{supabaseClient.removeChannel(settingsChannel);}catch(e){}settingsChannel=null;}settingsChannel=supabaseClient.channel('settings_'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'settings'},async function(payload){const row=payload.new||payload.old;if(row&&row.key==='team_size'&&row.value!==currentSettings.team_size){currentSettings.team_size=row.value;updateFormatLabels();}}).subscribe();}
 
-/* ===== ПОИСК ===== */
 async function findMyActiveMatch(){
   if(!currentUser||!currentUser.id)return null;
   try{
@@ -1395,12 +1275,7 @@ async function checkQueueOnLoad(){
     updateSearchVisibility();await updateQueueCount();
   }catch(e){}
 }
-async function checkActiveMatchOnLoad(){
-  if(!currentUser)return;
-  const my=await findMyActiveMatch();
-  if(!my||!my.id)return;
-  await loadCreatedMatch(my.id);
-}
+async function checkActiveMatchOnLoad(){if(!currentUser)return;const my=await findMyActiveMatch();if(!my||!my.id)return;await loadCreatedMatch(my.id);}
 async function cleanupSearchState(){
   if(searchTimerInterval){clearInterval(searchTimerInterval);searchTimerInterval=null;}
   if(queueUpdateInterval){clearInterval(queueUpdateInterval);queueUpdateInterval=null;}
@@ -1414,16 +1289,8 @@ function updateSearchVisibility(){
   const pb=document.getElementById('searchPlayersBlock');const tb=document.getElementById('searchTimerDisplay');
   const qb=document.getElementById('queueBtn');const cb=document.getElementById('cancelBtn');
   if(!pb||!qb)return;
-  if(isSearching){
-    pb.style.display='flex';tb.style.display='block';
-    qb.style.display='none';cb.style.display='inline-flex';cb.disabled=false;
-    cb.innerHTML='<i class="fas fa-times"></i> Отменить поиск';
-  }else{
-    pb.style.display='none';tb.style.display='none';
-    qb.style.display='block';qb.disabled=false;
-    qb.innerHTML='<i class="fas fa-search"></i> Начать поиск';
-    cb.style.display='none';
-  }
+  if(isSearching){pb.style.display='flex';tb.style.display='block';qb.style.display='none';cb.style.display='inline-flex';cb.disabled=false;cb.innerHTML='<i class="fas fa-times"></i> Отменить поиск';}
+  else{pb.style.display='none';tb.style.display='none';qb.style.display='block';qb.disabled=false;qb.innerHTML='<i class="fas fa-search"></i> Начать поиск';cb.style.display='none';}
 }
 async function startSearch(){
   if(isStartingSearch||isSearching)return;
@@ -1431,8 +1298,7 @@ async function startSearch(){
   if(!currentUser)return showToast('error','Ошибка','Авторизуйтесь');
   const existing=await findMyActiveMatch();
   if(existing&&existing.id){await loadCreatedMatch(existing.id);return;}
-  isStartingSearch=true;
-  const btn=document.getElementById('queueBtn');btn.disabled=true;
+  isStartingSearch=true;const btn=document.getElementById('queueBtn');btn.disabled=true;
   let countdown=3;btn.innerHTML='<i class="fas fa-hourglass-half"></i> Поиск через '+countdown+'...';
   if(searchCountdownTimer)clearInterval(searchCountdownTimer);
   searchCountdownTimer=setInterval(function(){countdown--;if(countdown>0)btn.innerHTML='<i class="fas fa-hourglass-half"></i> Поиск через '+countdown+'...';},1000);
@@ -1455,16 +1321,11 @@ async function startSearch(){
 }
 async function updateQueueCount(){
   if(!isSearching)return;
-  try{
-    const r=await supabaseClient.from('queue').select('*',{count:'exact',head:true}).eq('status','searching');
-    document.getElementById('searchCurrentPlayers').textContent=r.count||0;
-    document.getElementById('searchStatus').textContent='Поиск';
-  }catch(e){}
+  try{const r=await supabaseClient.from('queue').select('*',{count:'exact',head:true}).eq('status','searching');document.getElementById('searchCurrentPlayers').textContent=r.count||0;document.getElementById('searchStatus').textContent='Поиск';}catch(e){}
 }
 async function cancelSearch(){
   if(isCanceling||!isSearching)return;
-  isCanceling=true;const cb=document.getElementById('cancelBtn');
-  cb.disabled=true;cb.innerHTML='<i class="fas fa-hourglass-half"></i> Отмена...';
+  isCanceling=true;const cb=document.getElementById('cancelBtn');cb.disabled=true;cb.innerHTML='<i class="fas fa-hourglass-half"></i> Отмена...';
   await new Promise(function(r){setTimeout(r,1000);});
   if(!isCanceling)return;
   try{
@@ -1481,30 +1342,25 @@ function startSearchTimer(){
   searchTimerInterval=setInterval(function(){
     if(!isSearching){clearInterval(searchTimerInterval);searchTimerInterval=null;return;}
     searchSeconds++;
-    const m=String(Math.floor(searchSeconds/60)).padStart(2,'0');
-    const s=String(searchSeconds%60).padStart(2,'0');
-    const el=document.getElementById('searchTimerDisplay');
-    if(el)el.innerHTML='<i class="fas fa-clock"></i> '+m+':'+s;
+    const m=String(Math.floor(searchSeconds/60)).padStart(2,'0');const s=String(searchSeconds%60).padStart(2,'0');
+    const el=document.getElementById('searchTimerDisplay');if(el)el.innerHTML='<i class="fas fa-clock"></i> '+m+':'+s;
   },1000);
 }
 function subscribeToQueue(){
   if(searchChannel){try{supabaseClient.removeChannel(searchChannel);}catch(e){}searchChannel=null;}
-  searchChannel=supabaseClient.channel('queue_'+Date.now())
-    .on('postgres_changes',{event:'*',schema:'public',table:'queue'},async function(){if(isSearching){await updateQueueCount();await updateHomeStats();}})
-    .subscribe();
+  searchChannel=supabaseClient.channel('queue_'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'queue'},async function(){if(isSearching){await updateQueueCount();await updateHomeStats();}}).subscribe();
 }
 function subscribeToMatchCreation(){
   if(matchCreatedChannel)return;
-  matchCreatedChannel=supabaseClient.channel('match_created_'+Date.now()+'_'+Math.random())
-    .on('postgres_changes',{event:'*',schema:'public',table:'active_matches'},async function(payload){
-      const m=payload.new||payload.old;if(!m||!currentUser)return;
-      let orange=[],blue=[];
-      try{orange=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;blue=typeof m.blue==='string'?JSON.parse(m.blue):m.blue;}catch(e){return;}
-      const isMe=[].concat(orange,blue).some(function(p){return String(p.id)===String(currentUser.id);});
-      if(!isMe)return;
-      if(currentMatch&&String(currentMatch.id)===String(m.id)&&isPlayerInMatch&&isConfirming)return;
-      await loadCreatedMatch(m.id);
-    }).subscribe();
+  matchCreatedChannel=supabaseClient.channel('match_created_'+Date.now()+'_'+Math.random()).on('postgres_changes',{event:'*',schema:'public',table:'active_matches'},async function(payload){
+    const m=payload.new||payload.old;if(!m||!currentUser)return;
+    let orange=[],blue=[];
+    try{orange=typeof m.orange==='string'?JSON.parse(m.orange):m.orange;blue=typeof m.blue==='string'?JSON.parse(m.blue):m.blue;}catch(e){return;}
+    const isMe=[].concat(orange,blue).some(function(p){return String(p.id)===String(currentUser.id);});
+    if(!isMe)return;
+    if(currentMatch&&String(currentMatch.id)===String(m.id)&&isPlayerInMatch&&isConfirming)return;
+    await loadCreatedMatch(m.id);
+  }).subscribe();
 }
 function startHeartbeat(){
   if(heartbeatInterval)clearInterval(heartbeatInterval);
@@ -1514,7 +1370,7 @@ function startHeartbeat(){
   },20000);
 }
 
-/* ===== МОДАЛКА ПОДТВЕРЖДЕНИЯ ===== */
+/* Модалка подтверждения */
 function showConfirmModal(){
   if(isConfirming)return;
   isConfirming=true;waitingConfirm=true;
@@ -1529,50 +1385,34 @@ function showConfirmModal(){
   if(confirmTimer)clearInterval(confirmTimer);
   confirmTimer=setInterval(function(){
     confirmTimeLeft--;document.getElementById('modalTimer').textContent=confirmTimeLeft;
-    const ratio=confirmTimeLeft/25;
-    if(bar)bar.style.strokeDashoffset=String((1-ratio)*TIMER_CIRC);
+    const ratio=confirmTimeLeft/25;if(bar)bar.style.strokeDashoffset=String((1-ratio)*TIMER_CIRC);
     if(confirmTimeLeft<=5)document.getElementById('modalTimer').style.color='#ff3b6b';
     if(confirmTimeLeft<=0){clearInterval(confirmTimer);handleConfirmTimeout();}
   },1000);
-  document.getElementById('matchNavLabel').textContent='Матч';
-  document.querySelector('#matchNavBtn i').className='fas fa-gamepad';
+  document.getElementById('matchNavLabel').textContent='Матч';document.querySelector('#matchNavBtn i').className='fas fa-gamepad';
   try{if(navigator.vibrate)navigator.vibrate([120,60,120]);}catch(e){}
 }
 function renderModalPlayers(){
   const wrap=document.getElementById('modalPlayers');if(!wrap||!matchPlayers.length)return;
   wrap.innerHTML=matchPlayers.map(function(p){
-    const c=confirmedPlayers.indexOf(String(p.id))>=0;
-    const me=String(p.id)===String(currentUser.id);
+    const c=confirmedPlayers.indexOf(String(p.id))>=0;const me=String(p.id)===String(currentUser.id);
     const inner=c?'<svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg>':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>';
     const cls=['match-slot',c?'confirmed':'pending'];if(me)cls.push('me');
     return '<div class="'+cls.join(' ')+'" title="'+(p.username||'?')+'">'+inner+'</div>';
   }).join('');
-  const total=matchPlayers.length;
-  const cc=matchPlayers.filter(function(p){return confirmedPlayers.indexOf(String(p.id))>=0;}).length;
-  document.getElementById('confirmedCount').textContent=String(cc);
-  document.getElementById('totalCount').textContent=String(total);
-  const btn=document.getElementById('confirmBtn');
-  const btnText=document.getElementById('confirmBtnText');
-  const btnIcon=document.getElementById('confirmBtnIcon');
+  const total=matchPlayers.length;const cc=matchPlayers.filter(function(p){return confirmedPlayers.indexOf(String(p.id))>=0;}).length;
+  document.getElementById('confirmedCount').textContent=String(cc);document.getElementById('totalCount').textContent=String(total);
+  const btn=document.getElementById('confirmBtn');const btnText=document.getElementById('confirmBtnText');const btnIcon=document.getElementById('confirmBtnIcon');
   const meConfirmed=confirmedPlayers.indexOf(String(currentUser.id))>=0;
   if(cc===total&&total>0){
-    btn.className='match-confirm-btn done';btn.disabled=true;
-    btnText.textContent='Все готовы — запускаем матч...';
-    btnIcon.innerHTML='<span class="spinner"></span>';
+    btn.className='match-confirm-btn done';btn.disabled=true;btnText.textContent='Все готовы — запускаем матч...';btnIcon.innerHTML='<span class="spinner"></span>';
     clearInterval(confirmTimer);
     setTimeout(async function(){
       try{await supabaseClient.from('active_matches').update({status:'active'}).eq('id',currentMatchId).eq('status','pending');}catch(e){}
-      document.getElementById('confirmModal').classList.remove('active');
-      waitingConfirm=false;isConfirming=false;startMatchAfterConfirm();
+      document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;startMatchAfterConfirm();
     },1000);
-  }else if(meConfirmed){
-    btn.className='match-confirm-btn';btn.disabled=true;
-    btnText.textContent='Вы готовы — ждём остальных';
-    btnIcon.innerHTML='<span class="spinner"></span>';
-  }else{
-    btn.className='match-confirm-btn';btn.disabled=false;
-    btnText.textContent='Подтвердить';btnIcon.textContent='✓';
-  }
+  }else if(meConfirmed){btn.className='match-confirm-btn';btn.disabled=true;btnText.textContent='Вы готовы — ждём остальных';btnIcon.innerHTML='<span class="spinner"></span>';}
+  else{btn.className='match-confirm-btn';btn.disabled=false;btnText.textContent='Подтвердить';btnIcon.textContent='✓';}
 }
 async function handleConfirm(){
   if(!waitingConfirm||confirmedPlayers.indexOf(String(currentUser.id))>=0)return;
@@ -1588,18 +1428,14 @@ async function handleConfirm(){
 function handleConfirmTimeout(){
   const nc=matchPlayers.filter(function(p){return confirmedPlayers.indexOf(String(p.id))<0;});
   if(nc.length>0){
-    document.getElementById('confirmModal').classList.remove('active');
-    waitingConfirm=false;isConfirming=false;
+    document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;
     showToast('info','Матч отменён',nc.length+' не подтвердили');
     supabaseClient.from('active_matches').delete().eq('id',currentMatchId).then(function(){},function(){});
     currentMatch=null;isPlayerInMatch=false;
-    document.getElementById('matchNavLabel').textContent='Поиск';
-    document.querySelector('#matchNavBtn i').className='fas fa-search';
+    document.getElementById('matchNavLabel').textContent='Поиск';document.querySelector('#matchNavBtn i').className='fas fa-search';
     navigate('matches');return;
   }
-  document.getElementById('confirmModal').classList.remove('active');
-  waitingConfirm=false;isConfirming=false;
-  startMatchAfterConfirm();
+  document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;startMatchAfterConfirm();
 }
 function startMatchAfterConfirm(){
   if(!currentMatch)return;
@@ -1612,31 +1448,29 @@ function startMatchAfterConfirm(){
 }
 function subscribeToMatch(id){
   if(matchChannel){try{supabaseClient.removeChannel(matchChannel);}catch(e){}matchChannel=null;}
-  matchChannel=supabaseClient.channel('match_'+id+'_'+Date.now())
-    .on('postgres_changes',{event:'*',schema:'public',table:'active_matches',filter:'id=eq.'+id},async function(payload){
-      if(payload.eventType==='DELETE'){
-        document.getElementById('confirmModal').classList.remove('active');
-        waitingConfirm=false;currentMatch=null;isPlayerInMatch=false;
-        unsubscribeFromChat();navigate('matches');return;
-      }
-      if(payload.eventType==='UPDATE'){
-        const nd=payload.new;
-        const orange=typeof nd.orange==='string'?JSON.parse(nd.orange):nd.orange;
-        const blue=typeof nd.blue==='string'?JSON.parse(nd.blue):nd.blue;
-        currentMatch={id:nd.id,orange:orange,blue:blue,status:nd.status,draft_state:nd.draft_state||{banned:[],final:'',complete:false,turn:0},lobby_url:nd.lobby_url||''};
-        currentMatchId=nd.id;isPlayerInMatch=true;
-        if(Array.isArray(nd.confirmed)&&isConfirming){confirmedPlayers=nd.confirmed.map(String);renderModalPlayers();}
-        if(nd.status==='active'&&isConfirming){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;startMatchAfterConfirm();}
-        if(document.getElementById('pageMatch')&&document.getElementById('pageMatch').classList.contains('active'))renderMatchPage();
-      }
-    }).subscribe();
+  matchChannel=supabaseClient.channel('match_'+id+'_'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'active_matches',filter:'id=eq.'+id},async function(payload){
+    if(payload.eventType==='DELETE'){
+      document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;currentMatch=null;isPlayerInMatch=false;
+      unsubscribeFromChat();navigate('matches');return;
+    }
+    if(payload.eventType==='UPDATE'){
+      const nd=payload.new;
+      const orange=typeof nd.orange==='string'?JSON.parse(nd.orange):nd.orange;
+      const blue=typeof nd.blue==='string'?JSON.parse(nd.blue):nd.blue;
+      currentMatch={id:nd.id,orange:orange,blue:blue,status:nd.status,draft_state:nd.draft_state||{banned:[],final:'',complete:false,turn:0},lobby_url:nd.lobby_url||''};
+      currentMatchId=nd.id;isPlayerInMatch=true;
+      if(Array.isArray(nd.confirmed)&&isConfirming){confirmedPlayers=nd.confirmed.map(String);renderModalPlayers();}
+      if(nd.status==='active'&&isConfirming){document.getElementById('confirmModal').classList.remove('active');waitingConfirm=false;isConfirming=false;startMatchAfterConfirm();}
+      if(document.getElementById('pageMatch')&&document.getElementById('pageMatch').classList.contains('active'))renderMatchPage();
+    }
+  }).subscribe();
 }
 
-/* ===== СТРАНИЦА МАТЧА ===== */
+/* ===== Страница матча: 2 стадии ===== */
 function matchStatusLabel(){
   if(!currentMatch)return'ОЖИДАНИЕ';
   const s=currentMatch.draft_state||{};
-  if(s.complete||currentMatch.status==='active')return'ИДЁТ ИГРА';
+  if(s.complete)return'ИДЁТ ИГРА';
   return'БАН КАРТ';
 }
 function mySide(){
@@ -1654,20 +1488,36 @@ function isMyTurnToBan(){
   const turnSide=turn===0?'blue':'orange';
   return side===turnSide;
 }
+function matchNumberLabel(){
+  if(!currentMatchId)return'#—';
+  // Используем последние 4-5 символов id как «номер», если нет сохранённого номера
+  const stored=localStorage.getItem('aliance_match_num_'+currentMatchId);
+  if(stored)return stored;
+  // Генерируем номер по времени создания + случайно
+  const num='#'+String(Math.floor(Date.now()/1000)%10000);
+  try{localStorage.setItem('aliance_match_num_'+currentMatchId,num);}catch(e){}
+  return num;
+}
 function renderMatchPage(){
   if(!currentMatch)return;
   renderMatchTop();
-  renderMapHero();
-  renderBansUI();
-  renderTeams();
-  applyMapBackground();
-  checkMatchResultVisibility();
-  if(currentMatch.status==='active'||(currentMatch.draft_state&&currentMatch.draft_state.complete)){
-    showLobbyHostBlock();
+  const s=currentMatch.draft_state||{};
+  const stageBan=document.getElementById('stageBan');
+  const stageMatch=document.getElementById('stageMatch');
+  if(s.complete){
+    if(stageBan)stageBan.classList.add('hidden');
+    if(stageMatch)stageMatch.classList.remove('hidden');
+    renderMapHero();renderTeams();applyMapBackground();showLobbyHostBlock();startLobbyTimerOnce();
+  }else{
+    if(stageBan)stageBan.classList.remove('hidden');
+    if(stageMatch)stageMatch.classList.add('hidden');
+    renderBansUI();
+    if(lobbyTimerInterval){clearInterval(lobbyTimerInterval);lobbyTimerInterval=null;}
   }
+  checkMatchResultVisibility();
 }
 function renderMatchTop(){
-  const el=document.getElementById('mMatchNum');if(el)el.textContent='#'+String(currentMatchId||'').slice(-5);
+  const el=document.getElementById('mMatchNum');if(el)el.textContent=matchNumberLabel();
   const st=document.getElementById('mStatus');
   if(st){const lbl=matchStatusLabel();st.textContent=lbl;st.className='pill'+(lbl==='ИДЁТ ИГРА'?' live':'');}
 }
@@ -1682,22 +1532,31 @@ function applyMapBackground(){
 function renderMapHero(){
   const s=currentMatch.draft_state||{};
   const nameEl=document.getElementById('mMapName');
-  const stateEl=document.getElementById('mMapState');
   if(nameEl) nameEl.textContent=(s.complete&&s.final)?s.final.toUpperCase():'—';
-  if(stateEl) stateEl.textContent=(s.complete)?'КАРТА ВЫБРАНА':'ВЫБОР КАРТЫ';
 }
 function showLobbyHostBlock(){
-  const box=document.getElementById('mHostBox');const tbox=document.getElementById('mTimerBox');
-  if(box)box.style.display='flex';
-  if(tbox)tbox.style.display='flex';
   const host=currentMatch.blue[0]||currentMatch.orange[0]||{};
   const av=document.getElementById('mHostAv');
   if(av){if(host.avatar_url){av.innerHTML='<img src="'+host.avatar_url+'" alt="">';}else{av.innerHTML='<div class="let">'+((host.username||'?').charAt(0).toUpperCase())+'</div>';}}
-  setText('mHostName',host.username||'—');
-  setText('mHostId',host.game_id||'—');
+  setText('mHostName',host.username||'—');setText('mHostId',host.game_id||'—');
+}
+function startLobbyTimerOnce(){
+  if(lobbyTimerInterval)return;
+  const s=currentMatch.draft_state||{};
+  if(!s.complete)return;
+  lobbySecondsLeft=300;
+  const el=document.getElementById('mTimerVal');
+  function tick(){
+    const m=String(Math.floor(lobbySecondsLeft/60)).padStart(1,'0');
+    const sec=String(lobbySecondsLeft%60).padStart(2,'0');
+    if(el)el.textContent=m+':'+sec;
+    lobbySecondsLeft--;
+    if(lobbySecondsLeft<0){clearInterval(lobbyTimerInterval);lobbyTimerInterval=null;}
+  }
+  tick();lobbyTimerInterval=setInterval(tick,1000);
 }
 
-/* ===== БАНЫ КАРТ ===== */
+/* Баны карт */
 function renderBansUI(){
   if(!currentMatch)return;
   const s=currentMatch.draft_state||{banned:[],final:'',complete:false,turn:0};
@@ -1707,17 +1566,11 @@ function renderBansUI(){
   const left=total-bannedCount;
   const cnt=document.getElementById('bCount');
   if(cnt)cnt.textContent=(total?left+' / '+total:'— / —');
-  const turnCard=document.getElementById('bTurn');
-  const turnText=document.getElementById('bTurnText');
-  const turnSub=document.getElementById('bTurnSub');
-  const turnTimer=document.getElementById('bTurnTimer');
+  const turnCard=document.getElementById('bTurn');const turnText=document.getElementById('bTurnText');const turnSub=document.getElementById('bTurnSub');const turnTimer=document.getElementById('bTurnTimer');
   if(turnCard&&turnText&&turnSub){
     turnCard.classList.remove('me');
-    if(s.complete){
-      turnText.textContent='Драфт завершён';turnText.classList.remove('me');
-      turnSub.textContent='Карта: '+s.final;
-      if(turnTimer)turnTimer.style.display='none';
-    }else{
+    if(s.complete){turnText.textContent='Драфт завершён';turnText.classList.remove('me');turnSub.textContent='Карта: '+s.final;if(turnTimer)turnTimer.style.display='none';}
+    else{
       const turnSide=(typeof s.turn==='number'?s.turn:0)===0?'blue':'orange';
       const sideName=turnSide==='blue'?'Команда A':'Команда B';
       const my=isMyTurnToBan();
@@ -1728,15 +1581,10 @@ function renderBansUI(){
       if(turnTimer)turnTimer.style.display='block';
     }
   }
-  const list=document.getElementById('bList');
-  if(!list)return;
-  if(!MAPS.length){
-    list.innerHTML='<div class="b-loading">Карты не загружены. Проверь таблицу maps в Supabase.</div>';
-    return;
-  }
+  const list=document.getElementById('bList');if(!list)return;
+  if(!MAPS.length){list.innerHTML='<div class="b-loading">Карты не загружены. Проверь таблицу maps в Supabase.</div>';return;}
   list.innerHTML=MAPS.map(function(m){
-    const isBanned=banned.indexOf(m.id)>=0;
-    const isFinal=(s.final===m.id);
+    const isBanned=banned.indexOf(m.id)>=0;const isFinal=(s.final===m.id);
     const clickable=!isBanned&&!s.complete&&isMyTurnToBan();
     const img=m.img?('<img src="'+m.img+'" alt="">'):('<span>'+m.emoji+'</span>');
     let sub,btn;
@@ -1744,13 +1592,9 @@ function renderBansUI(){
     else if(isFinal){sub='Выбрана';btn='';}
     else if(s.complete){sub='Ещё в пуле';btn='';}
     else{sub=clickable?'Нажмите, чтобы забанить':'Ещё в пуле';btn=clickable?'<button class="b-btn">БАН</button>':'';}
-    return '<div class="b-item '+(isBanned?'banned ':'')+(clickable?'clickable':'')+'" data-map="'+m.id+'">'+
-      '<div class="b-img">'+img+'</div>'+
-      '<div class="b-body"><div class="b-name">'+m.name+'</div><div class="b-sub">'+sub+'</div></div>'+btn+'</div>';
+    return '<div class="b-item '+(isBanned?'banned ':'')+(clickable?'clickable':'')+'" data-map="'+m.id+'"><div class="b-img">'+img+'</div><div class="b-body"><div class="b-name">'+m.name+'</div><div class="b-sub">'+sub+'</div></div>'+btn+'</div>';
   }).join('');
-  list.querySelectorAll('.b-item.clickable').forEach(function(item){
-    item.addEventListener('click',function(){handleBanClick(item.dataset.map);});
-  });
+  list.querySelectorAll('.b-item.clickable').forEach(function(item){item.addEventListener('click',function(){handleBanClick(item.dataset.map);});});
   startDraftTimer();
 }
 function startDraftTimer(){
@@ -1777,38 +1621,35 @@ async function handleBanClick(slug){
   if(r.error){showToast('error','Ошибка',r.error.message);return;}
   await loadCreatedMatch(currentMatchId);
 }
-function copyMatchId(){
-  const t=String(currentMatchId||'');if(!t)return;
-  navigator.clipboard.writeText(t).then(function(){showToast('success','Скопировано',t);},function(){});
-}
-function copyHostId(){
-  if(!currentMatch)return;
-  const host=currentMatch.blue[0]||currentMatch.orange[0]||{};
-  const id=host.game_id||'';if(!id)return;
-  navigator.clipboard.writeText(id).then(function(){showToast('success','Скопировано',id);},function(){});
-}
+function copyMatchId(){const t=String(currentMatchId||'');if(!t)return;navigator.clipboard.writeText(t).then(function(){showToast('success','Скопировано',t);},function(){});}
+function copyHostId(){if(!currentMatch)return;const host=currentMatch.blue[0]||currentMatch.orange[0]||{};const id=host.game_id||'';if(!id)return;navigator.clipboard.writeText(id).then(function(){showToast('success','Скопировано',id);},function(){});}
 
-/* ===== КОМАНДЫ ===== */
+/* Команды — красивее */
 function renderTeams(){
   if(!currentMatch)return;
   const a=document.getElementById('mTeamA');const b=document.getElementById('mTeamB');
-  if(a)a.innerHTML=currentMatch.blue.map(function(p){return playerRowHtml(p,'blue');}).join('');
-  if(b)b.innerHTML=currentMatch.orange.map(function(p){return playerRowHtml(p,'orange');}).join('');
+  if(a)a.innerHTML=currentMatch.blue.map(function(p,i){return playerRowHtml(p,'blue',i===0);}).join('');
+  if(b)b.innerHTML=currentMatch.orange.map(function(p,i){return playerRowHtml(p,'orange',i===0);}).join('');
 }
-function playerRowHtml(p,side){
+function playerRowHtml(p,side,isCap){
   const lvl=getLevel(p.elo||300).lvl;
   const kd=p.kd!=null?Number(p.kd).toFixed(2):'—';
   const nm=p.username||'?';
+  const letter=nm.charAt(0).toUpperCase();
+  const avInner=p.avatar_url?('<img src="'+p.avatar_url+'" alt="">'):('<div class="let">'+letter+'</div>');
+  const badgeCls='badge'+(isCap?' gold':'');
+  const badgeTxt=isCap?'👑':lvl;
   return '<div class="pl" onclick="openViewProfile(\''+p.id+'\')">'+
-    '<div class="lvl">'+lvl+'</div>'+
-    '<div class="nm">'+escapeHtml(nm)+'</div>'+
-    '<div class="kd">K/D '+kd+'</div>'+
-    '<div class="flag"><i class="fas fa-flag"></i></div>'+
+    '<div class="av">'+avInner+'<div class="'+badgeCls+'">'+badgeTxt+'</div></div>'+
+    '<div class="body">'+
+      '<div class="nm">'+escapeHtml(nm)+'</div>'+
+      '<div class="kd">K/D <b>'+kd+'</b></div>'+
+    '</div>'+
     '<div class="chev"><i class="fas fa-chevron-right"></i></div>'+
   '</div>';
 }
 
-/* ===== ЧАТ ===== */
+/* Чат */
 function renderChatMessages(){
   const body=document.getElementById('chatBody');if(!body)return;
   if(!chatMessages.length){body.innerHTML='<div class="m-chat-empty">Сообщений пока нет</div>';return;}
@@ -1820,54 +1661,33 @@ function renderChatMessages(){
   }).join('');
   body.scrollTop=body.scrollHeight;
 }
-async function loadChatHistory(matchId){
-  try{
-    const r=await supabaseClient.from('match_messages').select('*').eq('match_id',String(matchId)).order('created_at',{ascending:true}).limit(200);
-    chatMessages=r.data||[];renderChatMessages();
-  }catch(e){}
-}
-function unsubscribeFromChat(){
-  if(chatChannel){try{supabaseClient.removeChannel(chatChannel);}catch(e){}chatChannel=null;}
-  chatMessages=[];
-}
+async function loadChatHistory(matchId){try{const r=await supabaseClient.from('match_messages').select('*').eq('match_id',String(matchId)).order('created_at',{ascending:true}).limit(200);chatMessages=r.data||[];renderChatMessages();}catch(e){}}
+function unsubscribeFromChat(){if(chatChannel){try{supabaseClient.removeChannel(chatChannel);}catch(e){}chatChannel=null;}chatMessages=[];}
 function subscribeToChat(matchId){
-  unsubscribeFromChat();
-  if(!matchId)return;
+  unsubscribeFromChat();if(!matchId)return;
   renderChatMessages();loadChatHistory(matchId);
-  chatChannel=supabaseClient.channel('chat_'+matchId)
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'match_messages',filter:'match_id=eq.'+matchId},function(payload){
-      if(!payload.new)return;
-      if(chatMessages.some(function(m){return m.id===payload.new.id;}))return;
-      chatMessages.push(payload.new);renderChatMessages();
-    }).subscribe();
+  chatChannel=supabaseClient.channel('chat_'+matchId).on('postgres_changes',{event:'INSERT',schema:'public',table:'match_messages',filter:'match_id=eq.'+matchId},function(payload){
+    if(!payload.new)return;if(chatMessages.some(function(m){return m.id===payload.new.id;}))return;
+    chatMessages.push(payload.new);renderChatMessages();
+  }).subscribe();
 }
 async function sendChatMessage(){
   if(!currentUser||!currentMatchId)return;
-  const inp=document.getElementById('chatInput');
-  const text=(inp&&inp.value||'').trim();if(!text)return;
-  if(text.length>300)return showToast('error','Ошибка','Максимум 300 символов');
-  const btn=document.getElementById('chatSendBtn');if(btn)btn.disabled=true;
-  inp.value='';
-  try{
-    await supabaseClient.from('match_messages').insert([{match_id:String(currentMatchId),user_id:String(currentUser.id),username:currentUser.username,avatar_url:currentUser.avatar_url||'',avatar_frame:currentUser.avatar_frame||'',text:text}]);
-  }catch(e){showToast('error','Ошибка',e.message);inp.value=text;}
+  const inp=document.getElementById('chatInput');const text=(inp&&inp.value||'').trim();if(!text)return;
+  if(text.length>300)return showToast('error','Ошибка','Максимум 300');
+  const btn=document.getElementById('chatSendBtn');if(btn)btn.disabled=true;inp.value='';
+  try{await supabaseClient.from('match_messages').insert([{match_id:String(currentMatchId),user_id:String(currentUser.id),username:currentUser.username,avatar_url:currentUser.avatar_url||'',avatar_frame:currentUser.avatar_frame||'',text:text}]);}
+  catch(e){showToast('error','Ошибка',e.message);inp.value=text;}
   finally{if(btn)btn.disabled=false;inp.focus();}
 }
 
-/* ===== АДМИН-ЗАВЕРШЕНИЕ МАТЧА ===== */
 function checkMatchResultVisibility(){
   const a=currentUser&&currentUser.isadmin===true;
-  const s=currentMatch&&currentMatch.draft_state;
-  const complete=s&&s.complete;
+  const s=currentMatch&&currentMatch.draft_state;const complete=s&&s.complete;
   const el=document.getElementById('matchActions');if(!el)return;
-  if(complete&&a)el.classList.add('admin-visible');
-  else el.classList.remove('admin-visible');
+  if(complete&&a)el.classList.add('admin-visible');else el.classList.remove('admin-visible');
 }
-async function finishMatch(winner){
-  if(!currentMatch||!currentUser||!currentUser.isadmin)return;
-  await admFinishMatch(currentMatchId,winner);
-  closeMatchForMe();
-}
+async function finishMatch(winner){if(!currentMatch||!currentUser||!currentUser.isadmin)return;await admFinishMatch(currentMatchId,winner);closeMatchForMe();}
 function endMatch(){
   if(!currentMatch||!currentUser||!currentUser.isadmin)return showToast('error','Доступ','');
   if(!confirm('Закрыть матч у всех?'))return;
@@ -1879,20 +1699,17 @@ function closeMatchForMe(){
   document.getElementById('confirmModal').classList.remove('active');
   document.getElementById('matchNavLabel').textContent='Поиск';
   document.querySelector('#matchNavBtn i').className='fas fa-search';
-  unsubscribeFromChat();
-  navigate('matches');
+  if(lobbyTimerInterval){clearInterval(lobbyTimerInterval);lobbyTimerInterval=null;}
+  unsubscribeFromChat();navigate('matches');
 }
 
-/* ===== ИСТОРИЯ / ДРУЗЬЯ / ТОП ===== */
 async function loadMatchHistory(){}
 async function loadFriends(){
   if(!currentUser)return;
   try{
     const fd1=await supabaseClient.from('friends').select('friend_id').eq('user_id',currentUser.id);
     const fd2=await supabaseClient.from('friends').select('user_id').eq('friend_id',currentUser.id);
-    const ids=new Set();
-    (fd1.data||[]).forEach(function(f){ids.add(f.friend_id);});
-    (fd2.data||[]).forEach(function(f){ids.add(f.user_id);});
+    const ids=new Set();(fd1.data||[]).forEach(function(f){ids.add(f.friend_id);});(fd2.data||[]).forEach(function(f){ids.add(f.user_id);});
     if(ids.size>0){const r=await supabaseClient.from('users').select('id, username, isadmin, elo, avatar_url, avatar_frame').in('id',Array.from(ids));myFriends=r.data||[];}else myFriends=[];
     const rd=await supabaseClient.from('friend_requests').select('from_user_id').eq('to_user_id',currentUser.id).eq('status','pending');
     const rids=(rd.data||[]).map(function(x){return x.from_user_id;});
@@ -1905,22 +1722,14 @@ async function loadFriends(){
     updateFriendBadges();renderFriends();
   }catch(e){}
 }
-function updateFriendBadges(){
-  const n=friendRequests.length;
-  const rb=document.getElementById('reqBadge');const nb=document.getElementById('navFriendBadge');
-  if(rb){if(n>0){rb.textContent=n;rb.classList.add('visible');}else rb.classList.remove('visible');}
-  if(nb){if(n>0){nb.textContent=n;nb.classList.add('visible');}else nb.classList.remove('visible');}
-}
+function updateFriendBadges(){const n=friendRequests.length;const rb=document.getElementById('reqBadge');const nb=document.getElementById('navFriendBadge');if(rb){if(n>0){rb.textContent=n;rb.classList.add('visible');}else rb.classList.remove('visible');}if(nb){if(n>0){nb.textContent=n;nb.classList.add('visible');}else nb.classList.remove('visible');}}
 function renderFriends(){
   const c=document.getElementById('friendsListContainer');if(!c)return;
-  let f=[],isR=false;
-  if(friendsTab==='friends'){f=myFriends;}else{isR=true;f=friendRequests;}
+  let f=[],isR=false;if(friendsTab==='friends'){f=myFriends;}else{isR=true;f=friendRequests;}
   document.getElementById('friendsCount').textContent=myFriends.length+' друзей';
-  if(f.length===0){c.innerHTML='<div class="friends-empty"><i class="fas fa-user-friends"></i><p>'+(isR?'Нет входящих заявок':'Нет друзей')+'</p></div>';return;}
+  if(f.length===0){c.innerHTML='<div class="friends-empty"><i class="fas fa-user-friends"></i><p>'+(isR?'Нет заявок':'Нет друзей')+'</p></div>';return;}
   c.innerHTML=f.map(function(fr){
-    const isFriend=myFriends.some(function(m){return m.id===fr.id;});
-    const isReq=friendRequests.some(function(r){return r.id===fr.id;});
-    const inP=partyFriends.some(function(p){return p.id===fr.id;});
+    const isFriend=myFriends.some(function(m){return m.id===fr.id;});const isReq=friendRequests.some(function(r){return r.id===fr.id;});const inP=partyFriends.some(function(p){return p.id===fr.id;});
     let cls='none',txt='Не в друзьях',ac='';
     if(isReq&&!isFriend){cls='request';txt='Заявка';ac='<button class="btn-accept" onclick="acceptFriend(\''+fr.id+'\')"><i class="fas fa-check"></i> Принять</button><button class="btn-decline" onclick="declineFriend(\''+fr.id+'\')"><i class="fas fa-times"></i> Отклонить</button>';}
     else if(isFriend){cls='friend';txt='Друг';if(inP)ac='<button class="btn-remove" onclick="removeFromParty(\''+fr.id+'\')"><i class="fas fa-user-minus"></i> Из пати</button><button class="btn-remove" onclick="removeFriend(\''+fr.id+'\')"><i class="fas fa-user-times"></i> Удалить</button>';else ac='<button class="btn-invite" onclick="inviteToParty(\''+fr.id+'\')"><i class="fas fa-user-plus"></i> В пати</button><button class="btn-remove" onclick="removeFriend(\''+fr.id+'\')"><i class="fas fa-user-times"></i> Удалить</button>';}
@@ -1930,16 +1739,12 @@ function renderFriends(){
 }
 function switchFriendsTab(t){friendsTab=t;document.querySelectorAll('.friends-tabs .tab').forEach(function(x){x.classList.remove('active');});const el=document.querySelector('.friends-tabs .tab[data-tab="'+t+'"]');if(el)el.classList.add('active');renderFriends();}
 function searchFriends(){
-  const q=document.getElementById('friendSearchInput').value.trim().toLowerCase();
-  if(!q)return renderFriends();
+  const q=document.getElementById('friendSearchInput').value.trim().toLowerCase();if(!q)return renderFriends();
   const c=document.getElementById('friendsListContainer');
   const f=friendsList.filter(function(x){return (x.username||'').toLowerCase().indexOf(q)>=0;});
   if(f.length===0){c.innerHTML='<div class="friends-empty"><i class="fas fa-search"></i><p>Никто не найден</p></div>';return;}
   c.innerHTML=f.map(function(fr){
-    const isFriend=myFriends.some(function(m){return m.id===fr.id;});
-    const isSent=sentRequests.some(function(r){return r.id===fr.id;});
-    const isReq=friendRequests.some(function(r){return r.id===fr.id;});
-    const inP=partyFriends.some(function(p){return p.id===fr.id;});
+    const isFriend=myFriends.some(function(m){return m.id===fr.id;});const isSent=sentRequests.some(function(r){return r.id===fr.id;});const isReq=friendRequests.some(function(r){return r.id===fr.id;});const inP=partyFriends.some(function(p){return p.id===fr.id;});
     let cls='none',txt='Не в друзьях',ac='';
     if(isReq&&!isFriend){cls='request';txt='Заявка';ac='<button class="btn-accept" onclick="acceptFriend(\''+fr.id+'\')"><i class="fas fa-check"></i> Принять</button>';}
     else if(isFriend){cls='friend';txt='Друг';ac=inP?'<button class="btn-remove" onclick="removeFromParty(\''+fr.id+'\')"><i class="fas fa-user-minus"></i> Из пати</button>':'<button class="btn-invite" onclick="inviteToParty(\''+fr.id+'\')"><i class="fas fa-user-plus"></i> В пати</button>';}
@@ -1950,43 +1755,21 @@ function searchFriends(){
 }
 async function sendFriendRequest(uid){
   if(!currentUser||uid===currentUser.id)return;
-  try{
-    if(myFriends.some(function(f){return f.id===uid;}))return showToast('info','Уже друг','');
+  try{if(myFriends.some(function(f){return f.id===uid;}))return showToast('info','Уже друг','');
     const r=await supabaseClient.from('friend_requests').insert({from_user_id:currentUser.id,to_user_id:uid,status:'pending'});
     if(r.error)return showToast('error','Ошибка',r.error.message);
     showToast('success','Заявка отправлена','');await loadFriends();
   }catch(e){showToast('error','Ошибка',e.message);}
 }
 async function cancelFriendRequest(uid){if(!confirm('Отменить заявку?'))return;await supabaseClient.from('friend_requests').delete().eq('from_user_id',currentUser.id).eq('to_user_id',uid);showToast('info','Отменена','');await loadFriends();}
-async function acceptFriend(uid){
-  try{
-    await supabaseClient.from('friend_requests').update({status:'accepted'}).eq('from_user_id',uid).eq('to_user_id',currentUser.id);
-    await supabaseClient.from('friends').insert([{user_id:currentUser.id,friend_id:uid},{user_id:uid,friend_id:currentUser.id}]);
-    showToast('success','Друг добавлен','');await loadFriends();
-  }catch(e){showToast('error','Ошибка',e.message);}
-}
+async function acceptFriend(uid){try{await supabaseClient.from('friend_requests').update({status:'accepted'}).eq('from_user_id',uid).eq('to_user_id',currentUser.id);await supabaseClient.from('friends').insert([{user_id:currentUser.id,friend_id:uid},{user_id:uid,friend_id:currentUser.id}]);showToast('success','Друг добавлен','');await loadFriends();}catch(e){showToast('error','Ошибка',e.message);}}
 async function declineFriend(uid){await supabaseClient.from('friend_requests').update({status:'declined'}).eq('from_user_id',uid).eq('to_user_id',currentUser.id);showToast('info','Отклонена','');await loadFriends();}
-async function removeFriend(id){
-  if(!confirm('Удалить из друзей?'))return;
-  await supabaseClient.from('friends').delete().eq('user_id',currentUser.id).eq('friend_id',id);
-  await supabaseClient.from('friends').delete().eq('user_id',id).eq('friend_id',currentUser.id);
-  showToast('info','Удалён','');await loadFriends();
-}
-function inviteToParty(id){
-  const fr=myFriends.find(function(f){return f.id===id;});if(!fr)return;
-  if(partyFriends.some(function(p){return p.id===id;}))return showToast('info','Уже в пати','');
-  if(partyFriends.length>=2)return showToast('error','Ошибка','Максимум 2');
-  partyFriends.push({id:fr.id,username:fr.username});
-  updatePartyUI();renderFriends();showToast('success','В пати',fr.username);
-}
+async function removeFriend(id){if(!confirm('Удалить из друзей?'))return;await supabaseClient.from('friends').delete().eq('user_id',currentUser.id).eq('friend_id',id);await supabaseClient.from('friends').delete().eq('user_id',id).eq('friend_id',currentUser.id);showToast('info','Удалён','');await loadFriends();}
+function inviteToParty(id){const fr=myFriends.find(function(f){return f.id===id;});if(!fr)return;if(partyFriends.some(function(p){return p.id===id;}))return showToast('info','Уже в пати','');if(partyFriends.length>=2)return showToast('error','Ошибка','Максимум 2');partyFriends.push({id:fr.id,username:fr.username});updatePartyUI();renderFriends();showToast('success','В пати',fr.username);}
 function removeFromParty(id){partyFriends=partyFriends.filter(function(f){return f.id!==id;});updatePartyUI();renderFriends();}
 function subscribeToFriends(){
-  if(!currentUser)return;
-  if(friendsChannel){try{supabaseClient.removeChannel(friendsChannel);}catch(e){}friendsChannel=null;}
-  friendsChannel=supabaseClient.channel('friends_'+currentUser.id+'_'+Date.now())
-    .on('postgres_changes',{event:'*',schema:'public',table:'friend_requests'},async function(){await loadFriends();})
-    .on('postgres_changes',{event:'*',schema:'public',table:'friends'},async function(){await loadFriends();})
-    .subscribe();
+  if(!currentUser)return;if(friendsChannel){try{supabaseClient.removeChannel(friendsChannel);}catch(e){}friendsChannel=null;}
+  friendsChannel=supabaseClient.channel('friends_'+currentUser.id+'_'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'friend_requests'},async function(){await loadFriends();}).on('postgres_changes',{event:'*',schema:'public',table:'friends'},async function(){await loadFriends();}).subscribe();
 }
 async function renderTopPage(){
   const c=document.getElementById('topList');
@@ -1998,8 +1781,7 @@ async function renderTopPage(){
     document.getElementById('userRank').textContent='#'+(ur||0);
     if(!data.length){c.innerHTML='<div class="friends-empty">Нет игроков</div>';return;}
     c.innerHTML=data.map(function(u,i){
-      const n=i+1;let rc='';
-      if(n===1)rc='gold';else if(n===2)rc='silver';else if(n===3)rc='bronze';
+      const n=i+1;let rc='';if(n===1)rc='gold';else if(n===2)rc='silver';else if(n===3)rc='bronze';
       const wr=u.matches>0?Math.round((u.wins||0)/u.matches*100):0;
       const me=u.id===(currentUser&&currentUser.id)?'me':'';
       const lvlRing='<div class="lvl-inline">'+levelRingHtml(u.elo||300,'sm')+'</div>';
@@ -2008,20 +1790,14 @@ async function renderTopPage(){
   }catch(e){console.error('renderTopPage',e);if(c)c.innerHTML='<div class="friends-empty">Ошибка загрузки</div>';}
 }
 async function openViewProfile(userId){
-  if(!userId)return;
-  viewingUserId=userId;
-  const modal=document.getElementById('viewProfileModal');
-  const body=document.getElementById('viewProfileBody');
-  body.innerHTML='<div class="adm-empty">Загрузка...</div>';
-  modal.classList.add('active');
+  if(!userId)return;viewingUserId=userId;
+  const modal=document.getElementById('viewProfileModal');const body=document.getElementById('viewProfileBody');
+  body.innerHTML='<div class="adm-empty">Загрузка...</div>';modal.classList.add('active');
   try{
     const r=await supabaseClient.from('users').select('*').eq('id',userId).maybeSingle();
-    const p=r.data;
-    if(!p){body.innerHTML='<div class="adm-empty">Игрок не найден</div>';return;}
-    const m=p.matches||0,w=p.wins||0,l=p.losses||0;
-    const wr=m>0?Math.round(w/m*100):0;
-    const isMe=p.id===currentUser.id;
-    const isFriend=myFriends.some(function(f){return f.id===p.id;});
+    const p=r.data;if(!p){body.innerHTML='<div class="adm-empty">Игрок не найден</div>';return;}
+    const m=p.matches||0,w=p.wins||0,l=p.losses||0;const wr=m>0?Math.round(w/m*100):0;
+    const isMe=p.id===currentUser.id;const isFriend=myFriends.some(function(f){return f.id===p.id;});
     let actionBtn='';
     if(!isMe&&isFriend)actionBtn='<button class="btn-action edit" style="background:#2a2050;color:#ff6b6b" onclick="removeFriend(\''+p.id+'\');closeViewProfile()">Удалить из друзей</button>';
     else if(!isMe)actionBtn='<button class="btn-action edit" style="background:#a855f7;color:#fff" onclick="sendFriendRequest(\''+p.id+'\')">Добавить в друзья</button>';
@@ -2029,31 +1805,8 @@ async function openViewProfile(userId){
   }catch(e){body.innerHTML='<div class="adm-empty">Ошибка: '+e.message+'</div>';}
 }
 function closeViewProfile(){document.getElementById('viewProfileModal').classList.remove('active');viewingUserId=null;}
-
-/* ===== КОШЕЛЁК ===== */
-async function applyPromo(){
-  const inp=document.getElementById('promoInput');
-  const code=inp.value.trim().toUpperCase();
-  if(!code)return showToast('error','Ошибка','Введите промокод');
-  try{
-    const r=await supabaseClient.from('promocodes').select('*').eq('code',code).single();
-    const data=r.data;
-    if(!data)return showToast('error','Ошибка','Не найден');
-    if(data.used_count>=data.max_uses)return showToast('error','Ошибка','Использован');
-    await supabaseClient.from('promocodes').update({used_count:data.used_count+1}).eq('id',data.id);
-    const nb=(currentUser.balance||0)+data.amount;
-    await supabaseClient.from('users').update({balance:nb}).eq('id',currentUser.id);
-    currentUser.balance=nb;saveSession(currentUser);
-    document.getElementById('walletBalance').textContent=nb+' ₽';
-    showToast('success','Применён!','+'+data.amount+' ₽');inp.value='';
-  }catch(e){showToast('error','Ошибка',e.message);}
-}
-function updatePartyUI(){
-  document.getElementById('partyCount').textContent=partyFriends.length+'/2';
-  const c=document.getElementById('partyMembers');
-  if(partyFriends.length===0){c.innerHTML='<span class="party-empty">Нет участников</span>';return;}
-  c.innerHTML=partyFriends.map(function(f){return '<span class="party-member"><span class="avatar-small">'+f.username.charAt(0).toUpperCase()+'</span>'+f.username+'<span class="remove" onclick="removeFromParty(\''+f.id+'\')">&times;</span></span>';}).join('');
-}
+async function applyPromo(){const inp=document.getElementById('promoInput');const code=inp.value.trim().toUpperCase();if(!code)return showToast('error','Ошибка','Введите промокод');try{const r=await supabaseClient.from('promocodes').select('*').eq('code',code).single();const data=r.data;if(!data)return showToast('error','Ошибка','Не найден');if(data.used_count>=data.max_uses)return showToast('error','Ошибка','Использован');await supabaseClient.from('promocodes').update({used_count:data.used_count+1}).eq('id',data.id);const nb=(currentUser.balance||0)+data.amount;await supabaseClient.from('users').update({balance:nb}).eq('id',currentUser.id);currentUser.balance=nb;saveSession(currentUser);document.getElementById('walletBalance').textContent=nb+' ₽';showToast('success','Применён!','+'+data.amount+' ₽');inp.value='';}catch(e){showToast('error','Ошибка',e.message);}}
+function updatePartyUI(){document.getElementById('partyCount').textContent=partyFriends.length+'/2';const c=document.getElementById('partyMembers');if(partyFriends.length===0){c.innerHTML='<span class="party-empty">Нет участников</span>';return;}c.innerHTML=partyFriends.map(function(f){return '<span class="party-member"><span class="avatar-small">'+f.username.charAt(0).toUpperCase()+'</span>'+f.username+'<span class="remove" onclick="removeFromParty(\''+f.id+'\')">&times;</span></span>';}).join('');}
 async function resync(){
   if(!currentUser)return;
   try{
@@ -2077,7 +1830,7 @@ async function updateHomeStats(){
   }catch(e){}
 }
 
-/* ===== АДМИНКА ===== */
+/* Админка */
 async function renderAdminPanel(){
   if(!currentUser||!currentUser.isadmin)return;
   const body=document.getElementById('admBody');if(!body)return;
@@ -2107,18 +1860,15 @@ async function renderAdminPanel(){
       bindAdminSearch();
     }
     else if(adminTab==='queue'){
-      const r=await supabaseClient.from('queue').select('*').eq('status','searching');
-      adminQueue=r.data||[];
+      const r=await supabaseClient.from('queue').select('*').eq('status','searching');adminQueue=r.data||[];
       body.innerHTML='<div style="display:flex;justify-content:space-between;margin-bottom:10px"><div style="font-weight:700">В очереди: '+adminQueue.length+'</div><button onclick="admClearQueue()" style="padding:6px 12px;background:#ff6b6b;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:11px">🧹</button></div>'+(adminQueue.length===0?'<div class="adm-empty">Пусто</div>':adminQueue.map(function(p){return '<div class="adm-qrow"><div class="av">'+(p.username||'?').charAt(0).toUpperCase()+'</div><div class="nm">'+escapeHtml(p.username||'?')+'</div><div class="elo">'+(p.elo||300)+'</div></div>';}).join(''));
     }
     else if(adminTab==='promos'){
-      const r=await supabaseClient.from('promocodes').select('*').order('created_at',{ascending:false});
-      adminPromos=r.data||[];
+      const r=await supabaseClient.from('promocodes').select('*').order('created_at',{ascending:false});adminPromos=r.data||[];
       body.innerHTML='<div class="adm-promo-creation"><div class="adm-promo-row"><input type="text" id="admPromoCode" placeholder="КОД" maxlength="20"></div><div class="adm-promo-row"><input type="number" id="admPromoAmount" placeholder="Сумма ₽" min="1"><input type="number" id="admPromoUses" placeholder="Активаций" min="1" value="1"></div><button onclick="admCreatePromo()" style="padding:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer">Создать</button></div>'+(adminPromos.length===0?'<div class="adm-empty">Нет промокодов</div>':adminPromos.map(function(p){return '<div class="adm-qrow"><div class="nm"><b>'+p.code+'</b> — '+p.amount+' ₽</div><div style="font-size:11px;color:#a89ec4">'+p.used_count+'/'+p.max_uses+'</div><button onclick="admDeletePromo(\''+p.id+'\')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer;padding:0 4px">×</button></div>';}).join(''));
     }
     else if(adminTab==='admins'){
-      const r=await supabaseClient.from('users').select('id, username').eq('isadmin',true);
-      adminAdmins=r.data||[];
+      const r=await supabaseClient.from('users').select('id, username').eq('isadmin',true);adminAdmins=r.data||[];
       body.innerHTML='<div style="display:flex;gap:8px;margin-bottom:12px"><input class="adm-search" id="admNewAdmin" placeholder="Никнейм" style="margin-bottom:0"><button onclick="admAddAdmin()" style="padding:10px 14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer">+</button></div>'+(adminAdmins.length===0?'<div class="adm-empty">Нет админов</div>':adminAdmins.map(function(a){return '<div class="adm-qrow"><div class="av">'+(a.username||'?').charAt(0).toUpperCase()+'</div><div class="nm">'+escapeHtml(a.username||'?')+' 👑</div><button onclick="admRemoveAdmin(\''+a.id+'\')" style="background:none;border:none;color:#ff6b6b;font-size:18px;cursor:pointer">×</button></div>';}).join(''));
     }
     else if(adminTab==='settings'){
@@ -2126,13 +1876,7 @@ async function renderAdminPanel(){
     }
   }catch(e){body.innerHTML='<div class="adm-empty">Ошибка: '+e.message+'</div>';}
 }
-function bindAdminSearch(){
-  const i=document.getElementById('admSearchInput');if(!i)return;let t;
-  i.addEventListener('input',function(e){
-    clearTimeout(t);
-    t=setTimeout(async function(){adminSearchQuery=e.target.value.trim();await renderAdminPanel();const ni=document.getElementById('admSearchInput');if(ni){ni.focus();ni.setSelectionRange(ni.value.length,ni.value.length);}},400);
-  });
-}
+function bindAdminSearch(){const i=document.getElementById('admSearchInput');if(!i)return;let t;i.addEventListener('input',function(e){clearTimeout(t);t=setTimeout(async function(){adminSearchQuery=e.target.value.trim();await renderAdminPanel();const ni=document.getElementById('admSearchInput');if(ni){ni.focus();ni.setSelectionRange(ni.value.length,ni.value.length);}},400);});}
 async function admFinishMatch(matchId,winner){
   const mr=await supabaseClient.from('active_matches').select('*').eq('id',matchId).single();
   const match=mr.data;if(!match)return showToast('error','Ошибка','Матч не найден');
@@ -2140,18 +1884,13 @@ async function admFinishMatch(matchId,winner){
   const blue=typeof match.blue==='string'?JSON.parse(match.blue):match.blue;
   const winners=winner==='blue'?blue:orange,losers=winner==='blue'?orange:blue;
   const totalPlayers=winners.length+losers.length;const teamSize=totalPlayers/2;
-  let winPoints=35,losePoints=-15;
-  if(teamSize<=1){winPoints=15;losePoints=-10;}else if(teamSize<=2){winPoints=20;losePoints=-12;}
+  let winPoints=35,losePoints=-15;if(teamSize<=1){winPoints=15;losePoints=-10;}else if(teamSize<=2){winPoints=20;losePoints=-12;}
   const ec={};winners.forEach(function(wp){ec[wp.id]=winPoints;});losers.forEach(function(lp){ec[lp.id]=losePoints;});
-  const mn=(match.draft_state&&match.draft_state.final)||'—';
-  const all=[].concat(orange,blue);
+  const mn=(match.draft_state&&match.draft_state.final)||'—';const all=[].concat(orange,blue);
   for(let i=0;i<all.length;i++){
-    const player=all[i];
-    const isWin=winners.some(function(w){return w.id===player.id;});
-    const eloChange=ec[player.id]||0;
+    const player=all[i];const isWin=winners.some(function(w){return w.id===player.id;});const eloChange=ec[player.id]||0;
     try{
-      const ur=await supabaseClient.from('users').select('*').eq('id',player.id).single();
-      const ud=ur.data;
+      const ur=await supabaseClient.from('users').select('*').eq('id',player.id).single();const ud=ur.data;
       if(ud){await supabaseClient.from('users').update({matches:(ud.matches||0)+1,wins:(ud.wins||0)+(isWin?1:0),losses:(ud.losses||0)+(isWin?0:1),elo:Math.max(100,(ud.elo||300)+eloChange),mvp:(ud.mvp||0)+(isWin?1:0),lastlogin:new Date().toISOString()}).eq('id',player.id);}
       await supabaseClient.from('match_history').insert([{id:Date.now().toString()+'_'+Math.random().toString(36).substr(2,4),user_id:player.id,username:player.username,map:mn,result:isWin?'win':'loss',elo_change:eloChange,match_date:new Date().toISOString(),server_name:'Aliance Faceit',created_at:new Date().toISOString()}]);
     }catch(e){}
@@ -2165,36 +1904,12 @@ async function admSetRating(id,nick,cur){const v=prompt('Новый рейтин
 async function admSetBanned(id,b){if(!confirm(b?'Забанить?':'Разбанить?'))return;await supabaseClient.from('users').update({banned:b}).eq('id',id);showToast('success','Готово','');await renderAdminPanel();}
 async function admSetAdmin(id,a){if(!confirm(a?'Сделать админом?':'Снять?'))return;await supabaseClient.from('users').update({isadmin:a}).eq('id',id);showToast('success','Готово','');await renderAdminPanel();}
 async function admClearQueue(){if(!confirm('Очистить очередь?'))return;const r=await supabaseClient.from('queue').delete().eq('status','searching');if(r.error){showToast('error','Ошибка',r.error.message);return;}showToast('success','Готово','Очередь очищена');await renderAdminPanel();}
-async function admCreatePromo(){
-  const c=document.getElementById('admPromoCode').value.trim().toUpperCase();
-  const a=parseInt(document.getElementById('admPromoAmount').value);
-  const u=parseInt(document.getElementById('admPromoUses').value)||1;
-  if(!c||!a||a<1)return showToast('error','Ошибка','Проверьте');
-  const r=await supabaseClient.from('promocodes').insert([{code:c,amount:a,max_uses:u,used_count:0,created_by:currentUser.username}]);
-  if(r.error)return showToast('error','Ошибка',r.error.code==='23505'?'Существует':r.error.message);
-  showToast('success','Готово',c);await renderAdminPanel();
-}
+async function admCreatePromo(){const c=document.getElementById('admPromoCode').value.trim().toUpperCase();const a=parseInt(document.getElementById('admPromoAmount').value);const u=parseInt(document.getElementById('admPromoUses').value)||1;if(!c||!a||a<1)return showToast('error','Ошибка','Проверьте');const r=await supabaseClient.from('promocodes').insert([{code:c,amount:a,max_uses:u,used_count:0,created_by:currentUser.username}]);if(r.error)return showToast('error','Ошибка',r.error.code==='23505'?'Существует':r.error.message);showToast('success','Готово',c);await renderAdminPanel();}
 async function admDeletePromo(id){if(!confirm('Удалить?'))return;await supabaseClient.from('promocodes').delete().eq('id',id);await renderAdminPanel();}
-async function admAddAdmin(){
-  const n=document.getElementById('admNewAdmin').value.trim();if(!n)return;
-  const r=await supabaseClient.from('users').select('id, isadmin').ilike('username',n).maybeSingle();
-  const u=r.data;if(!u)return showToast('error','Ошибка','Не найден');
-  if(u.isadmin)return showToast('info','Уже','');
-  await supabaseClient.from('users').update({isadmin:true}).eq('id',u.id);
-  showToast('success','Готово',n);await renderAdminPanel();
-}
+async function admAddAdmin(){const n=document.getElementById('admNewAdmin').value.trim();if(!n)return;const r=await supabaseClient.from('users').select('id, isadmin').ilike('username',n).maybeSingle();const u=r.data;if(!u)return showToast('error','Ошибка','Не найден');if(u.isadmin)return showToast('info','Уже','');await supabaseClient.from('users').update({isadmin:true}).eq('id',u.id);showToast('success','Готово',n);await renderAdminPanel();}
 async function admRemoveAdmin(id){if(!confirm('Снять?'))return;await supabaseClient.from('users').update({isadmin:false}).eq('id',id);await renderAdminPanel();}
-async function admSaveSettings(){
-  const s=parseInt(document.getElementById('admTeamSize').value,10);
-  if(!s||s<1||s>5){showToast('error','Ошибка','Размер 1-5');return;}
-  if(!confirm('Переключить формат на '+s+'×'+s+'?'))return;
-  const r=await supabaseClient.from('settings').update({value:String(s)}).eq('key','team_size');
-  if(r.error){showToast('error','Ошибка',r.error.message);return;}
-  currentSettings.team_size=String(s);updateFormatLabels();
-  showToast('success','Формат обновлён',s+'×'+s);
-}
+async function admSaveSettings(){const s=parseInt(document.getElementById('admTeamSize').value,10);if(!s||s<1||s>5){showToast('error','Ошибка','Размер 1-5');return;}if(!confirm('Переключить формат на '+s+'×'+s+'?'))return;const r=await supabaseClient.from('settings').update({value:String(s)}).eq('key','team_size');if(r.error){showToast('error','Ошибка',r.error.message);return;}currentSettings.team_size=String(s);updateFormatLabels();showToast('success','Формат обновлён',s+'×'+s);}
 
-/* ===== VISIBILITY / TG ===== */
 function scheduleAutoLeave(){
   if(_autoLeaveTimer)clearTimeout(_autoLeaveTimer);
   _autoLeaveTimer=setTimeout(async function(){
@@ -2205,8 +1920,7 @@ function scheduleAutoLeave(){
       isSearching=false;await cleanupSearchState();updateSearchVisibility();
       const sp=document.getElementById('searchCurrentPlayers');if(sp)sp.textContent='0';
       const st=document.getElementById('searchTimerDisplay');if(st)st.innerHTML='<i class="fas fa-clock"></i> 00:00';
-      await updateHomeStats();
-      showToast('info','Поиск отменён','Вы свернули приложение');
+      await updateHomeStats();showToast('info','Поиск отменён','Вы свернули приложение');
     }catch(e){}
   },AUTO_LEAVE_DELAY);
 }
@@ -2228,7 +1942,6 @@ window.addEventListener('offline',function(){if(isSearching)scheduleAutoLeave();
   }catch(e){}
 })();
 
-/* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',async function(){
   document.getElementById('tabLogin').addEventListener('click',function(){switchAuthTab('login');});
   document.getElementById('tabRegister').addEventListener('click',function(){switchAuthTab('register');});
@@ -2242,28 +1955,15 @@ document.addEventListener('DOMContentLoaded',async function(){
       else if(document.getElementById('registerForm').classList.contains('active'))registerUser();
     }
   });
-  const pi=document.getElementById('promoInput');
-  if(pi)pi.addEventListener('keydown',function(e){if(e.key==='Enter')applyPromo();});
+  const pi=document.getElementById('promoInput');if(pi)pi.addEventListener('keydown',function(e){if(e.key==='Enter')applyPromo();});
   document.getElementById('viewProfileModal').addEventListener('click',function(e){if(e.target.id==='viewProfileModal')closeViewProfile();});
-  const fs=document.getElementById('friendSearchInput');
-  if(fs)fs.addEventListener('input',function(){searchFriends();});
-  const ci=document.getElementById('chatInput');
-  if(ci)ci.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sendChatMessage();}});
-  const vb=document.getElementById('mVoiceBtn');
-  if(vb)vb.addEventListener('click',function(){showToast('info','Голос','Голосовой чат скоро');});
+  const fs=document.getElementById('friendSearchInput');if(fs)fs.addEventListener('input',function(){searchFriends();});
+  const ci=document.getElementById('chatInput');if(ci)ci.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sendChatMessage();}});
   cleanupInterval=setInterval(async function(){
-    try{
-      const cutoff=new Date(Date.now()-90000).toISOString();
-      await supabaseClient.from('queue').delete().eq('status','searching').lt('last_seen',cutoff);
-    }catch(e){}
+    try{const cutoff=new Date(Date.now()-90000).toISOString();await supabaseClient.from('queue').delete().eq('status','searching').lt('last_seen',cutoff);}catch(e){}
   },60000);
   const session=getSession();
-  if(session){
-    try{
-      const r=await supabaseClient.from('users').select('*').eq('id',session.id).maybeSingle();
-      if(r.data)currentUser=r.data;
-    }catch(e){}
-  }
+  if(session){try{const r=await supabaseClient.from('users').select('*').eq('id',session.id).maybeSingle();if(r.data)currentUser=r.data;}catch(e){}}
   await checkAuth();
 });
 </script>

@@ -2,35 +2,172 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Brawl Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>StartUp — Brawl Stars</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
 <style>
-:root{--bg:#0d0d0d;--card:#1a1a1a;--or:#ff7a00;--or2:#ffa040;--tx:#f5f5f5;--mut:#8a8a8a}
+:root{--bg:#0a0a0a;--card:#141414;--or:#ff7a00;--or2:#ffa040;--tx:#f5f5f5;--mut:#8f8f8f}
 *{box-sizing:border-box;margin:0}
-body{background:var(--bg);color:var(--tx);font-family:system-ui,sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center}
-.card{background:var(--card);border:1px solid #2a2a2a;border-radius:20px;padding:24px;width:100%;max-width:420px;text-align:center;margin-top:20px}
-h1{color:var(--or);font-size:22px;margin-bottom:8px}
-p{color:var(--mut);font-size:14px;line-height:1.5;margin:8px 0}
-.btn{background:linear-gradient(135deg,var(--or),var(--or2));color:#000;border:0;border-radius:12px;padding:14px;font-weight:700;font-size:16px;width:100%;margin-top:16px;cursor:pointer}
+body{background-color:var(--bg);background-image:linear-gradient(rgba(255,122,0,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,122,0,.08) 1px,transparent 1px);background-size:28px 28px;background-position:center top;color:var(--tx);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;padding:80px 20px 40px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.brand{font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--or);text-align:center;opacity:.95}
+.brand span{color:var(--mut)}
+.card{position:relative;background:linear-gradient(180deg,#191919,#101010);border:1px solid rgba(255,122,0,.25);border-radius:26px;padding:30px 22px 24px;width:100%;max-width:400px;text-align:center;margin-top:18px;box-shadow:0 0 0 1px #000,0 18px 50px rgba(0,0,0,.65),0 0 60px rgba(255,122,0,.10)}
+.card::before{content:"";position:absolute;left:20%;right:20%;top:-1px;height:2px;background:linear-gradient(90deg,transparent,var(--or),transparent);border-radius:2px}
+.icon{width:68px;height:68px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;background:radial-gradient(circle at 30% 25%,#ffb066,var(--or) 60%,#c85a00);box-shadow:0 0 28px rgba(255,122,0,.45)}
+h1{color:var(--tx);font-size:22px;font-weight:800;margin-bottom:6px}
+p{color:var(--mut);font-size:14px;line-height:1.55;margin:8px 0}
+.steps{display:flex;justify-content:center;gap:8px;margin:16px 0 4px}
+.steps i{width:30px;height:4px;border-radius:4px;background:#2c2c2c}
+.steps i.on{background:linear-gradient(90deg,var(--or),var(--or2));box-shadow:0 0 8px rgba(255,122,0,.6)}
+.btn{background:linear-gradient(135deg,var(--or),var(--or2));color:#111;border:0;border-radius:14px;padding:15px;font-weight:800;font-size:16px;width:100%;margin-top:16px;cursor:pointer;box-shadow:0 6px 20px rgba(255,122,0,.3);transition:transform .1s}
+.btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.5}
-.ava{width:110px;height:110px;border-radius:50%;border:3px solid var(--or);object-fit:cover;background:#222}
-.nick{font-size:26px;font-weight:800;margin-top:14px}
-.tag{color:var(--or);font-weight:600}
-.badge{display:inline-block;background:#1f1400;color:var(--or);border:1px solid var(--or);border-radius:20px;padding:4px 12px;font-size:12px;margin-top:10px}
-input[type=text]{width:100%;background:#111;border:1px solid #333;color:var(--tx);border-radius:10px;padding:12px;margin-top:12px;font-size:16px;text-align:center}
-.err{color:#ff5252}
+.drop{display:block;width:100%;margin-top:18px;padding:26px 14px;border:2px dashed rgba(255,122,0,.45);border-radius:18px;background:rgba(255,122,0,.05);color:var(--tx);font-size:15px;font-weight:600;cursor:pointer}
+.drop small{display:block;color:var(--mut);font-weight:400;font-size:12px;margin-top:6px}
+.drop b{display:block;font-size:30px;margin-bottom:6px}
+.ava{width:116px;height:116px;border-radius:50%;border:3px solid var(--or);object-fit:cover;background:#222;box-shadow:0 0 30px rgba(255,122,0,.45)}
+.nick{font-size:26px;font-weight:800;margin-top:16px}
+.tag{color:var(--or);font-weight:700;letter-spacing:.5px}
+.badge{display:inline-block;background:rgba(255,122,0,.1);color:var(--or2);border:1px solid rgba(255,122,0,.5);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;margin-top:12px}
+.found{background:#0d0d0d;border:1px solid #2a2a2a;border-radius:14px;padding:12px;margin-top:14px}
+.found .tag{font-size:18px}
+input[type=text]{width:100%;background:#0c0c0c;border:1px solid #2e2e2e;color:var(--tx);border-radius:12px;padding:14px;margin-top:14px;font-size:18px;font-weight:700;letter-spacing:1px;text-align:center;outline:0}
+input[type=text]:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(255,122,0,.15)}
+.err{color:#ff6b6b}
 .hidden{display:none}
+body.shell{justify-content:flex-start;padding-top:90px;padding-bottom:120px}
+#nav{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:420px;margin:0 auto;display:flex;gap:4px;padding:8px;background:rgba(18,18,18,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,122,0,.3);border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.7),0 0 30px rgba(255,122,0,.1)}
+#nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;color:var(--mut);font-size:11px;font-weight:700;padding:9px 4px;border-radius:17px;cursor:pointer;transition:.15s}
+#nav button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#nav button.on{color:var(--or);background:rgba(255,122,0,.13)}
+#nav button.on svg{filter:drop-shadow(0 0 6px rgba(255,122,0,.8))}
+.soon{margin-top:14px;display:inline-block;border:1px dashed rgba(255,122,0,.4);color:var(--or2);border-radius:12px;padding:8px 14px;font-size:13px;font-weight:600}
+.ico svg{width:34px;height:34px;fill:none;stroke:#111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#nav.hidden{display:none}
+html{touch-action:manipulation;-webkit-text-size-adjust:100%}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input{-webkit-user-select:text;user-select:text}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}
+.stat{background:#0d0d0d;border:1px solid #262626;border-radius:16px;padding:14px 4px}
+.stat b{display:block;font-size:24px;font-weight:800}
+.stat span{display:block;color:var(--mut);font-size:11px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.stat.w b{color:#4cd964}.stat.l b{color:#ff6b6b}.stat.r b{color:var(--or)}
+.wallet{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;background:linear-gradient(135deg,rgba(255,122,0,.16),rgba(255,122,0,.04));border:1px solid rgba(255,122,0,.35);border-radius:18px;padding:14px 16px;text-align:left}
+.wallet span{display:block;color:var(--mut);font-size:12px}
+.wallet b{font-size:24px;font-weight:800}
+.wallet .btn{width:auto;margin:0;padding:11px 16px;font-size:14px}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.sheet-in{width:100%;max-width:440px;background:#141414;border:1px solid rgba(255,122,0,.3);border-bottom:0;border-radius:26px 26px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px));text-align:center}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.chip{background:#0d0d0d;border:1px solid #2e2e2e;color:var(--tx);border-radius:12px;padding:12px 0;font-weight:700;font-size:15px;cursor:pointer}
+.chip.on{border-color:var(--or);color:var(--or);background:rgba(255,122,0,.1)}
+.link{background:none;border:0;color:var(--mut);margin-top:12px;font-size:14px;cursor:pointer}
+.chart{margin-top:12px;background:#0d0d0d;border:1px solid #262626;border-radius:18px;padding:16px 14px 12px;text-align:left}
+.ch-title{font-size:11px;letter-spacing:2px;color:var(--mut);font-weight:800;text-transform:uppercase}
+.ch-head{display:flex;justify-content:space-between;align-items:baseline;margin:10px 0 6px}
+#chv{font-size:30px;font-weight:800}#chd{font-weight:800;font-size:15px;margin-left:8px}#cht{color:var(--mut);font-size:13px}
+#chsvg{display:block;width:100%;touch-action:pan-y;cursor:ew-resize}
+.ch-foot{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:6px}
+.up{color:#6ee787}.down{color:#ff6b6b}
+.mlist{text-align:left;margin-top:14px}
+.mrow{display:flex;align-items:center;gap:12px;background:#0d0d0d;border:1px solid #262626;border-radius:14px;padding:12px;margin-top:8px}
+.mres{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;border-radius:8px;padding:6px 8px;min-width:84px;text-align:center}
+.mres.win{background:rgba(110,231,135,.12);color:#6ee787;border:1px solid rgba(110,231,135,.35)}
+.mres.loss{background:rgba(255,107,107,.12);color:#ff6b6b;border:1px solid rgba(255,107,107,.35)}
+.minfo{flex:1}.minfo b{display:block;font-size:14px}.minfo span{color:var(--mut);font-size:12px}
+.mdelta{text-align:right;font-weight:800;font-size:16px}.mdelta small{display:block;color:var(--mut);font-weight:600;font-size:11px}
+.balrow{display:flex;justify-content:space-between;align-items:center;background:#0d0d0d;border:1px solid #262626;border-radius:14px;padding:12px 14px;margin-top:14px;color:var(--mut);font-size:13px}
+.balrow b{color:var(--tx);font-size:18px}
+.sec{text-align:left;font-size:11px;letter-spacing:2px;color:var(--mut);font-weight:800;text-transform:uppercase;margin:20px 2px 8px}
+.chips.three{grid-template-columns:repeat(3,1fr)}
+.lrow{display:flex;align-items:center;gap:12px;background:#0d0d0d;border:1px solid #262626;border-radius:16px;padding:12px;margin-top:8px;text-align:left}
+.lrow .av{width:42px;height:42px;flex:none}
+.lrow .li{flex:1;min-width:0}.lrow .li b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lrow .li span{color:var(--mut);font-size:12px}
+.lrow .st{font-weight:800;font-size:17px;color:var(--or)}
+.lrow .btn{width:auto;margin:0;padding:10px 16px;font-size:14px}
+.av{width:68px;height:68px;border-radius:50%;border:2px solid #333;background:#1a1a1a;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#666}
+.av img{width:100%;height:100%;object-fit:cover}
+.av svg{width:55%;height:55%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.av.ok{border-color:var(--or);box-shadow:0 0 16px rgba(255,122,0,.55)}
+.av.empty{border-style:dashed;background:transparent}
+.avs{display:flex;justify-content:center;gap:16px;margin-top:20px}
+.ringwrap{position:relative;width:200px;height:200px;margin:4px auto 0}
+.ringwrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ringwrap circle{fill:none;stroke-width:10}
+.r-bg{stroke:#222}.r-fg{stroke:var(--or);stroke-linecap:round;stroke-dasharray:565;filter:drop-shadow(0 0 8px rgba(255,122,0,.7))}
+.cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:800;color:var(--or);text-shadow:0 0 24px rgba(255,122,0,.5)}
+.big{font-size:26px;letter-spacing:.5px;text-transform:uppercase;margin-top:14px}
+.ready{margin-top:16px;color:var(--mut);font-weight:700}.ready b{color:var(--tx);font-size:22px}
+.toast{position:fixed;left:50%;top:96px;transform:translateX(-50%);background:#2a1200;border:1px solid var(--or);color:var(--tx);padding:10px 16px;border-radius:12px;font-size:14px;z-index:99;max-width:90%;text-align:center}
+.btn.ghost{background:none;border:1px solid #333;color:var(--mut);box-shadow:none}
+#nav button.hidden{display:none}
+.note{background:rgba(255,122,0,.07);border:1px solid rgba(255,122,0,.3);border-radius:14px;padding:12px 14px;margin-top:16px;color:var(--tx);font-size:13px;line-height:1.55;text-align:left}
+.note b{color:var(--or2)}
+.pulse{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--or);margin-right:8px;animation:pl 1.2s infinite}
+@keyframes pl{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+.shot{width:100%;border-radius:12px;border:1px solid #2a2a2a;margin-top:8px;display:block}
+.viewer{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:90;display:flex;align-items:center;justify-content:center}
+.viewer img{max-width:100%;max-height:100%;object-fit:contain}
+.btn.sm{padding:11px;font-size:14px;margin-top:10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#0d0d0d;border:1px solid #262626;border-radius:14px;padding:5px;margin-top:14px}
+.seg button{background:none;border:0;color:var(--mut);font-weight:800;font-size:14px;padding:11px;border-radius:10px;cursor:pointer}
+.seg button.on{background:rgba(255,122,0,.15);color:var(--or);box-shadow:inset 0 0 0 1px rgba(255,122,0,.5)}
+.prize{margin-top:12px;color:var(--or2);font-size:13px;font-weight:600;line-height:1.5}
+.avs.many{flex-wrap:wrap;gap:10px}
+.avs.many .av{width:54px;height:54px}
+.tag-sd{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.5px;color:var(--or);border:1px solid rgba(255,122,0,.5);border-radius:6px;padding:2px 6px;margin-right:6px}
+.top-row{display:flex;align-items:center;gap:12px;background:#0d0d0d;border:1px solid #262626;border-radius:14px;padding:10px 12px;margin-top:8px;text-align:left}
+.top-row.me{border-color:rgba(255,122,0,.6);background:rgba(255,122,0,.06)}
+.top-row .pl{width:28px;text-align:center;font-weight:800;color:var(--mut)}
+.top-row.p1 .pl{color:#ffd54a}.top-row.p2 .pl{color:#cfd8dc}.top-row.p3 .pl{color:#d9925b}
+.top-row .av{width:40px;height:40px;flex:none}
+.top-row .li{flex:1;min-width:0}.top-row .li b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.top-row .li span{color:var(--mut);font-size:12px}
+.top-row .w{font-weight:800;font-size:18px;color:var(--or)}
+.pk{display:flex;gap:6px;margin-top:8px}.pk button{flex:1;margin:0}
+.pk button.on{background:linear-gradient(135deg,var(--or),var(--or2));color:#111}
+.pk button:not(.on){background:#161616;color:var(--tx);border:1px solid #333;box-shadow:none}
+.promo{display:flex;gap:8px;align-items:center;margin-top:8px}
+.promo input{margin:0;flex:1;text-transform:uppercase;font-size:16px;letter-spacing:1px}
+.promo .btn{width:auto;margin:0;padding:14px 16px;font-size:14px}
+#nav button{position:relative}
+.bdg{position:absolute;top:2px;right:16%;min-width:18px;height:18px;border-radius:9px;background:#ff3b30;color:#fff;font-size:11px;font-style:normal;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.bdg.hidden{display:none}
+.qr{width:100%;max-width:260px;border-radius:16px;margin:14px auto 0;display:block;background:#fff;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+.refcode{display:inline-block;margin-top:10px;padding:6px 14px;border:1px dashed rgba(255,122,0,.6);border-radius:10px;color:var(--or2);font-weight:800;font-size:20px;letter-spacing:3px}
+.seg.four button{font-size:11.5px;padding:10px 2px}
+.wallet{flex-wrap:wrap}
+.wbtns{display:flex;gap:8px;width:100%}
+.wallet .wbtns .btn{flex:1;width:auto}
+.seg.adm{display:flex;flex-wrap:wrap;gap:6px}
+.seg.adm button{flex:1 1 30%;font-size:12px;padding:10px 4px}
+.copy{background:none;border:1px solid #333;color:var(--or2);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;margin-left:8px}
+.mis{background:#0d0d0d;border:1px solid #262626;border-radius:16px;padding:14px;margin-top:10px;text-align:left}
+.mis.done{border-color:rgba(255,122,0,.55)}
+.mis .mh{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.mis .rw{color:var(--or);font-weight:800;white-space:nowrap}
+.mis .pg{display:flex;justify-content:space-between;color:var(--mut);font-size:12px}
+.bar{height:8px;background:#222;border-radius:6px;overflow:hidden;margin:10px 0 6px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--or),var(--or2));border-radius:6px}
+.refbox{word-break:break-all;background:#0a0a0a;border:1px dashed rgba(255,122,0,.5);border-radius:12px;padding:10px;font-size:12px;color:var(--or2);margin-top:10px;-webkit-user-select:text;user-select:text}
+.row2{display:flex;gap:8px;margin-top:10px}.row2 .btn{flex:1;margin:0}
 </style>
 </head>
 <body>
+<div class="brand">StartUp <span>—</span> Brawl Stars</div>
 <div id="app" class="card"><h1>Загрузка…</h1></div>
 
+<nav id="nav" class="hidden">
+  <button data-t="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Профиль</button>
+  <button data-t="matches"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>Матчи</button>
+  <button data-t="top"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4"/><path d="M12 13v4M10 17h4M8 21h8"/></svg>Топ</button>
+  <button data-t="admin" id="navadmin" class="hidden"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>Админ<i class="bdg hidden" id="admbdg"></i></button>
+  <button data-t="missions"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/></svg>Миссии</button>
+</nav>
 <script>
-// ВСТАВЬ после деплоя функции:
 const API = "https://wlhzcocwgmzcrtzhefic.supabase.co/functions/v1/api";
 const ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsaHpjb2N3Z216Y3J0emhlZmljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NzQ4ODYsImV4cCI6MjEwNjQ1MDg4Nn0.-Y1jYFT1NO9Nm1SgzNU7QYBA1E8zTZr8aXA768-5cd8";
+const QR_IMG = "";
 
 const tg = Telegram.WebApp; tg.ready(); tg.expand();
 tg.setHeaderColor("#0d0d0d"); tg.setBackgroundColor("#0d0d0d");
@@ -39,51 +176,129 @@ const tgUser = tg.initDataUnsafe.user || {};
 const ava = tgUser.photo_url || "";
 
 async function call(action, extra = {}) {
-  const r = await fetch(API, { method: "POST",
-    headers: { "Content-Type": "application/json", apikey: ANON, Authorization: "Bearer " + ANON },
-    body: JSON.stringify({ action, initData: tg.initData, ...extra }) });
-  const d = await r.json(); if (!r.ok) throw d; return d;
+  const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 15000);
+  try {
+    const r = await fetch(API, { method: "POST", signal: ac.signal,
+      headers: { "Content-Type": "application/json", apikey: ANON, Authorization: "Bearer " + ANON },
+      body: JSON.stringify({ action, initData: tg.initData, ...extra }) });
+    let d = {}; try { d = await r.json(); } catch (_) { d = { error: "http_" + r.status }; }
+    if (!r.ok) { d.status = d.status || r.status; throw d; }
+    return d;
+  } catch (e) {
+    if (e.name === "AbortError") throw { error: "timeout" };
+    if (e instanceof TypeError) throw { error: "network", detail: e.message };
+    throw e;
+  } finally { clearTimeout(tm); }
 }
-const errText = e => ({ tag_not_found: "Тег не найден", tag_taken: "Этот аккаунт уже привязан", bad_auth: "Открой приложение из Telegram" }[e.error] || "Ошибка, попробуй ещё раз");
+const errText = e => ({ tag_not_found: "Тег не найден", tag_taken: "Этот аккаунт уже привязан", bad_auth: "Открой приложение из Telegram", timeout: "Сервер не отвечает (таймаут)", network: "Нет связи с сервером" }[e.error] || "Ошибка, попробуй ещё раз");
 
 function render(p) {
+  const v = p.status === "verified";
+  document.body.classList.toggle("shell", v);
+  document.getElementById("nav").classList.toggle("hidden", !v);
   if (p.status === "verified") return profile(p);
   if (p.status === "pending") return pending(p);
   return upload();
 }
 
+const WL = "#0289PYLQGRJCUVO";
+function makeCanvas(img, sx, sy, sw, sh, k, mode) {
+  const c = document.createElement("canvas");
+  c.width = Math.round(sw * k); c.height = Math.round(sh * k);
+  const x = c.getContext("2d", { willReadFrequently: true });
+  x.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+  const d = x.getImageData(0, 0, c.width, c.height), px = d.data;
+  for (let i = 0; i < px.length; i += 4) {
+    let v = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+    if (mode === "t100") v = v > 100 ? 255 : 0;
+    if (mode === "t90inv") v = v > 90 ? 0 : 255;
+    px[i] = px[i + 1] = px[i + 2] = v;
+  }
+  x.putImageData(d, 0, 0);
+  return c;
+}
+
+async function readTags(file) {
+  const img = await createImageBitmap(file);
+  const reads = [];
+  const grab = (t, strict) => {
+    const re = strict ? /#\s*([0289PYLQGRJCUVO]{5,11})/g : /([0289PYLQGRJCUVO]{6,11})/g;
+    for (const m of t.toUpperCase().matchAll(re)) reads.push(m[1].replace(/O/g, "0"));
+  };
+  const w = await Tesseract.createWorker("eng");
+  try {
+    await w.setParameters({ tessedit_char_whitelist: WL, tessedit_pageseg_mode: "11" });
+    const sc = img.width < 1500 ? 1500 / img.width : 1;
+    let box = null;
+    for (const m of ["gray", "t100", "t90inv"]) {
+      const { data } = await w.recognize(makeCanvas(img, 0, 0, img.width, img.height, sc, m));
+      grab(data.text, true);
+      if (!box) { const wd = (data.words || []).find(q => q.text.includes("#")); if (wd) box = wd.bbox; }
+    }
+    if (box) {
+      await w.setParameters({ tessedit_pageseg_mode: "7" });
+      const h = box.y1 - box.y0, pad = h * 0.6;
+      const sx = Math.max(0, (box.x0 - pad) / sc), sy = Math.max(0, (box.y0 - pad) / sc);
+      const sw = Math.min(img.width - sx, (box.x1 - box.x0 + 2 * pad) / sc), sh = Math.min(img.height - sy, (h + 2 * pad) / sc);
+      for (const m of ["gray", "t90inv", "t100"]) for (const k of [3, 4]) {
+        const { data } = await w.recognize(makeCanvas(img, sx, sy, sw, sh, k, m));
+        grab(data.text, false);
+      }
+    }
+  } finally { await w.terminate(); }
+  const cnt = {}; reads.forEach(r => cnt[r] = (cnt[r] || 0) + 1);
+  return Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a] || Math.abs(a.length - 9) - Math.abs(b.length - 9)).slice(0, 8);
+}
+
+function withVariants(list) {
+  const out = [];
+  for (const t of list) {
+    out.push(t);
+    for (let i = 1; i < t.length; i++) if (t[i] === t[i - 1]) out.push(t.slice(0, i) + t.slice(i + 1));
+  }
+  return [...new Set(out)].slice(0, 20);
+}
+
 function upload() {
-  app.innerHTML = `<h1>Верификация Brawl Stars</h1>
-  <p>Прикрепи скриншот своего профиля — мы найдём #ТЕГ.</p>
+  app.innerHTML = `<div class="icon">🛡️</div><h1>Верификация аккаунта</h1>
+  <p>Подтверди, что аккаунт Brawl Stars принадлежит тебе</p>
+  <div class="steps"><i class="on"></i><i></i><i></i></div>
   <input type="file" id="f" accept="image/*" class="hidden">
-  <button class="btn" id="pick">📷 Выбрать фото профиля</button>
+  <button class="drop" id="pick"><b>📷</b>Загрузить скриншот профиля<small>Мы сами найдём твой #ТЕГ</small></button>
   <p id="st"></p>
   <input type="text" id="manual" class="hidden" placeholder="#ТЕГ вручную">
   <button class="btn hidden" id="go">Продолжить</button>`;
   const f = q("f"), st = q("st");
+  let found = [];
   q("pick").onclick = () => f.click();
   f.onchange = async () => {
     if (!f.files[0]) return;
     st.textContent = "Распознаём тег…"; st.className = "";
-    try {
-      const { data } = await Tesseract.recognize(f.files[0], "eng");
-      const m = data.text.match(/#\s?([0-9A-Za-z]{5,10})/);
-      q("manual").value = m ? "#" + m[1].toUpperCase() : "";
-      st.textContent = m ? "Проверь тег и нажми «Продолжить»" : "Тег не распознан — введи вручную";
-    } catch { st.textContent = "Не удалось распознать — введи тег вручную"; }
+    let err = ""; found = [];
+    try { found = await readTags(f.files[0]); } catch (e) { err = " (" + (e.message || e) + ")"; }
+    q("manual").value = found[0] ? "#" + found[0] : "";
+    st.textContent = found[0] ? "Проверь тег и нажми «Продолжить»" : "Тег не распознан — введи вручную" + err;
     q("manual").classList.remove("hidden"); q("go").classList.remove("hidden");
   };
   q("go").onclick = async () => {
-    q("go").disabled = true;
-    try { render((await call("start", { tag: q("manual").value })).player); }
-    catch (e) { st.textContent = errText(e); st.className = "err"; q("go").disabled = false; }
+    q("go").disabled = true; st.className = "";
+    const raw = q("manual").value.toUpperCase().replace(/^#/, "").replace(/O/g, "0").replace(/[^0289PYLQGRJCUV]/g, "");
+    const cands = withVariants(raw === found[0] ? found : [raw]);
+    let last;
+    for (const t of cands) {
+      st.textContent = "Ищем аккаунт…";
+      try { return render((await call("start", { tag: t })).player); }
+      catch (e) { last = e; if (e.error !== "tag_not_found") break; }
+    }
+    st.textContent = errText(last || {}); st.className = "err"; q("go").disabled = false;
   };
 }
 
 function pending(p) {
-  app.innerHTML = `<h1>Подтверди аккаунт</h1>
-  <p class="tag">${p.bs_name} · ${p.bs_tag}</p>
-  <p>Зайди в Brawl Stars и <b>смени аватарку</b> на любую другую. Затем нажми кнопку.</p>
+  app.innerHTML = `<div class="icon">🔑</div><h1>Подтверди аккаунт</h1>
+  <div class="steps"><i class="on"></i><i class="on"></i><i></i></div>
+  <div class="found"><div style="font-weight:800;font-size:18px">${p.bs_name}</div><div class="tag">${p.bs_tag}</div></div>
+  <p>Зайди в Brawl Stars и <b style="color:var(--or2)">смени аватарку</b> на любую другую. Затем нажми кнопку ниже.</p>
   <button class="btn" id="chk">Я сменил аватарку</button>
   <p id="st"></p><p><a href="#" id="back" style="color:var(--mut)">Другой аккаунт</a></p>`;
   q("chk").onclick = async () => {
@@ -98,15 +313,704 @@ function pending(p) {
   q("back").onclick = e => { e.preventDefault(); upload(); };
 }
 
+const ICONS = {
+  matches: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>',
+  top: '<svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4"/><path d="M12 13v4M10 17h4M8 21h8"/></svg>'
+};
+let curTab = "profile", cur = null;
+let isAdmin = false, isMain = false, adminSec = "games", adminGameId = null, adminKey = "";
 function profile(p) {
-  app.innerHTML = `<img class="ava" src="${ava || p.tg_photo_url || ""}" alt="">
-  <div class="nick">${p.bs_name}</div>
-  <p class="tag">${p.bs_tag}</p>
-  <span class="badge">✔ Аккаунт подтверждён</span>`;
+  cur = p; showTab(curTab); startPoll();
+  rpc("whoami").then(d => { isAdmin = !!d.admin; isMain = !!d.main; document.getElementById("navadmin").classList.toggle("hidden", !isAdmin); }).catch(() => {});
+}
+function showTab(t) {
+  curTab = t; app.dataset.adm = "0";
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
+  if (t === "matches") { renderMatches(); return; }
+  if (t === "missions") { renderMissions(); return; }
+  if (t === "admin") { renderAdmin(); return; }
+  if (t === "top") { renderTop(); return; }
+  const w = cur.wins || 0, l = cur.losses || 0, g = w + l;
+  const wr = g ? Math.round(w / g * 100) + "%" : "—";
+  const bal = Number(cur.balance || 0).toLocaleString("ru-RU");
+  app.innerHTML = `<img class="ava" src="${ava || cur.tg_photo_url || ""}" alt="">
+  <div class="nick">${cur.bs_name}</div>
+  <p class="tag">${cur.bs_tag}</p>
+  <div class="stats">
+    <div class="stat w"><b id="sw">${w}</b><span>Победы</span></div>
+    <div class="stat l"><b id="sl">${l}</b><span>Поражения</span></div>
+    <div class="stat r"><b id="sr">${wr}</b><span>Винрейт</span></div>
+  </div>
+  <div class="wallet"><div><span>Баланс</span><b id="wb">${bal} ₽</b></div>
+    <div class="wbtns"><button class="btn" id="topup">＋ Пополнить</button><button class="btn ghost" id="wdbtn">Вывод</button></div></div>
+  <div id="tpbox"></div><div id="wdbox"></div>
+  <div class="sec">Промокод</div>
+  <div class="promo"><input type="text" id="pc" placeholder="Введи промокод" autocapitalize="characters" autocomplete="off"><button class="btn" id="pb">Активировать</button></div>
+  <div class="chart"><div class="ch-title">История выигрыша</div><div id="chbox"><p>Загрузка…</p></div></div>
+  <div class="sec">История матчей</div><div id="hlist" class="mlist"></div>`;
+  q("topup").onclick = openTopup;
+  q("wdbtn").onclick = openWithdraw;
+  renderWdBox();
+  wd("status").then(applyWdState).catch(() => {});
+  renderTopupBox();
+  pay("status").then(applyTopupState).catch(() => {});
+  q("pb").onclick = async () => {
+    const code = q("pc").value.trim(); if (!code) return;
+    q("pb").disabled = true;
+    try {
+      const d = await rpc("promo_redeem", { code });
+      if (d.error) toast(LERR[d.error] || d.error);
+      else { cur.balance = d.balance; q("wb").textContent = money(d.balance); q("pc").value = ""; toast("Промокод активирован: +" + money(d.amount)); }
+    } catch (e) { toast(eText(e)); }
+    q("pb").disabled = false;
+  };
+  loadProfileHistory();
 }
 
 const q = id => document.getElementById(id);
-call("me").then(d => render(d.player)).catch(e => { app.innerHTML = `<h1>Ошибка</h1><p class="err">${errText(e)}</p>`; });
+
+const USER_SVG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>';
+const LERR = { bad_mission: "Такой миссии нет", mission_not_ready: "Миссия ещё не выполнена", mission_claimed: "Награда уже получена", bad_amount_wd: "Минимальная сумма вывода — 50 ₽", bad_phone: "Введи российский номер: +7 900 000-00-00", bad_bank: "Укажи банк получателя", wd_gone: "Заявка уже обработана", bad_amount: "Сумма от 50 до 50 000 ₽", topup_pending: "У тебя уже есть заявка на пополнение", topup_gone: "Заявка уже обработана", promo_invalid: "Промокод не найден или отключён", promo_used_up: "Промокод уже закончился", promo_already: "Ты уже использовал этот промокод", too_many: "Слишком много попыток. Попробуй позже", bad_tag: "Неверный тег", bad_code: "Код: 3–32 символа (латиница, цифры, - _)", bad_promo: "Проверь сумму и количество использований", promo_exists: "Такой промокод уже есть", forbidden: "Нет доступа", bad_link: "Нужна ссылка вида https://link.brawlstars.com/…", no_link_yet: "Создатель ещё не прислал ссылку", bad_image: "Нужно изображение", image_too_big: "Файл слишком большой", auth_expired: "Сессия устарела — открой приложение заново", bad_auth: "Открой приложение из Telegram", no_bot_token: "Сервер не настроен (bot_token)", bad_winner: "Неверный победитель", no_balance: "Недостаточно средств на балансе", already_in_lobby: "Ты уже в лобби", lobby_unavailable: "Лобби уже недоступно",
+  bad_stake: "Неверная ставка", bad_mode: "Неверный режим", no_maps: "Нет карт для ШД", not_verified: "Аккаунт не верифицирован", not_in_lobby: "Тебя нет в этом лобби" };
+let pickMode = "1v1", snap = null, off = 0, pollT = null, cdT = null, lastKey = "", busy = false, pickStake = 100;
+const money = n => Number(n || 0).toLocaleString("ru-RU") + " ₽";
+
+function toast(t) {
+  const el = document.createElement("div"); el.className = "toast"; el.textContent = t;
+  document.body.appendChild(el); setTimeout(() => el.remove(), 2600);
+}
+function applySnap(sn) {
+  if (!sn) return;
+  snap = sn; off = new Date(sn.now).getTime() - Date.now();
+  if (cur) cur.balance = sn.balance;
+  const wbe = document.getElementById("wb"); if (wbe) wbe.textContent = money(sn.balance);
+  const key = JSON.stringify([sn.mine, sn.open, sn.balance]);
+  if (key !== lastKey) { lastKey = key; if (curTab === "matches") renderMatches(); }
+  if (sn.mine && sn.mine.status === "confirming" && curTab !== "matches") showTab("matches");
+}
+let pollN = 0, admTop = 0, topupPending = null;
+async function poll() {
+  if (busy) return;
+  if (++pollN % 3 === 0) extraPoll();
+  try { applySnap((await call("lobbies")).snap); } catch (e) {}
+  if (isAdmin && curTab === "admin" && !adminGameId && (adminSec === "games" || adminSec === "topups" || adminSec === "withdrawals")) renderAdmin();
+}
+function startPoll() { if (pollT) return; poll(); pollT = setInterval(poll, 2500); cdT = setInterval(tick, 250); }
+async function lobbyCall(action, extra = {}) {
+  if (busy) return; busy = true;
+  try { const d = await call(action, extra); busy = false; applySnap(d.snap); if (d.error) toast(LERR[d.error] || d.error); if (d.snap) renderMatches(); }
+  catch (e) { busy = false; toast(errText(e)); }
+}
+
+// ПРАВКА 1: tick() — два таймера (поиск и подтверждение)
+function tick() {
+  if (!snap || !snap.mine) return;
+  const m = snap.mine;
+
+  if (m.status === "waiting" && m.search_deadline) {
+    const el = document.getElementById("cd");
+    const ring = document.getElementById("ring");
+    const total = (m.search_seconds || 150) * 1000;
+    const left = Math.max(0, new Date(m.search_deadline).getTime() - (Date.now() + off));
+    if (el) { const s = Math.ceil(left / 1000); el.textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+    if (ring) ring.style.strokeDashoffset = 565 * (1 - left / total);
+    if (left <= 0 && !tick.f) { tick.f = true; setTimeout(() => { tick.f = false; poll(); }, 700); }
+    return;
+  }
+
+  if (m.status === "confirming") {
+    const el = document.getElementById("cd");
+    if (!el) return;
+    const total = (snap.confirm_seconds || 30) * 1000;
+    const left = Math.max(0, new Date(m.deadline).getTime() - (Date.now() + off));
+    el.textContent = Math.ceil(left / 1000);
+    const ring = document.getElementById("ring");
+    if (ring) ring.style.strokeDashoffset = 565 * (1 - left / total);
+    if (left <= 0 && !tick.f) { tick.f = true; setTimeout(() => { tick.f = false; poll(); }, 700); }
+  }
+}
+const avatar = p => p ? `<div class="av ${p.confirmed ? "ok" : ""}">${p.photo ? `<img src="${p.photo}" alt="">` : USER_SVG}</div>` : '<div class="av empty"></div>';
+
+const RPCB = "https://wlhzcocwgmzcrtzhefic.supabase.co/rest/v1/rpc/";
+const rpc = (a, b) => rpcTo("tg_do", a, b);
+const pay = (a, b) => rpcTo("tg_pay", a, b);
+const wd  = (a, b) => rpcTo("tg_wd", a, b);
+const ms  = (a, b) => rpcTo("tg_ms", a, b);
+async function rpcTo(fn, action, args = {}) {
+  const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 25000);
+  try {
+    const r = await fetch(RPCB + fn, { method: "POST", signal: ac.signal,
+      headers: { "Content-Type": "application/json", apikey: ANON, Authorization: "Bearer " + ANON },
+      body: JSON.stringify({ p_init: tg.initData, p_action: action, p_args: args }) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw { error: d.message || "rpc_error" };
+    return d;
+  } catch (e) {
+    if (e.name === "AbortError") throw { error: "timeout" };
+    if (e instanceof TypeError) throw { error: "network" };
+    throw e;
+  } finally { clearTimeout(tm); }
+}
+const eText = e => LERR[e.error] || errText(e);
+async function shrink(file) {
+  const img = await createImageBitmap(file);
+  const k = Math.min(1, 1100 / Math.max(img.width, img.height));
+  const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", 0.62);
+}
+function viewImg(src) {
+  const v = document.createElement("div"); v.className = "viewer"; v.innerHTML = `<img src="${src}" alt="">`;
+  v.onclick = () => v.remove(); document.body.appendChild(v);
+}
+const modeName = m => (m === "1v1" ? "1×1" : m === "sd" ? "ШД" : (m ? m : "Поиск…"));
+
+function renderMatches() {
+  if (curTab !== "matches") return;
+  if (!snap) { app.innerHTML = '<h1>Матчи</h1><p>Загрузка…</p>'; return; }
+  const m = snap.mine, bal = snap.balance;
+  if (m && m.status === "confirming") {
+    const me = m.players.find(p => p.me), ready = m.players.filter(p => p.confirmed).length;
+    app.innerHTML = `<div class="ringwrap"><svg viewBox="0 0 200 200"><circle class="r-bg" cx="100" cy="100" r="90"/><circle class="r-fg" id="ring" cx="100" cy="100" r="90"/></svg><div class="cd" id="cd"></div></div>
+    <h1 class="big">Матч найден</h1><p>${modeName(m.mode)}<br>Ставка <b style="color:var(--tx)">${money(m.stake)}</b> с каждого</p>
+    <div class="avs ${(m.capacity || m.players.length) > 2 ? "many" : ""}">${m.players.map(avatar).join("")}</div>
+    <div class="ready"><b>${ready}</b> / ${m.capacity || m.players.length} готовы</div>
+    <button class="btn" id="conf" ${me && me.confirmed ? "disabled" : ""}>${me && me.confirmed ? "Ждём соперника…" : "✓ Подтвердить"}</button>`;
+    q("conf").onclick = () => lobbyCall("lobby_confirm", { id: m.id });
+    tick(); return;
+  }
+  // ПРАВКА 2: экран waiting — таймер поиска 2:30
+  if (m && m.status === "waiting") {
+    const cnt = m.players.length;
+    app.innerHTML = `
+      <div class="ringwrap">
+        <svg viewBox="0 0 200 200">
+          <circle class="r-bg" cx="100" cy="100" r="90"/>
+          <circle class="r-fg" id="ring" cx="100" cy="100" r="90"/>
+        </svg>
+        <div class="cd" id="cd">2:30</div>
+      </div>
+      <h1 class="big">Поиск соперника</h1>
+      <p>Ставка <b style="color:var(--tx)">${money(m.stake)}</b> с каждого<br>
+         Найдено игроков: <b style="color:var(--tx)">${cnt}</b></p>
+      <div class="avs ${cnt > 2 ? "many" : ""}">
+        ${m.players.map(avatar).join("")}
+        ${cnt === 1 ? '<div class="av empty"></div>' : ''}
+      </div>
+      <button class="btn ghost" id="leave">Отменить поиск (вернуть ${money(m.stake)})</button>`;
+    q("leave").onclick = () => lobbyCall("lobby_leave", { id: m.id });
+    tick();
+    return;
+  }
+  if (m && (m.status === "live" || m.status === "review")) {
+    let body;
+    if (!m.link && m.creator) {
+      body = `<div class="note"><b>Ты создатель лобби.</b> Создай лобби в Brawl Stars на карте «${m.map}», скопируй ссылку-приглашение и вставь её сюда. Остальные игроки увидят ссылку сразу, без перезагрузки.</div>
+      <input type="text" id="lk" placeholder="https://link.brawlstars.com/…" style="font-size:15px;letter-spacing:0">
+      <button class="btn" id="sendlk">Отправить ссылку</button>`;
+    } else if (!m.link) {
+      body = `<div class="note"><span class="pulse"></span><b>Ждём ссылку на лобби.</b> Создатель лобби сейчас создаёт комнату в Brawl Stars на карте «${m.map}» и пришлёт ссылку. Она появится здесь автоматически — ничего перезагружать не нужно.</div>`;
+    } else {
+      body = `<div class="note"><b>Ссылка на лобби получена.</b><br>1. Нажми «Открыть лобби» и зайди в комнату.<br>2. Сыграйте матч на карте «${m.map}» ${m.mode === "sd" ? "(все 8 игроков)" : ""}.<br>3. После игры прикрепи скриншот с результатом — эта вкладка закроется, а администратор определит победителя.</div>
+      <button class="btn" id="openlk">Открыть лобби в Brawl Stars</button>
+      <input type="file" id="shot" accept="image/*" class="hidden">
+      <button class="drop" id="pickshot"><b>📷</b>Прикрепить результат матча<small>Скриншот экрана с итогом игры</small></button>`;
+    }
+    app.innerHTML = `<div class="icon ico">${ICONS.matches}</div><h1>Матч создан</h1><p>${modeName(m.mode)} · ${m.map} · ставка ${money(m.stake)}</p>
+    <div class="avs ${(m.capacity || m.players.length) > 2 ? "many" : ""}">${m.players.map(avatar).join("")}</div>${body}`;
+    if (q("sendlk")) q("sendlk").onclick = async () => {
+      q("sendlk").disabled = true;
+      try { await rpc("set_link", { id: m.id, link: q("lk").value }); await poll(); }
+      catch (e) { toast(eText(e)); q("sendlk").disabled = false; }
+    };
+    if (q("openlk")) q("openlk").onclick = () => tg.openLink(m.link);
+    if (q("pickshot")) {
+      q("pickshot").onclick = () => q("shot").click();
+      q("shot").onchange = async ev => {
+        const f = ev.target.files[0]; if (!f) return;
+        q("pickshot").disabled = true; q("pickshot").textContent = "Загружаем…";
+        try {
+          await rpc("submit_result", { id: m.id, img: await shrink(f) });
+          toast("Результат отправлен. Ждём решения администратора");
+          await poll(); renderMatches();
+        } catch (e) { toast(eText(e)); renderMatches(); }
+      };
+    }
+    return;
+  }
+  const stakes = [50, 100, 200];
+  // ПРАВКА 6: mode может быть null
+  const open = snap.open.map(l => `<div class="lrow"><div class="av">${l.photo ? `<img src="${l.photo}" alt="">` : USER_SVG}</div>
+    <div class="li"><b>${l.name || "Игрок"}</b><span><span class="tag-sd">${l.mode ? modeName(l.mode) : "Поиск…"}</span>${l.count}${l.capacity ? "/" + l.capacity : ""}</span></div><div class="st">${money(l.stake)}</div>
+    <button class="btn" data-j="${l.id}" ${bal < l.stake ? "disabled" : ""}>Войти</button></div>`).join("");
+  const pend = (snap.pending || []).map(x => `<div class="lrow"><div class="li"><b>На проверке у администратора</b><span>${modeName(x.mode)}</span></div><div class="st">${money(x.stake)}</div></div>`).join("");
+  app.innerHTML = `<h1>Матчи</h1><p>Создай матч или войди в чужой</p>
+  <div class="balrow"><span>Баланс</span><b>${money(bal)}</b></div>
+  <div class="sec">Создать матч</div>
+  <div class="chips three">${stakes.map(x => `<button class="chip${x === pickStake ? " on" : ""}" data-s="${x}">${x} ₽</button>`).join("")}</div>
+  <button class="btn" id="mk" ${bal < pickStake ? "disabled" : ""}>${bal < pickStake ? "Не хватает баланса" : "🔍 Поиск · " + money(pickStake)}</button>
+  ${pend ? `<div class="sec">Ждут решения</div>${pend}` : ""}
+  <div class="sec">Открытые лобби</div>${open || "<p>Пока нет открытых лобби — создай своё.</p>"}`;
+  app.querySelectorAll(".chip").forEach(c => c.onclick = () => { pickStake = +c.dataset.s; renderMatches(); });
+  q("mk").onclick = async () => {
+    q("mk").disabled = true;
+    try { await rpc("create", { stake: pickStake }); await poll(); renderMatches(); }
+    catch (e) { toast(eText(e)); await poll(); renderMatches(); }
+  };
+  app.querySelectorAll("[data-j]").forEach(b => b.onclick = () => lobbyCall("lobby_join", { id: +b.dataset.j }));
+}
+
+const fmtD = d => new Date(d).toLocaleDateString("ru-RU", { day: "numeric", month: "short" }).replace(".", "");
+const sgn = n => (n > 0 ? "+" : "") + n;
+function fillStats() {
+  const w = cur.wins || 0, l = cur.losses || 0, g = w + l;
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  set("sw", w); set("sl", l); set("sr", g ? Math.round(w / g * 100) + "%" : "—");
+}
+async function loadProfileHistory() {
+  let d = null; try { d = await rpc("history"); } catch (e) {}
+  const box = document.getElementById("chbox"), hl = document.getElementById("hlist");
+  if (!box || curTab !== "profile") return;
+  if (!d) { box.innerHTML = "<p>История пока недоступна.</p>"; return; }
+  cur.wins = d.wins; cur.losses = d.losses; fillStats();
+  drawChart(box, d.matches);
+  hl.innerHTML = d.matches.length ? d.matches.slice().reverse().slice(0, 20).map(m => {
+    const w = m.result === "win";
+    const dt = new Date(m.created_at).toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    return `<div class="mrow"><div class="mres ${w ? "win" : "loss"}">${w ? "Победа" : "Поражение"}</div>
+      <div class="minfo"><b>${modeName(m.mode)} · ${m.map || ""}</b><span>${m.mode === "sd" ? (m.place ? m.place + " место" : "вне призов") : "vs " + (m.opponent || "—")} · ${dt}</span></div>
+      <div class="mdelta ${m.profit >= 0 ? "up" : "down"}">${sgn(m.profit)} ₽</div></div>`;
+  }).join("") : "<p>Матчей пока нет.</p>";
+}
+function drawChart(box, ms) {
+  if (!ms.length) { box.innerHTML = "<p>Пока нет матчей — график появится после первой игры.</p>"; return; }
+  const W = box.clientWidth || 320, H = 150, pt = 12, pb = 8, n = ms.length;
+  const vals = ms.map(m => Number(m.total));
+  let min = Math.min(...vals), max = Math.max(...vals);
+  if (min === max) { min -= 10; max += 10; }
+  const pad = (max - min) * 0.15; min -= pad; max += pad;
+  const X = i => n === 1 ? W / 2 : i * (W / (n - 1));
+  const Y = v => pt + (H - pt - pb) * (1 - (v - min) / (max - min));
+  const line = "M" + ms.map((m, i) => X(i).toFixed(1) + "," + Y(Number(m.total)).toFixed(1)).join(" L");
+  const area = line + ` L${X(n - 1).toFixed(1)},${H} L${X(0).toFixed(1)},${H} Z`;
+  const col = vals[n - 1] >= vals[0] ? "#6ee787" : "#ff6b6b";
+  const grid = [0, 1, 2, 3].map(k => { const y = (pt + (H - pt - pb) * k / 3).toFixed(1); return `<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="#222" stroke-width="1"/>`; }).join("");
+  box.innerHTML = `<div class="ch-head"><div><b id="chv"></b><span id="chd"></span></div><span id="cht"></span></div>
+  <svg id="chsvg" viewBox="0 0 ${W} ${H}" height="${H}">
+    <defs><linearGradient id="gf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".35"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    ${grid}<path d="${area}" fill="url(#gf)"/>
+    <path d="${line}" fill="none" stroke="${col}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    <line id="cl" y1="0" y2="${H}" stroke="rgba(255,255,255,.45)" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <circle id="cc" r="6" fill="#0d0d0d" stroke="${col}" stroke-width="3"/>
+  </svg>
+  <div class="ch-foot"><span>${fmtD(ms[0].created_at)}</span><span>${fmtD(ms[n - 1].created_at)}</span></div>`;
+  const svg = box.querySelector("#chsvg"), cl = box.querySelector("#cl"), cc = box.querySelector("#cc");
+  const set = i => {
+    const m = ms[i], x = X(i);
+    cl.setAttribute("x1", x); cl.setAttribute("x2", x);
+    cc.setAttribute("cx", x); cc.setAttribute("cy", Y(Number(m.total)));
+    box.querySelector("#chv").textContent = money(m.total);
+    const d = box.querySelector("#chd"); d.textContent = sgn(m.profit) + " ₽"; d.className = m.profit >= 0 ? "up" : "down";
+    box.querySelector("#cht").textContent = fmtD(m.created_at);
+  };
+  let drag = false;
+  const move = e => {
+    const r = svg.getBoundingClientRect();
+    const i = n === 1 ? 0 : Math.round((e.clientX - r.left) / r.width * (n - 1));
+    set(Math.max(0, Math.min(n - 1, i)));
+  };
+  svg.addEventListener("pointerdown", e => { drag = true; svg.setPointerCapture(e.pointerId); move(e); });
+  svg.addEventListener("pointermove", e => { if (drag) move(e); });
+  ["pointerup", "pointercancel"].forEach(ev => svg.addEventListener(ev, () => drag = false));
+  set(n - 1);
+}
+
+let adminStats = null;
+function adminStatHtml() {
+  const st = adminStats;
+  return `<div class="balrow" style="margin-top:10px"><span>Зарегистрировано пользователей</span><b id="astatv">${st ? st.verified : "…"}</b></div>
+  <p id="astatt" style="font-size:12px;margin:6px 0 10px">${st ? `За сутки +${st.today} · открывали приложение: ${st.total}` : ""}</p>`;
+}
+async function loadAdminStats() {
+  try {
+    adminStats = await ms("admin_stats");
+    const v = document.getElementById("astatv"), t = document.getElementById("astatt");
+    if (v) v.textContent = adminStats.verified;
+    if (t) t.textContent = `За сутки +${adminStats.today} · открывали приложение: ${adminStats.total}`;
+  } catch (e) {}
+}
+
+async function renderMissions() {
+  app.innerHTML = '<h1>Миссии</h1><p>Загрузка…</p>';
+  let d; try { d = await ms("missions"); } catch (e) { if (curTab === "missions") app.innerHTML = `<h1>Миссии</h1><p class="err">${eText(e)}</p>`; return; }
+  if (curTab !== "missions") return;
+  cur.balance = d.balance;
+  const cards = d.missions.map(m => {
+    const done = m.progress >= m.target;
+    return `<div class="mis ${done && !m.claimed ? "done" : ""}"><div class="mh"><span>${m.title}: ${m.progress}/${m.target}</span><span class="rw">+${money(m.reward)}</span></div>
+      <div class="bar"><i style="width:${Math.min(100, m.progress / m.target * 100)}%"></i></div>
+      ${m.claimed ? '<div class="pg"><span>Награда получена ✓</span></div>'
+        : done ? `<button class="btn sm" data-claim="${m.id}">Забрать ${money(m.reward)}</button>`
+        : `<div class="pg"><span>Осталось: ${m.target - m.progress}</span></div>`}</div>`;
+  }).join("");
+  const r = d.ref;
+  app.innerHTML = `<div class="icon ico"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/></svg></div>
+  <h1>Миссии</h1><p>Выполняй задания и получай ₽ на баланс</p>
+  <div class="sec">Задания</div>${cards}
+  <div class="sec">Пригласи друзей</div>
+  <div class="mis"><div class="mh"><span>За каждого нового игрока</span><span class="rw">+${money(1.5)}</span></div>
+    <p style="font-size:13px">Друг заходит по твоей ссылке и подтверждает аккаунт Brawl Stars, и тебе начисляется ${money(1.5)}.</p>
+    <div class="pg"><span>Приглашено: ${r.invited}</span><span>Ждут подтверждения: ${r.waiting}</span></div>
+    <div class="pg" style="margin-top:4px"><span>Заработано: ${money(r.invited * 1.5)}</span></div>
+    ${r.link ? `<div class="refbox">${r.link}</div><div class="row2"><button class="btn sm" id="rcopy">Копировать</button><button class="btn sm" id="rshare">Поделиться</button></div>`
+      : '<p class="err" style="font-size:12px">Реферальная ссылка ещё не настроена администратором.</p>'}</div>`;
+  app.querySelectorAll("[data-claim]").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try {
+      const x = await ms("claim", { id: b.dataset.claim });
+      cur.balance = x.balance; toast("Награда получена: +" + money(x.reward)); renderMissions();
+    } catch (e) { toast(eText(e)); b.disabled = false; }
+  });
+  if (q("rcopy")) {
+    q("rcopy").onclick = () => { try { navigator.clipboard.writeText(r.link); toast("Ссылка скопирована"); } catch (_) {} };
+    q("rshare").onclick = () => tg.openTelegramLink("https://t.me/share/url?url=" + encodeURIComponent(r.link) + "&text=" + encodeURIComponent("Играй со мной в StartUp — Brawl Stars!"));
+  }
+}
+
+async function renderTop() {
+  app.innerHTML = '<h1>Топ игроков</h1><p>Загрузка…</p>';
+  let d; try { d = await rpc("top"); } catch (e) { if (curTab === "top") app.innerHTML = `<h1>Топ игроков</h1><p class="err">${eText(e)}</p>`; return; }
+  if (curTab !== "top") return;
+  const rows = d.players.map((p, i) => `<div class="top-row ${p.me ? "me" : ""} ${i < 3 ? "p" + (i + 1) : ""}"><div class="pl">${i + 1}</div>
+    <div class="av">${p.photo ? `<img src="${p.photo}" alt="">` : USER_SVG}</div>
+    <div class="li"><b>${p.name || "Игрок"}</b><span>Поражений: ${p.losses}</span></div><div class="w">${p.wins}</div></div>`).join("");
+  app.innerHTML = `<div class="icon ico">${ICONS.top}</div><h1>Топ игроков</h1><p>Рейтинг по количеству побед</p><div class="mlist">${rows || "<p>Пока никого нет.</p>"}</div>`;
+}
+
+const adminSeg = () => `${adminStatHtml()}<div class="seg adm">
+  <button data-sec="games" class="${adminSec === "games" ? "on" : ""}">Игры</button>
+  <button data-sec="topups" class="${adminSec === "topups" ? "on" : ""}">Пополнения${admTop ? " (" + admTop + ")" : ""}</button>
+  <button data-sec="withdrawals" class="${adminSec === "withdrawals" ? "on" : ""}">Выводы${admWd ? " (" + admWd + ")" : ""}</button>
+  <button data-sec="promo" class="${adminSec === "promo" ? "on" : ""}">Промокоды</button>
+  ${isMain ? `<button data-sec="admins" class="${adminSec === "admins" ? "on" : ""}">Админы</button>` : ""}</div>`;
+const bindSeg = () => app.querySelectorAll("[data-sec]").forEach(b => b.onclick = () => { adminSec = b.dataset.sec; app.dataset.adm = "0"; adminKey = ""; renderAdmin(); });
+const askOk = (msg, go) => tg.showConfirm ? tg.showConfirm(msg, ok => ok && go()) : (confirm(msg) && go());
+
+async function renderAdmin() {
+  if (curTab !== "admin") return;
+  if (!isAdmin) { app.innerHTML = "<h1>Нет доступа</h1>"; return; }
+  loadAdminStats();
+  if (adminSec === "promo") return renderPromo();
+  if (adminSec === "topups") return renderTopups();
+  if (adminSec === "withdrawals") return renderWithdrawals();
+  if (adminSec === "admins" && isMain) return renderAdmins();
+  adminSec = "games"; adminGameId = null;
+  let d; try { d = await rpc("admin_games"); } catch (e) { if (curTab === "admin") app.innerHTML = `<h1>Админ-меню</h1><p class="err">${eText(e)}</p>`; return; }
+  const key = JSON.stringify(d.games);
+  if (curTab !== "admin" || adminGameId || adminSec !== "games") return;
+  if (key === adminKey && app.dataset.adm === "1") return;
+  adminKey = key; app.dataset.adm = "1";
+  const rows = d.games.map(g => `<div class="lrow" data-g="${g.id}" style="cursor:pointer"><div class="li"><b>${g.mode === "sd" ? "ШД · " + g.players.length + " игроков" : g.players.join(" vs ")}</b><span>${g.map} · скриншотов: ${g.shots}/${g.players.length}</span></div><div class="st">${money(g.stake)}</div></div>`).join("");
+  app.innerHTML = `<div class="icon ico">${ICONS.matches}</div><h1>Админ-меню</h1>${adminSeg()}<p>Игры, ожидающие выбора победителя</p>
+  <div class="mlist">${rows || "<p>Сейчас нет игр на проверке.</p>"}</div>`;
+  bindSeg();
+  app.querySelectorAll("[data-g]").forEach(r => r.onclick = () => openGame(+r.dataset.g));
+}
+
+async function renderTopups() {
+  adminGameId = null;
+  let d; try { d = await pay("admin_list"); } catch (e) { if (curTab === "admin" && adminSec === "topups") app.innerHTML = `<h1>Админ-меню</h1>${adminSeg()}<p class="err">${eText(e)}</p>`, bindSeg(); return; }
+  if (curTab !== "admin" || adminSec !== "topups") return;
+  const key = JSON.stringify(d.topups);
+  if (key === adminKey && app.dataset.adm === "t") return;
+  adminKey = key; app.dataset.adm = "t";
+  admTop = d.topups.length;
+  const rows = d.topups.map(t => {
+    const dt = new Date(t.created_at).toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    return `<div class="lrow" style="flex-wrap:wrap"><div class="li"><b>${t.name || "Игрок"} · ${t.tag}</b><span>${dt}${t.ref ? " · код " + t.ref : ""}</span></div><div class="st">${money(t.amount)}</div>
+      <div style="display:flex;gap:8px;width:100%;margin-top:8px"><button class="btn sm" style="margin:0" data-ok="${t.id}" data-n="${t.amount}">Пополнить</button><button class="btn sm ghost" style="margin:0" data-no="${t.id}" data-n="${t.amount}">Отклонить</button></div></div>`;
+  }).join("");
+  app.innerHTML = `<h1>Админ-меню</h1>${adminSeg()}<p>Заявки на пополнение. Перед подтверждением проверь поступление в банке: сумму и код в комментарии.</p>
+  <div class="mlist">${rows || "<p>Новых заявок нет.</p>"}</div>`;
+  bindSeg();
+  const decide = (id, approve, n) => askOk(approve ? `Пополнить баланс на ${money(+n)}?` : `Отклонить перевод на ${money(+n)}?`, async () => {
+    try { await pay("admin_decide", { id: +id, approve }); toast(approve ? "Баланс игрока пополнен" : "Заявка отклонена"); } catch (e) { toast(eText(e)); }
+    app.dataset.adm = "0"; renderTopups();
+  });
+  app.querySelectorAll("[data-ok]").forEach(b => b.onclick = () => decide(b.dataset.ok, true, b.dataset.n));
+  app.querySelectorAll("[data-no]").forEach(b => b.onclick = () => decide(b.dataset.no, false, b.dataset.n));
+}
+
+async function renderWithdrawals() {
+  adminGameId = null;
+  let d; try { d = await wd("admin_list"); } catch (e) { if (curTab === "admin" && adminSec === "withdrawals") { app.innerHTML = `<h1>Админ-меню</h1>${adminSeg()}<p class="err">${eText(e)}</p>`; bindSeg(); } return; }
+  if (curTab !== "admin" || adminSec !== "withdrawals") return;
+  const key = JSON.stringify(d.items);
+  if (key === adminKey && app.dataset.adm === "w") return;
+  adminKey = key; app.dataset.adm = "w";
+  admWd = d.items.length;
+  const rows = d.items.map(t => {
+    const dt = new Date(t.created_at).toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    return `<div class="lrow" style="flex-wrap:wrap"><div class="li"><b>${t.name || "Игрок"} · ${t.tag}</b><span>${dt}</span></div><div class="st">${money(t.amount)}</div>
+      <div style="width:100%;margin-top:6px;font-size:14px">${t.phone}<button class="copy" data-cp="${t.phone}">Копировать</button><br><span style="color:var(--mut);font-size:13px">Банк: ${t.bank}</span></div>
+      <div style="display:flex;gap:8px;width:100%;margin-top:8px"><button class="btn sm" style="margin:0" data-pay="${t.id}" data-n="${t.amount}" data-ph="${t.phone}">Вывести</button><button class="btn sm ghost" style="margin:0" data-rej="${t.id}" data-n="${t.amount}">Отменить</button></div></div>`;
+  }).join("");
+  app.innerHTML = `<h1>Админ-меню</h1>${adminSeg()}<p>Заявки на вывод. Сначала отправь деньги по номеру в банке, потом нажми «Вывести». «Отменить» вернёт сумму игроку на баланс.</p>
+  <div class="mlist">${rows || "<p>Новых заявок на вывод нет.</p>"}</div>`;
+  bindSeg();
+  app.querySelectorAll("[data-cp]").forEach(b => b.onclick = () => { try { navigator.clipboard.writeText(b.dataset.cp); toast("Номер скопирован"); } catch (_) {} });
+  const decide = (id, pay_, msg) => askOk(msg, async () => {
+    try { await wd("admin_decide", { id: +id, pay: pay_ }); toast(pay_ ? "Вывод отмечен как выполненный" : "Вывод отменён, деньги возвращены игроку"); } catch (e) { toast(eText(e)); }
+    app.dataset.adm = "0"; renderWithdrawals();
+  });
+  app.querySelectorAll("[data-pay]").forEach(b => b.onclick = () => decide(b.dataset.pay, true, `Ты уже отправил ${money(+b.dataset.n)} на ${b.dataset.ph}? Отметить вывод выполненным?`));
+  app.querySelectorAll("[data-rej]").forEach(b => b.onclick = () => decide(b.dataset.rej, false, `Отменить вывод и вернуть ${money(+b.dataset.n)} игроку на баланс?`));
+}
+
+async function renderPromo() {
+  let d; try { d = await rpc("promo_list"); } catch (e) { toast(eText(e)); return; }
+  if (curTab !== "admin" || adminSec !== "promo") return;
+  const rows = d.codes.map(c => `<div class="lrow"><div class="li"><b>${c.code}</b><span>${money(c.amount)} · использовано ${c.used}/${c.max_uses}${c.active ? "" : " · выключен"}</span></div>
+    <button class="btn" data-pc="${c.code}" style="${c.active ? "" : "opacity:.6"}">${c.active ? "Выкл" : "Вкл"}</button></div>`).join("");
+  app.innerHTML = `<h1>Админ-меню</h1>${adminSeg()}
+  <div class="sec">Создать промокод</div>
+  <input type="text" id="pcode" placeholder="Код (пусто — создать случайный)" style="font-size:15px;text-transform:uppercase">
+  <input type="text" id="pamt" inputmode="numeric" placeholder="Сумма на баланс, ₽">
+  <input type="text" id="pmax" inputmode="numeric" placeholder="Сколько человек смогут использовать">
+  <button class="btn" id="pmk">Создать промокод</button>
+  <div class="sec">Промокоды</div><div class="mlist">${rows || "<p>Пока нет промокодов.</p>"}</div>`;
+  bindSeg();
+  q("pmk").onclick = async () => {
+    const amount = q("pamt").value.replace(/\D/g, ""), max = q("pmax").value.replace(/\D/g, "");
+    if (!amount || !max) { toast("Укажи сумму и количество использований"); return; }
+    q("pmk").disabled = true;
+    try {
+      const r = await rpc("promo_create", { code: q("pcode").value, amount, max_uses: max });
+      try { navigator.clipboard.writeText(r.code); } catch (_) {}
+      toast("Создан промокод " + r.code); renderPromo();
+    } catch (e) { toast(eText(e)); q("pmk").disabled = false; }
+  };
+  app.querySelectorAll("[data-pc]").forEach(b => b.onclick = async () => {
+    try { await rpc("promo_toggle", { code: b.dataset.pc }); renderPromo(); } catch (e) { toast(eText(e)); }
+  });
+}
+
+async function renderAdmins() {
+  let d; try { d = await rpc("admins_list"); } catch (e) { toast(eText(e)); return; }
+  if (curTab !== "admin" || adminSec !== "admins") return;
+  const rows = d.admins.map(a => `<div class="lrow"><div class="li"><b>${a.name || "Ещё не заходил"}</b><span>${a.tag}${a.main ? " · главный админ" : ""}</span></div>
+    ${a.main ? "" : `<button class="btn" data-da="${a.tag}">Убрать</button>`}</div>`).join("");
+  app.innerHTML = `<h1>Админ-меню</h1>${adminSeg()}
+  <div class="sec">Добавить админа</div>
+  <input type="text" id="atag" placeholder="#ТЕГ Brawl Stars" style="text-transform:uppercase">
+  <button class="btn" id="aadd">Сделать админом</button>
+  <div class="sec">Админы</div><div class="mlist">${rows}</div>`;
+  bindSeg();
+  q("aadd").onclick = async () => {
+    if (!q("atag").value.trim()) return;
+    q("aadd").disabled = true;
+    try { await rpc("admin_add", { tag: q("atag").value }); toast("Админ добавлен"); renderAdmins(); }
+    catch (e) { toast(eText(e)); q("aadd").disabled = false; }
+  };
+  app.querySelectorAll("[data-da]").forEach(b => b.onclick = () => askOk(`Убрать админа ${b.dataset.da}?`, async () => {
+    try { await rpc("admin_del", { tag: b.dataset.da }); renderAdmins(); } catch (e) { toast(eText(e)); }
+  }));
+}
+
+async function openGame(id) {
+  adminGameId = id; app.dataset.adm = "0";
+  let g; try { g = await rpc("admin_game", { id }); } catch (e) { toast(eText(e)); adminGameId = null; return renderAdmin(); }
+  const sd = g.mode === "sd", picks = [];
+  const ps = g.players.map(p => `<div class="sec" style="margin-top:14px">${p.name} · ${p.tag}</div>
+    ${p.img ? `<img class="shot" src="${p.img}" data-v="1" alt="">` : "<p>Скриншот не прикреплён</p>"}
+    ${sd ? `<div class="pk"><button class="btn sm" data-p="1" data-id="${p.tg_id}">1 место</button><button class="btn sm" data-p="2" data-id="${p.tg_id}">2 место</button></div>` : ""}`).join("");
+  app.innerHTML = `<h1>Игра #${g.id}</h1><p>${modeName(g.mode)} · ${g.map} · ставка ${money(g.stake)}</p>${ps}
+  <div class="sec">${sd ? "Выбери 1 и 2 место" : "Кто победил?"}</div>
+  ${sd ? '<button class="btn" id="done" disabled>Подтвердить результат</button>' : g.players.map(p => `<button class="btn" data-w="${p.tg_id}">Победил ${p.name}</button>`).join("")}
+  <button class="btn ghost" id="back">← Назад</button>`;
+  app.querySelectorAll("[data-v]").forEach(i => i.onclick = () => viewImg(i.src));
+  q("back").onclick = () => { app.dataset.adm = "0"; renderAdmin(); };
+  const finish = async winners => {
+    try { await rpc("admin_pick", { id, winners }); toast("Результат подтверждён"); }
+    catch (e) { toast(eText(e)); }
+    adminGameId = null; app.dataset.adm = "0"; renderAdmin();
+  };
+  const ask = (msg, go) => tg.showConfirm ? tg.showConfirm(msg, ok => ok && go()) : (confirm(msg) && go());
+  if (sd) {
+    app.querySelectorAll("[data-p]").forEach(b => b.onclick = () => {
+      const place = +b.dataset.p - 1, pid = +b.dataset.id;
+      const other = 1 - place;
+      if (picks[other] === pid) picks[other] = undefined;
+      picks[place] = pid;
+      app.querySelectorAll("[data-p]").forEach(x => x.classList.toggle("on", picks[+x.dataset.p - 1] === +x.dataset.id));
+      q("done").disabled = !(picks[0] && picks[1]);
+    });
+    q("done").onclick = () => {
+      const nm = id2 => g.players.find(p => p.tg_id === id2).name;
+      ask(`1 место: ${nm(picks[0])}\n2 место: ${nm(picks[1])}\nПодтвердить результат?`, () => finish([picks[0], picks[1]]));
+    };
+  } else {
+    app.querySelectorAll("[data-w]").forEach(b => b.onclick = () => {
+      const name = g.players.find(p => String(p.tg_id) === b.dataset.w).name;
+      ask(`Победитель: ${name}. Подтвердить результат?`, () => finish([+b.dataset.w]));
+    });
+  }
+}
+
+function openTopup() {
+  if (topupPending) { toast("У тебя уже есть заявка на пополнение"); return; }
+  const el = document.createElement("div");
+  el.className = "sheet";
+  el.innerHTML = `<div class="sheet-in" id="sh"></div>`;
+  document.body.appendChild(el);
+  el.onclick = e => { if (e.target === el) el.remove(); };
+  const sh = el.querySelector("#sh");
+  const stepAmount = (def = 300) => {
+    sh.innerHTML = `<h1>Пополнение</h1><p>Выбери сумму в рублях</p>
+    <div class="chips">${[100, 300, 500, 1000].map(a => `<button class="chip${a === def ? " on" : ""}" data-a="${a}">${a} ₽</button>`).join("")}</div>
+    <input type="text" id="amt" inputmode="numeric" value="${def}" placeholder="Своя сумма, ₽">
+    <p id="tst"></p>
+    <button class="btn" id="pay">Перейти к оплате</button>
+    <button class="link" id="cls">Отмена</button>`;
+    const inp = sh.querySelector("#amt"), tst = sh.querySelector("#tst");
+    sh.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+      sh.querySelectorAll(".chip").forEach(x => x.classList.remove("on")); c.classList.add("on"); inp.value = c.dataset.a;
+    });
+    sh.querySelector("#cls").onclick = () => el.remove();
+    sh.querySelector("#pay").onclick = () => {
+      const amount = parseInt(inp.value.replace(/\D/g, ""), 10);
+      if (!amount || amount < 50 || amount > 50000) { tst.textContent = "Сумма от 50 до 50 000 ₽"; tst.className = "err"; return; }
+      stepQr(amount);
+    };
+  };
+  const stepQr = amount => {
+    const ref = String(1000 + Math.floor(Math.random() * 9000));
+    sh.innerHTML = `<h1>Переведи ${money(amount)}</h1>
+    <p>Отсканируй QR-код в приложении банка (с другого устройства или сохрани картинку долгим нажатием) и переведи ровно <b style="color:var(--tx)">${money(amount)}</b></p>
+    <img class="qr" src="${QR_IMG}" alt="QR для перевода">
+    <p style="margin-top:12px">В комментарии к переводу укажи код (если банк позволяет):</p>
+    <div class="refcode">${ref}</div>
+    <p id="tst"></p>
+    <button class="btn" id="ok">Подтвердить перевод</button>
+    <button class="link" id="back">← Изменить сумму</button>`;
+    sh.querySelector("#back").onclick = () => stepAmount(amount);
+    sh.querySelector("#ok").onclick = async () => {
+      const ok = sh.querySelector("#ok"), tst = sh.querySelector("#tst");
+      ok.disabled = true; tst.className = ""; tst.textContent = "Отправляем заявку…";
+      try {
+        await pay("request", { amount, ref });
+        el.remove();
+        topupPending = { amount, ref };
+        renderTopupBox();
+        toast("Заявка отправлена. Ждём подтверждения администратора");
+      } catch (e) { tst.textContent = eText(e); tst.className = "err"; ok.disabled = false; }
+    };
+  };
+  stepAmount();
+}
+
+function renderTopupBox() {
+  const box = document.getElementById("tpbox"); if (!box) return;
+  if (!topupPending) { box.innerHTML = ""; return; }
+  box.innerHTML = `<div class="note"><span class="pulse"></span><b>Ожидание оплаты</b> · ${money(topupPending.amount)}<br>Администратор проверяет перевод и пополнит баланс.</div>
+  <button class="link" id="tpc">Отменить заявку</button>`;
+  q("tpc").onclick = async () => {
+    try { await pay("cancel"); topupPending = null; renderTopupBox(); toast("Заявка отменена"); } catch (e) { toast(eText(e)); }
+  };
+}
+function applyTopupState(st) {
+  const prev = topupPending;
+  topupPending = st.pending ? { amount: st.pending.amount, ref: st.pending.ref } : null;
+  if (prev && !topupPending && st.last) {
+    toast(st.last.status === "approved" ? "Баланс пополнен на " + money(st.last.amount) : "Перевод на " + money(st.last.amount) + " отклонён администратором");
+  }
+  renderTopupBox();
+}
+let admWd = 0;
+async function extraPoll() {
+  if (isAdmin) {
+    loadAdminStats();
+    try {
+      const c = await pay("admin_counts"), w = await wd("admin_count");
+      const n = Number(c.topups) + Number(c.games) + Number(w.withdrawals);
+      const bdg = document.getElementById("admbdg");
+      bdg.textContent = n; bdg.classList.toggle("hidden", n === 0);
+      if (Number(c.topups) > admTop) toast("Новая заявка на пополнение");
+      if (Number(w.withdrawals) > admWd) toast("Новая заявка на вывод");
+      admTop = Number(c.topups); admWd = Number(w.withdrawals);
+    } catch (e) {}
+  }
+  if (cur && (topupPending || curTab === "profile")) { try { applyTopupState(await pay("status")); } catch (e) {} }
+  if (cur && (wdPending.length || curTab === "profile")) { try { applyWdState(await wd("status")); } catch (e) {} }
+}
+
+let wdPending = [];
+function renderWdBox() {
+  const box = document.getElementById("wdbox"); if (!box) return;
+  box.innerHTML = wdPending.map(w => `<div class="note"><span class="pulse"></span><b>Вывод в обработке</b> · ${money(w.amount)}${w.bank ? " · " + w.bank : ""}<br>Администратор скоро отправит перевод. Если вывод отменят, деньги вернутся на баланс.</div>`).join("");
+}
+function applyWdState(st) {
+  const prev = wdPending;
+  wdPending = st.pending || [];
+  prev.filter(p => !wdPending.some(n => n.id === p.id)).forEach(p => {
+    const r = (st.recent || []).find(x => x.id === p.id);
+    if (r) toast(r.status === "paid" ? "Вывод " + money(r.amount) + " выполнен" : "Вывод отменён", " + money(r.amount) + " верну inputлись на баланс");
+  });
+ mode renderWdBox();
+}
+const normPhone = v =>=" {
+  const d = v.replace(/\Dtel/g, "");
+  if (d.length === 11 && (d[0]" === "7" || d[0] === "8")) return "+7" + d.slice(1);
+  if (d.length === 10 && d[0] === "9") return "+7" + d;
+  return null;
+};
+function openWithdraw() {
+  const bal = Math.floor(Number(cur.balance || 0));
+  const el = document.createElement("div"); el.className = "sheet";
+  el.innerHTML = `<div class="sheet-in"><h1>Вывод средств</h1><p>Доступно: <b style="color:var(--tx)">${money(bal)}</b></p>
+    <input type="text" id="wamt" inputmode="numeric" placeholder="Сумма вывода, ₽" autocomplete="off">
+    <input type="text" id="wph placeholder="Номер телефона получателя" value="+7" autocomplete="off">
+    <input type="text" id="wbank" list="banks" placeholder="Банк получателя" autocomplete="off">
+    <datalist id="banks"><option value="Сбербанк"><option value="Т-Банк"><option value="ВТБ"><option value="Альфа-Банк"><option value="Ozon Банк"><option value="Райффайзенбанк"><option value="Газпромбанк"><option value="Совкомбанк"><option value="Яндекс Банк"></datalist>
+    <p id="tst" style="font-size:12px">Сумма сразу спишется с баланса. Если вывод отменят, деньги вернутся.</p>
+    <button class="btn" id="ok">Подтвердить вывод</button><button class="link" id="cls">Отмена</button></div>`;
+  document.body.appendChild(el);
+  el.onclick = e => { if (e.target === el) el.remove(); };
+  const tst = el.querySelector("#tst"), ok = el.querySelector("#ok");
+  const bad = t => { tst.textContent = t; tst.className = "err"; };
+  el.querySelector("#cls").onclick = () => el.remove();
+  ok.onclick = async () => {
+    const amount = parseInt(el.querySelector("#wamt").value.replace(/\D/g, ""), 10);
+    const phone = normPhone(el.querySelector("#wph").value);
+    const bank = el.querySelector("#wbank").value.trim();
+    if (!amount || amount < 50) return bad("Минимальная сумма вывода — 50 ₽");
+    if (amount > bal) return bad("Недостаточно средств на балансе");
+    if (!phone) return bad("Введи российский номер: +7 900 000-00-00");
+    if (bank.length < 2) return bad("Укажи банк получателя");
+    ok.disabled = true; tst.className = ""; tst.textContent = "Создаём заявку…";
+    try {
+      const d = await wd("request", { amount, phone, bank });
+      cur.balance = d.balance;
+      const wbe = document.getElementById("wb"); if (wbe) wbe.textContent = money(d.balance);
+      wdPending.push({ id: d.id, amount, bank }); renderWdBox();
+      el.remove(); toast("Заявка на вывод создана");
+    } catch (e) { bad(eText(e)); ok.disabled = false; }
+  };
+}
+
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => { if (cur) showTab(b.dataset.t); });
+
+["gesturestart", "gesturechange", "gestureend"].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
+document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+document.addEventListener("dblclick", e => e.preventDefault());
+
+function boot() {
+  app.innerHTML = "<h1>Загрузка…</h1>";
+  call("me").then(d => { render(d.player); ms("ref_touch").catch(() => {}); }).catch(e => {
+    app.innerHTML = `<div class="icon">⚠️</div><h1>Не удалось загрузить</h1><p class="err">${errText(e)}</p><p style="font-size:12px">${[e.error, e.status, e.detail, e.message].filter(Boolean).join(" · ")}</p><button class="btn" onclick="boot()">Повторить</button>`;
+  });
+}
+boot();
 </script>
 </body>
 </html>

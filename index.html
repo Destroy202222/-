@@ -6,152 +6,185 @@
 <title>Ranked — соревновательный матчмейкинг</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
 :root{
-  --bg:#08080b;--panel:#111116;--panel-2:#17171e;--line:#25252f;
-  --text:#f2f2f6;--muted:#8a8a99;--accent:#e8245f;--accent-soft:rgba(232,36,95,.16);
-  --ok:#36e07c;--gold:#f2c14e;--radius:18px;
-  --head:'Chakra Petch','Segoe UI',system-ui,sans-serif;
-  --body:'Manrope','Segoe UI',system-ui,sans-serif;
+  --bg:#121212;--panel:#1f1f1f;--panel-2:#272727;--line:#303030;
+  --text:#ffffff;--muted:#9b9b9b;--accent:#ff5500;--accent-hover:#ff6a1f;--accent-soft:rgba(255,85,0,.14);
+  --ok:#1ce400;--gold:#ffc800;--lose:#ff3d2e;--radius:6px;
+  --head:'Play','Segoe UI',system-ui,sans-serif;
+  --body:'Roboto','Segoe UI',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0}
 html{background:var(--bg)}
-body{
-  font-family:var(--body);color:var(--text);min-height:100vh;
-  background:
-    radial-gradient(900px 420px at 80% -10%,rgba(232,36,95,.14),transparent 60%),
-    radial-gradient(700px 400px at -10% 30%,rgba(232,36,95,.06),transparent 60%),var(--bg);
-  padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 24px);
-  -webkit-font-smoothing:antialiased;
-}
+body{font-family:var(--body);color:var(--text);background:var(--bg);min-height:100vh;padding-bottom:calc(env(safe-area-inset-bottom) + 28px);-webkit-font-smoothing:antialiased}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none}
-button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 [hidden]{display:none!important}
-.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
 
-.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
-.brand{display:flex;align-items:center;gap:10px;font-family:var(--head);font-weight:700;font-size:20px}
-.brand svg{width:34px;height:34px}
-.ghost{padding:9px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:13px;font-weight:600;transition:border-color .2s}
-.ghost:hover{border-color:var(--accent)}
+/* ---- верхнее меню ---- */
+.nav{background:#181818;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;padding-top:env(safe-area-inset-top)}
+.nav-in{max-width:1100px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--head);font-weight:700;font-size:21px;margin-right:12px}
+.brand svg{width:30px;height:30px}
+.menu{display:flex;gap:2px;overflow-x:auto;order:3;width:100%;scrollbar-width:none}
+.menu::-webkit-scrollbar{display:none}
+.menu button{padding:16px 16px 14px;font-family:var(--head);font-weight:700;font-size:15px;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;transition:color .15s}
+.menu button:hover{color:var(--text)}
+.menu button.on{color:var(--text);border-bottom-color:var(--accent)}
+.nav .spacer{flex:1}
+.ghost{padding:8px 14px;border-radius:var(--radius);background:var(--panel-2);font-size:13px;font-weight:500;transition:background .15s}
+.ghost:hover{background:#333}
+@media(min-width:760px){.menu{order:0;width:auto;margin-left:6px}.menu button{padding:19px 16px 17px}}
 
-h2{font-family:var(--head);font-size:13px;font-weight:600;color:var(--muted);margin:22px 0 10px}
-.layout{display:grid;gap:14px}
-@media(min-width:820px){.layout{grid-template-columns:1.1fr .9fr;align-items:start}}
+/* ---- общее ---- */
+h2{font-family:var(--head);font-size:15px;font-weight:700;margin:0 0 12px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.page{padding-top:18px}
+.cols{display:grid;gap:16px}
+@media(min-width:860px){.cols{grid-template-columns:1fr 340px;align-items:start}}
+.stack{display:grid;gap:16px}
 
-/* auth */
-.auth{max-width:420px;margin:30px auto}
+/* сезоны */
+.sbar{background:#181818;border-bottom:1px solid var(--line)}
+.sbar .wrap{display:flex;align-items:center;gap:12px;padding-top:10px;padding-bottom:10px}
+.sbar small{color:var(--muted);font-size:13px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:var(--radius);background:var(--panel-2);font-family:var(--head);font-weight:700;font-size:13px;color:var(--muted);transition:all .15s}
+.tab[aria-selected="true"]{background:var(--accent);color:#fff}
+
+/* значок уровня (цвета по шкале 1–10) */
+.lb{--lc:#eee;width:44px;height:44px;border-radius:50%;border:3px solid var(--lc);color:var(--lc);display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:19px;flex:none}
+.lb[data-l="2"],.lb[data-l="3"]{--lc:#1ce400}
+.lb[data-l="4"],.lb[data-l="5"],.lb[data-l="6"],.lb[data-l="7"]{--lc:#ffc800}
+.lb[data-l="8"],.lb[data-l="9"]{--lc:#ff6309}
+.lb[data-l="10"]{--lc:#fe1f00}
+.lb.big{width:72px;height:72px;font-size:32px;border-width:4px}
+
+/* ---- профиль ---- */
+.hero{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:var(--panel)}
+.cover{height:120px;background:
+  linear-gradient(115deg,rgba(255,85,0,.0) 40%,rgba(255,85,0,.22) 100%),
+  repeating-linear-gradient(135deg,#1b1b1b 0 14px,#202020 14px 28px)}
+.hero-body{display:flex;align-items:flex-end;gap:16px;padding:0 18px 16px;margin-top:-40px;flex-wrap:wrap}
+.avatar{width:96px;height:96px;border-radius:var(--radius);border:4px solid var(--panel);background:var(--panel-2);display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:38px;flex:none}
+.hero-name{flex:1;min-width:160px;padding-bottom:4px}
+.hero-name b{font-family:var(--head);font-size:28px;display:block;line-height:1.1}
+.hero-name small{color:var(--muted);font-size:13px}
+.subtabs{display:flex;gap:2px;border-top:1px solid var(--line);padding:0 10px;overflow-x:auto;scrollbar-width:none}
+.subtabs button{padding:14px 16px 12px;font-family:var(--head);font-weight:700;font-size:14px;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+.subtabs button.on{color:var(--text);border-bottom-color:var(--accent)}
+.pane{margin-top:16px}
+
+.elo-head{display:flex;align-items:center;gap:16px}
+.elo-main{display:flex;align-items:baseline;gap:8px}
+.elo-main strong{font-family:var(--head);font-size:40px;line-height:1}
+.badge{font-family:var(--head);font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:3px 8px;border-radius:4px}
+.bar{height:6px;border-radius:3px;background:var(--panel-2);margin:14px 0 6px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.bar-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:560px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 10px;text-align:center}
+.stat b{font-family:var(--head);font-size:22px;display:block}
+.stat span{font-size:12px;color:var(--muted)}
+
+/* ---- играть ---- */
+.leagues{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.league{padding:13px 6px;border-radius:var(--radius);background:var(--panel-2);border:1px solid transparent;font-family:var(--head);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:6px}
+.league[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.league:disabled{opacity:.4;cursor:not-allowed}
+.league svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn{width:100%;padding:16px;border-radius:var(--radius);background:var(--accent);color:#fff;font-family:var(--head);font-weight:700;font-size:17px;transition:background .15s}
+.btn:hover{background:var(--accent-hover)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.searching{background:var(--panel-2);box-shadow:inset 0 0 0 2px var(--accent)}
+.status{margin-top:12px;font-size:14px;color:var(--muted);min-height:20px;text-align:center}
+.status b{color:var(--text);font-family:var(--head)}
+.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:8px;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.team{background:var(--panel-2);border-radius:var(--radius);padding:12px}
+.team h3{font-family:var(--head);font-size:13px;margin-bottom:8px;color:var(--muted)}
+.team ul{padding:0}
+.team li{list-style:none;font-size:14px;padding:4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team li.me{color:var(--accent);font-weight:700}
+.hint{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.5}
+
+/* ---- списки ---- */
+.row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row:first-child{padding-top:0}
+.pos{width:28px;font-family:var(--head);font-weight:700;color:var(--muted);text-align:center}
+.tag{width:40px;height:40px;border-radius:var(--radius);display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:13px;flex:none;background:var(--panel-2)}
+.row .who{flex:1;min-width:0}
+.row .who b{display:block;font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .who small{color:var(--muted);font-size:12px}
+.row .pts{font-family:var(--head);font-weight:700}
+.row.me{background:var(--accent-soft);margin:0 -16px;padding-left:16px;padding-right:16px}
+.row.me .who b{color:var(--accent)}
+.win{color:var(--ok)}.lose{color:var(--lose)}
+.tag.win{background:rgba(28,228,0,.12)}.tag.lose{background:rgba(255,61,46,.12)}
+.empty{color:var(--muted);font-size:14px;padding:6px 0}
+
+/* ---- вход ---- */
+.auth{max-width:420px;margin:40px auto}
 .auth h1{font-family:var(--head);font-size:26px;margin-bottom:6px}
 .auth p{color:var(--muted);font-size:14px;margin-bottom:16px}
 .field{display:block;margin-bottom:12px}
 .field span{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
-.field input{width:100%;padding:12px 14px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line)}
+.field input{width:100%;padding:12px 14px;border-radius:var(--radius);background:var(--panel-2);border:1px solid var(--line)}
 .field input:focus{border-color:var(--accent);outline:0}
-.msg{font-size:13px;min-height:18px;margin:4px 0 10px;color:var(--accent)}
+.msg{font-size:13px;min-height:18px;margin:4px 0 10px;color:var(--lose)}
 .msg.ok{color:var(--ok)}
-.notice{border-color:var(--accent);background:var(--accent-soft);font-size:14px;line-height:1.5}
-.notice code{background:var(--panel-2);padding:2px 6px;border-radius:6px}
+.notice{border-color:var(--accent);background:var(--accent-soft);font-size:14px;line-height:1.5;margin-top:18px}
+.notice code{background:var(--panel-2);padding:2px 6px;border-radius:4px}
 
-/* player */
-.player{display:flex;align-items:center;gap:14px}
-.avatar{position:relative;width:64px;height:64px;border-radius:16px;border:2px solid var(--ok);display:grid;place-items:center;background:var(--panel-2);flex:none;font-family:var(--head);font-weight:700;font-size:24px}
-.avatar i{position:absolute;right:-5px;bottom:-5px;width:14px;height:14px;border-radius:50%;background:var(--ok);border:3px solid var(--panel)}
-.player b{font-family:var(--head);font-size:22px;display:block}
-.player small{color:var(--muted);font-size:13px}
-
-.elo{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;margin-top:14px}
-.ring{position:relative;width:86px;height:86px}
-.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.ring .bg{stroke:var(--line)}
-.ring .fg{stroke:var(--ok);transition:stroke-dashoffset .7s cubic-bezier(.2,.8,.2,1),stroke .3s}
-.ring .lvl{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:24px}
-.elo-main{display:flex;align-items:baseline;gap:8px}
-.elo-main strong{font-family:var(--head);font-size:34px;line-height:1}
-.badge{font-family:var(--head);font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:3px 8px;border-radius:7px}
-.bar{height:6px;border-radius:6px;background:var(--line);margin:10px 0 6px;overflow:hidden}
-.bar span{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
-.bar-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
-.stat{background:var(--panel-2);border-radius:12px;padding:10px 8px;text-align:center}
-.stat b{font-family:var(--head);font-size:18px;display:block}
-.stat span{font-size:11px;color:var(--muted)}
-
-.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.tab{padding:9px 16px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);font-family:var(--head);font-weight:600;font-size:13px;transition:all .2s}
-.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
-
-/* play */
-.play-card{text-align:center;padding:22px 16px}
-.leagues{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-.league{padding:12px 6px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);font-family:var(--head);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px}
-.league[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
-.league:disabled{opacity:.45;cursor:not-allowed}
-.league svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.btn{width:100%;padding:15px;border-radius:14px;background:var(--accent);color:#fff;font-family:var(--head);font-weight:700;font-size:17px;box-shadow:0 10px 30px -10px rgba(232,36,95,.8);transition:transform .15s}
-.btn:hover{transform:translateY(-1px)}
-.btn:disabled{opacity:.6;cursor:wait}
-.btn.searching{background:var(--panel-2);box-shadow:none;border:1px solid var(--accent)}
-.status{margin-top:12px;font-size:13px;color:var(--muted);min-height:20px}
-.status b{color:var(--text);font-family:var(--head);font-size:15px}
-.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:8px;animation:pulse 1.2s infinite}
-@keyframes pulse{50%{opacity:.25}}
-
-/* match */
-.teams{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.team{background:var(--panel-2);border-radius:12px;padding:10px}
-.team h3{font-family:var(--head);font-size:13px;margin-bottom:8px;color:var(--muted)}
-.team li{list-style:none;font-size:14px;padding:4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.team li.me{color:var(--ok);font-weight:700}
-.hint{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.45}
-
-/* rows */
-.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:0}
-.pos{width:26px;font-family:var(--head);font-weight:700;color:var(--muted);text-align:center}
-.tag{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:13px;flex:none;background:var(--panel-2)}
-.row .who{flex:1;min-width:0}
-.row .who b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row .who small{color:var(--muted);font-size:12px}
-.row .pts{font-family:var(--head);font-weight:700}
-.row.me .who b{color:var(--ok)}
-.win{color:var(--ok)}.lose{color:var(--accent)}
-.empty{color:var(--muted);font-size:14px;padding:6px 0}
-
-/* admin */
-.adm{border-color:var(--gold)}
-.adm h2{color:var(--gold);margin-top:0}
-.adm-match{background:var(--panel-2);border-radius:12px;padding:12px;margin-bottom:10px}
-.adm-match .teams{margin-bottom:10px}
-.kd{display:flex;gap:4px;align-items:center;margin-top:4px}
-.kd input{width:44px;padding:4px 6px;border-radius:8px;background:var(--bg);border:1px solid var(--line);font-size:12px}
+/* ---- админ ---- */
+.adm-match{background:var(--panel-2);border-radius:var(--radius);padding:12px;margin-bottom:12px}
+.adm-match .teams{margin-bottom:12px}
+.adm-match .team{background:var(--panel)}
+.kd{display:flex;gap:4px;margin-top:4px}
+.kd input{width:48px;padding:5px 6px;border-radius:4px;background:var(--bg);border:1px solid var(--line);font-size:12px}
 .adm-actions{display:flex;gap:8px;flex-wrap:wrap}
-.adm-actions button{flex:1;min-width:90px;padding:10px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px}
+.adm-actions button{flex:1;min-width:110px;padding:11px;border-radius:var(--radius);background:var(--accent);color:#fff;font-weight:700;font-size:13px}
 .adm-actions button.cancel{background:var(--panel);color:var(--muted);border:1px solid var(--line)}
 
-.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 20px);transform:translate(-50%,30px);background:var(--panel-2);border:1px solid var(--line);padding:12px 18px;border-radius:12px;font-size:14px;opacity:0;transition:all .25s;pointer-events:none;max-width:90vw;z-index:10}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 20px);transform:translate(-50%,30px);background:#2d2d2d;border:1px solid var(--line);padding:12px 18px;border-radius:var(--radius);font-size:14px;opacity:0;transition:all .25s;pointer-events:none;max-width:90vw;z-index:20}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header class="top">
+<header class="nav">
+  <div class="nav-in">
     <div class="brand">
       <svg viewBox="0 0 40 40" aria-hidden="true">
-        <path d="M20 3 35 9v11c0 9-6.500 15.500-15 18C11.500 35.500 5 29 5 20V9z" fill="#17171e" stroke="#e8245f" stroke-width="2"/>
-        <path d="M12 17h16M12 23h10" stroke="#f2f2f6" stroke-width="3" stroke-linecap="round"/>
+        <path d="M6 6h28v7H15v6h15v7H15v8H6z" fill="#ff5500"/>
       </svg>
       Ranked
     </div>
+    <nav class="menu" id="menu" hidden>
+      <button class="on" data-page="play">Играть</button>
+      <button data-page="profile">Профиль</button>
+      <button data-page="rank">Рейтинг</button>
+      <button data-page="admin" id="navAdmin" hidden>Админ</button>
+    </nav>
+    <div class="spacer"></div>
     <button class="ghost" id="logout" hidden>Выйти</button>
-  </header>
+  </div>
+</header>
 
-  <!-- ключи не вставлены -->
+<div class="sbar" id="seasonBar" hidden>
+  <div class="wrap"><small>Сезон</small><div class="tabs" id="seasonTabs" role="tablist"></div></div>
+</div>
+
+<div class="wrap">
+
   <div class="card notice" id="setup" hidden>
     Вставь адрес проекта и публичный ключ Supabase в начале скрипта:
     <code>SUPABASE_URL</code> и <code>SUPABASE_KEY</code> (Project Settings → API → anon public key).
@@ -160,96 +193,109 @@ h2{font-family:var(--head);font-size:13px;font-weight:600;color:var(--muted);mar
   <!-- вход -->
   <section class="card auth" id="auth" hidden>
     <h1 id="authTitle">Вход</h1>
-    <p id="authSub">Войди, чтобы искать матч и копить ELO.</p>
-    <div class="tabs" role="tablist">
+    <p id="authSub">Войди, чтобы искать матч 3 на 3 и копить ELO.</p>
+    <div class="tabs" role="tablist" style="margin-bottom:14px">
       <button class="tab" role="tab" aria-selected="true" data-mode="login">Вход</button>
       <button class="tab" role="tab" aria-selected="false" data-mode="signup">Регистрация</button>
     </div>
-    <label class="field" id="fNick" hidden><span>Ник (3–20 символов)</span><input id="nick" autocomplete="nickname" maxlength="20"></label>
-    <label class="field" id="fStatic" hidden><span>Static ID в Standoff 2 (необязательно)</span><input id="staticId" inputmode="numeric" maxlength="20"></label>
-    <label class="field"><span>Почта</span><input id="email" type="email" autocomplete="email"></label>
+    <label class="field" id="fNick"><span>Ник (3–20 символов: латиница, цифры, _)</span><input id="nick" autocomplete="username" maxlength="20" autocapitalize="off" spellcheck="false"></label>
     <label class="field"><span>Пароль (от 6 символов)</span><input id="pass" type="password" autocomplete="current-password"></label>
     <div class="msg" id="authMsg" role="status"></div>
     <button class="btn" id="authBtn">Войти</button>
   </section>
 
-  <!-- приложение -->
-  <main class="layout" id="app" hidden>
-    <section>
-      <div class="card">
-        <div class="player">
-          <div class="avatar" id="avatar">?<i></i></div>
-          <div>
-            <b id="pNick">—</b>
-            <small id="pSub"></small>
+  <main id="app" hidden>
+
+    <!-- ИГРАТЬ -->
+    <section class="page" id="pg-play">
+      <div class="cols">
+        <div class="card">
+          <h2>Выбор лиги</h2>
+          <div class="leagues">
+            <button class="league" aria-pressed="true">Default</button>
+            <button class="league" disabled><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Qual</button>
+            <button class="league" disabled><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Pro</button>
+          </div>
+          <button class="btn" id="play">Играть</button>
+          <div class="status" id="status" aria-live="polite"></div>
+        </div>
+        <div class="stack">
+          <div class="card" id="matchBox" hidden>
+            <h2>Текущий матч</h2>
+            <div class="teams" id="matchTeams"></div>
+            <p class="hint">Заходите в Nulls Brawl и играйте матч 3 на 3. После игры админ засчитает результат, и ELO обновится автоматически.</p>
           </div>
         </div>
+      </div>
+    </section>
 
-        <h2 style="margin-top:20px">Сезон</h2>
-        <div class="tabs" id="seasonTabs" role="tablist"></div>
+    <!-- ПРОФИЛЬ -->
+    <section class="page" id="pg-profile" hidden>
+      <div class="hero">
+        <div class="cover"></div>
+        <div class="hero-body">
+          <div class="avatar" id="avatar">?</div>
+          <div class="hero-name"><b id="pNick">—</b><small id="pSub"></small></div>
+          <div class="lb" data-l="1" aria-label="Уровень">1</div>
+        </div>
+        <div class="subtabs" id="subtabs">
+          <button class="on" data-pane="overview">Обзор</button>
+          <button data-pane="stats">Статистика</button>
+          <button data-pane="matches">Матчи</button>
+        </div>
+      </div>
 
-        <div class="elo">
-          <div class="ring">
-            <svg viewBox="0 0 100 100">
-              <circle class="bg" cx="50" cy="50" r="44" fill="none" stroke-width="7"/>
-              <circle class="fg" id="ringFg" cx="50" cy="50" r="44" fill="none" stroke-width="7" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
-            </svg>
-            <div class="lvl" id="lvl">1</div>
-          </div>
-          <div>
-            <div class="elo-main"><strong id="eloVal">0</strong><span class="badge">ELO</span></div>
+      <div class="pane" id="pane-overview">
+        <div class="stack">
+          <div class="card">
+            <div class="elo-head">
+              <div class="lb big" data-l="1">1</div>
+              <div>
+                <div class="elo-main"><strong id="eloVal">0</strong><span class="badge">ELO</span></div>
+              </div>
+            </div>
             <div class="bar"><span id="eloBar" style="width:0"></span></div>
             <div class="bar-meta"><span id="eloRange"></span><span id="eloLeft"></span></div>
           </div>
+          <div class="stats">
+            <div class="stat"><b id="stRank">—</b><span>Ранг</span></div>
+            <div class="stat"><b id="stWr">0%</b><span>Винрейт</span></div>
+            <div class="stat"><b id="stKd">0.00</b><span>K/D</span></div>
+            <div class="stat"><b id="stMatches">0</b><span>Матчи</span></div>
+          </div>
         </div>
+      </div>
 
+      <div class="pane" id="pane-stats" hidden>
         <div class="stats">
-          <div class="stat"><b id="stRank">—</b><span>Ранг</span></div>
-          <div class="stat"><b id="stWr">0%</b><span>Винрейт</span></div>
-          <div class="stat"><b id="stKd">0.00</b><span>K/D</span></div>
-          <div class="stat"><b id="stMatches">0</b><span>Матчи</span></div>
+          <div class="stat"><b id="stW" class="win">0</b><span>Победы</span></div>
+          <div class="stat"><b id="stL" class="lose">0</b><span>Поражения</span></div>
+          <div class="stat"><b id="stK">0</b><span>Убийства</span></div>
+          <div class="stat"><b id="stD">0</b><span>Смерти</span></div>
         </div>
       </div>
 
-      <h2>Топ игроков</h2>
-      <div class="card" id="board"></div>
-
-      <h2>Мои матчи</h2>
-      <div class="card" id="history"></div>
-    </section>
-
-    <section>
-      <div class="card play-card">
-        <h2 style="margin-top:0;text-align:left">Выбор лиги</h2>
-        <div class="leagues">
-          <button class="league" aria-pressed="true">Default</button>
-          <button class="league" disabled><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Qual</button>
-          <button class="league" disabled><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Pro</button>
-        </div>
-        <button class="btn" id="play">Играть</button>
-        <div class="status" id="status" aria-live="polite"></div>
-      </div>
-
-      <div id="matchBox" hidden>
-        <h2>Текущий матч</h2>
-        <div class="card">
-          <div class="teams" id="matchTeams"></div>
-          <p class="hint">Играйте матч в Standoff 2. После игры админ засчитает результат, и ELO обновится автоматически.</p>
-        </div>
-      </div>
-
-      <div id="admin" hidden style="margin-top:14px">
-        <div class="card adm">
-          <h2>Админ: матчи без результата</h2>
-          <div id="admList"></div>
-        </div>
+      <div class="pane" id="pane-matches" hidden>
+        <div class="card"><h2>Последние матчи</h2><div id="history"></div></div>
       </div>
     </section>
+
+    <!-- РЕЙТИНГ -->
+    <section class="page" id="pg-rank" hidden>
+      <div class="card"><h2>Топ игроков</h2><div id="board"></div></div>
+    </section>
+
+    <!-- АДМИН -->
+    <section class="page" id="pg-admin" hidden>
+      <div class="card"><h2>Матчи без результата</h2><div id="admList"></div></div>
+    </section>
+
   </main>
 </div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+
 /* ========== НАСТРОЙКИ: вставь свои значения ========== */
 const SUPABASE_URL = 'https://dcpxifikhoonrwkvmrbt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjcHhpZmlraG9vbnJ3a3ZtcmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0OTEzMzUsImV4cCI6MjEwNzA2NzMzNX0.gIErjd5AyfQguzplxDfzOwS5aIjB5zbVSMkwIEUt_ak';
@@ -277,7 +323,6 @@ let mode = 'login';
 function setMode(m){
   mode = m;
   document.querySelectorAll('#auth .tab').forEach(t => t.setAttribute('aria-selected', t.dataset.mode === m));
-  $('#fNick').hidden = $('#fStatic').hidden = m !== 'signup';
   $('#authTitle').textContent = m === 'signup' ? 'Регистрация' : 'Вход';
   $('#authBtn').textContent = m === 'signup' ? 'Создать аккаунт' : 'Войти';
   $('#pass').autocomplete = m === 'signup' ? 'new-password' : 'current-password';
@@ -287,20 +332,23 @@ document.querySelectorAll('#auth .tab').forEach(t => t.addEventListener('click',
 
 function authMsg(t, ok){ const m = $('#authMsg'); m.textContent = t; m.classList.toggle('ok', !!ok); }
 
+/* вход по нику: под капотом это почта вида ник@ranked.app, подтверждать её не нужно */
+const EMAIL_DOMAIN = 'ranked.app';
+const NICK_RE = /^[A-Za-z0-9_]{3,20}$/;
 $('#authBtn').addEventListener('click', async () => {
-  const email = $('#email').value.trim(), password = $('#pass').value;
-  if (!email || password.length < 6) return authMsg('Введи почту и пароль от 6 символов');
+  const nickname = $('#nick').value.trim(), password = $('#pass').value;
+  if (!NICK_RE.test(nickname)) return authMsg('Ник: 3–20 символов, латиница, цифры и _');
+  if (password.length < 6) return authMsg('Пароль должен быть от 6 символов');
+  const email = nickname.toLowerCase() + '@' + EMAIL_DOMAIN;
   $('#authBtn').disabled = true; authMsg('');
   try {
     if (mode === 'signup') {
-      const nickname = $('#nick').value.trim();
-      if (nickname.length < 3) return authMsg('Ник должен быть от 3 символов');
-      const { data, error } = await sb.auth.signUp({ email, password, options:{ data:{ nickname, static_id: $('#staticId').value.trim() } } });
-      if (error) return authMsg(error.message.includes('Database error') ? 'Этот ник уже занят' : error.message);
-      if (!data.session) authMsg('Аккаунт создан. Подтверди почту и войди.', true);
+      const { data, error } = await sb.auth.signUp({ email, password, options:{ data:{ nickname } } });
+      if (error) return authMsg(/already|database error/i.test(error.message) ? 'Этот ник уже занят' : error.message);
+      if (!data.session) authMsg('Аккаунт создан, но Supabase требует подтверждение. Отключи Confirm email в настройках Auth.');
     } else {
       const { error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) return authMsg('Неверная почта или пароль');
+      if (error) return authMsg('Неверный ник или пароль');
     }
   } finally { $('#authBtn').disabled = false; }
 });
@@ -317,11 +365,11 @@ async function init(){
     if (ev === 'SIGNED_OUT') { teardown(); showAuth(); }
   });
 }
-function showAuth(){ $('#auth').hidden = false; $('#app').hidden = true; $('#logout').hidden = true; }
+function showAuth(){ $('#auth').hidden = false; $('#app').hidden = true; $('#logout').hidden = true; $('#menu').hidden = true; $('#seasonBar').hidden = true; }
 
 async function boot(user){
   S.user = user;
-  $('#auth').hidden = true; $('#app').hidden = false; $('#logout').hidden = false;
+  $('#auth').hidden = true; $('#app').hidden = false; $('#logout').hidden = false; $('#menu').hidden = false; go('play');
 
   const [{ data:profile }, { data:seasons }, { data:set }] = await Promise.all([
     sb.from('profiles').select('*').eq('id', user.id).single(),
@@ -329,13 +377,13 @@ async function boot(user){
     sb.from('settings').select('*').eq('key', 'players_per_match').maybeSingle()
   ]);
   S.profile = profile; S.seasons = seasons || [];
-  S.perMatch = set ? +set.value : 10;
+  S.perMatch = set ? +set.value : 6;
   S.season = (S.seasons.find(s => s.is_active) || S.seasons[0] || {}).id;
 
   $('#pNick').textContent = profile.nickname;
-  $('#avatar').firstChild.textContent = profile.nickname[0].toUpperCase();
-  $('#pSub').textContent = (profile.clan ? '[' + profile.clan + '] · ' : '') + (profile.static_id ? 'Static #' + profile.static_id : 'Static ID не указан');
-  $('#admin').hidden = !profile.is_admin;
+  $('#avatar').textContent = profile.nickname[0].toUpperCase();
+  $('#pSub').textContent = (profile.clan ? '[' + profile.clan + '] · ' : '') + 'Brawl Stars';
+  $('#navAdmin').hidden = !profile.is_admin;
 
   renderSeasonTabs();
   await Promise.all([loadStats(), loadBoard(), loadHistory(), checkQueue()]);
@@ -366,17 +414,16 @@ async function loadStats(){
   const pct = li.next ? (s.elo - li.base) / (li.next - li.base) * 100 : 100;
 
   $('#eloVal').textContent = s.elo;
-  $('#lvl').textContent = li.l;
   $('#eloRange').textContent = li.next ? s.elo + ' / ' + li.next : 'Максимальный уровень';
   $('#eloLeft').textContent = li.next ? (li.next - s.elo) + ' до уровня' : '';
   $('#eloBar').style.width = pct + '%';
-  const fg = $('#ringFg');
-  fg.style.stroke = li.l >= 7 ? 'var(--gold)' : 'var(--ok)';
-  fg.style.strokeDashoffset = C * (1 - pct / 100);
+  document.querySelectorAll('.lb').forEach(b => { b.textContent = li.l; b.dataset.l = li.l; });
 
   $('#stWr').textContent = games ? Math.round(s.wins / games * 100) + '%' : '0%';
   $('#stKd').textContent = (s.deaths ? s.kills / s.deaths : s.kills).toFixed(2);
   $('#stMatches').textContent = games;
+  $('#stW').textContent = s.wins; $('#stL').textContent = s.losses;
+  $('#stK').textContent = s.kills; $('#stD').textContent = s.deaths;
   const { data:rank } = st ? await sb.rpc('get_my_rank', { p_season:S.season }) : { data:null };
   $('#stRank').textContent = rank ? '#' + rank : '—';
 }
@@ -518,7 +565,20 @@ async function loadAdmin(){
   }));
 }
 
+/* ---------- навигация ---------- */
+function go(p){
+  document.querySelectorAll('.page').forEach(x => x.hidden = x.id !== 'pg-' + p);
+  document.querySelectorAll('#menu button').forEach(b => b.classList.toggle('on', b.dataset.page === p));
+  $('#seasonBar').hidden = !(p === 'profile' || p === 'rank');
+}
+document.querySelectorAll('#menu button').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
+document.querySelectorAll('#subtabs button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#subtabs button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.pane').forEach(p => p.hidden = p.id !== 'pane-' + b.dataset.pane);
+}));
+
 init();
+
 </script>
 </body>
 </html>

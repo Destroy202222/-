@@ -1,686 +1,383 @@
-<!DOCTYPE html>
+Ты должен сам создать готовый сайт с красивым дизайном. Жду index и sql
+Изменить
+GPT-6 Sol
+
+Ниже — готовая стартовая версия сайта: тёмный интерфейс в стиле игровой платформы, регистрация и вход через Supabase, таблица рейтинга, список матчей и админское создание матчей.
+
+Важно: пароль Des, отправленный ранее в чат, не используется и не должен попадать в код. Создай администратора через Supabase Auth, а затем назначь ему роль по SQL-инструкции ниже. Вставленный в браузер anon-ключ не является секретом: доступ к данным ограничивают политики RLS из SQL.
+
+index.html
+Сохрани этот код в файл index.html. URL и ключ Supabase уже указаны из твоего сообщения.
+
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0924">
-<title>Ranked — рейтинговые матчи Brawl Stars 3 на 3</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<style>
-:root{
-  --bg:#07061a;
-  --glass:rgba(255,255,255,.045);
-  --glass-2:rgba(255,255,255,.08);
-  --line:rgba(255,255,255,.09);
-  --text:#f5f4ff;
-  --muted:#9d9bc0;
-  --gold:#ffc42e;
-  --gold-2:#ff9f1a;
-  --violet:#7c5cff;
-  --violet-2:#a58bff;
-  --green:#2ee6a6;
-  --red:#ff5470;
-  --head:'Sora','Segoe UI',system-ui,sans-serif;
-  --body:'DM Sans','Segoe UI',system-ui,sans-serif;
-}
-*{box-sizing:border-box;margin:0}
-html{background:var(--bg)}
-body{font-family:var(--body);color:var(--text);min-height:100vh;padding-bottom:calc(env(safe-area-inset-bottom) + 36px);-webkit-font-smoothing:antialiased;position:relative}
-button,input{font:inherit;color:inherit}
-button{cursor:pointer;border:0;background:none}
-button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
-[hidden]{display:none!important}
-.wrap{max-width:1120px;margin:0 auto;padding:0 18px;position:relative}
-
-/* ---------- ФОН ---------- */
-.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:
-  radial-gradient(1100px 620px at 12% -8%,rgba(124,92,255,.38),transparent 62%),
-  radial-gradient(900px 560px at 98% 6%,rgba(255,196,46,.15),transparent 58%),
-  radial-gradient(900px 700px at 55% 118%,rgba(255,84,112,.16),transparent 62%),
-  linear-gradient(180deg,#0c0a28 0%,#07061a 70%)}
-.bg svg{position:absolute;inset:0;width:100%;height:100%;-webkit-mask-image:linear-gradient(#000 35%,transparent 100%);mask-image:linear-gradient(#000 35%,transparent 100%)}
-.bg::after{content:"";position:absolute;inset:0;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
-
-/* ---------- ВЕРХНЯЯ ПАНЕЛЬ ---------- */
-.nav{position:sticky;top:0;z-index:10;background:rgba(10,8,32,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
-.nav-in{max-width:1120px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;font-family:var(--head);font-weight:800;font-size:20px;margin-right:10px}
-.brand svg{width:34px;height:34px;filter:drop-shadow(0 4px 12px rgba(255,196,46,.45))}
-.menu{display:flex;gap:6px;overflow-x:auto;order:3;width:100%;scrollbar-width:none;padding:2px 0}
-.menu::-webkit-scrollbar{display:none}
-.menu button{padding:10px 18px;border-radius:999px;font-weight:700;font-size:14px;color:var(--muted);white-space:nowrap;transition:all .18s}
-.menu button:hover{color:var(--text);background:var(--glass)}
-.menu button.on{color:#1a1200;background:linear-gradient(180deg,#ffd75e,#ffb91f);box-shadow:0 8px 20px -8px rgba(255,185,31,.8)}
-.spacer{flex:1}
-@media(min-width:760px){.menu{order:0;width:auto}}
-
-.ghost{padding:10px 18px;border-radius:999px;background:var(--glass);border:1px solid var(--line);font-size:13px;font-weight:700;transition:all .18s}
-.ghost:hover{background:var(--glass-2);border-color:rgba(255,255,255,.18)}
-
-/* ---------- ОБЩЕЕ ---------- */
-h2{font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:14px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:24px;padding:22px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 24px 60px -30px rgba(0,0,0,.9)}
-.page{padding-top:24px}
-.cols{display:grid;gap:18px}
-@media(min-width:900px){.cols{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);align-items:start}}
-.stack{display:grid;gap:18px}
-
-/* сезоны */
-.sbar{border-bottom:1px solid var(--line);background:rgba(10,8,32,.4)}
-.sbar .wrap{display:flex;align-items:center;gap:12px;padding-top:10px;padding-bottom:10px}
-.sbar small{color:var(--muted);font-size:13px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap}
-.tab{padding:8px 16px;border-radius:999px;background:var(--glass);border:1px solid var(--line);font-weight:700;font-size:13px;color:var(--muted);transition:all .18s}
-.tab:hover{color:var(--text)}
-.tab[aria-selected="true"]{background:var(--violet);border-color:var(--violet);color:#fff;box-shadow:0 8px 20px -8px rgba(124,92,255,.9)}
-
-/* значок уровня (шестиугольник, цвет по шкале 1–10) */
-.lb{--lc:#e9e8ff;position:relative;isolation:isolate;width:46px;height:52px;display:grid;place-items:center;flex:none;
-  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:var(--lc);color:var(--lc);font-family:var(--head);font-weight:800;font-size:19px}
-.lb::before{content:"";position:absolute;inset:3px;z-index:-1;background:#14113a;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
-.lb[data-l="2"],.lb[data-l="3"]{--lc:#2ee6a6}
-.lb[data-l="4"],.lb[data-l="5"],.lb[data-l="6"],.lb[data-l="7"]{--lc:#ffc42e}
-.lb[data-l="8"],.lb[data-l="9"]{--lc:#ff8a3d}
-.lb[data-l="10"]{--lc:#ff4d6d}
-.lb.big{width:76px;height:86px;font-size:32px}
-.lb.big::before{inset:4px}
-
-/* ---------- ИГРАТЬ ---------- */
-.arena{text-align:center;padding:30px 22px 26px;position:relative;overflow:hidden}
-.arena::before{content:"";position:absolute;left:50%;top:-140px;width:520px;height:320px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(124,92,255,.35),transparent);pointer-events:none}
-.arena>*{position:relative}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--line);font-size:13px;color:var(--muted);margin-bottom:16px}
-.pill i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
-.arena h1{font-family:var(--head);font-weight:800;font-size:clamp(30px,6vw,46px);line-height:1.08;margin-bottom:8px}
-.arena p.sub{color:var(--muted);font-size:15px;margin-bottom:26px}
-.slots{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:8px}
-.side{display:flex;gap:10px}
-.slot{width:58px;height:58px;border-radius:18px;border:1.5px dashed rgba(255,255,255,.2);display:grid;place-items:center;color:rgba(255,255,255,.28);transition:all .35s}
-.slot svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round}
-.slot.on{border-color:transparent;border-style:solid;background:linear-gradient(145deg,#7c5cff,#a58bff);color:#fff;box-shadow:0 10px 26px -8px rgba(124,92,255,.95)}
-.vs{font-family:var(--head);font-weight:800;font-size:15px;color:var(--gold);width:34px}
-@media(max-width:560px){.slots{flex-direction:column;gap:10px}.vs{width:auto}}
-.qcount{color:var(--muted);font-size:13px;margin-bottom:22px}
-.qcount b{color:var(--text);font-family:var(--head)}
-
-.leagues{display:flex;gap:8px;justify-content:center;margin-bottom:22px;flex-wrap:wrap}
-.league{padding:10px 20px;border-radius:999px;background:var(--glass);border:1px solid var(--line);font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:6px}
-.league[aria-pressed="true"]{border-color:var(--gold);color:var(--gold);background:rgba(255,196,46,.08)}
-.league:disabled{opacity:.4;cursor:not-allowed}
-.league svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
-.btn{display:block;width:100%;max-width:360px;margin:0 auto;padding:17px 24px;border-radius:999px;color:#1a1200;font-family:var(--head);font-weight:800;font-size:17px;
-  background:linear-gradient(180deg,#ffd75e,#ffb91f);box-shadow:0 16px 36px -12px rgba(255,185,31,.85),inset 0 1px 0 rgba(255,255,255,.5);transition:transform .15s,box-shadow .15s}
-.btn:hover{transform:translateY(-2px);box-shadow:0 20px 40px -12px rgba(255,185,31,.95),inset 0 1px 0 rgba(255,255,255,.5)}
-.btn:active{transform:translateY(0)}
-.btn:disabled{opacity:.6;cursor:wait;transform:none}
-.btn.searching{background:var(--glass-2);color:var(--text);box-shadow:inset 0 0 0 1.5px var(--gold)}
-.status{margin-top:14px;font-size:14px;color:var(--muted);min-height:20px}
-.status b{color:var(--text);font-family:var(--head)}
-.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin-right:8px;animation:pulse 1.2s infinite}
-@keyframes pulse{50%{opacity:.25}}
-
-.steps{list-style:none;padding:0;display:grid;gap:14px;counter-reset:s}
-.steps li{display:flex;gap:14px;align-items:flex-start;font-size:14px;line-height:1.5;color:var(--muted)}
-.steps li::before{counter-increment:s;content:counter(s);flex:none;width:28px;height:28px;border-radius:50%;background:var(--glass-2);display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:13px;color:var(--gold)}
-.steps b{color:var(--text);font-weight:700}
-
-.teams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.team{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:14px}
-.team h3{font-family:var(--head);font-size:13px;margin-bottom:10px;color:var(--muted)}
-.team ul{padding:0}
-.team li{list-style:none;font-size:14px;padding:5px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.team li.me{color:var(--gold);font-weight:700}
-.hint{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.55}
-
-/* ---------- ПРОФИЛЬ ---------- */
-.hero{border-radius:26px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.cover{height:150px;position:relative;background:
-  radial-gradient(500px 200px at 20% 0%,rgba(124,92,255,.7),transparent 70%),
-  radial-gradient(420px 220px at 90% 100%,rgba(255,196,46,.45),transparent 70%),
-  linear-gradient(120deg,#1b1650,#2a1b63 55%,#4a2a7a)}
-.cover::after{content:"";position:absolute;inset:0;opacity:.5;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'><path d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34' fill='none' stroke='white' stroke-opacity='.12'/></svg>")}
-.hero-body{display:flex;align-items:flex-end;gap:18px;padding:0 24px 18px;margin-top:-46px;flex-wrap:wrap;position:relative}
-.avatar{width:104px;height:104px;border-radius:30px;border:4px solid #14113a;background:linear-gradient(145deg,#7c5cff,#ffc42e);display:grid;place-items:center;font-family:var(--head);font-weight:800;font-size:42px;color:#fff;flex:none;box-shadow:0 18px 40px -14px rgba(0,0,0,.9)}
-.hero-name{flex:1;min-width:170px;padding-bottom:6px}
-.hero-name b{font-family:var(--head);font-size:30px;display:block;line-height:1.1}
-.hero-name small{color:var(--muted);font-size:14px}
-.subtabs{display:flex;gap:6px;border-top:1px solid var(--line);padding:10px 16px;overflow-x:auto;scrollbar-width:none}
-.subtabs::-webkit-scrollbar{display:none}
-.subtabs button{padding:9px 18px;border-radius:999px;font-weight:700;font-size:14px;color:var(--muted);white-space:nowrap;transition:all .18s}
-.subtabs button:hover{color:var(--text)}
-.subtabs button.on{background:var(--glass-2);color:var(--text)}
-.pane{margin-top:18px}
-
-.elo-head{display:flex;align-items:center;gap:20px}
-.elo-main{display:flex;align-items:baseline;gap:10px}
-.elo-main strong{font-family:var(--head);font-size:46px;line-height:1;font-weight:800}
-.badge{font-family:var(--head);font-size:12px;font-weight:700;color:var(--violet-2);background:rgba(124,92,255,.18);padding:4px 10px;border-radius:999px}
-.bar{height:10px;border-radius:999px;background:rgba(255,255,255,.08);margin:20px 0 8px;overflow:hidden}
-.bar span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--violet),var(--gold));transition:width .7s cubic-bezier(.2,.8,.2,1)}
-.bar-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-@media(min-width:620px){.stats{grid-template-columns:repeat(4,1fr)}}
-.stat{background:var(--glass);border:1px solid var(--line);border-radius:20px;padding:18px 12px;text-align:center}
-.stat b{font-family:var(--head);font-size:26px;display:block;font-weight:800}
-.stat span{font-size:13px;color:var(--muted)}
-.stats.three{grid-template-columns:repeat(3,1fr)}
-
-/* ---------- СПИСКИ ---------- */
-.row{display:flex;align-items:center;gap:14px;padding:12px 10px;border-radius:16px;transition:background .15s}
-.row+.row{margin-top:2px}
-.row:hover{background:var(--glass)}
-.pos{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--head);font-weight:800;font-size:14px;color:var(--muted);background:var(--glass);flex:none}
-.top1 .pos{background:linear-gradient(145deg,#ffe27a,#ffb01f);color:#2a1c00}
-.top2 .pos{background:linear-gradient(145deg,#eef0ff,#a9aed6);color:#1c1f3a}
-.top3 .pos{background:linear-gradient(145deg,#ffb383,#d2693a);color:#2e1405}
-.tag{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-family:var(--head);font-weight:800;font-size:14px;flex:none;background:var(--glass-2)}
-.row .who{flex:1;min-width:0}
-.row .who b{display:block;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row .who small{color:var(--muted);font-size:12px}
-.row .pts{font-family:var(--head);font-weight:800;font-size:17px}
-.row.me{background:rgba(255,196,46,.09);box-shadow:inset 0 0 0 1px rgba(255,196,46,.3)}
-.win{color:var(--green)}.lose{color:var(--red)}
-.tag.win{background:rgba(46,230,166,.14)}.tag.lose{background:rgba(255,84,112,.14)}
-.empty{color:var(--muted);font-size:14px;padding:8px 0}
-
-/* ---------- ВХОД ---------- */
-.auth{max-width:440px;margin:56px auto 0;padding:32px 28px;text-align:center}
-.auth .logo{width:64px;height:64px;margin:0 auto 14px;filter:drop-shadow(0 10px 24px rgba(255,196,46,.5))}
-.auth h1{font-family:var(--head);font-size:28px;font-weight:800;margin-bottom:6px}
-.auth p{color:var(--muted);font-size:14px;margin-bottom:22px}
-.auth .tabs{justify-content:center;margin-bottom:20px}
-.field{display:block;margin-bottom:14px;text-align:left}
-.field span{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-.field input{width:100%;padding:15px 18px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);transition:border-color .15s}
-.field input:focus{border-color:var(--gold);outline:0}
-.msg{font-size:13px;min-height:18px;margin:2px 0 12px;color:var(--red)}
-.msg.ok{color:var(--green)}
-.notice{margin-top:24px;font-size:14px;line-height:1.55}
-.notice code{background:var(--glass-2);padding:2px 8px;border-radius:8px}
-
-/* ---------- АДМИН ---------- */
-.adm-match{background:var(--glass);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px}
-.adm-match .teams{margin-bottom:14px}
-.adm-actions{display:flex;gap:10px;flex-wrap:wrap}
-.adm-actions button{flex:1;min-width:130px;padding:12px 16px;border-radius:999px;background:linear-gradient(180deg,#ffd75e,#ffb91f);color:#1a1200;font-weight:700;font-size:13px}
-.adm-actions button.cancel{background:var(--glass-2);color:var(--muted)}
-.adm-actions button:disabled{opacity:.5}
-
-.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 22px);transform:translate(-50%,30px);background:rgba(28,24,70,.96);border:1px solid var(--line);padding:14px 22px;border-radius:999px;font-size:14px;font-weight:500;opacity:0;transition:all .25s;pointer-events:none;max-width:92vw;z-index:30;box-shadow:0 20px 50px -15px rgba(0,0,0,.9)}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090b10" />
+  <title>StarQueue — Brawl Stars Arena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #090b10;
+      --panel: #11141c;
+      --panel-2: #171b25;
+      --line: rgba(255,255,255,.085);
+      --text: #f4f5f8;
+      --muted: #9299aa;
+      --lime: #c6ff4a;
+      --purple: #9b7bff;
+      --red: #ff5874;
+      --radius: 18px;
+    }
+    * { box-sizing: border-box }
+    body {
+      margin: 0; background:
+      radial-gradient(ellipse at 80% -10%, rgba(155,123,255,.16), transparent 38%),
+      radial-gradient(ellipse at 15% 0%, rgba(198,255,74,.08), transparent 32%), var(--bg);
+      color: var(--text); font-family: Inter, sans-serif; min-height: 100vh;
+    }
+    button, input, select { font: inherit }
+    button { cursor: pointer }
+    .shell { max-width: 1240px; margin: auto; padding: 0 28px }
+    header { height: 78px; border-bottom: 1px solid var(--line); display: flex; align-items: center }
+    .nav { display:flex; align-items:center; justify-content:space-between; width:100%; gap:24px }
+    .brand { display:flex; align-items:center; gap:11px; font-weight:900; letter-spacing:-.7px; font-size:20px }
+    .brand-mark { width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:var(--lime); color:#111; font-size:19px }
+    .brand span { color:var(--lime) }
+    .nav-links { display:flex; gap:26px; color:var(--muted); font-size:13px; font-weight:600 }
+    .nav-links a { color:inherit; text-decoration:none }
+    .nav-links a:hover { color:var(--text) }
+    .user-area { display:flex; align-items:center; gap:10px }
+    .pill { border:1px solid var(--line); background:rgba(255,255,255,.035); color:var(--muted); border-radius:999px; padding:9px 13px; font-size:12px }
+    .btn { border:0; border-radius:11px; padding:11px 16px; font-weight:800; font-size:12px; color:#111; background:var(--lime); transition:.18s; }
+    .btn:hover { transform:translateY(-1px); filter:brightness(1.06) }
+    .btn.secondary { background:var(--panel-2); color:var(--text); border:1px solid var(--line) }
+    .btn.danger { background:rgba(255,88,116,.12); color:#ff8da0; border:1px solid rgba(255,88,116,.2) }
+    .hero { padding:64px 0 34px; display:grid; grid-template-columns:1.35fr .65fr; gap:28px; align-items:stretch }
+    .hero-copy { padding:20px 0 }
+    .eyebrow { color:var(--lime); text-transform:uppercase; letter-spacing:2px; font-size:10px; font-weight:900 }
+    h1 { font-size:clamp(40px,6vw,70px); line-height:.99; letter-spacing:-4px; margin:18px 0; max-width:690px }
+    h1 em { color:var(--lime); font-style:normal }
+    .hero-copy p { color:var(--muted); line-height:1.7; max-width:510px; font-size:14px }
+    .hero-actions { display:flex; gap:10px; margin-top:24px; flex-wrap:wrap }
+    .hero-card { position:relative; overflow:hidden; min-height:250px; border:1px solid var(--line); border-radius:24px; padding:25px; background:linear-gradient(145deg,rgba(155,123,255,.19),rgba(17,20,28,.9) 56%); display:flex; flex-direction:column; justify-content:space-between }
+    .hero-card:after { content:"✦"; position:absolute; right:25px; top:30px; font-size:145px; color:rgba(198,255,74,.11); transform:rotate(15deg) }
+    .card-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; font-weight:800 }
+    .big-stat { font-weight:900; font-size:48px; letter-spacing:-2px }
+    .big-stat small { font-size:14px; color:var(--lime); letter-spacing:0 }
+    .stat-foot { color:var(--muted); font-size:12px }
+    .section-head { display:flex; justify-content:space-between; align-items:end; margin:26px 0 15px }
+    h2 { font-size:20px; letter-spacing:-.6px; margin:0 }
+    .section-sub { color:var(--muted); font-size:12px; margin-top:6px }
+    .grid { display:grid; grid-template-columns:1.35fr .65fr; gap:18px; align-items:start }
+    .panel { border:1px solid var(--line); background:rgba(17,20,28,.88); border-radius:var(--radius); overflow:hidden }
+    .panel-head { padding:18px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line) }
+    .panel-head strong { font-size:13px }
+    .panel-body { padding:8px 20px 17px }
+    .match { display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center; padding:17px 0; border-bottom:1px solid var(--line) }
+    .match:last-child { border-bottom:0 }
+    .match-title { font-weight:800; font-size:13px }
+    .match-meta { display:flex; gap:10px; color:var(--muted); font-size:11px; margin-top:8px; flex-wrap:wrap }
+    .tag { display:inline-flex; align-items:center; gap:6px; font-size:10px; text-transform:uppercase; letter-spacing:.7px; font-weight:900; color:var(--lime); background:rgba(198,255,74,.09); padding:6px 8px; border-radius:7px }
+    .tag:before { content:""; width:5px; height:5px; border-radius:50%; background:currentColor }
+    .tag.live { color:#ff6b87; background:rgba(255,88,116,.1) }
+    .tag.done { color:#aaa; background:rgba(255,255,255,.07) }
+    .leader-row { display:grid; grid-template-columns:30px 1fr auto; gap:11px; align-items:center; padding:13px 0; border-bottom:1px solid var(--line) }
+    .leader-row:last-child { border-bottom:0 }
+    .rank { color:var(--muted); font-size:12px; font-weight:800 }
+    .rank.top { color:var(--lime) }
+    .avatar { width:32px; height:32px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(135deg,#8b6cff,#403469); font-size:13px; font-weight:900 }
+    .player { display:flex; align-items:center; gap:10px; min-width:0 }
+    .player-name { font-size:12px; font-weight:800; overflow:hidden; text-overflow:ellipsis }
+    .player-tag { color:var(--muted); font-size:10px; margin-top:3px }
+    .elo { color:var(--lime); font-size:12px; font-weight:900 }
+    .empty { color:var(--muted); text-align:center; padding:28px 10px; font-size:12px }
+    .admin-box { margin-top:18px; padding:18px; border:1px solid rgba(198,255,74,.2); border-radius:var(--radius); background:rgba(198,255,74,.035) }
+    .admin-box h3 { margin:0 0 12px; font-size:13px }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:9px }
+    input, select { background:#0b0e14; border:1px solid var(--line); color:var(--text); padding:11px 12px; border-radius:10px; outline:none; width:100%; font-size:12px }
+    input:focus, select:focus { border-color:rgba(198,255,74,.55) }
+    .admin-box .btn { margin-top:9px; width:100% }
+    footer { color:#646b7b; font-size:11px; padding:35px 0 25px; display:flex; justify-content:space-between; border-top:1px solid var(--line); margin-top:40px }
+    .modal-backdrop { position:fixed; inset:0; z-index:5; background:rgba(0,0,0,.72); display:grid; place-items:center; padding:20px }
+    .modal { width:min(420px,100%); border:1px solid var(--line); border-radius:20px; background:#12151d; padding:24px; box-shadow:0 24px 100px #000 }
+    .modal h2 { margin-bottom:7px }
+    .modal p { color:var(--muted); font-size:12px; line-height:1.6; margin:0 0 18px }
+    .modal input { margin:6px 0 }
+    .modal-actions { display:flex; gap:9px; margin-top:12px }
+    .modal-actions button { flex:1 }
+    .toast { position:fixed; right:22px; bottom:22px; background:#202531; border:1px solid var(--line); padding:13px 16px; border-radius:12px; font-size:12px; z-index:9; box-shadow:0 10px 35px #0008 }
+    .hidden { display:none !important }
+    @media(max-width:800px) {
+      .shell { padding:0 17px } .nav-links { display:none } .hero { grid-template-columns:1fr; padding-top:40px }
+      .hero-card { min-height:190px } .grid { grid-template-columns:1fr } h1 { letter-spacing:-2.5px }
+    }
+    @media(max-width:480px) {
+      .pill { display:none } .hero { gap:12px } .form-row { grid-template-columns:1fr }
+      footer { gap:10px; flex-direction:column } .match { grid-template-columns:1fr }
+      .match > button { justify-self:start }
+    }
+  </style>
 </head>
 <body>
-
-<!-- декоративный фон -->
-<div class="bg" aria-hidden="true">
-  <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <pattern id="hex" width="56" height="100" patternUnits="userSpaceOnUse">
-        <path d="M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34" fill="none" stroke="#fff" stroke-opacity=".055"/>
-      </pattern>
-      <linearGradient id="beamV" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#7c5cff" stop-opacity="0"/><stop offset=".5" stop-color="#7c5cff" stop-opacity=".2"/><stop offset="1" stop-color="#7c5cff" stop-opacity="0"/>
-      </linearGradient>
-      <linearGradient id="beamG" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#ffc42e" stop-opacity="0"/><stop offset=".5" stop-color="#ffc42e" stop-opacity=".12"/><stop offset="1" stop-color="#ffc42e" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    <rect width="1440" height="900" fill="url(#hex)"/>
-    <polygon points="-100,0 360,0 1020,900 560,900" fill="url(#beamV)"/>
-    <polygon points="760,0 1000,0 1540,900 1300,900" fill="url(#beamG)"/>
-    <g fill="none" stroke="#fff" stroke-opacity=".06">
-      <circle cx="1180" cy="220" r="150"/><circle cx="1180" cy="220" r="230"/><circle cx="1180" cy="220" r="320"/>
-      <polygon points="260,640 340,594 420,640 420,732 340,778 260,732"/>
-      <polygon points="150,560 190,537 230,560 230,606 190,629 150,606"/>
-    </g>
-  </svg>
-</div>
-
-<header class="nav">
-  <div class="nav-in">
-    <div class="brand">
-      <svg viewBox="0 0 40 44" aria-hidden="true">
-        <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd75e"/><stop offset="1" stop-color="#ff9f1a"/></linearGradient></defs>
-        <polygon points="20,1 38,11 38,33 20,43 2,33 2,11" fill="url(#lg)"/>
-        <path d="M22.500 9 13 24h6.500l-2 11L27 20h-6.500z" fill="#1a1200"/>
-      </svg>
-      Ranked
-    </div>
-    <nav class="menu" id="menu" hidden>
-      <button class="on" data-page="play">Играть</button>
-      <button data-page="profile">Профиль</button>
-      <button data-page="rank">Рейтинг</button>
-      <button data-page="admin" id="navAdmin" hidden>Админ</button>
+<header>
+  <div class="shell nav">
+    <div class="brand"><div class="brand-mark">✦</div>STAR<span>QUEUE</span></div>
+    <nav class="nav-links">
+      <a href="#matches">Матчи</a><a href="#leaderboard">Рейтинг</a><a href="#about">О платформе</a>
     </nav>
-    <div class="spacer"></div>
-    <button class="ghost" id="logout" hidden>Выйти</button>
+    <div class="user-area">
+      <span id="userPill" class="pill">Гость</span>
+      <button id="authButton" class="btn">Войти</button>
+    </div>
   </div>
 </header>
 
-<div class="sbar" id="seasonBar" hidden>
-  <div class="wrap"><small>Сезон</small><div class="tabs" id="seasonTabs" role="tablist"></div></div>
-</div>
-
-<div class="wrap">
-
-  <div class="card notice" id="setup" hidden>
-    Вставь адрес проекта и публичный ключ Supabase в начале скрипта:
-    <code>SUPABASE_URL</code> и <code>SUPABASE_KEY</code>.
-  </div>
-
-  <!-- вход -->
-  <section class="card auth" id="auth" hidden>
-    <svg class="logo" viewBox="0 0 40 44" aria-hidden="true">
-      <polygon points="20,1 38,11 38,33 20,43 2,33 2,11" fill="url(#lg)"/>
-      <path d="M22.500 9 13 24h6.500l-2 11L27 20h-6.500z" fill="#1a1200"/>
-    </svg>
-    <h1 id="authTitle">Вход</h1>
-    <p id="authSub">Рейтинговые матчи Brawl Stars 3 на 3</p>
-    <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" data-mode="login">Вход</button>
-      <button class="tab" role="tab" aria-selected="false" data-mode="signup">Регистрация</button>
+<main class="shell">
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">Brawl Stars • Competitive</div>
+      <h1>Играй на своём<br>уровне. <em>Выше.</em></h1>
+      <p>Находи соперников, участвуй в матчах и поднимайся в рейтинге. Твоя арена для честных соревновательных игр.</p>
+      <div class="hero-actions">
+        <button class="btn" id="heroAuth">Начать играть&nbsp; ↗</button>
+        <a href="#matches"><button class="btn secondary">Смотреть матчи</button></a>
+      </div>
     </div>
-    <label class="field" id="fNick"><span>Ник (3–20 символов: латиница, цифры, _)</span><input id="nick" autocomplete="username" maxlength="20" autocapitalize="off" spellcheck="false"></label>
-    <label class="field"><span>Пароль (от 6 символов)</span><input id="pass" type="password" autocomplete="current-password"></label>
-    <div class="msg" id="authMsg" role="status"></div>
-    <button class="btn" id="authBtn">Войти</button>
+    <div class="hero-card">
+      <div class="card-label">Твоя следующая победа начинается здесь</div>
+      <div>
+        <div class="big-stat" id="playerCount">— <small>игроков</small></div>
+        <div class="stat-foot">Уже на арене StarQueue</div>
+      </div>
+    </div>
   </section>
 
-  <main id="app" hidden>
+  <div class="section-head" id="matches">
+    <div><h2>Матчи арены</h2><div class="section-sub">Выбирай режим и присоединяйся к игре</div></div>
+    <span class="tag">Открытая очередь</span>
+  </div>
 
-    <!-- ИГРАТЬ -->
-    <section class="page" id="pg-play">
-      <div class="cols">
-        <div class="card arena">
-          <div class="pill"><i></i>Brawl Stars · Nulls Brawl</div>
-          <h1>Матч 3 на 3</h1>
-          <p class="sub">Найди команду, сыграй рейтинговый матч и поднимайся в таблице.</p>
-          <div class="slots" id="slots"></div>
-          <div class="qcount">Игроков в очереди: <b id="qCount">0 / 6</b></div>
-          <div class="leagues">
-            <button class="league" aria-pressed="true">Default</button>
-            <button class="league" disabled><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Qual</button>
-            <button class="league" disabled><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Pro</button>
-          </div>
-          <button class="btn" id="play">Играть</button>
-          <div class="status" id="status" aria-live="polite"></div>
-        </div>
-
-        <div class="stack">
-          <div class="card" id="matchBox" hidden>
-            <h2>Текущий матч</h2>
-            <div class="teams" id="matchTeams"></div>
-            <p class="hint">Заходите в Nulls Brawl и играйте матч 3 на 3. После игры админ засчитает результат, и ELO обновится автоматически.</p>
-          </div>
-          <div class="card">
-            <h2>Как это работает</h2>
-            <ol class="steps">
-              <li><span><b>Нажми «Играть».</b> Ты попадаешь в очередь лиги Default.</span></li>
-              <li><span><b>Дождись шестерых игроков.</b> Команды делятся по ELO, чтобы силы были равными.</span></li>
-              <li><span><b>Сыграйте матч в Nulls Brawl.</b> Договоритесь о комнате между собой.</span></li>
-              <li><span><b>Получи результат.</b> Админ засчитывает победу, ELO меняется на 25 очков.</span></li>
-            </ol>
-          </div>
-        </div>
+  <section class="grid">
+    <div class="panel">
+      <div class="panel-head"><strong>Последние матчи</strong><span id="matchCount" class="pill">0 матчей</span></div>
+      <div class="panel-body" id="matchesList"><div class="empty">Загружаем матчи…</div></div>
+    </div>
+    <div>
+      <div class="panel" id="leaderboard">
+        <div class="panel-head"><strong>🏆 Лидерборд</strong><span class="card-label">ELO</span></div>
+        <div class="panel-body" id="leadersList"><div class="empty">Загружаем рейтинг…</div></div>
       </div>
-    </section>
-
-    <!-- ПРОФИЛЬ -->
-    <section class="page" id="pg-profile" hidden>
-      <div class="hero">
-        <div class="cover"></div>
-        <div class="hero-body">
-          <div class="avatar" id="avatar">?</div>
-          <div class="hero-name"><b id="pNick">—</b><small id="pSub"></small></div>
-          <div class="lb" data-l="1" aria-label="Уровень">1</div>
+      <div id="adminBox" class="admin-box hidden">
+        <h3>⚡ Панель администратора</h3>
+        <div class="form-row">
+          <input id="matchName" placeholder="Название матча" maxlength="60">
+          <select id="matchMode">
+            <option>3 на 3</option><option>Соло</option><option>Дуо</option><option>Испытание</option>
+          </select>
         </div>
-        <div class="subtabs" id="subtabs">
-          <button class="on" data-pane="overview">Обзор</button>
-          <button data-pane="stats">Статистика</button>
-          <button data-pane="matches">Матчи</button>
+        <div class="form-row" style="margin-top:9px">
+          <input id="matchMap" placeholder="Карта / режим" maxlength="60">
+          <input id="matchSlots" type="number" min="2" max="10" value="6" placeholder="Мест">
         </div>
+        <button id="createMatch" class="btn">Создать матч</button>
       </div>
+    </div>
+  </section>
+  <footer id="about"><span>STARQUEUE — Brawl Stars Community Arena</span><span>Играй честно. Поднимайся вместе.</span></footer>
+</main>
 
-      <div class="pane" id="pane-overview">
-        <div class="stack">
-          <div class="card">
-            <div class="elo-head">
-              <div class="lb big" data-l="1">1</div>
-              <div class="elo-main"><strong id="eloVal">0</strong><span class="badge">ELO</span></div>
-            </div>
-            <div class="bar"><span id="eloBar" style="width:0"></span></div>
-            <div class="bar-meta"><span id="eloRange"></span><span id="eloLeft"></span></div>
-          </div>
-          <div class="stats">
-            <div class="stat"><b id="stRank">—</b><span>Место в рейтинге</span></div>
-            <div class="stat"><b id="stWr">0%</b><span>Винрейт</span></div>
-            <div class="stat"><b id="stMatches">0</b><span>Матчи</span></div>
-            <div class="stat"><b id="stStreak">0</b><span>Серия побед</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="pane" id="pane-stats" hidden>
-        <div class="stats three">
-          <div class="stat"><b id="stW" class="win">0</b><span>Победы</span></div>
-          <div class="stat"><b id="stL" class="lose">0</b><span>Поражения</span></div>
-          <div class="stat"><b id="stBest">0</b><span>Лучшая серия</span></div>
-        </div>
-      </div>
-
-      <div class="pane" id="pane-matches" hidden>
-        <div class="card"><h2>Последние матчи</h2><div id="history"></div></div>
-      </div>
-    </section>
-
-    <!-- РЕЙТИНГ -->
-    <section class="page" id="pg-rank" hidden>
-      <div class="card"><h2>Топ игроков</h2><div id="board"></div></div>
-    </section>
-
-    <!-- АДМИН -->
-    <section class="page" id="pg-admin" hidden>
-      <div class="card"><h2>Матчи без результата</h2><div id="admList"></div></div>
-    </section>
-
-  </main>
-</div>
-<div class="toast" id="toast" role="status"></div>
+<div id="modalRoot" class="hidden"></div>
+<div id="toastRoot"></div>
 
 <script>
-/* ========== НАСТРОЙКИ ========== */
-const SUPABASE_URL = 'https://dcpxifikhoonrwkvmrbt.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjcHhpZmlraG9vbnJ3a3ZtcmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0OTEzMzUsImV4cCI6MjEwNzA2NzMzNX0.gIErjd5AyfQguzplxDfzOwS5aIjB5zbVSMkwIEUt_ak';
-const EMAIL_DOMAIN = 'ranked.app';   // вход по нику: ник@ranked.app, почту подтверждать не нужно
-/* =============================== */
+  const SUPABASE_URL = 'https://dcpxifikhoonrwkvmrbt.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImRjcHhpZmlraG9vbnJ3a3ZtcmJ0IiwiaWF0IjoxNzkxNDkxMzM1LCJleHAiOjIxMDcwNjczMzN9.gIErjd5AyfQguzplxDfzOwS5aIjB5zbVSMkwIEUt_ak';
 
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const toastEl = $('#toast'); let toastT;
-function toast(t){ toastEl.textContent = t; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2800); }
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let currentUser = null;
+  let isAdmin = false;
 
-const configured = !SUPABASE_URL.includes('YOUR-PROJECT');
-const sb = configured ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+  const escapeHtml = (value = '') => String(value).replace(/[&<>"']/g, c => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[c]));
 
-const S = { user:null, profile:null, seasons:[], season:null, perMatch:6, searching:false, match:null, timer:null, poll:null, channel:null };
-
-/* ---------- уровни ---------- */
-function levelInfo(elo){
-  const l = Math.min(10, Math.floor(elo / 200) + 1);
-  return { l, base:(l - 1) * 200, next: l < 10 ? l * 200 : null };
-}
-
-/* ---------- слоты очереди ---------- */
-function renderSlots(count){
-  const n = S.perMatch;
-  const slot = i => `<div class="slot ${i < count ? 'on' : ''}"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.400 3.600-7 8-7s8 2.600 8 7"/></svg></div>`;
-  let a = '', b = '';
-  for (let i = 0; i < n; i++) { if (i % 2) b += slot(i); else a += slot(i); }
-  $('#slots').innerHTML = `<div class="side">${a}</div><div class="vs">VS</div><div class="side">${b}</div>`;
-  $('#qCount').textContent = Math.min(count, n) + ' / ' + n;
-}
-
-/* ---------- вход / регистрация ---------- */
-let mode = 'login';
-function setMode(m){
-  mode = m;
-  document.querySelectorAll('#auth .tab').forEach(t => t.setAttribute('aria-selected', t.dataset.mode === m));
-  $('#authTitle').textContent = m === 'signup' ? 'Регистрация' : 'Вход';
-  $('#authBtn').textContent = m === 'signup' ? 'Создать аккаунт' : 'Войти';
-  $('#pass').autocomplete = m === 'signup' ? 'new-password' : 'current-password';
-  $('#authMsg').textContent = '';
-}
-document.querySelectorAll('#auth .tab').forEach(t => t.addEventListener('click', () => setMode(t.dataset.mode)));
-function authMsg(t, ok){ const m = $('#authMsg'); m.textContent = t; m.classList.toggle('ok', !!ok); }
-
-const NICK_RE = /^[A-Za-z0-9_]{3,20}$/;
-$('#authBtn').addEventListener('click', async () => {
-  const nickname = $('#nick').value.trim(), password = $('#pass').value;
-  if (!NICK_RE.test(nickname)) return authMsg('Ник: 3–20 символов, латиница, цифры и _');
-  if (password.length < 6) return authMsg('Пароль должен быть от 6 символов');
-  const email = nickname.toLowerCase() + '@' + EMAIL_DOMAIN;
-  $('#authBtn').disabled = true; authMsg('');
-  try {
-    if (mode === 'signup') {
-      const { data, error } = await sb.auth.signUp({ email, password, options:{ data:{ nickname } } });
-      if (error) return authMsg(/already|database error/i.test(error.message) ? 'Этот ник уже занят' : error.message);
-      if (!data.session) authMsg('Аккаунт создан, но Supabase требует подтверждение. Отключи Confirm email в настройках Auth.');
-    } else {
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) return authMsg('Неверный ник или пароль');
-    }
-  } finally { $('#authBtn').disabled = false; }
-});
-$('#logout').addEventListener('click', () => sb.auth.signOut());
-
-/* ---------- запуск ---------- */
-async function init(){
-  if (!configured) { $('#setup').hidden = false; return; }
-  setMode('login');
-  const { data:{ session } } = await sb.auth.getSession();
-  session ? boot(session.user) : showAuth();
-  sb.auth.onAuthStateChange((ev, s) => {
-    if (ev === 'SIGNED_IN' && s && !S.user) boot(s.user);
-    if (ev === 'SIGNED_OUT') { teardown(); showAuth(); }
-  });
-}
-function showAuth(){ $('#auth').hidden = false; $('#app').hidden = true; $('#logout').hidden = true; $('#menu').hidden = true; $('#seasonBar').hidden = true; }
-
-async function boot(user){
-  S.user = user;
-  $('#auth').hidden = true; $('#app').hidden = false; $('#logout').hidden = false; $('#menu').hidden = false; go('play');
-
-  const [{ data:profile }, { data:seasons }, { data:set }] = await Promise.all([
-    sb.from('profiles').select('*').eq('id', user.id).single(),
-    sb.from('seasons').select('*').order('id', { ascending:false }),
-    sb.from('settings').select('*').eq('key', 'players_per_match').maybeSingle()
-  ]);
-  S.profile = profile; S.seasons = seasons || [];
-  S.perMatch = set ? +set.value : 6;
-  S.season = (S.seasons.find(s => s.is_active) || S.seasons[0] || {}).id;
-  renderSlots(0);
-
-  $('#pNick').textContent = profile.nickname;
-  $('#avatar').textContent = profile.nickname[0].toUpperCase();
-  $('#pSub').textContent = (profile.clan ? '[' + profile.clan + '] · ' : '') + 'Brawl Stars';
-  $('#navAdmin').hidden = !profile.is_admin;
-
-  renderSeasonTabs();
-  await Promise.all([loadStats(), loadBoard(), loadHistory(), checkQueue()]);
-  await refreshMatch(true);
-  if (profile.is_admin) loadAdmin();
-  subscribe();
-}
-
-function teardown(){
-  stopSearchUI(); if (S.channel) sb.removeChannel(S.channel);
-  Object.assign(S, { user:null, profile:null, match:null, channel:null });
-  $('#matchBox').hidden = true;
-}
-
-/* ---------- сезоны и статистика ---------- */
-function renderSeasonTabs(){
-  $('#seasonTabs').innerHTML = S.seasons.map(s =>
-    `<button class="tab" role="tab" aria-selected="${s.id === S.season}" data-id="${s.id}">${esc(s.name)}</button>`).join('');
-  document.querySelectorAll('#seasonTabs .tab').forEach(t => t.addEventListener('click', async () => {
-    S.season = +t.dataset.id; renderSeasonTabs(); await Promise.all([loadStats(), loadBoard()]);
-  }));
-}
-
-async function loadStats(){
-  const { data:st } = await sb.from('player_stats').select('*').eq('user_id', S.user.id).eq('season_id', S.season).maybeSingle();
-  const s = st || { elo:300, wins:0, losses:0 };
-  const li = levelInfo(s.elo), games = s.wins + s.losses;
-  const pct = li.next ? (s.elo - li.base) / (li.next - li.base) * 100 : 100;
-
-  $('#eloVal').textContent = s.elo;
-  $('#eloRange').textContent = li.next ? s.elo + ' / ' + li.next : 'Максимальный уровень';
-  $('#eloLeft').textContent = li.next ? (li.next - s.elo) + ' до следующего уровня' : '';
-  $('#eloBar').style.width = pct + '%';
-  document.querySelectorAll('.lb').forEach(b => { b.textContent = li.l; b.dataset.l = li.l; });
-
-  $('#stWr').textContent = games ? Math.round(s.wins / games * 100) + '%' : '0%';
-  $('#stMatches').textContent = games;
-  $('#stW').textContent = s.wins; $('#stL').textContent = s.losses;
-  const { data:rank } = st ? await sb.rpc('get_my_rank', { p_season:S.season }) : { data:null };
-  $('#stRank').textContent = rank ? '#' + rank : '—';
-}
-
-async function loadBoard(){
-  const { data, error } = await sb.rpc('get_leaderboard', { p_season:S.season, p_limit:20 });
-  $('#board').innerHTML = error || !data.length ? '<div class="empty">Пока никого в рейтинге</div>' :
-    data.map((p, i) => `
-      <div class="row ${i < 3 ? 'top' + (i + 1) : ''} ${p.user_id === S.user.id ? 'me' : ''}">
-        <div class="pos">${i + 1}</div>
-        <div class="tag">${esc((p.clan || p.nickname).slice(0, 2).toUpperCase())}</div>
-        <div class="who"><b>${esc(p.nickname)}</b><small>${p.clan ? '[' + esc(p.clan) + '] · ' : ''}${p.wins} В · ${p.losses} П</small></div>
-        <div class="pts">${p.elo}</div>
-      </div>`).join('');
-}
-
-async function loadHistory(){
-  const { data } = await sb.from('match_players')
-    .select('team, elo_delta, matches!inner(status, winner_team, created_at)')
-    .eq('user_id', S.user.id).eq('matches.status', 'finished');
-  const all = (data || []).slice().sort((a, b) => a.matches.created_at.localeCompare(b.matches.created_at));
-  let cur = 0, best = 0;
-  all.forEach(r => { if (r.team === r.matches.winner_team) { cur++; best = Math.max(best, cur); } else cur = 0; });
-  $('#stStreak').textContent = cur; $('#stBest').textContent = best;
-
-  const rows = all.slice().reverse().slice(0, 15);
-  $('#history').innerHTML = !rows.length ? '<div class="empty">Сыгранных матчей пока нет</div>' :
-    rows.map(r => {
-      const won = r.team === r.matches.winner_team;
-      return `<div class="row">
-        <div class="tag ${won ? 'win' : 'lose'}">${won ? 'W' : 'L'}</div>
-        <div class="who"><b>${won ? 'Победа' : 'Поражение'}</b><small>${new Date(r.matches.created_at).toLocaleDateString('ru-RU')} · команда ${r.team}</small></div>
-        <div class="pts ${won ? 'win' : 'lose'}">${r.elo_delta > 0 ? '+' : ''}${r.elo_delta}</div>
-      </div>`; }).join('');
-}
-
-/* ---------- поиск матча ---------- */
-const playBtn = $('#play'), statusEl = $('#status');
-const fmt = n => String(Math.floor(n / 60)).padStart(2, '0') + ':' + String(n % 60).padStart(2, '0');
-
-function startSearchUI(sinceMs){
-  S.searching = true;
-  playBtn.textContent = 'Отменить поиск'; playBtn.classList.add('searching');
-  let sec = Math.floor((Date.now() - sinceMs) / 1000);
-  renderSlots(1);
-  const tick = () => { statusEl.innerHTML = `<span class="pulse"></span>Ищем игроков · <b>${fmt(sec++)}</b>`; };
-  tick(); S.timer = setInterval(tick, 1000);
-  const poll = async () => {
-    const { data } = await sb.rpc('queue_count'); if (data != null) renderSlots(data);
-    await refreshMatch();
-  };
-  poll(); S.poll = setInterval(poll, 3000);
-}
-function stopSearchUI(msg){
-  clearInterval(S.timer); clearInterval(S.poll);
-  S.searching = false; playBtn.classList.remove('searching'); playBtn.textContent = 'Играть';
-  statusEl.textContent = msg || ''; renderSlots(0);
-}
-
-async function checkQueue(){
-  const { data } = await sb.from('queue').select('joined_at').eq('user_id', S.user.id).maybeSingle();
-  if (data) startSearchUI(new Date(data.joined_at).getTime());
-}
-
-playBtn.addEventListener('click', async () => {
-  if (S.searching) { await sb.rpc('leave_queue'); stopSearchUI('Поиск отменён'); return; }
-  if (S.match) return toast('Сначала дождись результата текущего матча');
-  playBtn.disabled = true;
-  const { error } = await sb.rpc('join_queue', { p_league:'default' });
-  playBtn.disabled = false;
-  if (error) return toast(error.message);
-  await refreshMatch();
-  if (!S.match) startSearchUI(Date.now());
-});
-
-/* ---------- текущий матч ---------- */
-async function refreshMatch(silent){
-  const { data } = await sb.from('match_players')
-    .select('match_id, team, matches!inner(status)').eq('user_id', S.user.id).eq('matches.status', 'pending').limit(1);
-  const found = data && data[0];
-  const had = S.match;
-
-  if (!found) {
-    S.match = null; $('#matchBox').hidden = true;
-    if (had) { toast('Матч завершён'); loadStats(); loadHistory(); loadBoard(); statusEl.textContent = ''; }
-    return;
+  function toast(message) {
+    const root = document.getElementById('toastRoot');
+    root.innerHTML = '<div class="toast">' + escapeHtml(message) + '</div>';
+    setTimeout(() => root.innerHTML = '', 3200);
   }
-  if (had && had.id === found.match_id) return;
-  S.match = { id:found.match_id, team:found.team };
-  if (S.searching) { stopSearchUI(); if (!silent) toast('Матч найден!'); }
-  statusEl.textContent = 'Матч найден. Заходи в игру.';
 
-  const { data:pl } = await sb.from('match_players').select('team, user_id, profiles(nickname)').eq('match_id', found.match_id);
-  const col = t => (pl || []).filter(p => p.team === t)
-    .map(p => `<li class="${p.user_id === S.user.id ? 'me' : ''}">${esc(p.profiles.nickname)}</li>`).join('');
-  $('#matchTeams').innerHTML = `<div class="team"><h3>Команда 1</h3><ul>${col(1)}</ul></div><div class="team"><h3>Команда 2</h3><ul>${col(2)}</ul></div>`;
-  $('#matchBox').hidden = false;
-}
-
-/* ---------- realtime ---------- */
-function subscribe(){
-  S.channel = sb.channel('live-' + S.user.id)
-    .on('postgres_changes', { event:'INSERT', schema:'public', table:'match_players', filter:'user_id=eq.' + S.user.id }, () => refreshMatch())
-    .on('postgres_changes', { event:'*', schema:'public', table:'matches' }, () => { refreshMatch(); if (S.profile.is_admin) loadAdmin(); })
-    .subscribe();
-}
-
-/* ---------- админка ---------- */
-async function loadAdmin(){
-  const { data } = await sb.from('matches')
-    .select('id, created_at, match_players(team, user_id, profiles(nickname))')
-    .eq('status', 'pending').order('created_at');
-  $('#admList').innerHTML = !data || !data.length ? '<div class="empty">Нет матчей, ожидающих результата</div>' :
-    data.map(m => {
-      const col = t => m.match_players.filter(p => p.team === t).map(p => `<li>${esc(p.profiles.nickname)}</li>`).join('');
-      return `<div class="adm-match" data-id="${m.id}">
-        <div class="teams">
-          <div class="team"><h3>Команда 1</h3><ul>${col(1)}</ul></div>
-          <div class="team"><h3>Команда 2</h3><ul>${col(2)}</ul></div>
+  function openAuth() {
+    const root = document.getElementById('modalRoot');
+    root.classList.remove('hidden');
+    root.innerHTML = `
+      <div class="modal-backdrop" id="backdrop">
+        <div class="modal">
+          <h2>Добро пожаловать</h2>
+          <p>Войди в аккаунт или создай профиль игрока.</p>
+          <input id="authEmail" type="email" placeholder="Электронная почта" autocomplete="email">
+          <input id="authName" placeholder="Игровой ник" maxlength="20" autocomplete="nickname">
+          <input id="authPassword" type="password" placeholder="Пароль (не менее 6 символов)" autocomplete="current-password">
+          <div class="modal-actions">
+            <button class="btn" id="signIn">Войти</button>
+            <button class="btn secondary" id="signUp">Регистрация</button>
+          </div>
+          <button class="btn secondary" id="closeModal" style="width:100%;margin-top:9px">Закрыть</button>
         </div>
-        <div class="adm-actions">
-          <button data-win="1">Победа команды 1</button>
-          <button data-win="2">Победа команды 2</button>
-          <button class="cancel" data-cancel="1">Отменить матч</button>
-        </div></div>`; }).join('');
+      </div>`;
+    document.getElementById('backdrop').addEventListener('click', e => {
+      if (e.target.id === 'backdrop') closeAuth();
+    });
+    document.getElementById('closeModal').onclick = closeAuth;
+    document.getElementById('signIn').onclick = signIn;
+    document.getElementById('signUp').onclick = signUp;
+  }
+  function closeAuth() {
+    document.getElementById('modalRoot').classList.add('hidden');
+    document.getElementById('modalRoot').innerHTML = '';
+  }
+  function authValues() {
+    return {
+      email: document.getElementById('authEmail').value.trim(),
+      name: document.getElementById('authName').value.trim(),
+      password: document.getElementById('authPassword').value
+    };
+  }
+  async function signIn() {
+    const { email, password } = authValues();
+    if (!email || !password) return toast('Укажи почту и пароль.');
+    const { error } = await db.auth.signInWithPassword({ email, password });
+    if (error) return toast(error.message);
+    closeAuth(); await refreshUser(); toast('Ты вошёл в аккаунт.');
+  }
+  async function signUp() {
+    const { email, name, password } = authValues();
+    if (!email || !name || !password) return toast('Заполни почту, ник и пароль.');
+    if (name.length < 2) return toast('Ник должен содержать минимум 2 символа.');
+    if (password.length < 6) return toast('Пароль должен содержать минимум 6 символов.');
+    const { error } = await db.auth.signUp({
+      email, password, options: { data: { nickname: name } }
+    });
+    if (error) return toast(error.message);
+    closeAuth();
+    toast('Регистрация отправлена. Если включено подтверждение почты — проверь почтовый ящик.');
+    await refreshUser();
+  }
 
-  document.querySelectorAll('#admList [data-win]').forEach(b => b.addEventListener('click', async () => {
-    b.disabled = true;
-    const { error } = await sb.rpc('admin_report_match', { p_match:b.closest('.adm-match').dataset.id, p_winner:+b.dataset.win });
-    error ? toast(error.message) : toast('Результат записан');
-    loadAdmin();
-  }));
-  document.querySelectorAll('#admList [data-cancel]').forEach(b => b.addEventListener('click', async () => {
-    const { error } = await sb.rpc('admin_cancel_match', { p_match:b.closest('.adm-match').dataset.id });
-    error ? toast(error.message) : toast('Матч отменён');
-    loadAdmin();
-  }));
-}
+  async function refreshUser() {
+    const { data } = await db.auth.getUser();
+    currentUser = data.user || null;
+    isAdmin = false;
+    if (currentUser) {
+      const { data: role } = await db.from('user_roles')
+        .select('role').eq('user_id', currentUser.id).maybeSingle();
+      isAdmin = role?.role === 'admin';
+    }
+    const pill = document.getElementById('userPill');
+    const authButton = document.getElementById('authButton');
+    pill.textContent = currentUser ? (currentUser.user_metadata?.nickname || currentUser.email) : 'Гость';
+    authButton.textContent = currentUser ? 'Выйти' : 'Войти';
+    authButton.onclick = async () => {
+      if (!currentUser) return openAuth();
+      await db.auth.signOut();
+      await refreshUser();
+      toast('Ты вышел из аккаунта.');
+    };
+    document.getElementById('heroAuth').onclick = () => currentUser ? document.getElementById('matches').scrollIntoView({behavior:'smooth'}) : openAuth();
+    document.getElementById('adminBox').classList.toggle('hidden', !isAdmin);
+  }
 
-/* ---------- навигация ---------- */
-function go(p){
-  document.querySelectorAll('.page').forEach(x => x.hidden = x.id !== 'pg-' + p);
-  document.querySelectorAll('#menu button').forEach(b => b.classList.toggle('on', b.dataset.page === p));
-  $('#seasonBar').hidden = !(p === 'profile' || p === 'rank');
-}
-document.querySelectorAll('#menu button').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
-document.querySelectorAll('#subtabs button').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('#subtabs button').forEach(x => x.classList.toggle('on', x === b));
-  document.querySelectorAll('.pane').forEach(p => p.hidden = p.id !== 'pane-' + b.dataset.pane);
-}));
+  async function loadMatches() {
+    const root = document.getElementById('matchesList');
+    const { data, error } = await db.from('matches')
+      .select('id,title,mode,map_name,max_players,status,created_at,match_players(user_id)')
+      .order('created_at', { ascending: false }).limit(20);
+    if (error) { root.innerHTML = '<div class="empty">Не удалось загрузить матчи. Проверь SQL-настройку Supabase.</div>'; return; }
+    document.getElementById('matchCount').textContent = `${data.length} матчей`;
+    if (!data.length) { root.innerHTML = '<div class="empty">Матчей пока нет. Скоро здесь появятся первые игры.</div>'; return; }
+    root.innerHTML = data.map(m => {
+      const players = m.match_players?.length || 0;
+      const statusClass = m.status === 'open' ? '' : m.status === 'live' ? 'live' : 'done';
+      const statusText = m.status === 'open' ? 'Открыт' : m.status === 'live' ? 'Идёт' : 'Завершён';
+      const joined = currentUser && m.match_players?.some(p => p.user_id === currentUser.id);
+      const canJoin = currentUser && m.status === 'open' && !joined && players < m.max_players;
+      let button = '';
+      if (m.status === 'open') {
+        button = !currentUser
+          ? '<button class="btn secondary" onclick="openAuth()">Войти для игры</button>'
+          : joined ? '<span class="pill">Ты в матче</span>'
+          : players >= m.max_players ? '<span class="pill">Мест нет</span>'
+          : `<button class="btn" onclick="joinMatch('${m.id}')">Присоединиться</button>`;
+      }
+      return `<div class="match">
+        <div><div class="match-title">${escapeHtml(m.title)}</div>
+        <div class="match-meta"><span>${escapeHtml(m.mode)}</span><span>•</span><span>${escapeHtml(m.map_name || 'Карта не указана')}</span><span>•</span><span>${players}/${m.max_players} игроков</span></div></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="tag ${statusClass}">${statusText}</span>${button}</div>
+      </div>`;
+    }).join('');
+  }
 
-renderSlots(0);
-init();
+  async function joinMatch(id) {
+    if (!currentUser) return openAuth();
+    const { error } = await db.rpc('join_match', { target_match_id: id });
+    if (error) return toast(error.message);
+    toast('Ты присоединился к матчу!');
+    await loadMatches();
+  }
+
+  async function loadLeaders() {
+    const root = document.getElementById('leadersList');
+    const { data, error } = await db.from('profiles')
+      .select('id,nickname,elo,wins').order('elo', { ascending: false }).limit(10);
+    if (error) { root.innerHTML = '<div class="empty">Не удалось загрузить рейтинг.</div>'; return; }
+    document.getElementById('playerCount').innerHTML = `${data.length} <small>игроков</small>`;
+    if (!data.length) { root.innerHTML = '<div class="empty">Рейтинг появится после регистрации игроков.</div>'; return; }
+    root.innerHTML = data.map((p, i) => `
+      <div class="leader-row">
+        <div class="rank ${i < 3 ? 'top' : ''}">#${i + 1}</div>
+        <div class="player"><div class="avatar">${escapeHtml((p.nickname || '?').slice(0,1).toUpperCase())}</div>
+          <div><div class="player-name">${escapeHtml(p.nickname)}</div><div class="player-tag">${p.wins || 0} побед</div></div>
+        </div><div class="elo">${p.elo} ELO</div>
+      </div>`).join('');
+  }
+
+  async function createMatch() {
+    const title = document.getElementById('matchName').value.trim();
+    const mode = document.getElementById('matchMode').value;
+    const map_name = document.getElementById('matchMap').value.trim();
+    const max_players = Number(document.getElementById('matchSlots').value);
+    if (!title || !map_name) return toast('Укажи название матча и карту.');
+    if (!Number.isInteger(max_players) || max_players < 2 || max_players > 10) return toast('Количество мест: от 2 до 10.');
+    const { error } = await db.from('matches').insert({ title, mode, map_name, max_players, created_by: currentUser.id });
+    if (error) return toast(error.message);
+    document.getElementById('matchName').value = '';
+    document.getElementById('matchMap').value = '';
+    toast('Матч создан.');
+    await loadMatches();
+  }
+
+  document.getElementById('authButton').onclick = openAuth;
+  document.getElementById('heroAuth').onclick = openAuth;
+  document.getElementById('createMatch').onclick = createMatch;
+
+  (async function init() {
+    await refreshUser();
+    await Promise.all([loadMatches(), loadLeaders()]);
+    db.auth.onAuthStateChange(async () => {
+      await refreshUser();
+      await loadMatches();
+    });
+    db.channel('arena-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, loadMatches)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'match_players' }, loadMatches)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, loadLeaders)
+      .subscribe();
+  })();
 </script>
 </body>
 </html>

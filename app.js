@@ -11,11 +11,23 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 /* Без почты и Supabase Auth: вход по нику и паролю через RPC, токен сессии хранится в localStorage
    и уходит на сервер в заголовке X-Client-Info (его читает public.uid() в schema.sql). */
+const TG = window.Telegram && window.Telegram.WebApp;
+const cloud = {
+  ok: () => !!(TG && TG.CloudStorage && TG.isVersionAtLeast && TG.isVersionAtLeast('6.9')),
+  get: key => new Promise(res => {
+    if (!cloud.ok()) return res('');
+    const t = setTimeout(() => res(''), 2000);
+    try { TG.CloudStorage.getItem(key, (err, v) => { clearTimeout(t); res(err ? '' : (v || '')); }); } catch (e) { clearTimeout(t); res(''); }
+  }),
+  set: (key, val) => { try { if (cloud.ok()) { val ? TG.CloudStorage.setItem(key, val) : TG.CloudStorage.removeItem(key); } } catch (e) { /* ок */ } }
+};
 let SESSION = '';
 try { SESSION = localStorage.getItem('bnk_session') || ''; } catch (e) { /* приватный режим */ }
+// Токен дублируется в Telegram CloudStorage: если WebView очистит localStorage, вход сохранится
 function saveSession(t) {
   SESSION = t || '';
   try { t ? localStorage.setItem('bnk_session', t) : localStorage.removeItem('bnk_session'); } catch (e) { /* ок */ }
+  cloud.set('bnk_session', SESSION);
 }
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
@@ -54,7 +66,7 @@ const S = {
   party: null, invites: [], users: {},
   queue: { searching: false, since: null, count: 0, need: 6 },
   match: null, offset: 0, sig: '', polling: false, entering: false,
-  chat: [], tick: 0,
+  chat: [], tick: 0, rank: null, stats: { searching: 0, in_match: 0, matches: 0 },
   history: [], adminTab: 'matches',
   channels: [], timers: {}
 };
@@ -252,7 +264,7 @@ async function enterApp() {
     $('app').hidden = false;
     await Promise.all([loadMaps(), loadSettings()]);
     renderBalance();
-    await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory()]);
+    await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory(), refreshMe()]);
     if (!(S.match && S.match.status === 'active')) await syncQueue().catch(() => {});
     navigate(S.match && S.match.status === 'active' ? 'match' : 'home');
     startLoops();
@@ -263,7 +275,7 @@ function startLoops() {
   stopLoops();
   S.timers.poll = setInterval(pollTick, CFG.pollMs);
   S.timers.ui = setInterval(uiTick, 250);
-  S.timers.stats = setInterval(() => { if (S.page === 'home') loadStats(); }, 10000);
+  S.timers.stats = setInterval(() => { if (S.page === 'home' || S.page === 'matches') loadStats(); }, 8000);
 }
 function stopLoops() { Object.values(S.timers).forEach(clearInterval); S.timers = {}; }
 
@@ -309,9 +321,11 @@ async function fetchUsers(ids, force) {
 async function loadStats() {
   try {
     const s = await rpc('get_stats');
-    setText('statSearching', s.searching || 0);
-    setText('statInMatch', s.in_match || 0);
-    setText('statMatches', s.matches || 0);
+    S.stats = { searching: s.searching || 0, in_match: s.in_match || 0, matches: s.matches || 0 };
+    setText('statSearching', S.stats.searching);
+    setText('statInMatch', S.stats.in_match);
+    setText('statMatches', S.stats.matches);
+    updateSearchUI();
   } catch (e) { /* ок */ }
 }
 async function loadHistory() {
@@ -340,7 +354,7 @@ function navigate(page) {
   });
   window.scrollTo({ top: 0 });
   if (page === 'home') loadStats();
-  if (page === 'matches') { loadParty().catch(() => {}); updateSearchUI(); }
+  if (page === 'matches') { loadParty().catch(() => {}); loadStats(); refreshMe().then(updateSearchUI).catch(() => {}); updateSearchUI(); }
   if (page === 'match') renderMatch(true);
   if (page === 'profile') { renderProfile(); refreshMe().then(() => S.page === 'profile' && renderProfile()).catch(() => {}); loadHistory().catch(() => {}); }
   if (page === 'friends') loadFriends().catch(() => {});
@@ -369,21 +383,37 @@ async function syncQueue() {
 }
 
 function updateSearchUI() {
-  if (!S.me) return;
-  const q = S.queue, need = q.need || S.teamSize * 2;
-  setText('searchTitle', S.teamSize + '×' + S.teamSize + ' · рейтинг');
-  setText('searchNeed', need);
-  setText('searchCount', q.count);
-  $('searchSlots').innerHTML = Array.from({ length: need }, (_, i) =>
-    `<span class="slot ${i < q.count ? 'on' : ''}"><i class="fas fa-user"></i></span>`).join('');
-  $('searchPulse').classList.toggle('on', q.searching);
-  $('searchTimer').hidden = !q.searching;
+  if (!S.me || !$('lgElo')) return;
+  const q = S.queue, u = S.me, L = levelOf(u.elo), col = lvlColor(L.lvl);
+  const circ = 2 * Math.PI * 35;
+  const ring = $('lgRing');
+  ring.style.strokeDasharray = circ.toFixed(1);
+  ring.style.strokeDashoffset = (circ * (1 - levelProgress(u.elo))).toFixed(1);
+  ring.style.stroke = col;
+  $('lgHex').style.setProperty('--c', col);
+  setText('lgLvl', L.lvl);
+  setText('lgElo', u.elo);
+  $('lgBar').style.width = (levelProgress(u.elo) * 100).toFixed(1) + '%';
+  setText('lgRange', L.max === Infinity ? u.elo + ' / ∞' : u.elo + ' / ' + (L.max + 1));
+  setText('lgNext', L.max === Infinity ? 'макс. уровень' : (L.max + 1 - u.elo) + ' до уровня');
+  const st = profileStats(u);
+  setText('lgRank', '#' + (S.rank || '—'));
+  setText('lgWr', (u.matches ? Math.round(u.wins / u.matches * 100) : 0) + '%');
+  setText('lgKd', st.kd === null ? '—' : st.kd.toFixed(2));
+  setText('searchTitle', S.teamSize + '×' + S.teamSize);
+  setText('lgInGame', S.stats.in_match);
+  setText('lgSearching', q.searching ? Math.max(q.count, 1) : q.count);
+  setText('lgSeason', S.stats.matches);
+  if (!q.searching) setText('lgWait', '—');
   $('btnCancel').hidden = !q.searching;
   const start = $('btnSearch');
   start.hidden = q.searching;
   const wait = S.party && S.party.leader !== S.me.id;
   start.disabled = !!wait;
-  start.innerHTML = wait ? 'Поиск запускает лидер пати' : '<i class="fas fa-search"></i> Начать поиск';
+  start.innerHTML = wait ? 'Поиск запускает лидер пати' : '<i class="fas fa-search"></i> Найти матч';
+  setText('searchHint', q.searching
+    ? `Ищем ${S.teamSize * 2} игроков. Не закрывайте приложение — подтверждение придёт сюда.`
+    : 'Пати попадает в одну команду. Подтверждение придёт сюда.');
   if (!S.match) setNavMatch(q.searching ? 'searching' : 'idle');
 }
 
@@ -638,7 +668,7 @@ function uiTick() {
   if (!S.me) return;
   const now = nowMs();
   if (S.queue.searching && S.queue.since) {
-    setText('searchTimer', mmss(Math.max(0, Math.floor((now - S.queue.since) / 1000))));
+    setText('lgWait', mmss(Math.max(0, Math.floor((now - S.queue.since) / 1000))));
   }
   const m = S.match;
   if (!m) return;
@@ -1295,7 +1325,15 @@ const ACTIONS = {
 };
 
 /* ───────────── Инициализация ───────────── */
+function blockZoom() {
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
+  document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  document.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0'].includes(e.key)) e.preventDefault(); });
+}
+
 function bindEvents() {
+  blockZoom();
   document.addEventListener('click', e => {
     const el = e.target.closest('[data-act]');
     if (el) {
@@ -1329,19 +1367,24 @@ function bindEvents() {
 
 async function init() {
   try {
-    const tg = window.Telegram && window.Telegram.WebApp;
+    const tg = TG;
     if (tg) {
       tg.ready(); if (tg.expand) tg.expand();
+      try { tg.disableVerticalSwipes && tg.disableVerticalSwipes(); } catch (e) { /* старые версии */ }
       try { tg.setHeaderColor('#0c0916'); tg.setBackgroundColor('#0c0916'); } catch (e) { /* старые версии */ }
     }
   } catch (e) { /* ок */ }
   bindEvents();
   try {
+    if (!SESSION) {
+      const saved = await cloud.get('bnk_session');
+      if (/^[0-9a-f-]{36}$/.test(saved)) { SESSION = saved; try { localStorage.setItem('bnk_session', saved); } catch (e) { /* ок */ } }
+    }
     if (SESSION) await enterApp();
     else showAuth();
   } catch (e) {
     console.error('init', e);
-    showAuth();
+    showAuth('Нет связи с сервером. Откройте приложение ещё раз — вход сохранён.');
   } finally {
     const s = $('splash');
     if (s) { s.classList.add('hide'); setTimeout(() => s.remove(), 500); }

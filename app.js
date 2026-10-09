@@ -4,8 +4,8 @@
    ===================================================================== */
 
 /* ───────────── Конфигурация ───────────── */
-const SUPABASE_URL = 'https://tgjltbpmuczfkikvmmde.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
+const SUPABASE_URL = 'https://ggjkivobmwwqgzkaaihx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdnamtpdm9ibXd3cWd6a2FhaWh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NzQzODcsImV4cCI6MjEwNzE1MDM4N30.flfcDmjp9riwZe9N4xCqX9CzIo6D9x9SeeQB3YU7254';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }

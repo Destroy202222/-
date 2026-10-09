@@ -1,20 +1,38 @@
 'use strict';
 /* =====================================================================
-   Aliance Faceit — app.js (исправленная версия)
+   BNK FACEIT — app.js
+   Вся игровая логика (подбор, драфт, ELO, права) живёт на сервере в schema.sql.
+   Здесь — интерфейс и вызовы RPC.
    ===================================================================== */
 
 /* ───────────── Конфигурация ───────────── */
 const SUPABASE_URL = 'https://ggjkivobmwwqgzkaaihx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdnamtpdm9ibXd3cWd6a2FhaWh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NzQzODcsImV4cCI6MjEwNzE1MDM4N30.flfcDmjp9riwZe9N4xCqX9CzIo6D9x9SeeQB3YU7254';
 
+/* Без почты и Supabase Auth: вход по нику и паролю через RPC, токен сессии хранится в localStorage
+   и уходит на сервер в заголовке X-Client-Info (его читает public.uid() в schema.sql). */
+let SESSION = '';
+try { SESSION = localStorage.getItem('bnk_session') || ''; } catch (e) { /* приватный режим */ }
+function saveSession(t) {
+  SESSION = t || '';
+  try { t ? localStorage.setItem('bnk_session', t) : localStorage.removeItem('bnk_session'); } catch (e) { /* ок */ }
+}
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  global: {
+    fetch: (url, opts = {}) => {
+      const h = new Headers(opts.headers || {});
+      if (SESSION) h.set('X-Client-Info', 'bnk/' + SESSION);
+      return fetch(url, { ...opts, headers: h });
+    }
+  }
 });
 
 const CFG = { confirmSec: 30, draftSec: 30, lobbySec: 300, pollMs: 2500, framePrice: 25 };
 const NICK_RE = /^[A-Za-z0-9А-Яа-яЁё_-]{3,20}$/;
-const PUBLIC_COLS = 'id,username,elo,matches,wins,losses,win_streak,best_streak,likes,popularity,isadmin,avatar_url,avatar_frame,registered';
+const PUBLIC_COLS = 'id,username,elo,matches,wins,losses,win_streak,best_streak,kills,deaths,assists,rounds,stat_matches,likes,popularity,isadmin,avatar_url,avatar_frame,registered';
 const PAGES = ['home', 'matches', 'match', 'profile', 'friends', 'top', 'wallet', 'shop'];
+const SIDE_NAME = { blue: 'Спецназ', orange: 'Террористы' };
 const PARTY_COLORS = ['#f5c451', '#3ddc97', '#38bdf8', '#fb923c'];
 const FRAMES = [
   { id: 'frame_bronze', name: 'Бронзовая' }, { id: 'frame_silver', name: 'Серебряная' },
@@ -36,7 +54,7 @@ const S = {
   party: null, invites: [], users: {},
   queue: { searching: false, since: null, count: 0, need: 6 },
   match: null, offset: 0, sig: '', polling: false, entering: false,
-  chat: [], chatCh: null,
+  chat: [], tick: 0,
   history: [], adminTab: 'matches',
   channels: [], timers: {}
 };
@@ -83,11 +101,19 @@ function avatarHtml(u, size = 44) {
 
 function mapById(id) {
   const key = String(id || '').toLowerCase();
-  return S.maps.find(m => m.id.toLowerCase() === key || m.name.toLowerCase() === key) || { id, name: id || '—', emoji: '🗺️', img: '' };
+  return S.maps.find(m => m.id.toLowerCase() === key || m.name.toLowerCase() === key) || { id: key || 'map', name: id || '—', img: '' };
+}
+function mapSrc(m) { return m.img || ('maps/' + m.id + '.jpg'); }
+function mapFallback(m) {
+  const name = String(m.name || m.id || '?').replace(/[^A-Za-z0-9А-Яа-я ]/g, '');
+  let h = 0; for (const ch of String(m.id || name)) h = (h * 31 + ch.charCodeAt(0)) % 360;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h},60%,34%)"/><stop offset="1" stop-color="hsl(${(h + 70) % 360},55%,16%)"/></linearGradient></defs><rect width="320" height="180" fill="url(#g)"/><path d="M0 140 L70 90 L120 120 L190 60 L260 110 L320 80 L320 180 L0 180Z" fill="rgba(0,0,0,.28)"/><text x="16" y="164" font-family="Arial" font-weight="700" font-size="26" fill="rgba(255,255,255,.85)">${name}</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 function mapThumb(m) {
-  return m.img ? `<img src="${esc(m.img)}" alt="" onerror="this.remove()">` : esc(m.emoji || '🗺️');
+  return `<img src="${esc(mapSrc(m))}" alt="${esc(m.name)}" loading="lazy" onerror="this.onerror=null;this.src='${mapFallback(m)}'">`;
 }
+function mapBg(m) { return `background-image:url('${esc(mapSrc(m))}'),url('${mapFallback(m)}')`; }
 
 async function copyText(text) {
   try { await navigator.clipboard.writeText(text); }
@@ -148,42 +174,7 @@ async function run(fn, d, el) {
   }
 }
 
-/* ───────────── Авторизация ───────────── */
-/**
- * Генерирует email для Supabase Auth на основе ника.
- * Исправлено: домен alliance (с двумя L), добавлен фолбэк для crypto.subtle.
- */
-async function nickEmail(nick) {
-  const clean = nick.trim().toLowerCase();
-  
-  // Фолбэк: если crypto.subtle недоступен (например, старый WebView), используем простой хеш
-  if (!(window.crypto && crypto.subtle)) {
-    let hash = 0;
-    for (let i = 0; i < clean.length; i++) {
-      hash = (hash << 5) - hash + clean.charCodeAt(i);
-      hash |= 0;
-    }
-    const hex = Math.abs(hash).toString(16).padStart(8, '0').repeat(4).slice(0, 32);
-    return 'u' + hex + '@alliance-faceit.app';
-  }
-  
-  try {
-    const bytes = new TextEncoder().encode(clean);
-    const hash = await crypto.subtle.digest('SHA-256', bytes);
-    const hex = [...new Uint8Array(hash)].map(b => pad(b.toString(16))).join('');
-    return 'u' + hex.slice(0, 32) + '@alliance-faceit.app';
-  } catch (e) {
-    // Если crypto.subtle упал — используем простой хеш
-    let hash = 0;
-    for (let i = 0; i < clean.length; i++) {
-      hash = (hash << 5) - hash + clean.charCodeAt(i);
-      hash |= 0;
-    }
-    const hex = Math.abs(hash).toString(16).padStart(8, '0').repeat(4).slice(0, 32);
-    return 'u' + hex + '@alliance-faceit.app';
-  }
-}
-
+/* ───────────── Авторизация (ник + пароль, без почты) ───────────── */
 function authMsg(id, type, text) { const el = $(id); el.className = 'auth-msg ' + type; el.textContent = text; }
 function switchAuthTab(tab) {
   const login = tab === 'login';
@@ -200,9 +191,9 @@ async function doLogin(e) {
   const btn = $('loginBtn'); btn.disabled = true;
   authMsg('loginMsg', 'info', 'Входим…');
   try {
-    const email = await nickEmail(nick);
-    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if (error) return authMsg('loginMsg', 'error', 'Неверный ник или пароль');
+    const r = await rpc('login_user', { p_nick: nick, p_password: pass });
+    if (!r || r.error) return authMsg('loginMsg', 'error', (r && r.error) || 'Не удалось войти');
+    saveSession(r.token);
     authMsg('loginMsg', 'success', 'Готово');
     await enterApp();
   } catch (err) { authMsg('loginMsg', 'error', errText(err)); }
@@ -215,41 +206,14 @@ async function doRegister(e) {
   const p1 = $('regPass').value, p2 = $('regPass2').value;
   const bad = t => authMsg('registerMsg', 'error', t);
   if (!NICK_RE.test(nick)) return bad('Ник: 3–20 символов — буквы, цифры, _ и -');
-  if (gid.length < 3 || gid.length > 30) return bad('ID StandRise: от 3 до 30 символов');
+  if (gid.length < 3 || gid.length > 30) return bad('ID Standoff: от 3 до 30 символов');
   if (p1.length < 8) return bad('Пароль — минимум 8 символов');
   if (p1 !== p2) return bad('Пароли не совпадают');
   const btn = $('registerBtn'); btn.disabled = true;
   authMsg('registerMsg', 'info', 'Создаём аккаунт…');
   try {
-    const free = await rpc('username_available', { p_nick: nick });
-    if (!free) return bad('Этот ник уже занят');
-    
-    const email = await nickEmail(nick);
-    const { data, error } = await sb.auth.signUp({
-      email,
-      password: p1,
-      options: { data: { username: nick, game_id: gid } }
-    });
-    
-    if (error) {
-      // Разбираем типичные ошибки Supabase
-      const msg = error.message || '';
-      if (/already registered|already exists/i.test(msg)) return bad('Этот ник уже занят');
-      if (/email signups are disabled/i.test(msg)) {
-        return bad('Регистрация через email отключена. Включите Email provider в Supabase.');
-      }
-      if (/signups not allowed/i.test(msg)) {
-        return bad('Регистрация в проекте запрещена. Включите "Allow new users to sign up".');
-      }
-      if (/password/i.test(msg)) return bad('Пароль слишком простой или короткий');
-      return bad('Не удалось создать аккаунт: ' + msg);
-    }
-    
-    if (!data.session) {
-      return authMsg('registerMsg', 'info',
-        'Аккаунт создан, но вход не выполнен. Выключите «Confirm email» в Supabase (Authentication → Sign In / Providers → Email).');
-    }
-    
+    const r = await rpc('register_user', { p_nick: nick, p_game_id: gid, p_password: p1 });
+    saveSession(r.token);
     authMsg('registerMsg', 'success', 'Добро пожаловать, ' + nick + '!');
     await enterApp();
   } catch (err) { bad(errText(err)); }
@@ -257,7 +221,7 @@ async function doRegister(e) {
 }
 
 function showAuth(message) {
-  stopLoops(); unsubscribeRealtime(); stopChat();
+  stopLoops(); stopChat();
   S.me = null; S.match = null; S.party = null; S.invites = [];
   S.queue = { searching: false, since: null, count: 0, need: S.teamSize * 2 };
   $('app').hidden = true;
@@ -270,7 +234,8 @@ async function logout() {
   const ok = await dialog({ title: 'Выйти из аккаунта?', ok: 'Выйти', danger: true });
   if (!ok) return;
   try { await rpc('cancel_search'); } catch (e) { /* не критично */ }
-  await sb.auth.signOut();
+  try { await rpc('logout'); } catch (e) { /* не критично */ }
+  saveSession('');
   showAuth();
   toast('info', 'Вы вышли', '');
 }
@@ -281,14 +246,12 @@ async function enterApp() {
   S.entering = true;
   try {
     const me = await rpc('get_me');
-    if (!me) { await sb.auth.signOut(); return showAuth('Профиль не найден. Зарегистрируйтесь заново.'); }
-    if (me.banned) { await sb.auth.signOut(); return showAuth('Аккаунт заблокирован'); }
+    if (!me) { saveSession(''); return showAuth('Сессия истекла. Войдите снова.'); }
     S.me = me;
     $('auth').hidden = true;
     $('app').hidden = false;
     await Promise.all([loadMaps(), loadSettings()]);
     renderBalance();
-    subscribeRealtime();
     await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory()]);
     if (!(S.match && S.match.status === 'active')) await syncQueue().catch(() => {});
     navigate(S.match && S.match.status === 'active' ? 'match' : 'home');
@@ -307,29 +270,18 @@ function stopLoops() { Object.values(S.timers).forEach(clearInterval); S.timers 
 async function pollTick() {
   if (!S.me || S.polling) return;
   S.polling = true;
+  S.tick++;
   try {
     await syncMatch();
     if (!S.match) await syncQueue();
     else if (S.match.status === 'active') await pullChat();
+    if (S.tick % 2 === 0) await loadParty().catch(() => {});
+    if (S.tick % 4 === 0) await loadFriends().catch(() => {});
+    if (S.tick % 8 === 0) await loadSettings().catch(() => {});
   } catch (e) { /* сеть моргнула — повторим */ }
   finally { S.polling = false; }
 }
 
-function subscribeRealtime() {
-  unsubscribeRealtime();
-  const ch = sb.channel('app-' + S.me.id);
-  const on = (table, fn) => ch.on('postgres_changes', { event: '*', schema: 'public', table }, fn);
-  const dMatch = debounce(() => syncMatch().catch(() => {}), 150);
-  const dFriends = debounce(() => loadFriends().catch(() => {}), 250);
-  const dParty = debounce(() => loadParty().catch(() => {}), 250);
-  on('active_matches', dMatch);
-  on('friends', dFriends); on('friend_requests', dFriends);
-  on('party_members', dParty); on('party_invites', dParty);
-  on('settings', () => loadSettings().catch(() => {}));
-  ch.subscribe();
-  S.channels.push(ch);
-}
-function unsubscribeRealtime() { S.channels.forEach(c => { try { sb.removeChannel(c); } catch (e) { /* ок */ } }); S.channels = []; }
 
 /* ───────────── Данные ───────────── */
 async function loadMaps() {
@@ -344,6 +296,7 @@ async function loadSettings() {
 async function refreshMe() {
   const me = await rpc('get_me');
   if (me) { S.me = me; renderBalance(); }
+  try { S.rank = await rpc('my_rank'); } catch (e) { /* ок */ }
 }
 async function fetchUsers(ids, force) {
   const need = [...new Set(ids)].filter(id => force || !S.users[id]);
@@ -363,7 +316,7 @@ async function loadStats() {
 }
 async function loadHistory() {
   const { data } = await sb.from('match_history')
-    .select('id,map,result,elo_change,match_date,winner,score_a,score_b')
+    .select('id,map,result,elo_change,match_date,winner,score_a,score_b,kills,deaths,assists')
     .eq('user_id', S.me.id).order('match_date', { ascending: false }).limit(30);
   S.history = data || [];
   if (S.page === 'profile') renderProfile();
@@ -406,7 +359,7 @@ function setNavMatch(mode) { // 'idle' | 'searching' | 'match'
 /* ───────────── Очередь и поиск ───────────── */
 async function syncQueue() {
   const st = await rpc('queue_state');
-  if (!st) return;
+  if (!st) { saveSession(''); showAuth('Сессия истекла. Войдите снова.'); return; }
   const was = S.queue.searching;
   S.queue = { searching: !!st.searching, since: toMs(st.since), count: st.count || 0, need: st.need || S.teamSize * 2 };
   S.teamSize = Math.max(1, Math.round(S.queue.need / 2));
@@ -537,6 +490,7 @@ function matchEnded(prev) {
   stopChat();
   S.sig = '';
   $('chatPanel').hidden = true;
+  $('matchTop').hidden = false;
   setNavMatch('idle');
   if (prev.status === 'pending') {
     toast('info', 'Матч отменён', 'Не все игроки подтвердили участие');
@@ -560,7 +514,7 @@ function renderConfirm() {
   }).join('');
   setText('confirmDone', conf.size);
   setText('confirmTotal', players.length);
-  setText('confirmSub', 'Вы в команде ' + (mySide(m) === 'blue' ? 'A' : 'B'));
+  setText('confirmSub', 'Ваша сторона: ' + SIDE_NAME[mySide(m)]);
   const btn = $('confirmBtn');
   if (conf.has(S.me.id)) {
     btn.disabled = true;
@@ -592,12 +546,12 @@ function renderMatch(force) {
   st.textContent = ds.complete ? 'Идёт игра' : 'Бан карт';
   st.className = 'pill' + (ds.complete ? ' live' : '');
   $('matchBody').innerHTML = ds.complete ? lobbyHtml(m, ds) : draftHtml(m, ds);
-  $('chatPanel').hidden = false;
+  $('matchTop').hidden = !ds.complete;
+  $('chatPanel').hidden = !ds.complete;
   renderChat();
-  $('adminMatchBar').innerHTML = S.me.isadmin
+  $('adminMatchBar').innerHTML = (S.me.isadmin && ds.complete)
     ? `<div class="admin-bar">
-        <button class="btn btn-sm btn-ghost" data-act="adm-finish" data-id="${m.id}" data-side="blue">🏆 Команда A</button>
-        <button class="btn btn-sm btn-ghost" data-act="adm-finish" data-id="${m.id}" data-side="orange">🏆 Команда B</button>
+        <button class="btn btn-sm btn-ghost" data-act="adm-open"><i class="fas fa-clipboard-check"></i> Результат и K/D/A</button>
         <button class="btn btn-sm btn-danger" data-act="adm-cancel" data-id="${m.id}" aria-label="Отменить матч"><i class="fas fa-times"></i></button></div>`
     : '';
 }
@@ -618,7 +572,7 @@ function teamsHtml(m) {
   };
   const side = (list, cls, label, icon) => `<div class="team ${cls}"><div class="team-head"><i class="fas ${icon}"></i>${label}</div>
     ${list.map((p, i) => plHtml(p, i === 0, dot(p.party_id))).join('')}</div>`;
-  return `<div class="teams">${side(m.blue, 'blue', 'Команда A', 'fa-shield-halved')}${side(m.orange, 'orange', 'Команда B', 'fa-fire')}</div>`;
+  return `<div class="teams">${side(m.blue, 'blue', 'Спецназ', 'fa-shield-halved')}${side(m.orange, 'orange', 'Террористы', 'fa-fire')}</div>`;
 }
 
 function draftHtml(m, ds) {
@@ -640,17 +594,16 @@ function draftHtml(m, ds) {
     <div class="turn ${mine ? 'mine' : ''}"><div class="ico"><i class="fas fa-crosshairs"></i></div>
       <div class="txt"><b>${mine ? 'Ваш ход' : 'Банит ' + esc(cap ? cap.username : 'капитан')}</b><span>${sub}</span></div>
       <div class="turn-time" id="turnTime">0:30</div></div>
-    <div class="maps">${list}</div>
-    <div style="height:14px"></div>${teamsHtml(m)}`;
+    <div class="maps">${list}</div>`;
 }
 
 function lobbyHtml(m, ds) {
   const mp = mapById(ds.final);
   const host = m.blue[0] || {};
-  const bg = mp.img ? `style="background-image:url('${esc(mp.img)}')"` : '';
+  const bg = `style="${mapBg(mp)}"`;
   const side = mySide(m);
   const other = side === 'blue' ? 'orange' : 'blue';
-  const rep = m.my_report ? `<p>Ваш ответ: победила команда ${m.my_report === 'blue' ? 'A' : 'B'}</p>` : '<p>Матч сыгран? Отметьте, кто победил — это поможет админу.</p>';
+  const rep = m.my_report ? `<p>Ваш ответ: победил ${m.my_report === 'blue' ? 'спецназ' : 'террористы'}</p>` : '<p>Матч сыгран? Отметьте, кто победил — это поможет админу.</p>';
   return `<div class="lobby-hero"><div class="bg" ${bg}></div><div class="in">
       <div class="cap">Карта выбрана</div><div class="map">${esc(mp.name)}</div>
       <div class="host">${avatarHtml(host, 40)}
@@ -664,7 +617,7 @@ function lobbyHtml(m, ds) {
     ${teamsHtml(m)}
     <div class="panel report" id="reportBox" hidden>${rep}
       <div class="btns">
-        <button class="btn btn-ok" data-act="report" data-side="${side}">Победила моя команда</button>
+        <button class="btn btn-ok" data-act="report" data-side="${side}">Победила моя сторона</button>
         <button class="btn btn-danger" data-act="report" data-side="${other}">Победил соперник</button></div></div>`;
 }
 
@@ -715,14 +668,8 @@ async function startChat(matchId) {
   const { data } = await sb.from('match_messages').select('*').eq('match_id', matchId).order('created_at').limit(200);
   S.chat = data || [];
   renderChat();
-  S.chatCh = sb.channel('chat-' + matchId)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'match_messages', filter: 'match_id=eq.' + matchId }, p => addChat(p.new))
-    .subscribe();
 }
-function stopChat() {
-  if (S.chatCh) { try { sb.removeChannel(S.chatCh); } catch (e) { /* ок */ } S.chatCh = null; }
-  S.chat = [];
-}
+function stopChat() { S.chat = []; }
 function addChat(msg) {
   if (!msg || S.chat.some(x => x.id === msg.id)) return;
   S.chat.push(msg);
@@ -760,52 +707,132 @@ async function sendChat(e) {
 }
 
 /* ───────────── Профиль ───────────── */
+const qual = (v, hi, mid) => (v === null ? '—' : v >= hi ? 'Высокий' : v >= mid ? 'Средний' : 'Низкий');
+function profileStats(u) {
+  const sm = u.stat_matches || 0;
+  return {
+    kd: u.deaths > 0 ? u.kills / u.deaths : (u.kills > 0 ? u.kills : null),
+    avg: sm ? u.kills / sm : null,
+    ast: sm ? u.assists / sm : null,
+    kpr: u.rounds > 0 ? u.kills / u.rounds : null,
+    sm
+  };
+}
+const fx = (v, d = 2) => (v === null || v === undefined ? '—' : Number(v).toFixed(d));
+
+function achievements(u) {
+  const st = profileStats(u), L = levelOf(u.elo).lvl;
+  return [
+    ['fa-flag-checkered', 'Первый матч', u.matches >= 1], ['fa-cube', '10 матчей', u.matches >= 10],
+    ['fa-trophy', 'Первая победа', u.wins >= 1], ['fa-crown', '10 побед', u.wins >= 10],
+    ['fa-fire', 'Серия из 3 побед', u.best_streak >= 3], ['fa-bolt', 'Серия из 5 побед', u.best_streak >= 5],
+    ['fa-shield-halved', '5 уровень', L >= 5], ['fa-crosshairs', 'K/D от 1.5', st.kd !== null && st.kd >= 1.5 && st.sm >= 3],
+    ['fa-user-group', 'Есть друзья', S.friends.length >= 1], ['fa-medal', '10 уровень', L >= 10]
+  ];
+}
+
+function mapStatsHtml() {
+  const by = {};
+  S.history.forEach(h => {
+    const k = h.map || '—';
+    const o = by[k] || (by[k] = { w: 0, l: 0, k: 0, d: 0 });
+    if (h.result === 'win') o.w++; else o.l++;
+    o.k += h.kills || 0; o.d += h.deaths || 0;
+  });
+  const list = Object.entries(by).sort((a, b) => (b[1].w + b[1].l) - (a[1].w + a[1].l));
+  if (!list.length) return '<div class="empty"><i class="fas fa-map"></i>Статистика по картам появится после матчей</div>';
+  return '<div class="mapstat">' + list.map(([name, o]) => {
+    const mp = mapById(name), tot = o.w + o.l;
+    return `<div class="ms"><div class="in"><div class="nm">${esc(name)}</div>
+      <div class="wl2">W ${o.w} · <b class="r">L ${o.l}</b></div>
+      <div class="row2"><span>K/D ${o.d ? (o.k / o.d).toFixed(2) : (o.k || '0')}</span><span>${Math.round(o.w / tot * 100)}%</span></div></div>
+      <div class="pic" style="${mapBg(mp)}"></div></div>`;
+  }).join('') + '</div>';
+}
+
 function renderProfile() {
   const u = S.me; if (!u) return;
   const body = $('profileBody'); if (!body) return;
   const L = levelOf(u.elo), prog = levelProgress(u.elo), col = lvlColor(L.lvl);
+  const st = profileStats(u);
   const wr = u.matches ? Math.round(u.wins / u.matches * 100) : 0;
-  const toNext = L.max === Infinity ? '<b>Максимальный</b> уровень' : `<b>${L.max + 1 - u.elo}</b> ELO до ${L.lvl + 1} уровня`;
-  const ladder = LEVELS.map(l => `<i class="${l.lvl <= L.lvl ? 'on' : ''} ${l.lvl === L.lvl ? 'cur' : ''}"></i>`).join('');
-  const hist = S.history.slice(0, 10).map(h => {
+  const toNext = L.max === Infinity ? 'Максимальный уровень' : `До уровня ${L.lvl + 1}: ${L.max + 1 - u.elo} ELO`;
+  const ringLen = 2 * Math.PI * 34, kdFill = st.kd === null ? 0 : Math.min(1, st.kd / 3);
+  const recent = S.history.slice(0, 8);
+  const wlWins = recent.filter(h => h.result === 'win').length;
+  const rows = S.history.slice(0, 10).map(h => {
     const win = h.result === 'win', d = h.elo_change || 0, mp = mapById(h.map);
+    const kda = h.kills != null ? `${h.kills}/${h.deaths}/${h.assists}` : '';
     return `<div class="hist ${win ? 'win' : 'lose'}" data-act="match-details" data-id="${h.id}">
-      <div class="map-thumb" style="width:46px;height:46px">${mapThumb(mp)}</div>
-      <div class="main"><div class="t">${win ? 'Победа' : 'Поражение'} · ${esc(h.map || '—')}</div>
-        <div class="s">${fmtDay(h.match_date)}${h.score_a != null ? ` · ${h.score_a}:${h.score_b}` : ''}</div></div>
-      <div class="right"><div class="elo ${d >= 0 ? 'p' : 'n'}">${d >= 0 ? '+' : ''}${d}</div><div class="time">${fmtTime(h.match_date)}</div></div></div>`;
+      <div class="map-thumb" style="width:52px;height:52px">${mapThumb(mp)}</div>
+      <div class="main"><div class="t">${esc(h.map || '—')} · ${win ? 'Победа' : 'Поражение'}</div>
+        <div class="s">${fmtDay(h.match_date)} · ${fmtTime(h.match_date)}${h.score_a != null ? ` · ${h.score_a}:${h.score_b}` : ''}</div></div>
+      <div class="right">${kda ? `<div class="kda">${kda}</div>` : ''}<div class="elo ${d >= 0 ? 'p' : 'n'}">${d >= 0 ? '+' : ''}${d} ELO</div></div></div>`;
   }).join('') || '<div class="empty"><i class="fas fa-gamepad"></i>Матчей пока нет</div>';
+  const ach = achievements(u), achOn = ach.filter(a => a[2]).length;
+  const today = new Date();
 
   body.innerHTML = `
-    <div class="panel">
-      <div class="me-hero">${avatarHtml(u, 72)}<div><div class="name">${esc(u.username)} ${u.isadmin ? '<i class="fas fa-crown" style="color:var(--gold);font-size:15px"></i>' : ''}</div>
-        <div class="gid">ID StandRise: <b>${esc(u.game_id || '—')}</b></div></div></div>
-      <div class="rank">
-        <div class="badge-lvl" style="--c:${col}"><div class="n">${L.lvl}</div><div class="l">LVL</div></div>
-        <div class="main"><div class="elo">${u.elo}<small>ELO</small></div>
-          <div class="ladder">${ladder}</div>
-          <div class="bar"><i style="width:${(prog * 100).toFixed(1)}%"></i></div>
-          <div class="sub">${toNext}</div></div></div>
+    <div class="pf-banner">
+      <div class="logo">BNK<span>FACEIT</span></div>
+      <div class="pf-top">${avatarHtml(u, 84)}
+        <div class="pf-id"><div class="no">#${S.rank || '—'}</div>
+          <div class="name">${esc(u.username)}${u.isadmin ? ' <i class="fas fa-crown" style="color:var(--gold);font-size:15px"></i>' : ''}</div>
+          <div class="gid">ID: ${esc(u.game_id || '—')}</div></div></div>
+      <div class="chips"><span class="chip">LVL ${L.lvl}</span>${u.isadmin ? '<span class="chip pr"><i class="fas fa-crown"></i> ADMIN</span>' : ''}<span class="chip">${u.elo} ELO</span></div>
+      <div class="dt">${pad(today.getDate())}.${pad(today.getMonth() + 1)}.${today.getFullYear()}</div>
     </div>
-    <div class="panel"><div class="panel-head"><h3>Статистика</h3></div>
-      <div class="stat-grid">
-        <div class="stat"><div class="k">Победы</div><div class="v g">${u.wins}</div></div>
-        <div class="stat"><div class="k">Поражения</div><div class="v r">${u.losses}</div></div>
-        <div class="stat"><div class="k">Винрейт</div><div class="v">${wr}%</div></div>
-        <div class="stat"><div class="k">Матчей</div><div class="v">${u.matches}</div></div>
-        <div class="stat"><div class="k">Серия побед</div><div class="v">${u.win_streak}</div></div>
-        <div class="stat"><div class="k">Лучшая серия</div><div class="v">${u.best_streak}</div></div>
+
+    <div class="panel">
+      <div class="panel-head"><h3><i class="fas fa-chart-simple"></i> Статистика</h3><span class="pill-soft">${toNext}</span></div>
+      <div class="kd-card">
+        <div class="ring-kd"><svg viewBox="0 0 80 80"><circle class="t" cx="40" cy="40" r="34"/><circle class="b" cx="40" cy="40" r="34" stroke-dasharray="${ringLen.toFixed(1)}" stroke-dashoffset="${(ringLen * (1 - kdFill)).toFixed(1)}"/></svg><b>${fx(st.kd)}</b></div>
+        <div><div class="k">Kill / Deaths</div><div class="v">K = ${u.kills} &nbsp; D = ${u.deaths}</div></div>
       </div>
-      <div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+      <div class="lvl-card">
+        <div class="main"><div class="lbl">LEVEL</div>
+          <div class="rng"><small>${L.min}</small><b>${u.elo}</b><small>${L.max === Infinity ? '∞' : L.max + 1}</small></div>
+          <div class="bar"><i style="width:${(prog * 100).toFixed(1)}%"></i></div></div>
+        <div class="hex" style="--c:${col}"><span>${L.lvl}</span></div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="k">WINRATE</div><div class="v">${wr}%</div><div class="bar"><i style="width:${wr}%"></i></div><div class="q">${u.matches ? qual(wr, 55, 45) : '—'}</div></div>
+        <div class="tile"><div class="k">K/D</div><div class="v">${fx(st.kd)}</div><div class="bar"><i style="width:${st.kd === null ? 0 : Math.min(100, st.kd / 2 * 100)}%"></i></div><div class="q">${qual(st.kd, 1.2, 0.9)}</div></div>
+        <div class="tile"><div class="k">AVG</div><div class="v">${fx(st.avg, 1)}</div><div class="bar"><i style="width:${st.avg === null ? 0 : Math.min(100, st.avg / 25 * 100)}%"></i></div><div class="q">${qual(st.avg, 15, 10)}</div></div>
+        <div class="tile"><div class="k">KPR</div><div class="v">${fx(st.kpr)}</div><div class="bar"><i style="width:${st.kpr === null ? 0 : Math.min(100, st.kpr / 1.2 * 100)}%"></i></div><div class="q">${qual(st.kpr, 0.75, 0.55)}</div></div>
+      </div>
+      <div class="pf-foot"><span>Ассисты <b>${fx(st.ast, 1)}</b>/матч</span><span>по ${st.sm} матч.</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="stat-grid">
+        <div class="stat"><div class="k">Игр</div><div class="v">${u.matches}</div></div>
+        <div class="stat"><div class="k">Победы</div><div class="v g">${u.wins}</div></div>
+        <div class="stat"><div class="k">Поражения</div><div class="v r">${u.losses}</div></div></div>
+      <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:10px">
+        <div class="stat"><div class="k">Лучшая серия</div><div class="v">${u.best_streak}</div></div>
         <div class="stat"><div class="k">👍 Оценок</div><div class="v">${u.likes}</div></div>
         <div class="stat"><div class="k">🔥 Популярность</div><div class="v">${u.popularity}</div></div></div>
     </div>
-    <div class="panel"><div class="panel-head"><h3>История рейтинга</h3></div>
-      <div class="chart-top"><div><span class="big num" id="chartElo">${u.elo}</span><span class="d up" id="chartDelta" hidden></span></div><div class="date" id="chartDate"></div></div>
+    <div class="place"><span>Твоё место в рейтинге —</span><span class="num">#${S.rank || '—'}</span></div>
+
+    <div class="panel"><div class="panel-head"><h3>Достижения</h3><span class="aside">${achOn}/${ach.length}</span></div>
+      <div class="ach">${ach.map(a => `<div class="${a[2] ? '' : 'off'}" title="${esc(a[1])}"><i class="fas ${a[0]}"></i></div>`).join('')}</div></div>
+
+    <div class="panel">
+      <div class="panel-head"><h3><i class="fas fa-chart-line"></i> Динамика ELO</h3><span class="pill-soft" id="chartDelta">—</span></div>
+      <div class="chart-top"><div><span class="big num" id="chartElo">${u.elo}</span></div><div class="date" id="chartDate"></div></div>
       <div class="chart" id="eloChart"></div>
-      <div class="chart-foot"><span id="chartStart"></span><span id="chartEnd"></span></div>
+      <div class="chart-mm"><span>мин <b id="chartMin">—</b></span><span>макс <b id="chartMax">—</b></span></div>
+      <div class="dots" id="chartDots"></div>
     </div>
-    <div class="panel"><div class="panel-head"><h3>Последние матчи</h3><span class="aside">${S.history.length ? 'последние ' + Math.min(10, S.history.length) : ''}</span></div>${hist}</div>
+
+    <div class="panel"><div class="panel-head"><h3>Статистика по картам</h3><span class="aside">последние ${S.history.length}</span></div>${mapStatsHtml()}</div>
+
+    <div class="panel"><div class="panel-head"><h3>Последние матчи</h3><span class="pill-soft">${recent.length ? Math.round(wlWins / recent.length * 100) + '% W' : '—'}</span></div>
+      <div class="wl">${recent.map(h => `<i class="${h.result === 'win' ? 'w' : 'l'}">${h.result === 'win' ? 'W' : 'L'}</i>`).join('')}</div>
+      ${u.win_streak > 0 ? `<div class="series">Серия: <b>${u.win_streak} ${u.win_streak === 1 ? 'победа' : 'побед'} подряд</b></div>` : ''}
+      ${rows}</div>
     <button class="btn btn-ghost btn-block" data-act="logout"><i class="fas fa-sign-out-alt"></i> Выйти</button>`;
   renderEloChart();
   renderAdmin();
@@ -823,22 +850,20 @@ function renderEloChart() {
   let acc = S.me.elo - total;
   const pts = [acc]; deltas.forEach(d => { acc += d; pts.push(acc); });
   const dates = [rows[0].match_date, ...rows.map(r => r.match_date)];
-  const W = box.clientWidth || 320, H = 120, padX = 8, padT = 10, padB = 14;
+  const W = box.clientWidth || 320, H = 120, padX = 8, padT = 10, padB = 10;
   const min = Math.min(...pts), max = Math.max(...pts), range = max - min || 1;
   const xs = pts.map((_, i) => padX + (W - 2 * padX) * (i / (pts.length - 1)));
   const ys = pts.map(v => padT + (H - padT - padB) * (1 - (v - min) / range));
   const line = xs.map((x, i) => (i ? 'L' : 'M') + x.toFixed(1) + ' ' + ys[i].toFixed(1)).join(' ');
   const area = `${line} L${xs[xs.length - 1].toFixed(1)} ${H - padB} L${xs[0].toFixed(1)} ${H - padB} Z`;
   box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
-    <defs><linearGradient id="eloGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3ddc97" stop-opacity=".45"/><stop offset="1" stop-color="#3ddc97" stop-opacity="0"/></linearGradient></defs>
-    <path class="area" fill="url(#eloGrad)" d="${area}"/><path class="line" d="${line}"/>
-    <line class="cursor" id="cLine" x1="0" x2="0" y1="0" y2="${H - padB}"/><circle class="dot" id="cDot" r="5" cx="0" cy="0"/></svg>`;
+    <defs><linearGradient id="eloGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f472b6" stop-opacity=".45"/><stop offset="1" stop-color="#f472b6" stop-opacity="0"/></linearGradient></defs>
+    <path class="area" fill="url(#eloGrad)" d="${area}"/><path class="line" style="stroke:#f9a8d4;filter:drop-shadow(0 0 6px rgba(244,114,182,.6))" d="${line}"/>
+    <line class="cursor" id="cLine" x1="0" x2="0" y1="0" y2="${H - padB}"/><circle class="dot" id="cDot" r="5" cx="0" cy="0" style="stroke:#f9a8d4"/></svg>`;
   const delta = $('chartDelta');
-  delta.hidden = false;
-  delta.textContent = (total >= 0 ? '+' : '') + total;
-  delta.className = 'd ' + (total >= 0 ? 'up' : 'down');
-  setText('chartStart', fmtDay(dates[0]));
-  setText('chartEnd', fmtDay(dates[dates.length - 1]));
+  delta.textContent = (total >= 0 ? '+' : '') + total + ' за ' + rows.length + ' матч.';
+  setText('chartMin', min); setText('chartMax', max);
+  $('chartDots').innerHTML = rows.slice(-10).map((r, i) => `<i class="${r.result === 'win' ? 'w' : 'l'}">${i + 1}</i>`).join('');
   const put = i => {
     $('cLine').setAttribute('x1', xs[i]); $('cLine').setAttribute('x2', xs[i]);
     $('cDot').setAttribute('cx', xs[i]); $('cDot').setAttribute('cy', ys[i]);
@@ -864,12 +889,12 @@ async function openMatchDetails(d) {
   const win = h.result === 'win', delta = h.elo_change || 0, mp = mapById(h.map);
   const team = (list, cls, label, isWin) => `<div class="md-team ${cls} ${isWin ? 'win' : ''}"><h4>${label}</h4>
     ${(list || []).map(p => { const c = p.elo_change; return `<div class="md-pl" data-act="player" data-id="${esc(p.id)}">${avatarHtml(p, 30)}<div class="nm">${esc(p.username)}</div>
-      <div class="e">ELO ${p.elo ?? 300} ${c != null ? `<b class="${c >= 0 ? 'p' : 'n'}">${c >= 0 ? '+' : ''}${c}</b>` : ''}</div></div>`; }).join('') || '<div class="empty" style="padding:8px">Пусто</div>'}</div>`;
+      <div class="e">${p.kills != null ? `<b style="color:var(--text)">${p.kills}/${p.deaths}/${p.assists}</b> · ` : ''}ELO ${p.elo ?? 300} ${c != null ? `<b class="${c >= 0 ? 'p' : 'n'}">${c >= 0 ? '+' : ''}${c}</b>` : ''}</div></div>`; }).join('') || '<div class="empty" style="padding:8px">Пусто</div>'}</div>`;
   body.innerHTML = `<div class="md-head"><h3>${win ? '🏆 Победа' : 'Поражение'}</h3>
     <p>${fmtDay(h.match_date)}, ${fmtTime(h.match_date)} · ${esc(mp.name)}${h.match_number ? ' · матч #' + h.match_number : ''}</p></div>
     ${h.score_a != null ? `<div class="md-score"><span class="${h.winner === 'blue' ? 'w' : ''}">${h.score_a}</span><span class="sep">:</span><span class="${h.winner === 'orange' ? 'w' : ''}">${h.score_b}</span></div>`
       : `<div class="md-score" style="font-size:18px">Ваше ELO&nbsp;<span class="${delta >= 0 ? 'w' : ''}" style="${delta < 0 ? 'color:#ff8fa3' : ''}">${delta >= 0 ? '+' : ''}${delta}</span></div>`}
-    ${team(h.team_blue, 'blue', 'Команда A', h.winner === 'blue')}${team(h.team_orange, 'orange', 'Команда B', h.winner === 'orange')}`;
+    ${team(h.team_blue, 'blue', 'Спецназ', h.winner === 'blue')}${team(h.team_orange, 'orange', 'Террористы', h.winner === 'orange')}`;
 }
 
 async function openPlayer(d) {
@@ -894,6 +919,7 @@ async function openPlayer(d) {
       <div class="stat"><div class="k">Победы</div><div class="v g">${u.wins}</div></div>
       <div class="stat"><div class="k">Поражения</div><div class="v r">${u.losses}</div></div>
       <div class="stat"><div class="k">Винрейт</div><div class="v">${wr}%</div></div>
+      <div class="stat"><div class="k">K/D</div><div class="v">${fx(profileStats(u).kd)}</div></div>
       <div class="stat"><div class="k">Оценок</div><div class="v">${u.likes}</div></div>
       <div class="stat"><div class="k">Лучшая серия</div><div class="v">${u.best_streak}</div></div></div>${actions}`;
 }
@@ -1020,7 +1046,7 @@ function renderShop() {
       <div class="shop-me">${avatarHtml(u, 84)}
         <div class="upload"><label class="btn btn-ghost btn-block" for="avatarFile"><i class="fas fa-upload"></i> Загрузить</label>
           <input type="file" id="avatarFile" accept="image/jpeg,image/png,image/webp">
-          <div class="row-sub">JPG, PNG или WEBP, до 2 МБ</div>
+          <div class="row-sub">JPG, PNG или WEBP</div>
           ${u.avatar_url ? '<button class="btn btn-danger btn-sm btn-block" data-act="avatar-remove"><i class="fas fa-trash"></i> Удалить</button>' : ''}</div></div></div>
     <div class="panel"><div class="panel-head"><h3>Рамки</h3><span class="aside">${CFG.framePrice} ₽ за рамку</span></div>
       <div class="frames">${FRAMES.map(f => {
@@ -1033,31 +1059,36 @@ function renderShop() {
       }).join('')}</div></div>`;
 }
 
+function resizeToDataUrl(file, size = 128) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const c = document.createElement('canvas'); c.width = c.height = size;
+      const side = Math.min(img.width, img.height);
+      c.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', 0.8));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Не удалось прочитать картинку')); };
+    img.src = url;
+  });
+}
 async function uploadAvatar(file) {
   if (!file) return;
-  const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[file.type];
-  if (!ext) return toast('error', 'Неверный формат', 'Нужен JPG, PNG или WEBP');
-  if (file.size > 2 * 1024 * 1024) return toast('error', 'Файл слишком большой', 'Максимум 2 МБ');
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return toast('error', 'Неверный формат', 'Нужен JPG, PNG или WEBP');
+  if (file.size > 8 * 1024 * 1024) return toast('error', 'Файл слишком большой', 'Максимум 8 МБ');
   toast('info', 'Загружаем…', '');
-  const path = `${S.me.id}/${Date.now()}.${ext}`;
-  const up = await sb.storage.from('avatars').upload(path, file, { cacheControl: '3600', upsert: false });
-  if (up.error) throw up.error;
-  const url = sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
-  const { error } = await sb.from('users').update({ avatar_url: url }).eq('id', S.me.id);
-  if (error) throw error;
-  const old = (S.me.avatar_url || '').split('/avatars/')[1];
-  if (old) sb.storage.from('avatars').remove([old]).catch(() => {});
-  S.me.avatar_url = url;
+  const dataUrl = await resizeToDataUrl(file);
+  await rpc('set_avatar', { p_url: dataUrl });
+  S.me.avatar_url = dataUrl;
   toast('success', 'Аватар обновлён', '');
   renderShop();
 }
 async function removeAvatar() {
   const ok = await dialog({ title: 'Удалить аватар?', ok: 'Удалить', danger: true });
   if (!ok) return;
-  const { error } = await sb.from('users').update({ avatar_url: '' }).eq('id', S.me.id);
-  if (error) throw error;
-  const old = (S.me.avatar_url || '').split('/avatars/')[1];
-  if (old) sb.storage.from('avatars').remove([old]).catch(() => {});
+  await rpc('set_avatar', { p_url: '' });
   S.me.avatar_url = '';
   renderShop();
 }
@@ -1094,15 +1125,17 @@ async function loadAdminTab() {
     const list = await rpc('admin_matches');
     body.innerHTML = `<button class="btn btn-ghost btn-sm" data-act="adm-refresh" style="margin-bottom:10px"><i class="fas fa-rotate"></i> Обновить</button>` +
       (list.length ? list.map(m => {
-        const team = (arr, cls, title) => `<div class="${cls}"><h5>${title}</h5>${arr.map((p, i) => `<div>${i === 0 ? '👑 ' : ''}${esc(p.username)}</div>`).join('')}</div>`;
+        const statRow = p => `<div class="adm-pl" data-pid="${esc(p.id)}"><span>${esc(p.username)}</span>
+          <input class="text-input k" type="number" min="0" inputmode="numeric" aria-label="K ${esc(p.username)}"><input class="text-input d" type="number" min="0" inputmode="numeric" aria-label="D ${esc(p.username)}"><input class="text-input a" type="number" min="0" inputmode="numeric" aria-label="A ${esc(p.username)}"></div>`;
+        const team = (arr, title) => `<h5 style="margin:8px 0 4px">${title}</h5>${arr.map(statRow).join('')}`;
         const rp = m.reports || { blue: 0, orange: 0 };
         return `<div class="adm-card" data-card="${m.id}">
           <div class="hdr"><b>#${m.match_number}</b><span class="badge ${m.status === 'pending' ? 'warn' : 'info'}">${m.status === 'pending' ? 'Ждёт подтверждения' : 'Идёт'}</span></div>
-          <div class="adm-teams">${team(m.blue, 'blue', 'Команда A')}${team(m.orange, 'orange', 'Команда B')}</div>
-          ${m.status === 'active' ? `<div class="row-sub" style="margin-bottom:8px">Ответы игроков: A — <b>${rp.blue}</b>, B — <b>${rp.orange}</b></div>
-          <div class="adm-score"><input class="text-input sa" type="number" min="0" placeholder="0" aria-label="Счёт A"><span class="muted">:</span><input class="text-input sb" type="number" min="0" placeholder="0" aria-label="Счёт B"></div>
-          <div class="adm-btns"><button class="btn btn-sm btn-ghost" data-act="adm-finish" data-id="${m.id}" data-side="blue">🏆 Победа A</button>
-            <button class="btn btn-sm btn-ghost" data-act="adm-finish" data-id="${m.id}" data-side="orange">🏆 Победа B</button></div>` : ''}
+          ${m.status === 'active' ? `<div class="adm-pl head"><span>Игрок</span><span>K</span><span>D</span><span>A</span></div>${team(m.blue, 'Спецназ')}${team(m.orange, 'Террористы')}` : `<div class="row-sub">${m.blue.map(p => esc(p.username)).join(', ')} · ${m.orange.map(p => esc(p.username)).join(', ')}</div>`}
+          ${m.status === 'active' ? `<div class="row-sub" style="margin-bottom:8px">Ответы игроков: спецназ — <b>${rp.blue}</b>, террористы — <b>${rp.orange}</b></div>
+          <div class="adm-score"><input class="text-input sa" type="number" min="0" placeholder="0" aria-label="Счёт спецназа"><span class="muted">:</span><input class="text-input sb" type="number" min="0" placeholder="0" aria-label="Счёт террористов"></div>
+          <div class="adm-btns"><button class="btn btn-sm btn-ghost" data-act="adm-finish" data-id="${m.id}" data-side="blue">🏆 Спецназ</button>
+            <button class="btn btn-sm btn-ghost" data-act="adm-finish" data-id="${m.id}" data-side="orange">🏆 Террористы</button></div>` : ''}
           <button class="btn btn-sm btn-danger btn-block" data-act="adm-cancel" data-id="${m.id}">Отменить матч</button></div>`;
       }).join('') : '<div class="empty">Активных матчей нет</div>');
   } else if (tab === 'players') {
@@ -1147,11 +1180,17 @@ async function fillAdminPlayers() {
 }
 
 async function admFinish(d) {
-  const ok = await dialog({ title: `Засчитать победу команды ${d.side === 'blue' ? 'A' : 'B'}?`, text: 'ELO игроков изменится сразу.', ok: 'Засчитать' });
+  const ok = await dialog({ title: `Засчитать победу: ${d.side === 'blue' ? 'спецназ' : 'террористы'}?`, text: 'ELO игроков изменится сразу.', ok: 'Засчитать' });
   if (!ok) return;
   const card = document.querySelector(`[data-card="${d.id}"]`);
   const num = sel => { const v = card && card.querySelector(sel) ? card.querySelector(sel).value : ''; const n = parseInt(v, 10); return Number.isFinite(n) ? n : null; };
-  await rpc('admin_finish_match', { p_match: d.id, p_winner: d.side, p_score_a: num('.sa'), p_score_b: num('.sb') });
+  const stats = {};
+  if (card) card.querySelectorAll('[data-pid]').forEach(r => {
+    const g = c => { const n = parseInt(r.querySelector(c).value, 10); return Number.isFinite(n) ? n : null; };
+    const k = g('.k'), dd = g('.d'), a = g('.a');
+    if (k !== null || dd !== null || a !== null) stats[r.dataset.pid] = { k: k || 0, d: dd || 0, a: a || 0 };
+  });
+  await rpc('admin_finish_match', { p_match: d.id, p_winner: d.side, p_score_a: num('.sa'), p_score_b: num('.sb'), p_stats: stats });
   toast('success', 'Матч засчитан', '');
   await syncMatch();
   if ($('admBody')) loadAdminTab().catch(() => {});
@@ -1203,6 +1242,7 @@ const ACTIONS = {
   'frame-use': useFrame,
   'adm-tab': d => { S.adminTab = d.tab; renderAdmin(); },
   'adm-refresh': () => loadAdminTab(),
+  'adm-open': () => { S.adminTab = 'matches'; navigate('profile'); setTimeout(() => $('adminPanel') && $('adminPanel').scrollIntoView({ behavior: 'smooth' }), 150); },
   'adm-finish': admFinish,
   'adm-cancel': admCancel,
   'adm-rating': async d => {
@@ -1285,7 +1325,6 @@ function bindEvents() {
   }, 300));
   document.addEventListener('visibilitychange', () => { if (!document.hidden && S.me) pollTick(); });
   window.addEventListener('online', () => { if (S.me) pollTick(); });
-  sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT' && S.me) showAuth('Сессия истекла. Войдите снова.'); });
 }
 
 async function init() {
@@ -1298,8 +1337,7 @@ async function init() {
   } catch (e) { /* ок */ }
   bindEvents();
   try {
-    const { data } = await sb.auth.getSession();
-    if (data && data.session) await enterApp();
+    if (SESSION) await enterApp();
     else showAuth();
   } catch (e) {
     console.error('init', e);

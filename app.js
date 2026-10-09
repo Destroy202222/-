@@ -1,13 +1,11 @@
 'use strict';
 /* =====================================================================
-   Aliance Faceit — app.js
-   Вся игровая логика (подбор, драфт, ELO, права) живёт на сервере в schema.sql.
-   Здесь — интерфейс и вызовы RPC.
+   Aliance Faceit — app.js (исправленная версия)
    ===================================================================== */
 
 /* ───────────── Конфигурация ───────────── */
-const SUPABASE_URL = 'https://ggjkivobmwwqgzkaaihx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdnamtpdm9ibXd3cWd6a2FhaWh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NzQzODcsImV4cCI6MjEwNzE1MDM4N30.flfcDmjp9riwZe9N4xCqX9CzIo6D9x9SeeQB3YU7254';
+const SUPABASE_URL = 'https://tgjltbpmuczfkikvmmde.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnamx0YnBtdWN6Zmtpa3ZtbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzA5ODQsImV4cCI6MjEwNDQ0Njk4NH0.TlCYgYwefoypDdsU-6-0TkSqDM7S8XgB6PBlbeEGm6I';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
@@ -151,13 +149,41 @@ async function run(fn, d, el) {
 }
 
 /* ───────────── Авторизация ───────────── */
+/**
+ * Генерирует email для Supabase Auth на основе ника.
+ * Исправлено: домен alliance (с двумя L), добавлен фолбэк для crypto.subtle.
+ */
 async function nickEmail(nick) {
-  if (!(window.crypto && crypto.subtle)) throw new Error('Откройте сайт по https');
-  const bytes = new TextEncoder().encode(nick.trim().toLowerCase());
-  const hash = await crypto.subtle.digest('SHA-256', bytes);
-  const hex = [...new Uint8Array(hash)].map(b => pad(b.toString(16))).join('');
-  return 'u' + hex.slice(0, 32) + '@aliance-faceit.app';
+  const clean = nick.trim().toLowerCase();
+  
+  // Фолбэк: если crypto.subtle недоступен (например, старый WebView), используем простой хеш
+  if (!(window.crypto && crypto.subtle)) {
+    let hash = 0;
+    for (let i = 0; i < clean.length; i++) {
+      hash = (hash << 5) - hash + clean.charCodeAt(i);
+      hash |= 0;
+    }
+    const hex = Math.abs(hash).toString(16).padStart(8, '0').repeat(4).slice(0, 32);
+    return 'u' + hex + '@alliance-faceit.app';
+  }
+  
+  try {
+    const bytes = new TextEncoder().encode(clean);
+    const hash = await crypto.subtle.digest('SHA-256', bytes);
+    const hex = [...new Uint8Array(hash)].map(b => pad(b.toString(16))).join('');
+    return 'u' + hex.slice(0, 32) + '@alliance-faceit.app';
+  } catch (e) {
+    // Если crypto.subtle упал — используем простой хеш
+    let hash = 0;
+    for (let i = 0; i < clean.length; i++) {
+      hash = (hash << 5) - hash + clean.charCodeAt(i);
+      hash |= 0;
+    }
+    const hex = Math.abs(hash).toString(16).padStart(8, '0').repeat(4).slice(0, 32);
+    return 'u' + hex + '@alliance-faceit.app';
+  }
 }
+
 function authMsg(id, type, text) { const el = $(id); el.className = 'auth-msg ' + type; el.textContent = text; }
 function switchAuthTab(tab) {
   const login = tab === 'login';
@@ -174,7 +200,8 @@ async function doLogin(e) {
   const btn = $('loginBtn'); btn.disabled = true;
   authMsg('loginMsg', 'info', 'Входим…');
   try {
-    const { error } = await sb.auth.signInWithPassword({ email: await nickEmail(nick), password: pass });
+    const email = await nickEmail(nick);
+    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
     if (error) return authMsg('loginMsg', 'error', 'Неверный ник или пароль');
     authMsg('loginMsg', 'success', 'Готово');
     await enterApp();
@@ -196,12 +223,33 @@ async function doRegister(e) {
   try {
     const free = await rpc('username_available', { p_nick: nick });
     if (!free) return bad('Этот ник уже занят');
+    
+    const email = await nickEmail(nick);
     const { data, error } = await sb.auth.signUp({
-      email: await nickEmail(nick), password: p1,
+      email,
+      password: p1,
       options: { data: { username: nick, game_id: gid } }
     });
-    if (error) return bad(/registered|already/i.test(error.message) ? 'Этот ник уже занят' : 'Не удалось создать аккаунт: ' + error.message);
-    if (!data.session) return authMsg('registerMsg', 'info', 'Аккаунт создан, но вход не выполнен. Выключите «Confirm email» в Supabase (Authentication → Providers → Email).');
+    
+    if (error) {
+      // Разбираем типичные ошибки Supabase
+      const msg = error.message || '';
+      if (/already registered|already exists/i.test(msg)) return bad('Этот ник уже занят');
+      if (/email signups are disabled/i.test(msg)) {
+        return bad('Регистрация через email отключена. Включите Email provider в Supabase.');
+      }
+      if (/signups not allowed/i.test(msg)) {
+        return bad('Регистрация в проекте запрещена. Включите "Allow new users to sign up".');
+      }
+      if (/password/i.test(msg)) return bad('Пароль слишком простой или короткий');
+      return bad('Не удалось создать аккаунт: ' + msg);
+    }
+    
+    if (!data.session) {
+      return authMsg('registerMsg', 'info',
+        'Аккаунт создан, но вход не выполнен. Выключите «Confirm email» в Supabase (Authentication → Sign In / Providers → Email).');
+    }
+    
     authMsg('registerMsg', 'success', 'Добро пожаловать, ' + nick + '!');
     await enterApp();
   } catch (err) { bad(errText(err)); }

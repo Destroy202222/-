@@ -43,7 +43,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 const CFG = { confirmSec: 30, draftSec: 30, lobbySec: 300, pollMs: 2500, framePrice: 25 };
 const NICK_RE = /^[A-Za-z0-9А-Яа-яЁё_-]{3,20}$/;
 const PUBLIC_COLS = 'id,username,elo,matches,wins,losses,win_streak,best_streak,kills,deaths,assists,rounds,stat_matches,likes,popularity,isadmin,avatar_url,avatar_frame,registered';
-const PAGES = ['home', 'matches', 'match', 'profile', 'friends', 'top', 'wallet', 'shop'];
+const PAGES = ['home', 'matches', 'match', 'matchview', 'profile', 'friends', 'top', 'wallet', 'shop'];
 const SIDE_NAME = { blue: 'Спецназ', orange: 'Террористы' };
 const PARTY_COLORS = ['#f5c451', '#3ddc97', '#38bdf8', '#fb923c'];
 const FRAMES = [
@@ -350,7 +350,7 @@ function navigate(page) {
   PAGES.forEach(p => $('page-' + p).classList.toggle('active', p === page));
   document.querySelectorAll('#nav button').forEach(b => {
     const bp = b.dataset.page;
-    b.classList.toggle('active', bp === page || (bp === 'matches' && page === 'match'));
+    b.classList.toggle('active', bp === page || (bp === 'matches' && page === 'match') || (bp === 'profile' && page === 'matchview'));
   });
   window.scrollTo({ top: 0 });
   if (page === 'home') loadStats();
@@ -911,20 +911,56 @@ function renderEloChart() {
 }
 
 async function openMatchDetails(d) {
-  openModal('matchModal');
-  const body = $('matchModalBody');
+  navigate('matchview');
+  const body = $('matchViewBody');
   body.innerHTML = '<div class="empty">Загрузка…</div>';
   const { data: h } = await sb.from('match_history').select('*').eq('id', d.id).maybeSingle();
   if (!h) { body.innerHTML = '<div class="empty">Матч не найден</div>'; return; }
   const win = h.result === 'win', delta = h.elo_change || 0, mp = mapById(h.map);
-  const team = (list, cls, label, isWin) => `<div class="md-team ${cls} ${isWin ? 'win' : ''}"><h4>${label}</h4>
-    ${(list || []).map(p => { const c = p.elo_change; return `<div class="md-pl" data-act="player" data-id="${esc(p.id)}">${avatarHtml(p, 30)}<div class="nm">${esc(p.username)}</div>
-      <div class="e">${p.kills != null ? `<b style="color:var(--text)">${p.kills}/${p.deaths}/${p.assists}</b> · ` : ''}ELO ${p.elo ?? 300} ${c != null ? `<b class="${c >= 0 ? 'p' : 'n'}">${c >= 0 ? '+' : ''}${c}</b>` : ''}</div></div>`; }).join('') || '<div class="empty" style="padding:8px">Пусто</div>'}</div>`;
-  body.innerHTML = `<div class="md-head"><h3>${win ? '🏆 Победа' : 'Поражение'}</h3>
-    <p>${fmtDay(h.match_date)}, ${fmtTime(h.match_date)} · ${esc(mp.name)}${h.match_number ? ' · матч #' + h.match_number : ''}</p></div>
-    ${h.score_a != null ? `<div class="md-score"><span class="${h.winner === 'blue' ? 'w' : ''}">${h.score_a}</span><span class="sep">:</span><span class="${h.winner === 'orange' ? 'w' : ''}">${h.score_b}</span></div>`
-      : `<div class="md-score" style="font-size:18px">Ваше ELO&nbsp;<span class="${delta >= 0 ? 'w' : ''}" style="${delta < 0 ? 'color:#ff8fa3' : ''}">${delta >= 0 ? '+' : ''}${delta}</span></div>`}
-    ${team(h.team_blue, 'blue', 'Спецназ', h.winner === 'blue')}${team(h.team_orange, 'orange', 'Террористы', h.winner === 'orange')}`;
+  const blue = h.team_blue || [], orange = h.team_orange || [];
+  const all = [...blue, ...orange];
+  const hasStats = all.some(p => p.kills != null);
+  const best = hasStats ? all.reduce((a, b) => ((b.kills || 0) > ((a && a.kills) || 0) ? b : a), null) : null;
+  const kdOf = p => (p.kills == null ? '—' : ((p.deaths > 0 ? p.kills / p.deaths : p.kills)).toFixed(2));
+  const team = (list, cls, label, icon, isWin) => {
+    const sorted = hasStats ? list.slice().sort((a, b) => (b.kills || 0) - (a.kills || 0)) : list;
+    const tk = list.reduce((n, p) => n + (p.kills || 0), 0);
+    const td = list.reduce((n, p) => n + (p.deaths || 0), 0);
+    const ta = list.reduce((n, p) => n + (p.assists || 0), 0);
+    const rows = sorted.map(p => {
+      const c = p.elo_change, me = p.id === S.me.id, mvp = best && best.id === p.id && (p.kills || 0) > 0;
+      return `<div class="mv-pl ${me ? 'me' : ''}" data-act="player" data-id="${esc(p.id)}">
+        <div class="mv-top">${avatarHtml(p, 36)}
+          <div class="mv-nm"><div class="n">${esc(p.username)}${mvp ? ' <i class="fas fa-star mv-star" title="Лучший по киллам"></i>' : ''}${me ? ' <span class="mv-you">вы</span>' : ''}</div>
+            <div class="s">ELO ${p.elo ?? 300}</div></div>
+          ${c != null ? `<div class="mv-elo ${c >= 0 ? 'p' : 'n'}">${c >= 0 ? '+' : ''}${c}</div>` : ''}${lvlChip(p.elo)}</div>
+        ${hasStats ? `<div class="mv-stats">
+          <div><b>${p.kills ?? 0}</b><span>Убийств</span></div>
+          <div><b>${p.deaths ?? 0}</b><span>Смертей</span></div>
+          <div><b>${p.assists ?? 0}</b><span>Ассистов</span></div>
+          <div><b>${kdOf(p)}</b><span>K/D</span></div></div>` : ''}</div>`;
+    }).join('') || '<div class="empty" style="padding:12px">Пусто</div>';
+    return `<div class="team ${cls} mv-team ${isWin ? 'win' : ''}">
+      <div class="team-head"><i class="fas ${icon}"></i>${label}${isWin ? ' <span class="mv-trophy">🏆 победа</span>' : ''}
+        ${hasStats ? `<span class="mv-sum">${tk} / ${td} / ${ta}</span>` : ''}</div>${rows}</div>`;
+  };
+  const mine = blue.some(p => p.id === S.me.id) ? 'blue' : (orange.some(p => p.id === S.me.id) ? 'orange' : null);
+  $('matchViewBody').innerHTML = `
+    <div class="match-top">
+      <button class="icon-btn" data-act="nav" data-page="profile" aria-label="Назад"><i class="fas fa-chevron-left"></i></button>
+      <div class="ttl"><b>Матч${h.match_number ? ' #' + h.match_number : ''}</b><span>${fmtDay(h.match_date)}, ${fmtTime(h.match_date)} · рейтинг</span></div>
+      <span class="pill ${win ? '' : 'live'}">${win ? 'Победа' : 'Поражение'}</span>
+    </div>
+    <div class="lobby-hero"><div class="bg" style="${mapBg(mp)}"></div><div class="in">
+      <div class="cap">Сыгранная карта</div><div class="map">${esc(mp.name)}</div>
+      <div class="host mv-host">
+        ${h.score_a != null ? `<div class="mv-score"><span class="${h.winner === 'blue' ? 'w' : ''}">${h.score_a}</span><i>:</i><span class="${h.winner === 'orange' ? 'w' : ''}">${h.score_b}</span></div>` : '<div class="meta"><div class="lbl">Счёт</div><div class="val">не указан</div></div>'}
+        <div class="gid"><div class="lbl">Ваше ELO</div><div class="val" style="color:${delta >= 0 ? 'var(--win)' : '#ff8fa3'}">${delta >= 0 ? '+' : ''}${delta}</div></div>
+      </div></div></div>
+    ${team(blue, 'blue', 'Спецназ', 'fa-shield-halved', h.winner === 'blue')}
+    ${team(orange, 'orange', 'Террористы', 'fa-fire', h.winner === 'orange')}
+    ${hasStats ? '' : '<div class="panel"><div class="empty" style="padding:6px">Подробная статистика по этому матчу не вводилась админом</div></div>'}`;
+  window.scrollTo({ top: 0 });
 }
 
 async function openPlayer(d) {

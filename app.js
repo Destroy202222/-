@@ -298,7 +298,7 @@ async function pollTick() {
 /* ───────────── Данные ───────────── */
 async function loadMaps() {
   const { data } = await sb.from('maps').select('*').eq('active', true).order('sort_order');
-  S.maps = data || [];
+  S.maps = (data || []).filter(m => String(m.id).toLowerCase() !== 'zone' && String(m.name).toLowerCase() !== 'zone');
 }
 async function loadSettings() {
   const { data } = await sb.from('settings').select('*');
@@ -413,7 +413,7 @@ function updateSearchUI() {
   start.innerHTML = wait ? 'Поиск запускает лидер пати' : '<i class="fas fa-search"></i> Найти матч';
   setText('searchHint', q.searching
     ? `Ищем ${S.teamSize * 2} игроков. Не закрывайте приложение — подтверждение придёт сюда.`
-    : 'Пати попадает в одну команду. Подтверждение придёт сюда.');
+    : '');
   if (!S.match) setNavMatch(q.searching ? 'searching' : 'idle');
 }
 

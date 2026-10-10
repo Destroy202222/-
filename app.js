@@ -764,19 +764,22 @@ function achievements(u) {
 function mapStatsHtml() {
   const by = {};
   S.history.forEach(h => {
-    const k = h.map || '—';
+    const mp = mapById(h.map), k = mp.id.toLowerCase();
     const o = by[k] || (by[k] = { w: 0, l: 0, k: 0, d: 0 });
     if (h.result === 'win') o.w++; else o.l++;
     o.k += h.kills || 0; o.d += h.deaths || 0;
   });
-  const list = Object.entries(by).sort((a, b) => (b[1].w + b[1].l) - (a[1].w + a[1].l));
-  if (!list.length) return '<div class="empty"><i class="fas fa-map"></i>Статистика по картам появится после матчей</div>';
-  return '<div class="mapstat">' + list.map(([name, o]) => {
-    const mp = mapById(name), tot = o.w + o.l;
-    return `<div class="ms"><div class="in"><div class="nm">${esc(name)}</div>
-      <div class="wl2">W ${o.w} · <b class="r">L ${o.l}</b></div>
-      <div class="row2"><span>K/D ${o.d ? (o.k / o.d).toFixed(2) : (o.k || '0')}</span><span>${Math.round(o.w / tot * 100)}%</span></div></div>
-      <div class="pic" style="${mapBg(mp)}"></div></div>`;
+  const pool = S.maps.slice();
+  Object.keys(by).forEach(k => { if (!pool.some(m => m.id.toLowerCase() === k)) pool.push(mapById(k)); });
+  if (!pool.length) return '';
+  return '<div class="mm-title">По картам</div><div class="mm-list">' + pool.map(mp => {
+    const o = by[mp.id.toLowerCase()] || { w: 0, l: 0, k: 0, d: 0 }, tot = o.w + o.l;
+    const kd = tot && (o.d ? (o.k / o.d).toFixed(2) : (o.k ? String(o.k) : '0'));
+    return `<div class="mm ${tot ? '' : 'none'}"><div class="mm-pic" style="${mapBg(mp)}"></div>
+      <div class="mm-nm">${esc(mp.name)}</div>
+      <div class="mm-wl">${tot ? `<b class="g">${o.w}</b>/<b class="r">${o.l}</b>` : '—'}</div>
+      <div class="mm-kd">${tot ? kd : '—'}</div>
+      <div class="mm-pc">${tot ? Math.round(o.w / tot * 100) + '%' : '—'}</div></div>`;
   }).join('') + '</div>';
 }
 
@@ -799,7 +802,6 @@ function renderProfile() {
         <div class="s">${fmtDay(h.match_date)} · ${fmtTime(h.match_date)}${h.score_a != null ? ` · ${h.score_a}:${h.score_b}` : ''}</div></div>
       <div class="right">${kda ? `<div class="kda">${kda}</div>` : ''}<div class="elo ${d >= 0 ? 'p' : 'n'}">${d >= 0 ? '+' : ''}${d} ELO</div></div></div>`;
   }).join('') || '<div class="empty"><i class="fas fa-gamepad"></i>Матчей пока нет</div>';
-  const ach = achievements(u), achOn = ach.filter(a => a[2]).length;
   const today = new Date();
 
   body.innerHTML = `
@@ -844,20 +846,14 @@ function renderProfile() {
         <div class="stat"><div class="k">Оценок</div><div class="v">${u.likes}</div></div>
         <div class="stat"><div class="k">Популярность</div><div class="v">${u.popularity}</div></div></div>
     </div>
-    <div class="place"><span>Твоё место в рейтинге —</span><span class="num">#${S.rank || '—'}</span></div>
-
-    <div class="panel"><div class="panel-head"><h3>Достижения</h3><span class="aside">${achOn}/${ach.length}</span></div>
-      <div class="ach">${ach.map(a => `<div class="${a[2] ? '' : 'off'}" title="${esc(a[1])}"><i class="fas ${a[0]}"></i></div>`).join('')}</div></div>
-
     <div class="panel">
       <div class="panel-head"><h3><i class="fas fa-chart-line"></i> Динамика ELO</h3><span class="pill-soft" id="chartDelta">—</span></div>
       <div class="chart-top"><div><span class="big num" id="chartElo">${u.elo}</span></div><div class="date" id="chartDate"></div></div>
       <div class="chart" id="eloChart"></div>
       <div class="chart-mm"><span>мин <b id="chartMin">—</b></span><span>макс <b id="chartMax">—</b></span></div>
       <div class="dots" id="chartDots"></div>
+      ${mapStatsHtml()}
     </div>
-
-    <div class="panel"><div class="panel-head"><h3>Статистика по картам</h3><span class="aside">последние ${S.history.length}</span></div>${mapStatsHtml()}</div>
 
     <div class="panel"><div class="panel-head"><h3>Последние матчи</h3><span class="pill-soft">${recent.length ? Math.round(wlWins / recent.length * 100) + '% W' : '—'}</span></div>
       <div class="wl">${recent.map(h => `<i class="${h.result === 'win' ? 'w' : 'l'}">${h.result === 'win' ? 'W' : 'L'}</i>`).join('')}</div>

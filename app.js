@@ -68,7 +68,7 @@ const S = {
   match: null, offset: 0, sig: '', polling: false, entering: false,
   chat: [], tick: 0, rank: null, stats: { searching: 0, in_match: 0, matches: 0 },
   history: [], adminTab: 'matches',
-  channels: [], timers: {}, sup: newSup()
+  channels: [], timers: {}, sup: newSup(), news: [], newsLoaded: false, seenAt: 0, newSince: 0
 };
 
 /* ───────────── Утилиты ───────────── */
@@ -234,7 +234,7 @@ async function doRegister(e) {
 
 function showAuth(message) {
   stopLoops(); stopChat();
-  S.me = null; S.match = null; S.party = null; S.invites = []; S.sup = newSup();
+  S.me = null; S.match = null; S.party = null; S.invites = []; S.sup = newSup(); S.news = []; S.newsLoaded = false;
   S.queue = { searching: false, since: null, count: 0, need: S.teamSize * 2 };
   $('app').hidden = true;
   $('auth').hidden = false;
@@ -260,11 +260,12 @@ async function enterApp() {
     const me = await rpc('get_me');
     if (!me) { saveSession(''); return showAuth('Сессия истекла. Войдите снова.'); }
     S.me = me;
+    initSeen();
     $('auth').hidden = true;
     $('app').hidden = false;
     await Promise.all([loadMaps(), loadSettings()]);
     renderBalance();
-    await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory(), refreshMe()]);
+    await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory(), refreshMe(), loadNews()]);
     if (!(S.match && S.match.status === 'active')) await syncQueue().catch(() => {});
     navigate(S.match && S.match.status === 'active' ? 'match' : 'home');
     startLoops();
@@ -290,6 +291,7 @@ async function pollTick() {
     if (S.tick % 2 === 0) await loadParty().catch(() => {});
     if (S.tick % 4 === 0) await loadFriends().catch(() => {});
     if (S.tick % 8 === 0) await loadSettings().catch(() => {});
+    if (S.tick % 4 === 2) await loadNews().catch(() => {});
   } catch (e) { /* сеть моргнула — повторим */ }
   finally { S.polling = false; }
 }
@@ -333,6 +335,7 @@ async function loadHistory() {
     .select('id,map,result,elo_change,match_date,winner,score_a,score_b,kills,deaths,assists,match_number')
     .eq('user_id', S.me.id).order('match_date', { ascending: false }).limit(30);
   S.history = data || [];
+  updateFriendBadges();
   if (S.page === 'profile') renderProfile();
 }
 function renderBalance() {
@@ -370,20 +373,72 @@ function setNavMatch(mode) { // 'idle' | 'searching' | 'match'
 }
 
 /* Уведомления */
+function initSeen() {
+  let v = 0;
+  try { v = parseInt(localStorage.getItem('bnk_seen_' + S.me.id)) || 0; } catch (e) { /* ок */ }
+  if (!v) { v = Date.now(); saveSeen(v); }
+  S.seenAt = v; S.newSince = v;
+}
+function saveSeen(v) { try { localStorage.setItem('bnk_seen_' + S.me.id, String(v)); } catch (e) { /* ок */ } }
+function feedItems() {
+  const news = S.news.map(n => ({ kind: 'news', ts: toMs(n.created_at), n }));
+  const res = S.history.slice(0, 15).map(h => ({ kind: 'result', ts: toMs(h.match_date), h }));
+  return [...news, ...res].sort((a, b) => b.ts - a.ts).slice(0, 25);
+}
+const unreadFeed = () => feedItems().filter(i => i.ts > S.seenAt).length;
+
+async function loadNews() {
+  try {
+    const list = (await rpc('get_news')) || [];
+    const known = new Set(S.news.map(n => n.id));
+    const first = !S.newsLoaded;
+    S.news = list; S.newsLoaded = true;
+    if (!first) {
+      const fresh = list.find(n => !known.has(n.id) && toMs(n.created_at) > S.seenAt);
+      if (fresh) toast('info', 'Новости проекта', fresh.title);
+    }
+    updateFriendBadges();
+  } catch (e) { /* таблица новостей ещё не создана */ }
+}
+function openNotifs() {
+  S.newSince = S.seenAt;
+  S.seenAt = Date.now() + S.offset; saveSeen(S.seenAt);
+  renderNotifs(); openModal('notifModal'); updateFriendBadges();
+}
+
 function renderNotifs() {
   const box = $('notifBody'); if (!box) return;
-  const row = (icon, name, text, yes, no) => `<div class="nt"><div class="nt-ico"><i class="fas ${icon}"></i></div>
+  const act = (icon, name, text, yes, no) => `<div class="nt"><div class="nt-ico"><i class="fas ${icon}"></i></div>
     <div class="nt-main"><b>${esc(name)}</b><span>${text}</span></div>${yes}${no}</div>`;
-  const inv = S.invites.map(i => {
-    const f = S.users[i.from_id];
-    return row('fa-user-group', f ? f.username : 'Игрок', 'зовёт вас в пати',
-      `<button class="btn btn-ok btn-sm" data-act="party-accept" data-id="${i.id}">Принять</button>`,
-      `<button class="btn btn-ghost btn-sm" data-act="party-decline" data-id="${i.id}" aria-label="Отклонить"><i class="fas fa-times"></i></button>`);
+  const todo = [
+    ...S.invites.map(i => {
+      const f = S.users[i.from_id];
+      return act('fa-user-group', f ? f.username : 'Игрок', 'зовёт вас в пати',
+        `<button class="btn btn-ok btn-sm" data-act="party-accept" data-id="${i.id}">Принять</button>`,
+        `<button class="btn btn-ghost btn-sm" data-act="party-decline" data-id="${i.id}" aria-label="Отклонить"><i class="fas fa-times"></i></button>`);
+    }),
+    ...S.requests.map(u => act('fa-user-plus', u.username, 'хочет дружить',
+      `<button class="btn btn-ok btn-sm" data-act="friend-accept" data-id="${u.id}">Принять</button>`,
+      `<button class="btn btn-ghost btn-sm" data-act="friend-decline" data-id="${u.id}" aria-label="Отклонить"><i class="fas fa-times"></i></button>`))
+  ];
+  const feed = feedItems().map(it => {
+    const isNew = it.ts > S.newSince ? ' new' : '';
+    const when = `${fmtDay(new Date(it.ts).toISOString())}, ${fmtTime(new Date(it.ts).toISOString())}`;
+    if (it.kind === 'news') {
+      return `<div class="nt${isNew}"><div class="nt-ico gold"><i class="fas fa-bullhorn"></i></div>
+        <div class="nt-main"><b>${esc(it.n.title)}</b><span class="nt-body">${esc(it.n.text)}</span><em>Новости проекта · ${when}</em></div></div>`;
+    }
+    const h = it.h, win = h.result === 'win', d = h.elo_change || 0;
+    const kda = h.kills != null ? `${h.kills}/${h.deaths}/${h.assists} · ` : '';
+    return `<div class="nt link${isNew}" data-act="match-details" data-id="${h.id}"><div class="nt-ico ${win ? 'win' : 'lose'}"><i class="fas ${win ? 'fa-trophy' : 'fa-xmark'}"></i></div>
+      <div class="nt-main"><b>${win ? 'Победа' : 'Поражение'} · ${esc(h.map || '—')}</b>
+        <span>${h.score_a != null ? h.score_a + ':' + h.score_b + ' · ' : ''}${kda}<strong class="${d >= 0 ? 'p' : 'n'}">${d >= 0 ? '+' : ''}${d} ELO</strong></span><em>Результат матча · ${when}</em></div>
+      <i class="fas fa-chevron-right nt-go"></i></div>`;
   });
-  const req = S.requests.map(u => row('fa-user-plus', u.username, 'хочет дружить',
-    `<button class="btn btn-ok btn-sm" data-act="friend-accept" data-id="${u.id}">Принять</button>`,
-    `<button class="btn btn-ghost btn-sm" data-act="friend-decline" data-id="${u.id}" aria-label="Отклонить"><i class="fas fa-times"></i></button>`));
-  box.innerHTML = [...inv, ...req].join('') || '<div class="empty"><i class="fas fa-bell-slash"></i>Уведомлений нет</div>';
+  let html = '';
+  if (todo.length) html += `<div class="nt-sec">Требуют ответа</div>${todo.join('')}`;
+  if (feed.length) html += `${todo.length ? '<div class="nt-sec">Лента</div>' : ''}${feed.join('')}`;
+  box.innerHTML = html || '<div class="empty"><i class="fas fa-bell-slash"></i>Уведомлений нет</div>';
 }
 
 /* ───────────── Очередь и поиск ───────────── */
@@ -900,6 +955,7 @@ function renderEloChart() {
 }
 
 async function openMatchDetails(d) {
+  closeModal('notifModal');
   navigate('matchview');
   const body = $('matchViewBody');
   body.innerHTML = '<div class="empty">Загрузка…</div>';
@@ -1001,7 +1057,8 @@ function updateFriendBadges() {
   const n = S.requests.length + S.invites.length;
   const dot = $('navFriendDot'); dot.hidden = n === 0; dot.textContent = n;
   const rb = $('reqBadge'); rb.hidden = S.requests.length === 0; rb.textContent = S.requests.length;
-  const hb = $('hdBadge'); hb.hidden = n === 0; hb.textContent = n;
+  const total = n + unreadFeed();
+  const hb = $('hdBadge'); hb.hidden = total === 0; hb.textContent = total > 9 ? '9+' : total;
   if ($('notifModal').classList.contains('active')) renderNotifs();
 }
 function friendRowHtml(u) {
@@ -1326,7 +1383,7 @@ async function submitTicket() {
 function renderAdmin() {
   const box = $('adminPanel'); if (!box) return;
   if (!S.me || !S.me.isadmin) { box.innerHTML = ''; return; }
-  const tabs = [['matches', 'Матчи'], ['players', 'Игроки'], ['queue', 'Очередь'], ['promos', 'Промокоды'], ['admins', 'Админы'], ['tickets', 'Обращения'], ['settings', 'Формат']];
+  const tabs = [['matches', 'Матчи'], ['players', 'Игроки'], ['queue', 'Очередь'], ['promos', 'Промокоды'], ['admins', 'Админы'], ['news', 'Новости'], ['tickets', 'Обращения'], ['settings', 'Формат']];
   box.innerHTML = `<div class="panel" style="margin-top:14px"><div class="panel-head"><h3><i class="fas fa-user-shield"></i> Админ-панель</h3></div>
     <div class="adm-tabs">${tabs.map(([k, v]) => `<button class="${S.adminTab === k ? 'on' : ''}" data-act="adm-tab" data-tab="${k}">${v}</button>`).join('')}</div>
     <div id="admBody"><div class="empty">Загрузка…</div></div></div>`;
@@ -1375,6 +1432,16 @@ async function loadAdminTab() {
     body.innerHTML = `<div class="adm-row" style="margin:0 0 12px"><input class="text-input" id="admNewAdmin" placeholder="Ник игрока"><button class="btn btn-primary" data-act="adm-add-admin">Добавить</button></div>` +
       '<div class="rows">' + (data || []).map(a => `<div class="row"><div class="row-main"><div class="row-title">${esc(a.username)} 👑</div></div>
         <button class="btn btn-ghost btn-sm" data-act="adm-set-admin" data-id="${a.id}" data-value="0">Снять</button></div>`).join('') + '</div>';
+  } else if (tab === 'news') {
+    const list = (await rpc('get_news')) || [];
+    body.innerHTML = `<div class="stack" style="margin-bottom:14px">
+      <input class="text-input" id="admNewsTitle" maxlength="60" placeholder="Заголовок">
+      <textarea class="text-input sp-ta" id="admNewsText" maxlength="500" placeholder="Текст новости. Придёт всем игрокам в уведомления"></textarea>
+      <button class="btn btn-primary" data-act="adm-news-post"><i class="fas fa-bullhorn"></i> Опубликовать всем</button></div>` +
+      (list.length ? '<div class="rows">' + list.map(n => `<div class="row"><div class="row-main"><div class="row-title">${esc(n.title)}</div>
+        <div class="row-sub">${fmtDay(n.created_at)}, ${fmtTime(n.created_at)}</div></div>
+        <button class="icon-btn" data-act="adm-news-del" data-id="${n.id}" aria-label="Удалить"><i class="fas fa-trash"></i></button></div>`).join('') + '</div>'
+        : '<div class="empty">Новостей пока нет</div>');
   } else if (tab === 'tickets') {
     const all = !!S.admTkAll;
     const list = await rpc('admin_tickets', { p_status: all ? 'all' : 'active' });
@@ -1438,7 +1505,7 @@ async function admCancel(d) {
 const ACTIONS = {
   nav: d => { closeModal('settingsModal'); closeModal('notifModal'); navigate(d.page); },
   settings: () => openModal('settingsModal'),
-  notifs: () => { renderNotifs(); openModal('notifModal'); },
+  notifs: openNotifs,
   support: () => { closeModal('settingsModal'); closeModal('notifModal'); navigate('support'); },
   close: d => closeModal(d.target),
   'auth-tab': d => switchAuthTab(d.tab),
@@ -1503,6 +1570,19 @@ const ACTIONS = {
     await rpc('admin_update_ticket', { p_id: Number(d.id), p_status: d.st, p_reply: (reply || '').trim() || null });
     toast('success', 'Обновлено', '');
     await loadAdminTab();
+  },
+  'adm-news-post': async () => {
+    const t = $('admNewsTitle').value.trim(), x = $('admNewsText').value.trim();
+    if (!t || !x) return toast('error', 'Заполните заголовок и текст', '');
+    await rpc('admin_post_news', { p_title: t, p_text: x });
+    toast('success', 'Новость опубликована', 'Придёт всем игрокам');
+    await loadNews(); await loadAdminTab();
+  },
+  'adm-news-del': async d => {
+    const ok = await dialog({ title: 'Удалить новость?', ok: 'Удалить', danger: true });
+    if (!ok) return;
+    await rpc('admin_delete_news', { p_id: Number(d.id) });
+    await loadNews(); await loadAdminTab();
   },
   'adm-tab': d => { S.adminTab = d.tab; renderAdmin(); },
   'adm-refresh': () => loadAdminTab(),

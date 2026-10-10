@@ -45,6 +45,17 @@
 </div>
 
 <!-- Профиль игрока / детали матча -->
+<!-- Просмотр скриншота (админ) -->
+<div class="overlay center" id="shotModal" aria-hidden="true" style="z-index:9400">
+  <div class="shot-view">
+    <button class="sheet-close" data-act="close" data-target="shotModal" aria-label="Закрыть">×</button>
+    <img id="shotImg" alt="Скриншот результата">
+  </div>
+</div>
+
+<!-- Выбор скриншота результата (игрок) -->
+<input type="file" id="shotFile" accept="image/*" hidden>
+
 <div class="overlay" id="profileModal">
   <div class="sheet">
     <button class="sheet-close" data-act="close" data-target="profileModal" aria-label="Закрыть">×</button>
@@ -238,6 +249,10 @@
   <!-- Профиль -->
   <section class="page" id="page-profile">
     <div id="profileBody"></div>
+  </section>
+
+  <!-- Админ-панель -->
+  <section class="page" id="page-admin">
     <div id="adminPanel"></div>
   </section>
 

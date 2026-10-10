@@ -1081,3 +1081,5 @@ select.text-input{appearance:auto}
 .tk-reply i{color:var(--accent-hi);margin-right:4px}
 .pl-card .am-top{margin-bottom:0}
 .pl-elo{font-size:18px;color:var(--accent-hi)}
+
+.am-left{margin-left:auto;font-style:normal;font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;background:var(--surface-3);color:var(--muted)}

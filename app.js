@@ -1150,6 +1150,8 @@ async function renderTop() {
 }
 
 /* ───────────── Баннеры профиля (оригинальные аниме-арты, нарисованы кодом) ───────────── */
+/* Свои баннеры: положите картинки banners/bn_sakura.jpg, bn_neon.jpg, bn_stars.jpg, bn_sunset.jpg, bn_magic.jpg, bn_sky.jpg
+   рядом с index.html. Если файла нет, показывается нарисованный кодом баннер. */
 const BANNER_IDS = ['bn_sakura', 'bn_neon', 'bn_stars', 'bn_sunset', 'bn_magic', 'bn_sky'];
 function rng(seed) { let s = seed; return () => (s = (s * 9301 + 49297) % 233280) / 233280; }
 const svgWrap = (defs, body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid slice"><defs>${defs}</defs>${body}</svg>`;
@@ -1244,7 +1246,7 @@ const bnCls = id => (id && BANNER_ART[id] ? ' bn bn-' + id : '');
 function injectBannerStyles() {
   const css = BANNER_IDS.map(id => {
     const uri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(BANNER_ART[id]());
-    return `.bn-${id}{background-image:linear-gradient(90deg,rgba(7,11,28,.76),rgba(7,11,28,.2)),url("${uri}")!important;background-size:cover!important;background-position:center!important}`;
+    return `.bn-${id}{background-image:linear-gradient(90deg,rgba(7,11,28,.76),rgba(7,11,28,.2)),url("banners/${id}.jpg"),url("${uri}")!important;background-size:cover!important;background-position:center!important}`;
   }).join('\n');
   const el = document.createElement('style');
   el.textContent = css;

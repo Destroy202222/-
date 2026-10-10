@@ -40,10 +40,10 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   }
 });
 
-const CFG = { confirmSec: 30, draftSec: 30, lobbySec: 300, pollMs: 2500, framePrice: 25, bannerPrice: 50 };
+const CFG = { confirmSec: 30, draftSec: 30, lobbySec: 300, pollMs: 2500, framePrice: 25, bannerPrice: 50, cancelVotes: 6 };
 const NICK_RE = /^[A-Za-z0-9А-Яа-яЁё_-]{3,20}$/;
 const PUBLIC_COLS = 'id,username,elo,matches,wins,losses,win_streak,best_streak,kills,deaths,assists,rounds,stat_matches,likes,popularity,isadmin,avatar_url,avatar_frame,registered';
-const PAGES = ['home', 'matches', 'match', 'matchview', 'support', 'profile', 'friends', 'top', 'wallet', 'shop'];
+const PAGES = ['home', 'matches', 'match', 'matchview', 'support', 'profile', 'friends', 'top', 'wallet', 'shop', 'admin'];
 const SIDE_NAME = { blue: 'Спецназ', orange: 'Террористы' };
 const PARTY_COLORS = ['#f5c451', '#3ddc97', '#38bdf8', '#fb923c'];
 const FRAMES = [
@@ -69,7 +69,8 @@ const S = {
   chat: [], tick: 0, rank: null, stats: { searching: 0, in_match: 0, matches: 0 },
   history: [], adminTab: 'matches',
   channels: [], timers: {}, sup: newSup(), news: [], newsLoaded: false, seenAt: 0, newSince: 0,
-  banners: {}, myBanners: { owned: [], active: '' }, bnMatch: null
+  banners: {}, myBanners: { owned: [], active: '' }, bnMatch: null,
+  extra: null, shot: {}, admSel: {}, admShots: {}, admBadge: { matches: 0, tickets: 0 }
 };
 
 /* ───────────── Утилиты ───────────── */
@@ -301,7 +302,7 @@ async function pollTick() {
 /* ───────────── Данные ───────────── */
 async function loadMaps() {
   const { data } = await sb.from('maps').select('*').eq('active', true).order('sort_order');
-  S.maps = (data || []).filter(m => String(m.id).toLowerCase() !== 'zone' && String(m.name).toLowerCase() !== 'zone');
+  S.maps = (data || []).filter(m => !/^zone/i.test(String(m.id)) && !/^zone/i.test(String(m.name)));
 }
 async function loadSettings() {
   const { data } = await sb.from('settings').select('*');
@@ -354,13 +355,14 @@ function navigate(page) {
   PAGES.forEach(p => $('page-' + p).classList.toggle('active', p === page));
   document.querySelectorAll('#nav button').forEach(b => {
     const bp = b.dataset.page;
-    b.classList.toggle('active', bp === page || (bp === 'matches' && page === 'match') || (bp === 'profile' && page === 'matchview'));
+    b.classList.toggle('active', bp === page || (bp === 'matches' && page === 'match') || (bp === 'profile' && (page === 'matchview' || page === 'admin')));
   });
   window.scrollTo({ top: 0 });
   if (page === 'home') loadStats();
   if (page === 'matches') { loadParty().catch(() => {}); loadStats(); refreshMe().then(updateSearchUI).catch(() => {}); updateSearchUI(); }
   if (page === 'match') renderMatch(true);
   if (page === 'profile') { renderProfile(); refreshMe().then(() => S.page === 'profile' && renderProfile()).catch(() => {}); loadHistory().catch(() => {}); }
+  if (page === 'admin') { if (!S.me || !S.me.isadmin) return navigate('profile'); renderAdmin(); }
   if (page === 'friends') loadFriends().catch(() => {});
   if (page === 'top') renderTop();
   if (page === 'wallet') renderBalance();
@@ -564,6 +566,7 @@ async function syncMatch() {
     await loadBanners(ids, fresh);
   }
   applyMatch(m);
+  if (m && m.status === 'active') await fetchExtra();
 }
 
 function applyMatch(m) {
@@ -600,8 +603,11 @@ function matchEnded(prev) {
   $('chatPanel').hidden = true;
   $('matchTop').hidden = false;
   setNavMatch('idle');
+  const ex = S.extra; S.extra = null;
   if (prev.status === 'pending') {
     toast('info', 'Матч отменён', 'Не все игроки подтвердили участие');
+  } else if (ex && ex.match === String(prev.id) && ex.votes >= ex.needed - 1 && ex.votes > 0) {
+    toast('info', 'Матч отменён', 'Игроки проголосовали за отмену');
   } else {
     toast('success', 'Матч завершён', 'Рейтинг обновлён');
     refreshMe().catch(() => {});
@@ -645,7 +651,7 @@ function renderMatch(force) {
   const m = S.match;
   if (!m || m.status !== 'active') return;
   const ds = m.draft_state || {};
-  const sig = JSON.stringify([m.id, ds, m.my_report, m.draft_finished_at, S.me.isadmin, [...m.blue, ...m.orange].map(p => S.banners[p.id] || '')]);
+  const sig = JSON.stringify([m.id, ds, m.my_report, m.draft_finished_at, S.me.isadmin, S.extra, shotState(m), lobbyOver(m), [...m.blue, ...m.orange].map(p => S.banners[p.id] || '')]);
   if (!force && sig === S.sig) return;
   S.sig = sig;
   setText('mNum', 'Матч #' + (m.match_number || '—'));
@@ -705,13 +711,46 @@ function draftHtml(m, ds) {
     <div class="maps">${list}</div>`;
 }
 
+/* Результат матча: скриншот + отмена голосованием */
+const lobbyLeft = m => (m && m.draft_finished_at ? Math.max(0, Math.ceil((toMs(m.draft_finished_at) + CFG.lobbySec * 1000 - nowMs()) / 1000)) : CFG.lobbySec);
+const lobbyOver = m => !!(m && m.draft_finished_at) && lobbyLeft(m) <= 0;
+const shotKey = m => 'bnk_shot_' + m.id;
+function shotState(m) { // '' | 'sent' | 'skipped'
+  if (!m) return '';
+  if (S.extra && S.extra.match === String(m.id) && S.extra.has_shot) return 'sent';
+  if (S.shot[m.id]) return S.shot[m.id];
+  try { return localStorage.getItem(shotKey(m)) || ''; } catch (e) { return ''; }
+}
+function setShotState(m, v) { S.shot[m.id] = v; try { localStorage.setItem(shotKey(m), v); } catch (e) { /* ок */ } }
+
+function resultBoxHtml(m) {
+  const st = shotState(m);
+  const players = m.blue.length + m.orange.length;
+  const needed = (S.extra && S.extra.needed) || Math.min(CFG.cancelVotes, players);
+  const votes = (S.extra && S.extra.match === String(m.id)) ? (S.extra.votes || 0) : 0;
+  const voted = !!(S.extra && S.extra.match === String(m.id) && S.extra.voted);
+  const segs = Array.from({ length: needed }, (_, i) => `<i class="${i < votes ? 'on' : ''}"></i>`).join('');
+  const shotPart = st === 'sent'
+    ? `<div class="rb-done ok"><i class="fas fa-circle-check"></i><div><b>Скриншот отправлен</b><span>Админ проверит его и засчитает матч.</span></div></div>`
+    : st === 'skipped'
+      ? `<div class="rb-done"><i class="fas fa-circle-info"></i><div><b>Скриншот не отправлен</b><span>Вы отметили, что скриншота нет. Результат решит админ.</span></div></div>`
+      : `<div class="rb-head"><div class="ico"><i class="fas fa-camera"></i></div>
+          <div class="txt"><b>Результат матча</b><span>Прикрепите скриншот итогов — админ увидит его и засчитает победителя.</span></div></div>
+        <button class="btn btn-primary btn-xl" data-act="shot-pick"><i class="fas fa-image"></i> Прикрепить скриншот</button>
+        <button class="btn btn-ghost btn-block rb-skip" data-act="shot-skip">Я не сделал скриншот</button>`;
+  return `<div class="panel result-box">${shotPart}</div>
+    <div class="panel cancel-box">
+      <div class="cb-head"><div class="txt"><b>Отмена матча</b><span>Нужно ${needed} голосов игроков</span></div><div class="cb-count"><b>${votes}</b>/${needed}</div></div>
+      <div class="cb-bar">${segs}</div>
+      <button class="btn ${voted ? 'btn-ghost' : 'btn-danger'} btn-block" data-act="cancel-vote"><i class="fas ${voted ? 'fa-rotate-left' : 'fa-ban'}"></i> ${voted ? 'Отозвать голос' : 'Проголосовать за отмену'}</button>
+    </div>`;
+}
+
 function lobbyHtml(m, ds) {
   const mp = mapById(ds.final);
   const host = m.blue[0] || {};
   const bg = `style="${mapBg(mp)}"`;
-  const side = mySide(m);
-  const other = side === 'blue' ? 'orange' : 'blue';
-  const rep = m.my_report ? `<p>Ваш ответ: победил ${m.my_report === 'blue' ? 'спецназ' : 'террористы'}</p>` : '<p>Матч сыгран? Отметьте, кто победил — это поможет админу.</p>';
+  const over = lobbyOver(m);
   return `<div class="lobby-hero"><div class="bg" ${bg}></div><div class="in">
       <div class="cap">Карта выбрана</div><div class="map">${esc(mp.name)}</div>
       <div class="host">${avatarHtml(host, 40)}
@@ -720,13 +759,10 @@ function lobbyHtml(m, ds) {
         <button class="icon-btn" data-act="copy-host" aria-label="Скопировать ID хоста"><i class="fas fa-copy"></i></button>
       </div></div></div>
     <div class="timer-box"><div class="ico"><i class="fas fa-hourglass-half"></i></div>
-      <div class="txt"><b id="lobbyLabel">Заход в лобби</b>Хост собирает игру. Результат можно отправить после таймера.</div>
-      <div class="t" id="lobbyTime">5:00</div></div>
+      <div class="txt"><b id="lobbyLabel">${over ? 'Время на заход вышло' : 'Заход в лобби'}</b>Хост собирает игру. Результат можно отправить после таймера.</div>
+      <div class="t" id="lobbyTime">${mmss(lobbyLeft(m))}</div></div>
     ${teamsHtml(m)}
-    <div class="panel report" id="reportBox" hidden>${rep}
-      <div class="btns">
-        <button class="btn btn-ok" data-act="report" data-side="${side}">Победила моя сторона</button>
-        <button class="btn btn-danger" data-act="report" data-side="${other}">Победил соперник</button></div></div>`;
+    <div id="reportBox" ${over ? '' : 'hidden'}>${over ? resultBoxHtml(m) : ''}</div>`;
 }
 
 async function banMap(d) {
@@ -734,11 +770,67 @@ async function banMap(d) {
   await rpc('ban_map', { p_match: S.match.id, p_map: d.map });
   await syncMatch();
 }
-async function reportResult(d) {
-  if (!S.match) return;
-  await rpc('report_result', { p_match: S.match.id, p_winner: d.side });
-  toast('success', 'Ответ отправлен', '');
-  await syncMatch();
+
+/* Закрываем вкладку матча (матч остаётся активным, вернуться можно через «Матч») */
+function closeMatchTab() { navigate('home'); }
+
+async function fetchExtra() {
+  const m = S.match;
+  if (!m || m.status !== 'active' || !lobbyOver(m)) return;
+  try {
+    const r = await rpc('match_extra', { p_match: String(m.id) });
+    if (r) {
+      const next = { match: String(m.id), votes: r.votes || 0, needed: r.needed || Math.min(CFG.cancelVotes, m.blue.length + m.orange.length), voted: !!r.voted, has_shot: !!r.has_shot };
+      if (JSON.stringify(next) !== JSON.stringify(S.extra)) { S.extra = next; renderMatch(true); }
+    }
+  } catch (e) { /* функция ещё не добавлена в БД — молча */ }
+}
+
+function resizeShot(file, max = 1280, q = 0.72) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', q));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Не удалось прочитать картинку')); };
+    img.src = url;
+  });
+}
+async function uploadShot(file) {
+  const m = S.match;
+  if (!file || !m) return;
+  if (!/^image\//.test(file.type)) return toast('error', 'Нужна картинка', 'Выберите скриншот в формате JPG, PNG или WEBP');
+  if (file.size > 20 * 1024 * 1024) return toast('error', 'Файл слишком большой', 'Максимум 20 МБ');
+  toast('info', 'Отправляем скриншот…', '');
+  let data = await resizeShot(file);
+  if (data.length > 650000) data = await resizeShot(file, 1000, 0.6);
+  await rpc('submit_screenshot', { p_match: String(m.id), p_image: data });
+  setShotState(m, 'sent');
+  toast('success', 'Скриншот отправлен', 'Админ проверит результат');
+  closeMatchTab();
+}
+function skipShot() {
+  const m = S.match; if (!m) return;
+  setShotState(m, 'skipped');
+  closeMatchTab();
+}
+async function voteCancel() {
+  const m = S.match; if (!m) return;
+  const voted = !!(S.extra && S.extra.voted);
+  if (!voted) {
+    const ok = await dialog({ title: 'Голосовать за отмену матча?', text: `Матч отменится, когда за это проголосуют ${(S.extra && S.extra.needed) || CFG.cancelVotes} игроков. Рейтинг не изменится.`, ok: 'Проголосовать', danger: true });
+    if (!ok) return;
+  }
+  const r = await rpc('vote_cancel_match', { p_match: String(m.id), p_vote: !voted });
+  if (r && r.cancelled) { toast('info', 'Матч отменён', 'Набрано нужное число голосов'); S.extra = null; await syncMatch(); return; }
+  await fetchExtra();
+  toast('success', voted ? 'Голос отозван' : 'Голос принят', '');
 }
 
 /* Таймеры интерфейса */
@@ -765,7 +857,8 @@ function uiTick() {
     const left = Math.max(0, Math.ceil((toMs(m.draft_finished_at) + CFG.lobbySec * 1000 - now) / 1000));
     setText('lobbyTime', mmss(left));
     setText('lobbyLabel', left > 0 ? 'Заход в лобби' : 'Время на заход вышло');
-    const rb = $('reportBox'); if (rb) rb.hidden = left > 0;
+    const rb = $('reportBox');
+    if (rb && rb.hidden && left <= 0) { renderMatch(true); fetchExtra(); }
   }
 }
 
@@ -914,9 +1007,9 @@ function renderProfile() {
       <div class="wl">${recent.map(h => `<i class="${h.result === 'win' ? 'w' : 'l'}">${h.result === 'win' ? 'W' : 'L'}</i>`).join('')}</div>
       ${u.win_streak > 0 ? `<div class="series">Серия: <b>${u.win_streak} ${u.win_streak === 1 ? 'победа' : 'побед'} подряд</b></div>` : ''}
       ${rows}</div>
+    ${u.isadmin ? '<button class="btn btn-primary btn-block" data-act="nav" data-page="admin" style="margin-bottom:10px"><i class="fas fa-user-shield"></i> Админ-панель</button>' : ''}
     <button class="btn btn-ghost btn-block" data-act="logout"><i class="fas fa-sign-out-alt"></i> Выйти</button>`;
   renderEloChart();
-  renderAdmin();
 }
 
 function renderEloChart() {
@@ -1549,104 +1642,170 @@ async function submitTicket() {
 }
 
 /* ───────────── Админка ───────────── */
+const ADM_TABS = [
+  ['matches', 'fa-gamepad', 'Матчи'], ['tickets', 'fa-headset', 'Обращения'], ['players', 'fa-users', 'Игроки'],
+  ['news', 'fa-bullhorn', 'Новости'], ['promos', 'fa-ticket', 'Промо'], ['queue', 'fa-hourglass-half', 'Очередь'],
+  ['admins', 'fa-crown', 'Админы'], ['settings', 'fa-sliders', 'Формат']
+];
+const admSideOf = (m, uid) => m.blue.some(p => String(p.id) === String(uid)) ? 'blue' : (m.orange.some(p => String(p.id) === String(uid)) ? 'orange' : '');
+
+function setAdmBadge(key, n) {
+  S.admBadge[key] = n;
+  const el = $('admBadge-' + key);
+  if (el) { el.textContent = n; el.hidden = !n; }
+}
+async function refreshAdmBadges() {
+  const [ms, ts] = await Promise.all([
+    rpc('admin_matches').catch(() => null),
+    rpc('admin_tickets', { p_status: 'active' }).catch(() => null)
+  ]);
+  if (ms) setAdmBadge('matches', ms.length);
+  if (ts) setAdmBadge('tickets', ts.length);
+}
+
 function renderAdmin() {
   const box = $('adminPanel'); if (!box) return;
   if (!S.me || !S.me.isadmin) { box.innerHTML = ''; return; }
-  const tabs = [['matches', 'Матчи'], ['players', 'Игроки'], ['queue', 'Очередь'], ['promos', 'Промокоды'], ['admins', 'Админы'], ['news', 'Новости'], ['tickets', 'Обращения'], ['settings', 'Формат']];
-  box.innerHTML = `<div class="panel" style="margin-top:14px"><div class="panel-head"><h3><i class="fas fa-user-shield"></i> Админ-панель</h3></div>
-    <div class="adm-tabs">${tabs.map(([k, v]) => `<button class="${S.adminTab === k ? 'on' : ''}" data-act="adm-tab" data-tab="${k}">${v}</button>`).join('')}</div>
-    <div id="admBody"><div class="empty">Загрузка…</div></div></div>`;
+  box.innerHTML = `<div class="adm-head">
+      <div class="adm-title"><div class="ico"><i class="fas fa-user-shield"></i></div><div><b>Админ-панель</b><span>Матчи, игроки и обращения</span></div></div>
+      <button class="icon-btn" data-act="adm-refresh" aria-label="Обновить"><i class="fas fa-rotate"></i></button></div>
+    <div class="adm-tabs">${ADM_TABS.map(([k, ic, v]) => `<button class="${S.adminTab === k ? 'on' : ''}" data-act="adm-tab" data-tab="${k}"><i class="fas ${ic}"></i><span>${v}</span>${(k === 'matches' || k === 'tickets') ? `<em class="adm-badge" id="admBadge-${k}" ${S.admBadge[k] ? '' : 'hidden'}>${S.admBadge[k]}</em>` : ''}</button>`).join('')}</div>
+    <div id="admBody"><div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Загрузка…</div></div>`;
   loadAdminTab().catch(e => { const b = $('admBody'); if (b) b.innerHTML = `<div class="empty">${esc(errText(e))}</div>`; });
+  refreshAdmBadges();
+}
+
+function admMatchCard(m) {
+  const active = m.status === 'active';
+  const sel = S.admSel[m.id] || '';
+  const team = (arr, cls, title, icon) => `<div class="am-team ${cls}"><h5><i class="fas ${icon}"></i> ${title}</h5>
+    ${arr.map(p => `<div class="am-p">${avatarHtml(p, 24)}<span>${esc(p.username)}</span></div>`).join('')}</div>`;
+  const statRow = p => `<div class="adm-pl" data-pid="${esc(p.id)}"><span>${esc(p.username)}</span>
+    <input class="text-input k" type="number" min="0" inputmode="numeric" aria-label="K ${esc(p.username)}"><input class="text-input d" type="number" min="0" inputmode="numeric" aria-label="D ${esc(p.username)}"><input class="text-input a" type="number" min="0" inputmode="numeric" aria-label="A ${esc(p.username)}"></div>`;
+  const statTeam = (arr, title) => `<div class="am-kt">${title}</div>${arr.map(statRow).join('')}`;
+  return `<div class="am-card ${active ? 'live' : ''}" data-card="${m.id}">
+    <div class="am-top"><div class="am-num">#${m.match_number}</div>
+      <span class="badge ${active ? 'ok' : 'warn'}">${active ? 'Идёт игра' : 'Ждёт подтверждения'}</span></div>
+    <div class="am-teams">${team(m.blue, 'blue', 'Спецназ', 'fa-shield-halved')}${team(m.orange, 'orange', 'Террористы', 'fa-fire')}</div>
+    ${active ? `
+      <div class="am-sec" id="shots-${m.id}"><div class="am-sec-h"><i class="fas fa-images"></i> Скриншоты</div><div class="am-none">Загрузка…</div></div>
+      <div class="am-sec">
+        <div class="am-sec-h"><i class="fas fa-trophy"></i> Результат</div>
+        <div class="am-win">
+          <button class="seg blue ${sel === 'blue' ? 'on' : ''}" data-act="adm-pick" data-id="${m.id}" data-side="blue"><i class="fas fa-shield-halved"></i> Спецназ</button>
+          <button class="seg orange ${sel === 'orange' ? 'on' : ''}" data-act="adm-pick" data-id="${m.id}" data-side="orange"><i class="fas fa-fire"></i> Террористы</button>
+        </div>
+        <div class="adm-score"><input class="text-input sa" type="number" min="0" inputmode="numeric" placeholder="0" aria-label="Счёт спецназа"><span class="muted">:</span><input class="text-input sb" type="number" min="0" inputmode="numeric" placeholder="0" aria-label="Счёт террористов"></div>
+        <details class="am-kda"><summary><i class="fas fa-chart-simple"></i> K/D/A игроков <small>необязательно</small></summary>
+          <div class="adm-pl head"><span>Игрок</span><span>K</span><span>D</span><span>A</span></div>${statTeam(m.blue, 'Спецназ')}${statTeam(m.orange, 'Террористы')}</details>
+        <button class="btn btn-primary btn-block" data-act="adm-finish" data-id="${m.id}" ${sel ? '' : 'disabled'}><i class="fas fa-check"></i> Засчитать матч</button>
+      </div>` : ''}
+    <button class="btn btn-sm btn-danger btn-block am-cancel" data-act="adm-cancel" data-id="${m.id}"><i class="fas fa-ban"></i> Отменить матч</button></div>`;
+}
+
+async function loadMatchShots(m) {
+  const box = $('shots-' + m.id); if (!box) return;
+  try {
+    const r = await rpc('admin_match_shots', { p_match: String(m.id) });
+    const shots = (r && r.shots) || [];
+    shots.forEach(sh => { S.admShots[String(sh.id)] = sh.image; });
+    const votes = (r && r.votes) || 0, needed = (r && r.needed) || CFG.cancelVotes;
+    box.innerHTML = `<div class="am-sec-h"><i class="fas fa-images"></i> Скриншоты <span class="am-cnt">${shots.length}</span>
+        <span class="am-votes ${votes ? 'hot' : ''}"><i class="fas fa-ban"></i> отмена ${votes}/${needed}</span></div>` +
+      (shots.length
+        ? `<div class="am-shots">${shots.map(sh => `<button class="shot ${admSideOf(m, sh.user_id)}" data-act="shot-view" data-sid="${esc(sh.id)}"><img src="${esc(sh.image)}" alt="Скриншот ${esc(sh.username)}"><span class="who">${esc(sh.username)}</span></button>`).join('')}</div>`
+        : '<div class="am-none">Игроки ещё не прислали скриншоты</div>');
+  } catch (e) {
+    box.innerHTML = `<div class="am-sec-h"><i class="fas fa-images"></i> Скриншоты</div><div class="am-none">Не загрузились: ${esc(errText(e))}</div>`;
+  }
 }
 
 async function loadAdminTab() {
   const body = $('admBody'); if (!body) return;
   const tab = S.adminTab;
   if (tab === 'matches') {
-    const list = await rpc('admin_matches');
-    body.innerHTML = `<button class="btn btn-ghost btn-sm" data-act="adm-refresh" style="margin-bottom:10px"><i class="fas fa-rotate"></i> Обновить</button>` +
-      (list.length ? list.map(m => {
-        const statRow = p => `<div class="adm-pl" data-pid="${esc(p.id)}"><span>${esc(p.username)}</span>
-          <input class="text-input k" type="number" min="0" inputmode="numeric" aria-label="K ${esc(p.username)}"><input class="text-input d" type="number" min="0" inputmode="numeric" aria-label="D ${esc(p.username)}"><input class="text-input a" type="number" min="0" inputmode="numeric" aria-label="A ${esc(p.username)}"></div>`;
-        const team = (arr, title) => `<h5 style="margin:8px 0 4px">${title}</h5>${arr.map(statRow).join('')}`;
-        const rp = m.reports || { blue: 0, orange: 0 };
-        return `<div class="adm-card" data-card="${m.id}">
-          <div class="hdr"><b>#${m.match_number}</b><span class="badge ${m.status === 'pending' ? 'warn' : 'info'}">${m.status === 'pending' ? 'Ждёт подтверждения' : 'Идёт'}</span></div>
-          ${m.status === 'active' ? `<div class="adm-pl head"><span>Игрок</span><span>K</span><span>D</span><span>A</span></div>${team(m.blue, 'Спецназ')}${team(m.orange, 'Террористы')}` : `<div class="row-sub">${m.blue.map(p => esc(p.username)).join(', ')} · ${m.orange.map(p => esc(p.username)).join(', ')}</div>`}
-          ${m.status === 'active' ? `<div class="row-sub" style="margin-bottom:8px">Ответы игроков: спецназ — <b>${rp.blue}</b>, террористы — <b>${rp.orange}</b></div>
-          <div class="adm-score"><input class="text-input sa" type="number" min="0" placeholder="0" aria-label="Счёт спецназа"><span class="muted">:</span><input class="text-input sb" type="number" min="0" placeholder="0" aria-label="Счёт террористов"></div>
-          <div class="adm-btns"><button class="btn btn-sm btn-ghost" data-act="adm-finish" data-id="${m.id}" data-side="blue">🏆 Спецназ</button>
-            <button class="btn btn-sm btn-ghost" data-act="adm-finish" data-id="${m.id}" data-side="orange">🏆 Террористы</button></div>` : ''}
-          <button class="btn btn-sm btn-danger btn-block" data-act="adm-cancel" data-id="${m.id}">Отменить матч</button></div>`;
-      }).join('') : '<div class="empty">Активных матчей нет</div>');
+    const list = (await rpc('admin_matches')) || [];
+    setAdmBadge('matches', list.length);
+    body.innerHTML = list.length ? list.map(admMatchCard).join('') : '<div class="empty"><i class="fas fa-gamepad"></i>Активных матчей нет</div>';
+    list.filter(m => m.status === 'active').forEach(m => loadMatchShots(m));
   } else if (tab === 'players') {
-    body.innerHTML = `<input class="text-input" id="admSearch" placeholder="Поиск по нику" style="margin-bottom:10px"><div id="admPlayers"></div>`;
+    body.innerHTML = `<div class="adm-search"><i class="fas fa-magnifying-glass"></i><input class="text-input" id="admSearch" placeholder="Поиск по нику" autocomplete="off"></div><div id="admPlayers"></div>`;
     $('admSearch').addEventListener('input', debounce(() => fillAdminPlayers(), 350));
     await fillAdminPlayers();
   } else if (tab === 'queue') {
     const { data } = await sb.from('queue').select('*').order('created_at');
-    body.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>В очереди: ${(data || []).length}</b>
-      <button class="btn btn-sm btn-danger" data-act="adm-clear-queue">Очистить</button></div>` +
-      ((data || []).length ? '<div class="rows">' + data.map(p => `<div class="row"><div class="row-main"><div class="row-title">${esc(p.username)}</div></div><b>${p.elo}</b></div>`).join('') + '</div>' : '<div class="empty">Очередь пуста</div>');
+    const q = data || [];
+    body.innerHTML = `<div class="adm-bar"><div><b>В очереди: ${q.length}</b><span>Игроки, которые ищут матч</span></div>
+      <button class="btn btn-sm btn-danger" data-act="adm-clear-queue"><i class="fas fa-broom"></i> Очистить</button></div>` +
+      (q.length ? '<div class="rows">' + q.map(p => `<div class="row"><div class="row-main"><div class="row-title">${esc(p.username)}</div></div><b class="num">${p.elo}</b></div>`).join('') + '</div>' : '<div class="empty"><i class="fas fa-hourglass-half"></i>Очередь пуста</div>');
   } else if (tab === 'promos') {
-    const list = await rpc('admin_promos');
-    body.innerHTML = `<div class="stack" style="margin-bottom:12px">
+    const list = (await rpc('admin_promos')) || [];
+    body.innerHTML = `<div class="adm-form"><div class="adm-form-h"><i class="fas fa-ticket"></i> Новый промокод</div>
       <input class="text-input" id="admPromoCode" placeholder="КОД" maxlength="20" style="text-transform:uppercase">
       <div class="adm-row" style="margin:0"><input class="text-input" id="admPromoAmount" type="number" min="1" placeholder="Сумма ₽"><input class="text-input" id="admPromoUses" type="number" min="1" value="1" placeholder="Активаций"></div>
-      <button class="btn btn-primary" data-act="adm-promo-create">Создать</button></div>` +
+      <button class="btn btn-primary btn-block" data-act="adm-promo-create">Создать</button></div>` +
       (list.length ? '<div class="rows">' + list.map(p => `<div class="row"><div class="row-main"><div class="row-title">${esc(p.code)} — ${p.amount} ₽</div><div class="row-sub">${p.used_count}/${p.max_uses} активаций</div></div>
-        <button class="icon-btn" data-act="adm-promo-del" data-id="${p.id}" aria-label="Удалить"><i class="fas fa-trash"></i></button></div>`).join('') + '</div>' : '<div class="empty">Промокодов нет</div>');
+        <button class="icon-btn" data-act="adm-promo-del" data-id="${p.id}" aria-label="Удалить"><i class="fas fa-trash"></i></button></div>`).join('') + '</div>' : '<div class="empty"><i class="fas fa-ticket"></i>Промокодов нет</div>');
   } else if (tab === 'admins') {
     const { data } = await sb.from('users').select('id,username').eq('isadmin', true);
-    body.innerHTML = `<div class="adm-row" style="margin:0 0 12px"><input class="text-input" id="admNewAdmin" placeholder="Ник игрока"><button class="btn btn-primary" data-act="adm-add-admin">Добавить</button></div>` +
-      '<div class="rows">' + (data || []).map(a => `<div class="row"><div class="row-main"><div class="row-title">${esc(a.username)} 👑</div></div>
+    body.innerHTML = `<div class="adm-form"><div class="adm-form-h"><i class="fas fa-crown"></i> Добавить админа</div>
+      <div class="adm-row" style="margin:0"><input class="text-input" id="admNewAdmin" placeholder="Ник игрока"><button class="btn btn-primary" data-act="adm-add-admin">Добавить</button></div></div>` +
+      '<div class="rows">' + (data || []).map(a => `<div class="row"><div class="row-main" style="display:flex;align-items:center;gap:10px">${avatarHtml(a, 34)}<div class="row-title">${esc(a.username)} 👑</div></div>
         <button class="btn btn-ghost btn-sm" data-act="adm-set-admin" data-id="${a.id}" data-value="0">Снять</button></div>`).join('') + '</div>';
   } else if (tab === 'news') {
     const list = (await rpc('get_news')) || [];
-    body.innerHTML = `<div class="stack" style="margin-bottom:14px">
+    body.innerHTML = `<div class="adm-form"><div class="adm-form-h"><i class="fas fa-bullhorn"></i> Новость для всех игроков</div>
       <input class="text-input" id="admNewsTitle" maxlength="60" placeholder="Заголовок">
       <textarea class="text-input sp-ta" id="admNewsText" maxlength="500" placeholder="Текст новости. Придёт всем игрокам в уведомления"></textarea>
-      <button class="btn btn-primary" data-act="adm-news-post"><i class="fas fa-bullhorn"></i> Опубликовать всем</button></div>` +
+      <button class="btn btn-primary btn-block" data-act="adm-news-post"><i class="fas fa-paper-plane"></i> Опубликовать</button></div>` +
       (list.length ? '<div class="rows">' + list.map(n => `<div class="row"><div class="row-main"><div class="row-title">${esc(n.title)}</div>
         <div class="row-sub">${fmtDay(n.created_at)}, ${fmtTime(n.created_at)}</div></div>
         <button class="icon-btn" data-act="adm-news-del" data-id="${n.id}" aria-label="Удалить"><i class="fas fa-trash"></i></button></div>`).join('') + '</div>'
-        : '<div class="empty">Новостей пока нет</div>');
+        : '<div class="empty"><i class="fas fa-bullhorn"></i>Новостей пока нет</div>');
   } else if (tab === 'tickets') {
     const all = !!S.admTkAll;
-    const list = await rpc('admin_tickets', { p_status: all ? 'all' : 'active' });
-    body.innerHTML = `<button class="btn btn-ghost btn-sm" data-act="adm-tk-filter" style="margin-bottom:10px">${all ? 'Только активные' : 'Показать все'}</button>` +
+    const list = (await rpc('admin_tickets', { p_status: all ? 'all' : 'active' })) || [];
+    if (!all) setAdmBadge('tickets', list.length);
+    body.innerHTML = `<div class="adm-seg"><button class="${all ? '' : 'on'}" data-act="adm-tk-filter" data-all="0">Активные</button><button class="${all ? 'on' : ''}" data-act="adm-tk-filter" data-all="1">Все</button></div>` +
       (list.length ? list.map(t => {
         const c = catOf(t.category), st = TICKET_ST[t.status] || TICKET_ST.open;
-        return `<div class="adm-card"><div class="hdr"><b>#${t.id} · ${c.title}</b><span class="badge ${st[1]}">${st[0]}</span></div>
-          <div class="row-sub">${esc(t.username || '—')}${t.target_name ? ' → ' + esc(t.target_name) : ''}${t.match_number ? ' · матч #' + t.match_number : ''} · ${fmtDay(t.created_at)} ${fmtTime(t.created_at)}</div>
-          <div style="margin:8px 0;font-size:13px;word-break:break-word">${esc(t.text)}</div>
-          ${t.admin_reply ? `<div class="row-sub" style="margin-bottom:8px">Ответ: ${esc(t.admin_reply)}</div>` : ''}
-          <div class="adm-btns" style="grid-template-columns:repeat(3,1fr)">
+        return `<div class="am-card tk"><div class="am-top"><div class="tk-cat" style="--c:${c.color}"><i class="fas ${c.icon}"></i></div>
+            <div class="tk-ttl"><b>#${t.id} · ${esc(c.title)}</b><span>${esc(t.username || '—')}${t.target_name ? ' → ' + esc(t.target_name) : ''}${t.match_number ? ' · матч #' + t.match_number : ''} · ${fmtDay(t.created_at)} ${fmtTime(t.created_at)}</span></div>
+            <span class="badge ${st[1]}">${st[0]}</span></div>
+          <div class="tk-text">${esc(t.text)}</div>
+          ${t.admin_reply ? `<div class="tk-reply"><i class="fas fa-reply"></i> ${esc(t.admin_reply)}</div>` : ''}
+          <div class="adm-btns" style="grid-template-columns:repeat(3,1fr);margin:10px 0 0">
             <button class="btn btn-sm btn-ghost" data-act="adm-tk" data-id="${t.id}" data-st="progress">В работу</button>
             <button class="btn btn-sm btn-ok" data-act="adm-tk" data-id="${t.id}" data-st="resolved">Решено</button>
             <button class="btn btn-sm btn-danger" data-act="adm-tk" data-id="${t.id}" data-st="rejected">Отклонить</button></div></div>`;
-      }).join('') : '<div class="empty">Обращений нет</div>');
+      }).join('') : '<div class="empty"><i class="fas fa-headset"></i>Обращений нет</div>');
   } else if (tab === 'settings') {
-    body.innerHTML = `<div class="stack"><label class="row-sub" for="admSize">Формат матча (очередь сбросится)</label>
+    body.innerHTML = `<div class="adm-form"><div class="adm-form-h"><i class="fas fa-sliders"></i> Формат матча</div>
+      <label class="row-sub" for="admSize">При смене формата очередь сбросится</label>
       <select class="text-input" id="admSize">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${S.teamSize === n ? 'selected' : ''}>${n} на ${n}</option>`).join('')}</select>
-      <button class="btn btn-primary" data-act="adm-save-size">Сохранить</button></div>`;
+      <button class="btn btn-primary btn-block" data-act="adm-save-size">Сохранить</button></div>`;
   }
 }
 
 async function fillAdminPlayers() {
   const box = $('admPlayers'); if (!box) return;
   const q = ($('admSearch') || { value: '' }).value.trim();
-  const list = await rpc('admin_players', { p_q: q });
-  box.innerHTML = list.length ? list.map(p => `<div class="adm-card"><div class="hdr"><b>${esc(p.username)} ${p.isadmin ? '👑' : ''} ${p.banned ? '🚫' : ''}</b><span class="num">${p.elo}</span></div>
-    <div class="row-sub">Игровой ID: ${esc(p.game_id)} · баланс ${p.balance} ₽</div>
-    <div class="adm-row"><button class="btn btn-sm btn-ghost" data-act="adm-rating" data-id="${p.id}" data-nick="${esc(p.username)}" data-elo="${p.elo}">ELO</button>
+  const list = (await rpc('admin_players', { p_q: q })) || [];
+  box.innerHTML = list.length ? list.map(p => `<div class="am-card pl-card ${p.banned ? 'banned' : ''}">
+    <div class="am-top">${avatarHtml(p, 38)}
+      <div class="tk-ttl"><b>${esc(p.username)} ${p.isadmin ? '👑' : ''} ${p.banned ? '🚫' : ''}</b><span>ID: ${esc(p.game_id)} · ${p.balance} ₽</span></div>
+      <span class="num pl-elo">${p.elo}</span></div>
+    <div class="adm-btns" style="grid-template-columns:repeat(3,1fr);margin:10px 0 0">
+      <button class="btn btn-sm btn-ghost" data-act="adm-rating" data-id="${p.id}" data-nick="${esc(p.username)}" data-elo="${p.elo}"><i class="fas fa-pen"></i> ELO</button>
       <button class="btn btn-sm ${p.banned ? 'btn-ok' : 'btn-danger'}" data-act="adm-ban" data-id="${p.id}" data-value="${p.banned ? 0 : 1}">${p.banned ? 'Разбанить' : 'Бан'}</button>
-      <button class="btn btn-sm btn-ghost" data-act="adm-set-admin" data-id="${p.id}" data-value="${p.isadmin ? 0 : 1}">${p.isadmin ? 'Снять админа' : 'Сделать админом'}</button></div></div>`).join('')
-    : '<div class="empty">Никого не нашли</div>';
+      <button class="btn btn-sm btn-ghost" data-act="adm-set-admin" data-id="${p.id}" data-value="${p.isadmin ? 0 : 1}">${p.isadmin ? 'Снять' : 'Админ'}</button></div></div>`).join('')
+    : '<div class="empty"><i class="fas fa-users"></i>Никого не нашли</div>';
 }
 
 async function admFinish(d) {
-  const ok = await dialog({ title: `Засчитать победу: ${d.side === 'blue' ? 'спецназ' : 'террористы'}?`, text: 'ELO игроков изменится сразу.', ok: 'Засчитать' });
+  const side = S.admSel[d.id];
+  if (!side) return toast('error', 'Выберите победителя', 'Нажмите «Спецназ» или «Террористы»');
+  const ok = await dialog({ title: `Засчитать победу: ${side === 'blue' ? 'спецназ' : 'террористы'}?`, text: 'ELO игроков изменится сразу.', ok: 'Засчитать' });
   if (!ok) return;
   const card = document.querySelector(`[data-card="${d.id}"]`);
   const num = sel => { const v = card && card.querySelector(sel) ? card.querySelector(sel).value : ''; const n = parseInt(v, 10); return Number.isFinite(n) ? n : null; };
@@ -1656,7 +1815,8 @@ async function admFinish(d) {
     const k = g('.k'), dd = g('.d'), a = g('.a');
     if (k !== null || dd !== null || a !== null) stats[r.dataset.pid] = { k: k || 0, d: dd || 0, a: a || 0 };
   });
-  await rpc('admin_finish_match', { p_match: d.id, p_winner: d.side, p_score_a: num('.sa'), p_score_b: num('.sb'), p_stats: stats });
+  await rpc('admin_finish_match', { p_match: d.id, p_winner: side, p_score_a: num('.sa'), p_score_b: num('.sb'), p_stats: stats });
+  delete S.admSel[d.id];
   toast('success', 'Матч засчитан', '');
   await syncMatch();
   if ($('admBody')) loadAdminTab().catch(() => {});
@@ -1665,6 +1825,7 @@ async function admCancel(d) {
   const ok = await dialog({ title: 'Отменить матч?', text: 'Матч закроется у всех игроков без изменения рейтинга.', ok: 'Отменить', danger: true });
   if (!ok) return;
   await rpc('admin_cancel_match', { p_match: d.id });
+  delete S.admSel[d.id];
   toast('info', 'Матч отменён', '');
   await syncMatch();
   if ($('admBody')) loadAdminTab().catch(() => {});
@@ -1683,7 +1844,10 @@ const ACTIONS = {
   'search-cancel': cancelSearch,
   confirm: confirmMatch,
   ban: banMap,
-  report: reportResult,
+  'shot-pick': () => { const f = $('shotFile'); if (f) f.click(); },
+  'shot-skip': skipShot,
+  'cancel-vote': voteCancel,
+  'shot-view': d => { const src = S.admShots[d.sid]; if (src) { $('shotImg').src = src; openModal('shotModal'); } },
   'copy-match': () => S.match && copyText(String(S.match.match_number || S.match.id)),
   'copy-host': () => { const h = S.match && S.match.blue[0]; if (h && h.game_id) copyText(h.game_id); },
   player: openPlayer,
@@ -1731,7 +1895,7 @@ const ACTIONS = {
     navigate('support');
     ensureMatchFull();
   },
-  'adm-tk-filter': () => { S.admTkAll = !S.admTkAll; loadAdminTab(); },
+  'adm-tk-filter': d => { S.admTkAll = d.all === '1'; loadAdminTab(); },
   'adm-tk': async d => {
     let reply = null;
     if (d.st !== 'progress') {
@@ -1755,9 +1919,14 @@ const ACTIONS = {
     await rpc('admin_delete_news', { p_id: Number(d.id) });
     await loadNews(); await loadAdminTab();
   },
-  'adm-tab': d => { S.adminTab = d.tab; renderAdmin(); },
-  'adm-refresh': () => loadAdminTab(),
-  'adm-open': () => { S.adminTab = 'matches'; navigate('profile'); setTimeout(() => $('adminPanel') && $('adminPanel').scrollIntoView({ behavior: 'smooth' }), 150); },
+  'adm-tab': d => { S.adminTab = d.tab; document.querySelectorAll('.adm-tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === d.tab)); $('admBody').innerHTML = '<div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Загрузка…</div>'; loadAdminTab(); },
+  'adm-refresh': () => { loadAdminTab(); refreshAdmBadges(); },
+  'adm-open': () => { S.adminTab = 'matches'; navigate('admin'); },
+  'adm-pick': d => {
+    S.admSel[d.id] = d.side;
+    const card = document.querySelector(`[data-card="${d.id}"]`);
+    if (card) { card.querySelectorAll('.seg').forEach(b => b.classList.toggle('on', b.dataset.side === d.side)); const f = card.querySelector('[data-act="adm-finish"]'); if (f) f.disabled = false; }
+  },
   'adm-finish': admFinish,
   'adm-cancel': admCancel,
   'adm-rating': async d => {
@@ -1826,7 +1995,7 @@ function bindEvents() {
       if (fn) run(fn, el.dataset, el);
       return;
     }
-    if (e.target.classList && e.target.classList.contains('overlay') && ['profileModal', 'matchModal', 'settingsModal', 'notifModal'].includes(e.target.id)) closeModal(e.target.id);
+    if (e.target.classList && e.target.classList.contains('overlay') && ['profileModal', 'matchModal', 'settingsModal', 'notifModal', 'shotModal'].includes(e.target.id)) closeModal(e.target.id);
   });
   document.addEventListener('input', e => {
     if (e.target.id === 'supText') { S.sup.text = e.target.value; updateSupportSubmit(); }
@@ -1834,9 +2003,10 @@ function bindEvents() {
   });
   document.addEventListener('change', e => {
     if (e.target.id === 'avatarFile') run(() => uploadAvatar(e.target.files[0]));
+    else if (e.target.id === 'shotFile') { const f = e.target.files[0]; e.target.value = ''; run(() => uploadShot(f)); }
   });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { ['profileModal', 'matchModal', 'settingsModal', 'notifModal'].forEach(closeModal); }
+    if (e.key === 'Escape') { ['profileModal', 'matchModal', 'settingsModal', 'notifModal', 'shotModal'].forEach(closeModal); }
   });
   $('loginForm').addEventListener('submit', doLogin);
   $('registerForm').addEventListener('submit', doRegister);

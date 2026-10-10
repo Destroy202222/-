@@ -772,3 +772,22 @@ select.text-input{appearance:auto}
 .lg-find:disabled{opacity:.55}
 .lg-find.cancel{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2);box-shadow:none;color:#ff8fa3}
 .lg-card .hint{margin-top:14px}
+
+
+/* Хост в баннере карты — прозрачнее */
+.host{background:rgba(0,0,0,.15);border-color:rgba(255,255,255,.12);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+
+/* Пустая подсказка не занимает место */
+.hint:empty{display:none}
+
+/* ═════ Вкладка «Играть»: блоки в стиле панели «Пати» ═════ */
+.lg-top,.lg-card{
+  background:linear-gradient(180deg,rgba(23,32,70,.78),rgba(15,22,51,.8));
+  border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;
+}
+.lg-top{margin-bottom:14px}
+.lg-label{margin:18px 4px 10px}
+.lg-tiles > div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md)}
+.lg-ladder{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md)}
+.lg-tabs button.on{background:var(--surface-3);border:1px solid var(--line-strong)}
+.lg-find{border-radius:var(--r-lg)}

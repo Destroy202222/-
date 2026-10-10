@@ -40,7 +40,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   }
 });
 
-const CFG = { confirmSec: 30, draftSec: 30, lobbySec: 300, pollMs: 2500, framePrice: 25 };
+const CFG = { confirmSec: 30, draftSec: 30, lobbySec: 300, pollMs: 2500, framePrice: 25, bannerPrice: 50 };
 const NICK_RE = /^[A-Za-z0-9А-Яа-яЁё_-]{3,20}$/;
 const PUBLIC_COLS = 'id,username,elo,matches,wins,losses,win_streak,best_streak,kills,deaths,assists,rounds,stat_matches,likes,popularity,isadmin,avatar_url,avatar_frame,registered';
 const PAGES = ['home', 'matches', 'match', 'matchview', 'support', 'profile', 'friends', 'top', 'wallet', 'shop'];
@@ -68,7 +68,8 @@ const S = {
   match: null, offset: 0, sig: '', polling: false, entering: false,
   chat: [], tick: 0, rank: null, stats: { searching: 0, in_match: 0, matches: 0 },
   history: [], adminTab: 'matches',
-  channels: [], timers: {}, sup: newSup(), news: [], newsLoaded: false, seenAt: 0, newSince: 0
+  channels: [], timers: {}, sup: newSup(), news: [], newsLoaded: false, seenAt: 0, newSince: 0,
+  banners: {}, myBanners: { owned: [], active: '' }, bnMatch: null
 };
 
 /* ───────────── Утилиты ───────────── */
@@ -234,7 +235,7 @@ async function doRegister(e) {
 
 function showAuth(message) {
   stopLoops(); stopChat();
-  S.me = null; S.match = null; S.party = null; S.invites = []; S.sup = newSup(); S.news = []; S.newsLoaded = false;
+  S.me = null; S.match = null; S.party = null; S.invites = []; S.sup = newSup(); S.news = []; S.newsLoaded = false; S.banners = {}; S.myBanners = { owned: [], active: '' }; S.bnMatch = null;
   S.queue = { searching: false, since: null, count: 0, need: S.teamSize * 2 };
   $('app').hidden = true;
   $('auth').hidden = false;
@@ -265,7 +266,7 @@ async function enterApp() {
     $('app').hidden = false;
     await Promise.all([loadMaps(), loadSettings()]);
     renderBalance();
-    await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory(), refreshMe(), loadNews()]);
+    await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory(), refreshMe(), loadNews(), loadMyBanners()]);
     if (!(S.match && S.match.status === 'active')) await syncQueue().catch(() => {});
     navigate(S.match && S.match.status === 'active' ? 'match' : 'home');
     startLoops();
@@ -363,7 +364,7 @@ function navigate(page) {
   if (page === 'friends') loadFriends().catch(() => {});
   if (page === 'top') renderTop();
   if (page === 'wallet') renderBalance();
-  if (page === 'shop') renderShop();
+  if (page === 'shop') { renderShop(); loadMyBanners().then(() => { if (S.page === 'shop') renderShop(); }); }
   if (page === 'support') { renderSupport(); loadTickets().then(() => { if (S.page === 'support' && S.sup.view === 'home') renderSupport(); }); }
 }
 
@@ -556,6 +557,12 @@ async function syncMatch() {
   if (!S.me) return;
   const m = await rpc('my_match');
   if (m && m.server_now) S.offset = toMs(m.server_now) - Date.now();
+  if (m && m.blue && m.orange) {
+    const ids = [...m.blue, ...m.orange].map(p => p.id);
+    const fresh = m.id !== S.bnMatch;
+    S.bnMatch = m.id;
+    await loadBanners(ids, fresh);
+  }
   applyMatch(m);
 }
 
@@ -638,7 +645,7 @@ function renderMatch(force) {
   const m = S.match;
   if (!m || m.status !== 'active') return;
   const ds = m.draft_state || {};
-  const sig = JSON.stringify([m.id, ds, m.my_report, m.draft_finished_at, S.me.isadmin]);
+  const sig = JSON.stringify([m.id, ds, m.my_report, m.draft_finished_at, S.me.isadmin, [...m.blue, ...m.orange].map(p => S.banners[p.id] || '')]);
   if (!force && sig === S.sig) return;
   S.sig = sig;
   setText('mNum', 'Матч #' + (m.match_number || '—'));
@@ -658,7 +665,7 @@ function renderMatch(force) {
 }
 
 function plHtml(p, isCap, dotColor) {
-  return `<div class="pl" data-act="player" data-id="${esc(p.id)}">${avatarHtml(p, 32)}
+  return `<div class="pl${bnCls(S.banners[p.id])}" data-act="player" data-id="${esc(p.id)}">${avatarHtml(p, 32)}
     <div class="body"><div class="nm">${esc(p.username)}${dotColor ? `<span class="pdot" style="background:${dotColor}" title="Одна пати"></span>` : ''}</div>
     <div class="meta">${isCap ? '<i class="fas fa-crown crown"></i> капитан · ' : ''}ELO ${p.elo ?? 300}</div></div>${lvlChip(p.elo)}</div>`;
 }
@@ -854,7 +861,7 @@ function renderProfile() {
   const today = new Date();
 
   body.innerHTML = `
-    <div class="pf-banner">
+    <div class="pf-banner${bnCls(S.banners[u.id])}">
       <div class="logo">BNK<span>FACEIT</span></div>
       <div class="pf-top">${avatarHtml(u, 84)}
         <div class="pf-id"><div class="no">#${S.rank || '—'}</div>
@@ -964,6 +971,7 @@ async function openMatchDetails(d) {
   const win = h.result === 'win', delta = h.elo_change || 0, mp = mapById(h.map);
   const blue = h.team_blue || [], orange = h.team_orange || [];
   const all = [...blue, ...orange];
+  await loadBanners(all.map(p => p.id));
   const hasStats = all.some(p => p.kills != null);
   const best = hasStats ? all.reduce((a, b) => ((b.kills || 0) > ((a && a.kills) || 0) ? b : a), null) : null;
   const kdOf = p => (p.kills == null ? '—' : ((p.deaths > 0 ? p.kills / p.deaths : p.kills)).toFixed(2));
@@ -974,7 +982,7 @@ async function openMatchDetails(d) {
     const ta = list.reduce((n, p) => n + (p.assists || 0), 0);
     const rows = sorted.map(p => {
       const c = p.elo_change, me = p.id === S.me.id, mvp = best && best.id === p.id && (p.kills || 0) > 0;
-      return `<div class="mv-pl ${me ? 'me' : ''}" data-act="player" data-id="${esc(p.id)}">
+      return `<div class="mv-pl${bnCls(S.banners[p.id])} ${me ? 'me' : ''}" data-act="player" data-id="${esc(p.id)}">
         <div class="mv-top">${avatarHtml(p, 36)}
           <div class="mv-nm"><div class="n">${esc(p.username)}${mvp ? ' <i class="fas fa-star mv-star" title="Лучший по киллам"></i>' : ''}${me ? ' <span class="mv-you">вы</span>' : ''}</div>
             <div class="s">ELO ${p.elo ?? 300}</div></div>
@@ -1130,14 +1138,157 @@ async function renderTop() {
   if (error) { box.innerHTML = `<div class="empty">Не удалось загрузить: ${esc(error.message)}</div>`; return; }
   setText('myRank', '#' + (rank || '—'));
   if (!data.length) { box.innerHTML = '<div class="empty">Игроков пока нет</div>'; return; }
+  await loadBanners(data.map(u => u.id), true);
   box.innerHTML = '<div class="rows">' + data.map((u, i) => {
     const wr = u.matches ? Math.round(u.wins / u.matches * 100) : 0;
     const n = i + 1;
-    return `<div class="row link ${u.id === S.me.id ? 'me' : ''}" data-act="player" data-id="${u.id}">
+    return `<div class="row link${bnCls(S.banners[u.id])} ${u.id === S.me.id ? 'me' : ''}" data-act="player" data-id="${u.id}">
       <div class="top-rank ${n <= 3 ? 'r' + n : ''}">#${n}</div>${avatarHtml(u, 40)}
       <div class="row-main"><div class="row-title">${esc(u.username)} ${u.isadmin ? '👑' : ''}</div><div class="row-sub">${u.matches} матчей · ${wr}%</div></div>
       ${lvlChip(u.elo)}<div class="top-elo">${u.elo}<small>ELO</small></div></div>`;
   }).join('') + '</div>';
+}
+
+/* ───────────── Баннеры профиля (оригинальные аниме-арты, нарисованы кодом) ───────────── */
+const BANNER_IDS = ['bn_sakura', 'bn_neon', 'bn_stars', 'bn_sunset', 'bn_magic', 'bn_sky'];
+function rng(seed) { let s = seed; return () => (s = (s * 9301 + 49297) % 233280) / 233280; }
+const svgWrap = (defs, body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid slice"><defs>${defs}</defs>${body}</svg>`;
+const f1 = n => n.toFixed(1);
+const BANNER_ART = {
+  bn_sakura() {
+    const r = rng(7); let bl = '', pe = '';
+    [[40, 56], [96, 66], [150, 46], [205, 80], [262, 70], [320, 48], [120, 36], [236, 56], [14, 34], [176, 62], [290, 92]].forEach(([x, y]) => {
+      for (let i = 0; i < 7; i++) bl += `<circle cx="${f1(x + r() * 38 - 19)}" cy="${f1(y + r() * 30 - 15)}" r="${f1(4.5 + r() * 6)}" fill="${['#ffc9e2', '#ff9ccb', '#ffe6f1'][i % 3]}" opacity="${(.7 + r() * .3).toFixed(2)}"/>`;
+    });
+    for (let i = 0; i < 30; i++) {
+      const x = r() * 600, y = 40 + r() * 170;
+      pe += `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="3.2" ry="1.7" fill="#ffd3e6" opacity="${(.35 + r() * .5).toFixed(2)}" transform="rotate(${Math.round(r() * 180)} ${f1(x)} ${f1(y)})"/>`;
+    }
+    return svgWrap(
+      '<linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d1f6e"/><stop offset=".5" stop-color="#c85fae"/><stop offset="1" stop-color="#ffc7a2"/></linearGradient><radialGradient id="m"><stop offset="0" stop-color="#fff6e0" stop-opacity=".9"/><stop offset="1" stop-color="#fff6e0" stop-opacity="0"/></radialGradient>',
+      `<rect width="600" height="220" fill="url(#a)"/><circle cx="450" cy="92" r="84" fill="url(#m)"/><circle cx="450" cy="92" r="34" fill="#fff4dc"/>
+       <path d="M0 168C90 138 150 162 230 150S390 128 460 150 560 140 600 134V220H0Z" fill="#5a3a8e" opacity=".85"/>
+       <path d="M0 192C100 166 190 188 290 174S480 166 600 182V220H0Z" fill="#26164f"/>
+       <path d="M-10 36C60 56 120 40 190 80S300 74 340 40" stroke="#3a1c40" stroke-width="5" fill="none" stroke-linecap="round"/>
+       <path d="M110 58C130 70 150 64 170 90" stroke="#3a1c40" stroke-width="3" fill="none"/>${bl}${pe}`);
+  },
+  bn_neon() {
+    const r = rng(21); let b = '', w = '', rain = '', x = -10;
+    while (x < 610) {
+      const bw = 26 + r() * 40, bh = 55 + r() * 105, y = 220 - bh;
+      b += `<rect x="${Math.round(x)}" y="${Math.round(y)}" width="${Math.round(bw)}" height="${Math.round(bh)}" fill="#0a0822"/>`;
+      for (let wy = y + 8; wy < 210; wy += 12) for (let wx = x + 5; wx < x + bw - 7; wx += 9)
+        if (r() < .3) w += `<rect x="${Math.round(wx)}" y="${Math.round(wy)}" width="4" height="6" fill="${r() < .5 ? '#ffd86b' : '#6fe7ff'}" opacity=".85"/>`;
+      x += bw + 2;
+    }
+    for (let i = 0; i < 40; i++) { const rx = r() * 600, ry = r() * 200; rain += `<line x1="${Math.round(rx)}" y1="${Math.round(ry)}" x2="${Math.round(rx - 6)}" y2="${Math.round(ry + 22)}"/>`; }
+    return svgWrap(
+      '<linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0830"/><stop offset=".55" stop-color="#3a1a78"/><stop offset="1" stop-color="#ff4d9a"/></linearGradient><radialGradient id="m"><stop offset="0" stop-color="#ff7ac8" stop-opacity=".8"/><stop offset="1" stop-color="#ff7ac8" stop-opacity="0"/></radialGradient><filter id="g" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>',
+      `<rect width="600" height="220" fill="url(#a)"/><circle cx="470" cy="62" r="70" fill="url(#m)"/><circle cx="470" cy="62" r="30" fill="#ffd0ec"/>${b}${w}
+       <g filter="url(#g)" stroke-width="3" fill="none" stroke-linecap="round"><path d="M300 96h52" stroke="#00e5ff"/><path d="M96 70v44h26" stroke="#ff3d8b"/><rect x="396" y="112" width="40" height="16" stroke="#b388ff"/></g>
+       <g stroke="rgba(190,220,255,.28)" stroke-width="1">${rain}</g>`);
+  },
+  bn_stars() {
+    const r = rng(33); let st = '';
+    for (let i = 0; i < 110; i++) st += `<circle cx="${Math.round(r() * 600)}" cy="${Math.round(r() * 150)}" r="${f1(.4 + r() * 1.3)}" fill="#fff" opacity="${(.3 + r() * .7).toFixed(2)}"/>`;
+    return svgWrap(
+      '<linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#040824"/><stop offset=".6" stop-color="#1a2c78"/><stop offset="1" stop-color="#7a5bc0"/></linearGradient><radialGradient id="m"><stop offset="0" stop-color="#fff6d6" stop-opacity=".6"/><stop offset="1" stop-color="#fff6d6" stop-opacity="0"/></radialGradient><linearGradient id="t" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff"/></linearGradient><filter id="bl"><feGaussianBlur stdDeviation="14"/></filter><mask id="c" maskUnits="userSpaceOnUse" x="0" y="0" width="600" height="220"><rect width="600" height="220" fill="#fff"/><circle cx="458" cy="48" r="25" fill="#000"/></mask>',
+      `<rect width="600" height="220" fill="url(#a)"/>
+       <g filter="url(#bl)"><ellipse cx="200" cy="120" rx="170" ry="26" fill="#3de0b0" opacity=".28"/><ellipse cx="380" cy="100" rx="150" ry="20" fill="#9b6bff" opacity=".28"/></g>
+       ${st}<circle cx="446" cy="56" r="64" fill="url(#m)"/><circle cx="446" cy="56" r="28" fill="#fff6d6" mask="url(#c)"/>
+       <g stroke="url(#t)" stroke-width="2" stroke-linecap="round"><line x1="250" y1="28" x2="330" y2="58"/><line x1="130" y1="70" x2="190" y2="92"/></g>
+       <path d="M0 200L70 140 110 168 180 108 250 176 320 130 400 182 470 120 540 170 600 140V220H0Z" fill="#0b1140"/>
+       <path d="M180 108l-12 14 12-4 10 6zM470 120l-11 13 11-4 9 6z" fill="#cfd8ff" opacity=".7"/>
+       <path d="M0 220V192C80 172 160 202 260 188S460 178 600 198V220Z" fill="#060a28"/>`);
+  },
+  bn_sunset() {
+    const r = rng(5); let cl = '', rf = '';
+    for (let i = 0; i < 7; i++) cl += `<ellipse cx="${Math.round(r() * 600)}" cy="${Math.round(30 + r() * 70)}" rx="${Math.round(50 + r() * 70)}" ry="${Math.round(5 + r() * 6)}" fill="#ffb3a0" opacity="${(.3 + r() * .35).toFixed(2)}"/>`;
+    for (let i = 0; i < 8; i++) rf += `<rect x="${Math.round(360 - (60 - i * 6) / 2 * 2 / 2 - (46 - i * 4))}" y="${156 + i * 8}" width="${Math.round((46 - i * 4) * 2)}" height="3" fill="#ffe3b0" opacity="${(.7 - i * .07).toFixed(2)}"/>`;
+    const torii = '<rect x="-26" y="88" width="7" height="62"/><rect x="19" y="88" width="7" height="62"/><path d="M-42 84Q0 94 42 84L40 93Q0 103-40 93Z"/><rect x="-30" y="104" width="60" height="5"/><rect x="-3" y="94" width="6" height="12"/>';
+    return svgWrap(
+      '<linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b1055"/><stop offset=".45" stop-color="#d4418e"/><stop offset=".8" stop-color="#ff9a56"/><stop offset="1" stop-color="#ffd29b"/></linearGradient><linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8325e"/><stop offset="1" stop-color="#2a1050"/></linearGradient><radialGradient id="m"><stop offset="0" stop-color="#fff2c6" stop-opacity=".85"/><stop offset="1" stop-color="#fff2c6" stop-opacity="0"/></radialGradient>',
+      `<rect width="600" height="150" fill="url(#a)"/><circle cx="360" cy="136" r="96" fill="url(#m)"/><circle cx="360" cy="136" r="46" fill="#fff2c6"/>${cl}
+       <path d="M0 150L60 118 120 142 200 108 270 146 560 132 600 150Z" fill="#6b2d74" opacity=".75"/>
+       <rect y="150" width="600" height="70" fill="url(#w)"/>${rf}
+       <g fill="#1b0c33" transform="translate(480 0)">${torii}</g>
+       <g fill="#1b0c33" opacity=".3" transform="translate(480 300) scale(1 -1)">${torii}</g>`);
+  },
+  bn_magic() {
+    const r = rng(9), cx = 450, cy = 110; let tk = '', pt = '';
+    const pol = (a, rad) => `${f1(cx + rad * Math.cos(a))},${f1(cy + rad * Math.sin(a))}`;
+    const tri = off => [0, 1, 2].map(i => pol(off + i * 2 * Math.PI / 3, 58)).join(' ');
+    for (let i = 0; i < 36; i++) { const a = i * Math.PI / 18; tk += `<line x1="${f1(cx + 88 * Math.cos(a))}" y1="${f1(cy + 88 * Math.sin(a))}" x2="${f1(cx + 96 * Math.cos(a))}" y2="${f1(cy + 96 * Math.sin(a))}"/>`; }
+    for (let i = 0; i < 42; i++) pt += `<circle cx="${Math.round(r() * 600)}" cy="${Math.round(r() * 220)}" r="${f1(.8 + r() * 1.8)}" fill="${r() < .5 ? '#8fd0ff' : '#ff8ad0'}" opacity="${(.3 + r() * .6).toFixed(2)}"/>`;
+    return svgWrap(
+      '<radialGradient id="a" cx=".75" cy=".5" r=".8"><stop offset="0" stop-color="#3b1a8a"/><stop offset=".6" stop-color="#0d0638"/><stop offset="1" stop-color="#04031a"/></radialGradient><radialGradient id="p" cx=".1" cy=".95" r=".6"><stop offset="0" stop-color="#ec4899" stop-opacity=".45"/><stop offset="1" stop-color="#ec4899" stop-opacity="0"/></radialGradient><filter id="g" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>',
+      `<rect width="600" height="220" fill="url(#a)"/><rect width="600" height="220" fill="url(#p)"/>
+       <g opacity=".22" fill="#8fd0ff"><polygon points="${cx - 10},0 ${cx + 10},0 ${cx + 60},220 ${cx - 60},220"/></g>${pt}
+       <g filter="url(#g)" fill="none" stroke-linejoin="round"><circle cx="${cx}" cy="${cy}" r="88" stroke="#8fd0ff" stroke-width="1.6"/><circle cx="${cx}" cy="${cy}" r="74" stroke="#ec4899" stroke-width="1.4" stroke-dasharray="4 6"/><circle cx="${cx}" cy="${cy}" r="58" stroke="#8fd0ff" stroke-width="1.2"/>
+       <polygon points="${tri(-Math.PI / 2)}" stroke="#ff8ad0" stroke-width="1.6"/><polygon points="${tri(Math.PI / 2)}" stroke="#8fd0ff" stroke-width="1.6"/>
+       <circle cx="${cx}" cy="${cy}" r="14" stroke="#fff" stroke-width="1.4"/><g stroke="#8fd0ff" stroke-width="1.4">${tk}</g></g>`);
+  },
+  bn_sky() {
+    const cs = [[0, 0, 26], [28, -8, 32], [62, 0, 26], [90, 6, 20], [-26, 8, 20]].map(([x, y, rad]) => `<circle cx="${x}" cy="${y}" r="${rad}"/>`).join('');
+    const cloud = (x, y, k) => `<g transform="translate(${x} ${y}) scale(${k})"><g fill="#b9d6ff" transform="translate(0 7)">${cs}</g><g fill="#fff">${cs}</g></g>`;
+    let rays = '';
+    for (let i = 0; i < 14; i++) { const a = i * Math.PI / 7; rays += `<line x1="${f1(520 + 40 * Math.cos(a))}" y1="${f1(30 + 40 * Math.sin(a))}" x2="${f1(520 + 120 * Math.cos(a))}" y2="${f1(30 + 120 * Math.sin(a))}"/>`; }
+    return svgWrap(
+      '<linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a80ff"/><stop offset=".6" stop-color="#6fb8ff"/><stop offset="1" stop-color="#cdeaff"/></linearGradient><radialGradient id="m"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>',
+      `<rect width="600" height="220" fill="url(#a)"/><circle cx="520" cy="30" r="110" fill="url(#m)"/><g stroke="#fff" stroke-width="2" opacity=".25">${rays}</g><circle cx="520" cy="30" r="22" fill="#fff"/>
+       ${cloud(250, 78, .8)}${cloud(60, 64, .6)}${cloud(120, 176, 1.8)}${cloud(340, 192, 2.2)}${cloud(540, 168, 1.6)}
+       <g fill="none" stroke="#1d2f66" stroke-width="1.6" stroke-linecap="round"><path d="M180 40q6-6 12 0q6-6 12 0"/><path d="M210 58q5-5 10 0q5-5 10 0"/><path d="M420 90q4-4 8 0q4-4 8 0"/></g>`);
+  }
+};
+const bnCls = id => (id && BANNER_ART[id] ? ' bn bn-' + id : '');
+function injectBannerStyles() {
+  const css = BANNER_IDS.map(id => {
+    const uri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(BANNER_ART[id]());
+    return `.bn-${id}{background-image:linear-gradient(90deg,rgba(7,11,28,.76),rgba(7,11,28,.2)),url("${uri}")!important;background-size:cover!important;background-position:center!important}`;
+  }).join('\n');
+  const el = document.createElement('style');
+  el.textContent = css;
+  document.head.appendChild(el);
+}
+async function loadBanners(ids, force) {
+  const need = [...new Set(ids)].filter(id => force || !(id in S.banners));
+  if (!need.length) return;
+  try {
+    const map = (await rpc('banners_for', { p_ids: need })) || {};
+    need.forEach(id => { S.banners[id] = map[id] || ''; });
+  } catch (e) { need.forEach(id => { S.banners[id] = ''; }); /* баннеры ещё не подключены на сервере */ }
+}
+async function loadMyBanners() {
+  try {
+    const r = await rpc('my_banners');
+    S.myBanners = { owned: (r && r.owned) || [], active: (r && r.active) || '' };
+    S.banners[S.me.id] = S.myBanners.active;
+  } catch (e) { /* баннеры ещё не подключены на сервере */ }
+}
+function bannersPanelHtml(u) {
+  const owned = S.myBanners.owned, active = S.myBanners.active;
+  return `<div class="panel"><div class="panel-head"><h3>Баннеры</h3><span class="aside">${CFG.bannerPrice} ₽ за баннер</span></div>
+    <div class="banners">${BANNER_IDS.map(id => {
+      const isOwned = owned.includes(id), isActive = active === id;
+      const btn = isActive ? '<button class="btn btn-ghost btn-sm" data-act="banner-use" data-id="">Снять</button>'
+        : isOwned ? `<button class="btn btn-ghost btn-sm" data-act="banner-use" data-id="${id}">Надеть</button>`
+        : `<button class="btn btn-primary btn-sm" data-act="banner-buy" data-id="${id}">Купить</button>`;
+      return `<div class="bn-card ${isActive ? 'active' : isOwned ? 'owned' : ''}"><div class="bn-prev bn bn-${id}">${avatarHtml(u, 34)}<b>${esc(u.username)}</b></div>
+        <div class="bn-foot"><span class="pr">${isOwned ? 'Куплен' : CFG.bannerPrice + ' ₽'}</span>${btn}</div></div>`;
+    }).join('')}</div></div>`;
+}
+async function buyBanner(d) {
+  const ok = await dialog({ title: 'Купить баннер?', text: CFG.bannerPrice + ' ₽ спишется с баланса.', ok: 'Купить' });
+  if (!ok) return;
+  await rpc('buy_banner', { p_banner: d.id });
+  await refreshMe(); await loadMyBanners();
+  toast('success', 'Куплено', 'Баннер надет');
+  renderShop();
+}
+async function useBanner(d) {
+  await rpc('use_banner', { p_banner: d.id || '' });
+  await loadMyBanners();
+  renderShop();
 }
 
 /* ───────────── Кошелёк и магазин ───────────── */
@@ -1171,7 +1322,8 @@ function renderShop() {
           : `<button class="btn btn-primary btn-sm btn-block" data-act="frame-buy" data-id="${f.id}">Купить</button>`;
         return `<div class="frame ${isActive ? 'active' : isOwned ? 'owned' : ''}">${avatarHtml({ username: u.username, avatar_url: u.avatar_url, avatar_frame: f.id }, 60)}
           <div class="nm">${f.name}</div><div class="pr">${isOwned ? 'Куплена' : CFG.framePrice + ' ₽'}</div>${btn}</div>`;
-      }).join('')}</div></div>`;
+      }).join('')}</div></div>
+    ${bannersPanelHtml(u)}`;
 }
 
 function resizeToDataUrl(file, size = 128) {
@@ -1538,6 +1690,8 @@ const ACTIONS = {
   'party-leave': async () => { await rpc('party_leave'); await loadParty(); await syncQueue(); },
   'party-kick': async d => { await rpc('party_kick', { p_user: d.id }); await loadParty(); },
   'avatar-remove': removeAvatar,
+  'banner-buy': buyBanner,
+  'banner-use': useBanner,
   'frame-buy': buyFrame,
   'frame-use': useFrame,
   'sup-pick': async d => { const sp = S.sup; sp.cat = d.id; sp.view = 'form'; sp.target = null; sp.q = ''; sp.results = []; renderSupport(); window.scrollTo({ top: 0 }); ensureMatchFull(); },
@@ -1692,6 +1846,7 @@ async function init() {
       try { tg.setHeaderColor('#0c0916'); tg.setBackgroundColor('#0c0916'); } catch (e) { /* старые версии */ }
     }
   } catch (e) { /* ок */ }
+  injectBannerStyles();
   bindEvents();
   try {
     if (!SESSION) {

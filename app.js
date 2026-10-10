@@ -264,7 +264,7 @@ async function enterApp() {
     initSeen();
     $('auth').hidden = true;
     $('app').hidden = false;
-    await Promise.all([loadMaps(), loadSettings()]);
+    await Promise.all([loadMaps(), loadSettings(), loadBannerCatalog()]);
     renderBalance();
     await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory(), refreshMe(), loadNews(), loadMyBanners()]);
     if (!(S.match && S.match.status === 'active')) await syncQueue().catch(() => {});
@@ -364,7 +364,7 @@ function navigate(page) {
   if (page === 'friends') loadFriends().catch(() => {});
   if (page === 'top') renderTop();
   if (page === 'wallet') renderBalance();
-  if (page === 'shop') { renderShop(); loadMyBanners().then(() => { if (S.page === 'shop') renderShop(); }); }
+  if (page === 'shop') { renderShop(); Promise.all([loadMyBanners(), loadBannerCatalog()]).then(() => { if (S.page === 'shop') renderShop(); }); }
   if (page === 'support') { renderSupport(); loadTickets().then(() => { if (S.page === 'support' && S.sup.view === 'home') renderSupport(); }); }
 }
 
@@ -1150,8 +1150,6 @@ async function renderTop() {
 }
 
 /* ───────────── Баннеры профиля (оригинальные аниме-арты, нарисованы кодом) ───────────── */
-/* Свои баннеры: положите картинки banners/bn_sakura.jpg, bn_neon.jpg, bn_stars.jpg, bn_sunset.jpg, bn_magic.jpg, bn_sky.jpg
-   рядом с index.html. Если файла нет, показывается нарисованный кодом баннер. */
 const BANNER_IDS = ['bn_sakura', 'bn_neon', 'bn_stars', 'bn_sunset', 'bn_magic', 'bn_sky'];
 function rng(seed) { let s = seed; return () => (s = (s * 9301 + 49297) % 233280) / 233280; }
 const svgWrap = (defs, body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid slice"><defs>${defs}</defs>${body}</svg>`;
@@ -1242,15 +1240,29 @@ const BANNER_ART = {
        <g fill="none" stroke="#1d2f66" stroke-width="1.6" stroke-linecap="round"><path d="M180 40q6-6 12 0q6-6 12 0"/><path d="M210 58q5-5 10 0q5-5 10 0"/><path d="M420 90q4-4 8 0q4-4 8 0"/></g>`);
   }
 };
-const bnCls = id => (id && BANNER_ART[id] ? ' bn bn-' + id : '');
+/* Каталог: таблица banners в Supabase (как maps). Пока её нет — встроенные шесть. */
+let bnList = BANNER_IDS.map(id => ({ id, img: '', price: CFG.bannerPrice }));
+const bnCls = id => (id && bnList.some(b => b.id === id) ? ' bn bn-' + id : '');
 function injectBannerStyles() {
-  const css = BANNER_IDS.map(id => {
-    const uri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(BANNER_ART[id]());
-    return `.bn-${id}{background-image:linear-gradient(90deg,rgba(7,11,28,.76),rgba(7,11,28,.2)),url("banners/${id}.jpg"),url("${uri}")!important;background-size:cover!important;background-position:center!important}`;
+  const css = bnList.map(b => {
+    const layers = ['linear-gradient(90deg,rgba(7,11,28,.76),rgba(7,11,28,.2))'];
+    const img = String(b.img || '').replace(/["\\\r\n]/g, '').trim();
+    if (img) layers.push(`url("${img}")`);
+    if (BANNER_ART[b.id]) layers.push(`url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(BANNER_ART[b.id]())}")`);
+    if (layers.length < 2) return '';
+    return `.bn-${b.id}{background-image:${layers.join(',')}!important;background-size:cover!important;background-position:center!important}`;
   }).join('\n');
-  const el = document.createElement('style');
+  let el = document.getElementById('bnStyles');
+  if (!el) { el = document.createElement('style'); el.id = 'bnStyles'; document.head.appendChild(el); }
   el.textContent = css;
-  document.head.appendChild(el);
+}
+async function loadBannerCatalog() {
+  try {
+    const { data, error } = await sb.from('banners').select('id,img,price').eq('active', true).order('sort_order').order('id');
+    if (error) throw error;
+    if (data && data.length) bnList = data.filter(b => /^[A-Za-z0-9_-]+$/.test(b.id)).map(b => ({ id: b.id, img: b.img || '', price: b.price ?? CFG.bannerPrice }));
+  } catch (e) { /* таблицы banners ещё нет: остаются встроенные */ }
+  injectBannerStyles();
 }
 async function loadBanners(ids, force) {
   const need = [...new Set(ids)].filter(id => force || !(id in S.banners));
@@ -1269,18 +1281,21 @@ async function loadMyBanners() {
 }
 function bannersPanelHtml(u) {
   const owned = S.myBanners.owned, active = S.myBanners.active;
-  return `<div class="panel"><div class="panel-head"><h3>Баннеры</h3><span class="aside">${CFG.bannerPrice} ₽ за баннер</span></div>
-    <div class="banners">${BANNER_IDS.map(id => {
-      const isOwned = owned.includes(id), isActive = active === id;
+  const prices = bnList.map(b => b.price);
+  const aside = !prices.length ? '' : (Math.min(...prices) === Math.max(...prices) ? prices[0] + ' ₽ за баннер' : 'от ' + Math.min(...prices) + ' ₽');
+  return `<div class="panel"><div class="panel-head"><h3>Баннеры</h3><span class="aside">${aside}</span></div>
+    <div class="banners">${bnList.map(b => {
+      const id = b.id, isOwned = owned.includes(id), isActive = active === id;
       const btn = isActive ? '<button class="btn btn-ghost btn-sm" data-act="banner-use" data-id="">Снять</button>'
-        : isOwned ? `<button class="btn btn-ghost btn-sm" data-act="banner-use" data-id="${id}">Надеть</button>`
-        : `<button class="btn btn-primary btn-sm" data-act="banner-buy" data-id="${id}">Купить</button>`;
-      return `<div class="bn-card ${isActive ? 'active' : isOwned ? 'owned' : ''}"><div class="bn-prev bn bn-${id}">${avatarHtml(u, 34)}<b>${esc(u.username)}</b></div>
-        <div class="bn-foot"><span class="pr">${isOwned ? 'Куплен' : CFG.bannerPrice + ' ₽'}</span>${btn}</div></div>`;
+        : isOwned ? `<button class="btn btn-ghost btn-sm" data-act="banner-use" data-id="${esc(id)}">Надеть</button>`
+        : `<button class="btn btn-primary btn-sm" data-act="banner-buy" data-id="${esc(id)}">Купить</button>`;
+      return `<div class="bn-card ${isActive ? 'active' : isOwned ? 'owned' : ''}"><div class="bn-prev bn bn-${esc(id)}">${avatarHtml(u, 34)}<b>${esc(u.username)}</b></div>
+        <div class="bn-foot"><span class="pr">${isOwned ? 'Куплен' : b.price + ' ₽'}</span>${btn}</div></div>`;
     }).join('')}</div></div>`;
 }
 async function buyBanner(d) {
-  const ok = await dialog({ title: 'Купить баннер?', text: CFG.bannerPrice + ' ₽ спишется с баланса.', ok: 'Купить' });
+  const bn = bnList.find(x => x.id === d.id);
+  const ok = await dialog({ title: 'Купить баннер?', text: (bn ? bn.price : CFG.bannerPrice) + ' ₽ спишется с баланса.', ok: 'Купить' });
   if (!ok) return;
   await rpc('buy_banner', { p_banner: d.id });
   await refreshMe(); await loadMyBanners();

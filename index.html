@@ -58,6 +58,25 @@
   </div>
 </div>
 
+<div class="overlay" id="settingsModal">
+  <div class="sheet">
+    <button class="sheet-close" data-act="close" data-target="settingsModal" aria-label="Закрыть">×</button>
+    <h3 class="sheet-title">Настройки</h3>
+    <div class="row link" data-act="nav" data-page="wallet" style="margin-bottom:12px">
+      <div class="row-main"><div class="row-title">Кошелёк</div><div class="row-sub">Баланс и промокоды</div></div>
+      <div class="balance-chip" id="headBalance"><i class="fas fa-coins"></i>0 ₽</div>
+    </div>
+    <button class="btn btn-danger btn-block" data-act="logout"><i class="fas fa-sign-out-alt"></i> Выйти из аккаунта</button>
+  </div>
+</div>
+<div class="overlay" id="notifModal">
+  <div class="sheet">
+    <button class="sheet-close" data-act="close" data-target="notifModal" aria-label="Закрыть">×</button>
+    <h3 class="sheet-title">Уведомления</h3>
+    <div id="notifBody"></div>
+  </div>
+</div>
+
 <!-- Диалог подтверждения / ввода -->
 <div class="overlay center" id="dialog" style="z-index:9500">
   <div class="sheet">
@@ -111,8 +130,11 @@
 <!-- Приложение -->
 <div class="app" id="app" hidden>
   <header class="app-head">
-    <div class="brand" data-act="nav" data-page="home"><div class="mark">🚀</div><b>BNK FACEIT</b></div>
-    <div class="balance-chip" id="headBalance"><i class="fas fa-coins"></i>0 ₽</div>
+    <div class="hd-left">
+      <button class="hd-btn" data-act="settings" aria-label="Настройки"><i class="fas fa-gear"></i></button>
+      <button class="hd-btn" data-act="support" aria-label="Поддержка"><i class="fas fa-headphones"></i></button>
+    </div>
+    <button class="hd-btn" data-act="notifs" id="hdBell" aria-label="Уведомления"><i class="fas fa-bell"></i><span class="hd-badge" id="hdBadge" hidden>0</span></button>
   </header>
 
   <!-- Главная -->
@@ -202,6 +224,11 @@
     <div id="adminMatchBar"></div>
   </section>
 
+  <!-- Поддержка -->
+  <section class="page" id="page-support">
+    <div id="supportBody"></div>
+  </section>
+
   <!-- Просмотр сыгранного матча -->
   <section class="page" id="page-matchview">
     <div id="matchViewBody"><div class="empty">Загрузка…</div></div>
@@ -252,11 +279,11 @@
   </section>
 
   <nav class="nav" id="nav" aria-label="Основная навигация">
-    <button data-act="nav" data-page="profile"><i class="fas fa-user"></i><span>Профиль</span></button>
-    <button data-act="nav" data-page="shop"><i class="fas fa-store"></i><span>Магазин</span></button>
-    <button data-act="nav" data-page="matches" class="play" id="navPlay"><i class="fas fa-play" id="navPlayIcon"></i><span id="navPlayLabel">Играть</span></button>
-    <button data-act="nav" data-page="friends"><i class="fas fa-user-friends"></i><span>Друзья</span><span class="dot" id="navFriendDot" hidden>0</span></button>
-    <button data-act="nav" data-page="top"><i class="fas fa-trophy"></i><span>Топ</span></button>
+    <button data-act="nav" data-page="top"><span class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span><span>Топ</span></button>
+    <button data-act="nav" data-page="friends"><span class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>Друзья</span><span class="dot" id="navFriendDot" hidden>0</span></button>
+    <button data-act="nav" data-page="matches" class="play" id="navPlay"><span class="ni" id="navPlayIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="1.2"/></svg></span><span id="navPlayLabel">Играть</span></button>
+    <button data-act="nav" data-page="shop"><span class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span><span>Магазин</span></button>
+    <button data-act="nav" data-page="profile"><span class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span>Профиль</span></button>
   </nav>
 </div>
 

@@ -791,3 +791,30 @@ select.text-input{appearance:auto}
 .lg-ladder{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md)}
 .lg-tabs button.on{background:var(--surface-3);border:1px solid var(--line-strong)}
 .lg-find{border-radius:var(--r-lg)}
+
+
+/* ═════ Страница сыгранного матча ═════ */
+#page-matchview .match-top .icon-btn{width:42px;height:42px}
+.mv-host{justify-content:space-between}
+.mv-score{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:700;font-size:28px;letter-spacing:-.03em}
+.mv-score i{font-style:normal;color:var(--dim)}
+.mv-score .w{color:var(--win)}
+.mv-team{margin-bottom:12px}
+.mv-team.win{box-shadow:0 0 0 1px rgba(61,220,151,.35),0 0 26px rgba(61,220,151,.12)}
+.mv-team .team-head .mv-trophy{margin-left:6px;font-size:11px;color:var(--win)}
+.mv-team .team-head .mv-sum{margin-left:auto;font-family:var(--f-display);font-size:12px;color:var(--muted)}
+.mv-pl{padding:11px 14px;border-top:1px solid var(--line);cursor:pointer}
+.mv-pl:hover{background:rgba(79,140,255,.07)}
+.mv-pl.me{background:rgba(79,140,255,.12)}
+.mv-top{display:flex;align-items:center;gap:10px}
+.mv-nm{flex:1;min-width:0}
+.mv-nm .n{font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mv-nm .s{font-size:11px;color:var(--muted)}
+.mv-star{color:var(--gold);font-size:12px}
+.mv-you{font-size:10px;font-weight:800;padding:1px 7px;border-radius:99px;background:rgba(79,140,255,.25);color:var(--accent-hi)}
+.mv-elo{font-family:var(--f-display);font-weight:700;font-size:13px}
+.mv-elo.p{color:var(--win)}.mv-elo.n{color:#ff8fa3}
+.mv-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}
+.mv-stats > div{background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:7px 4px;text-align:center}
+.mv-stats b{display:block;font-family:var(--f-display);font-size:15px;line-height:1.2}
+.mv-stats span{display:block;font-size:10px;color:var(--muted);font-weight:700;margin-top:1px}

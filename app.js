@@ -40,7 +40,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   }
 });
 
-const CFG = { confirmSec: 30, draftSec: 30, lobbySec: 300, pollMs: 2500, framePrice: 25, bannerPrice: 50, cancelVotes: 6 };
+const CFG = { confirmSec: 30, draftSec: 30, lobbySec: 300, pollMs: 2500, framePrice: 25, bannerPrice: 50, cancelVotes: 6, nickPrice: 25 };
 const NICK_RE = /^[A-Za-z0-9А-Яа-яЁё_-]{3,20}$/;
 const PUBLIC_COLS = 'id,username,elo,matches,wins,losses,win_streak,best_streak,kills,deaths,assists,rounds,stat_matches,likes,popularity,isadmin,avatar_url,avatar_frame,registered';
 const PAGES = ['home', 'matches', 'match', 'matchview', 'support', 'profile', 'friends', 'top', 'wallet', 'shop', 'admin'];
@@ -70,7 +70,7 @@ const S = {
   history: [], adminTab: 'matches',
   channels: [], timers: {}, sup: newSup(), news: [], newsLoaded: false, seenAt: 0, newSince: 0,
   banners: {}, myBanners: { owned: [], active: '' }, bnMatch: null,
-  extra: null, shot: {}, admSel: {}, admShots: {}, admBadge: { matches: 0, tickets: 0 }
+  extra: null, shot: {}, leftIds: new Set(), overSeen: {}, qSeq: 0, mSeq: 0, clkRtt: Infinity, admSel: {}, admShots: {}, admBadge: { matches: 0, tickets: 0 }
 };
 
 /* ───────────── Утилиты ───────────── */
@@ -85,6 +85,14 @@ const nowMs = () => Date.now() + S.offset;
 const toMs = v => (v ? new Date(v).getTime() : 0);
 const fmtDay = iso => { const d = new Date(iso); return d.getDate() + ' ' + ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'][d.getMonth()]; };
 const fmtTime = iso => { const d = new Date(iso); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+
+function syncClock(serverIso, t0, t1) {
+  if (!serverIso) return;
+  const rtt = t1 - t0;
+  const sample = toMs(serverIso) - (t0 + t1) / 2;
+  if (S.clkRtt === Infinity || rtt <= S.clkRtt + 40) { S.offset = sample; S.clkRtt = rtt; }
+  else S.clkRtt += 15; // со временем снова принимаем замеры
+}
 
 async function rpc(name, args) {
   const { data, error } = await sb.rpc(name, args || {});
@@ -446,12 +454,14 @@ function renderNotifs() {
 
 /* ───────────── Очередь и поиск ───────────── */
 async function syncQueue() {
+  const seq = ++S.qSeq, t0 = Date.now();
   const st = await rpc('queue_state');
+  if (seq !== S.qSeq) return; // пришёл устаревший ответ — игнорируем, иначе кнопки «прыгают»
   if (!st) { saveSession(''); showAuth('Сессия истекла. Войдите снова.'); return; }
+  syncClock(st.now, t0, Date.now());
   const was = S.queue.searching;
   S.queue = { searching: !!st.searching, since: toMs(st.since), count: st.count || 0, need: st.need || S.teamSize * 2 };
   S.teamSize = Math.max(1, Math.round(S.queue.need / 2));
-  if (st.now) S.offset = toMs(st.now) - Date.now();
   updateSearchUI();
   if (was && !S.queue.searching) await syncMatch(); // очередь сменилась матчем
 }
@@ -557,13 +567,17 @@ const mySide = m => (m.blue.some(p => p.id === S.me.id) ? 'blue' : 'orange');
 
 async function syncMatch() {
   if (!S.me) return;
-  const m = await rpc('my_match');
-  if (m && m.server_now) S.offset = toMs(m.server_now) - Date.now();
+  const seq = ++S.mSeq, t0 = Date.now();
+  let m = await rpc('my_match');
+  if (seq !== S.mSeq) return;
+  if (m && m.server_now) syncClock(m.server_now, t0, Date.now());
+  if (m && S.leftIds.has(String(m.id))) m = null; // вы уже вышли из этого матча
   if (m && m.blue && m.orange) {
     const ids = [...m.blue, ...m.orange].map(p => p.id);
     const fresh = m.id !== S.bnMatch;
     S.bnMatch = m.id;
     await loadBanners(ids, fresh);
+    if (seq !== S.mSeq) return;
   }
   applyMatch(m);
   if (m && m.status === 'active') await fetchExtra();
@@ -651,7 +665,7 @@ function renderMatch(force) {
   const m = S.match;
   if (!m || m.status !== 'active') return;
   const ds = m.draft_state || {};
-  const sig = JSON.stringify([m.id, ds, m.my_report, m.draft_finished_at, S.me.isadmin, S.extra, shotState(m), lobbyOver(m), [...m.blue, ...m.orange].map(p => S.banners[p.id] || '')]);
+  const sig = JSON.stringify([m.id, ds, m.my_report, m.draft_finished_at, S.me.isadmin, S.extra, lobbyOver(m), [...m.blue, ...m.orange].map(p => S.banners[p.id] || '')]);
   if (!force && sig === S.sig) return;
   S.sig = sig;
   setText('mNum', 'Матч #' + (m.match_number || '—'));
@@ -713,31 +727,22 @@ function draftHtml(m, ds) {
 
 /* Результат матча: скриншот + отмена голосованием */
 const lobbyLeft = m => (m && m.draft_finished_at ? Math.max(0, Math.ceil((toMs(m.draft_finished_at) + CFG.lobbySec * 1000 - nowMs()) / 1000)) : CFG.lobbySec);
-const lobbyOver = m => !!(m && m.draft_finished_at) && lobbyLeft(m) <= 0;
-const shotKey = m => 'bnk_shot_' + m.id;
-function shotState(m) { // '' | 'sent' | 'skipped'
-  if (!m) return '';
-  if (S.extra && S.extra.match === String(m.id) && S.extra.has_shot) return 'sent';
-  if (S.shot[m.id]) return S.shot[m.id];
-  try { return localStorage.getItem(shotKey(m)) || ''; } catch (e) { return ''; }
-}
-function setShotState(m, v) { S.shot[m.id] = v; try { localStorage.setItem(shotKey(m), v); } catch (e) { /* ок */ } }
-
+const lobbyOver = m => {
+  if (!m || !m.draft_finished_at) return false;
+  if (S.overSeen[m.id]) return true;           // раз прошло 5 минут — блок больше не пропадает
+  if (lobbyLeft(m) <= 0) { S.overSeen[m.id] = true; return true; }
+  return false;
+};
 function resultBoxHtml(m) {
-  const st = shotState(m);
   const players = m.blue.length + m.orange.length;
   const needed = (S.extra && S.extra.needed) || Math.min(CFG.cancelVotes, players);
   const votes = (S.extra && S.extra.match === String(m.id)) ? (S.extra.votes || 0) : 0;
   const voted = !!(S.extra && S.extra.match === String(m.id) && S.extra.voted);
   const segs = Array.from({ length: needed }, (_, i) => `<i class="${i < votes ? 'on' : ''}"></i>`).join('');
-  const shotPart = st === 'sent'
-    ? `<div class="rb-done ok"><i class="fas fa-circle-check"></i><div><b>Скриншот отправлен</b><span>Админ проверит его и засчитает матч.</span></div></div>`
-    : st === 'skipped'
-      ? `<div class="rb-done"><i class="fas fa-circle-info"></i><div><b>Скриншот не отправлен</b><span>Вы отметили, что скриншота нет. Результат решит админ.</span></div></div>`
-      : `<div class="rb-head"><div class="ico"><i class="fas fa-camera"></i></div>
-          <div class="txt"><b>Результат матча</b><span>Прикрепите скриншот итогов — админ увидит его и засчитает победителя.</span></div></div>
-        <button class="btn btn-primary btn-xl" data-act="shot-pick"><i class="fas fa-image"></i> Прикрепить скриншот</button>
-        <button class="btn btn-ghost btn-block rb-skip" data-act="shot-skip">Я не сделал скриншот</button>`;
+  const shotPart = `<div class="rb-head"><div class="ico"><i class="fas fa-camera"></i></div>
+      <div class="txt"><b>Результат матча</b><span>Прикрепите скриншот итогов — админ засчитает победителя. После отправки вы выйдете из матча и сможете искать новый.</span></div></div>
+    <button class="btn btn-primary btn-xl" data-act="shot-pick"><i class="fas fa-image"></i> Прикрепить скриншот</button>
+    <button class="btn btn-ghost btn-block rb-skip" data-act="shot-skip">Я не сделал скриншот</button>`;
   return `<div class="panel result-box">${shotPart}</div>
     <div class="panel cancel-box">
       <div class="cb-head"><div class="txt"><b>Отмена матча</b><span>Нужно ${needed} голосов игроков</span></div><div class="cb-count"><b>${votes}</b>/${needed}</div></div>
@@ -771,8 +776,19 @@ async function banMap(d) {
   await syncMatch();
 }
 
-/* Закрываем вкладку матча (матч остаётся активным, вернуться можно через «Матч») */
-function closeMatchTab() { navigate('home'); }
+/* Игрок выходит из матча (сам матч остаётся у админа) и может сразу искать новый */
+function leaveMatchLocal(m) {
+  S.leftIds.add(String(m.id));
+  S.mSeq++; S.qSeq++;
+  S.match = null; S.extra = null; S.sig = '';
+  stopChat();
+  closeModal('confirmModal');
+  $('chatPanel').hidden = true; $('matchTop').hidden = false;
+  $('matchBody').innerHTML = '';
+  setNavMatch('idle');
+  navigate('home');
+  syncQueue().catch(() => {});
+}
 
 async function fetchExtra() {
   const m = S.match;
@@ -811,14 +827,14 @@ async function uploadShot(file) {
   let data = await resizeShot(file);
   if (data.length > 650000) data = await resizeShot(file, 1000, 0.6);
   await rpc('submit_screenshot', { p_match: String(m.id), p_image: data });
-  setShotState(m, 'sent');
-  toast('success', 'Скриншот отправлен', 'Админ проверит результат');
-  closeMatchTab();
+  toast('success', 'Скриншот отправлен', 'Админ проверит результат. Можно искать новый матч');
+  leaveMatchLocal(m);
 }
-function skipShot() {
+async function skipShot() {
   const m = S.match; if (!m) return;
-  setShotState(m, 'skipped');
-  closeMatchTab();
+  await rpc('leave_match', { p_match: String(m.id) });
+  toast('info', 'Вы вышли из матча', 'Можно искать новый');
+  leaveMatchLocal(m);
 }
 async function voteCancel() {
   const m = S.match; if (!m) return;
@@ -1679,7 +1695,7 @@ function admMatchCard(m) {
   const active = m.status === 'active';
   const sel = S.admSel[m.id] || '';
   const team = (arr, cls, title, icon) => `<div class="am-team ${cls}"><h5><i class="fas ${icon}"></i> ${title}</h5>
-    ${arr.map(p => `<div class="am-p">${avatarHtml(p, 24)}<span>${esc(p.username)}</span></div>`).join('')}</div>`;
+    ${arr.map(p => `<div class="am-p">${avatarHtml(p, 24)}<span>${esc(p.username)}</span>${(m.left_ids || []).includes(String(p.id)) ? '<em class="am-left">вышел</em>' : ''}</div>`).join('')}</div>`;
   const statRow = p => `<div class="adm-pl" data-pid="${esc(p.id)}"><span>${esc(p.username)}</span>
     <input class="text-input k" type="number" min="0" inputmode="numeric" aria-label="K ${esc(p.username)}"><input class="text-input d" type="number" min="0" inputmode="numeric" aria-label="D ${esc(p.username)}"><input class="text-input a" type="number" min="0" inputmode="numeric" aria-label="A ${esc(p.username)}"></div>`;
   const statTeam = (arr, title) => `<div class="am-kt">${title}</div>${arr.map(statRow).join('')}`;
@@ -1847,6 +1863,20 @@ const ACTIONS = {
   'shot-pick': () => { const f = $('shotFile'); if (f) f.click(); },
   'shot-skip': skipShot,
   'cancel-vote': voteCancel,
+  rename: async () => {
+    if (S.match || S.queue.searching) return toast('error', 'Сейчас нельзя', 'Сначала выйдите из матча и отмените поиск');
+    if ((S.me.balance || 0) < CFG.nickPrice) return toast('error', 'Недостаточно средств', `Смена ника стоит ${CFG.nickPrice} ₽`);
+    const v = await dialog({ title: 'Сменить никнейм', text: `Стоимость ${CFG.nickPrice} ₽. 3–20 символов: буквы, цифры, _ и -`, input: S.me.username, ok: `Сменить за ${CFG.nickPrice} ₽` });
+    if (v === null) return;
+    const nick = v.trim();
+    if (nick === S.me.username) return toast('info', 'Это ваш текущий ник', '');
+    if (!NICK_RE.test(nick)) return toast('error', 'Неверный ник', '3–20 символов: буквы, цифры, _ и -');
+    await rpc('change_username', { p_nick: nick });
+    await refreshMe();
+    closeModal('settingsModal');
+    renderProfile(); updateSearchUI();
+    toast('success', 'Ник изменён', nick);
+  },
   'shot-view': d => { const src = S.admShots[d.sid]; if (src) { $('shotImg').src = src; openModal('shotModal'); } },
   'copy-match': () => S.match && copyText(String(S.match.match_number || S.match.id)),
   'copy-host': () => { const h = S.match && S.match.blue[0]; if (h && h.game_id) copyText(h.game_id); },

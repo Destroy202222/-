@@ -43,7 +43,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 const CFG = { confirmSec: 30, draftSec: 30, lobbySec: 300, pollMs: 2500, framePrice: 25 };
 const NICK_RE = /^[A-Za-z0-9А-Яа-яЁё_-]{3,20}$/;
 const PUBLIC_COLS = 'id,username,elo,matches,wins,losses,win_streak,best_streak,kills,deaths,assists,rounds,stat_matches,likes,popularity,isadmin,avatar_url,avatar_frame,registered';
-const PAGES = ['home', 'matches', 'match', 'matchview', 'profile', 'friends', 'top', 'wallet', 'shop'];
+const PAGES = ['home', 'matches', 'match', 'matchview', 'support', 'profile', 'friends', 'top', 'wallet', 'shop'];
 const SIDE_NAME = { blue: 'Спецназ', orange: 'Террористы' };
 const PARTY_COLORS = ['#f5c451', '#3ddc97', '#38bdf8', '#fb923c'];
 const FRAMES = [
@@ -68,7 +68,7 @@ const S = {
   match: null, offset: 0, sig: '', polling: false, entering: false,
   chat: [], tick: 0, rank: null, stats: { searching: 0, in_match: 0, matches: 0 },
   history: [], adminTab: 'matches',
-  channels: [], timers: {}
+  channels: [], timers: {}, sup: newSup()
 };
 
 /* ───────────── Утилиты ───────────── */
@@ -234,11 +234,11 @@ async function doRegister(e) {
 
 function showAuth(message) {
   stopLoops(); stopChat();
-  S.me = null; S.match = null; S.party = null; S.invites = [];
+  S.me = null; S.match = null; S.party = null; S.invites = []; S.sup = newSup();
   S.queue = { searching: false, since: null, count: 0, need: S.teamSize * 2 };
   $('app').hidden = true;
   $('auth').hidden = false;
-  closeModal('confirmModal');
+  closeModal('confirmModal'); closeModal('settingsModal'); closeModal('notifModal');
   if (message) authMsg('loginMsg', 'error', message);
 }
 
@@ -330,7 +330,7 @@ async function loadStats() {
 }
 async function loadHistory() {
   const { data } = await sb.from('match_history')
-    .select('id,map,result,elo_change,match_date,winner,score_a,score_b,kills,deaths,assists')
+    .select('id,map,result,elo_change,match_date,winner,score_a,score_b,kills,deaths,assists,match_number')
     .eq('user_id', S.me.id).order('match_date', { ascending: false }).limit(30);
   S.history = data || [];
   if (S.page === 'profile') renderProfile();
@@ -361,13 +361,29 @@ function navigate(page) {
   if (page === 'top') renderTop();
   if (page === 'wallet') renderBalance();
   if (page === 'shop') renderShop();
+  if (page === 'support') { renderSupport(); loadTickets().then(() => { if (S.page === 'support' && S.sup.view === 'home') renderSupport(); }); }
 }
 
 function setNavMatch(mode) { // 'idle' | 'searching' | 'match'
-  const btn = $('navPlay');
-  btn.classList.toggle('live', mode !== 'idle');
-  $('navPlayIcon').className = 'fas ' + (mode === 'match' ? 'fa-gamepad' : mode === 'searching' ? 'fa-magnifying-glass' : 'fa-play');
+  $('navPlay').classList.toggle('live', mode !== 'idle');
   setText('navPlayLabel', mode === 'match' ? 'Матч' : mode === 'searching' ? 'Поиск' : 'Играть');
+}
+
+/* Уведомления */
+function renderNotifs() {
+  const box = $('notifBody'); if (!box) return;
+  const row = (icon, name, text, yes, no) => `<div class="nt"><div class="nt-ico"><i class="fas ${icon}"></i></div>
+    <div class="nt-main"><b>${esc(name)}</b><span>${text}</span></div>${yes}${no}</div>`;
+  const inv = S.invites.map(i => {
+    const f = S.users[i.from_id];
+    return row('fa-user-group', f ? f.username : 'Игрок', 'зовёт вас в пати',
+      `<button class="btn btn-ok btn-sm" data-act="party-accept" data-id="${i.id}">Принять</button>`,
+      `<button class="btn btn-ghost btn-sm" data-act="party-decline" data-id="${i.id}" aria-label="Отклонить"><i class="fas fa-times"></i></button>`);
+  });
+  const req = S.requests.map(u => row('fa-user-plus', u.username, 'хочет дружить',
+    `<button class="btn btn-ok btn-sm" data-act="friend-accept" data-id="${u.id}">Принять</button>`,
+    `<button class="btn btn-ghost btn-sm" data-act="friend-decline" data-id="${u.id}" aria-label="Отклонить"><i class="fas fa-times"></i></button>`));
+  box.innerHTML = [...inv, ...req].join('') || '<div class="empty"><i class="fas fa-bell-slash"></i>Уведомлений нет</div>';
 }
 
 /* ───────────── Очередь и поиск ───────────── */
@@ -761,28 +777,6 @@ function achievements(u) {
   ];
 }
 
-function mapStatsHtml() {
-  const by = {};
-  S.history.forEach(h => {
-    const mp = mapById(h.map), k = mp.id.toLowerCase();
-    const o = by[k] || (by[k] = { w: 0, l: 0, k: 0, d: 0 });
-    if (h.result === 'win') o.w++; else o.l++;
-    o.k += h.kills || 0; o.d += h.deaths || 0;
-  });
-  const pool = S.maps.slice();
-  Object.keys(by).forEach(k => { if (!pool.some(m => m.id.toLowerCase() === k)) pool.push(mapById(k)); });
-  if (!pool.length) return '';
-  return '<div class="mm-title">По картам</div><div class="mm-list">' + pool.map(mp => {
-    const o = by[mp.id.toLowerCase()] || { w: 0, l: 0, k: 0, d: 0 }, tot = o.w + o.l;
-    const kd = tot && (o.d ? (o.k / o.d).toFixed(2) : (o.k ? String(o.k) : '0'));
-    return `<div class="mm ${tot ? '' : 'none'}"><div class="mm-pic" style="${mapBg(mp)}"></div>
-      <div class="mm-nm">${esc(mp.name)}</div>
-      <div class="mm-wl">${tot ? `<b class="g">${o.w}</b>/<b class="r">${o.l}</b>` : '—'}</div>
-      <div class="mm-kd">${tot ? kd : '—'}</div>
-      <div class="mm-pc">${tot ? Math.round(o.w / tot * 100) + '%' : '—'}</div></div>`;
-  }).join('') + '</div>';
-}
-
 function renderProfile() {
   const u = S.me; if (!u) return;
   const body = $('profileBody'); if (!body) return;
@@ -852,7 +846,6 @@ function renderProfile() {
       <div class="chart" id="eloChart"></div>
       <div class="chart-mm"><span>мин <b id="chartMin">—</b></span><span>макс <b id="chartMax">—</b></span></div>
       <div class="dots" id="chartDots"></div>
-      ${mapStatsHtml()}
     </div>
 
     <div class="panel"><div class="panel-head"><h3>Последние матчи</h3><span class="pill-soft">${recent.length ? Math.round(wlWins / recent.length * 100) + '% W' : '—'}</span></div>
@@ -955,7 +948,8 @@ async function openMatchDetails(d) {
       </div></div></div>
     ${team(blue, 'blue', 'Спецназ', 'fa-shield-halved', h.winner === 'blue')}
     ${team(orange, 'orange', 'Террористы', 'fa-fire', h.winner === 'orange')}
-    ${hasStats ? '' : '<div class="panel"><div class="empty" style="padding:6px">Подробная статистика по этому матчу не вводилась админом</div></div>'}`;
+    ${hasStats ? '' : '<div class="panel"><div class="empty" style="padding:6px">Подробная статистика по этому матчу не вводилась админом</div></div>'}
+    <button class="btn btn-ghost btn-block" data-act="sup-from-match" data-id="${h.id}"><i class="fas fa-headset"></i> Сообщить о проблеме с матчем</button>`;
   window.scrollTo({ top: 0 });
 }
 
@@ -1007,6 +1001,8 @@ function updateFriendBadges() {
   const n = S.requests.length + S.invites.length;
   const dot = $('navFriendDot'); dot.hidden = n === 0; dot.textContent = n;
   const rb = $('reqBadge'); rb.hidden = S.requests.length === 0; rb.textContent = S.requests.length;
+  const hb = $('hdBadge'); hb.hidden = n === 0; hb.textContent = n;
+  if ($('notifModal').classList.contains('active')) renderNotifs();
 }
 function friendRowHtml(u) {
   const isF = S.friends.some(x => x.id === u.id);
@@ -1169,11 +1165,168 @@ async function useFrame(d) {
   renderShop();
 }
 
+/* ───────────── Поддержка ───────────── */
+const SUPPORT_CATS = [
+  { id: 'player', icon: 'fa-user-slash', title: 'Жалоба на игрока', sub: 'Читы, оскорбления, слив матча', color: '#ff4d6d', needTarget: true },
+  { id: 'result', icon: 'fa-flag-checkered', title: 'Неверный результат', sub: 'Победу или поражение засчитали не так', color: '#f5c451', needMatch: true },
+  { id: 'map', icon: 'fa-map-location-dot', title: 'Неверная карта', sub: 'Карта или сторона записаны неправильно', color: '#38bdf8', needMatch: true },
+  { id: 'stats', icon: 'fa-chart-simple', title: 'Ошибка в статистике', sub: 'K/D/A или ELO посчитаны неверно', color: '#a78bfa', needMatch: true },
+  { id: 'wallet', icon: 'fa-wallet', title: 'Кошелёк и промокоды', sub: 'Баланс, рамки, промокод не работает', color: '#3ddc97' },
+  { id: 'bug', icon: 'fa-bug', title: 'Ошибка в приложении', sub: 'Что-то не работает или зависает', color: '#fb923c' },
+  { id: 'other', icon: 'fa-circle-question', title: 'Другое', sub: 'Любой другой вопрос к администрации', color: '#8fd0ff' }
+];
+const SUPPORT_HINTS = {
+  player: 'Что именно сделал игрок? Опишите нарушение и момент в матче.',
+  result: 'Кто на самом деле победил и почему результат неверный?',
+  map: 'Какая карта была выбрана и какая записана в матче?',
+  stats: 'Что посчитано неверно: убийства, смерти, ассисты или ELO?',
+  wallet: 'Что случилось с балансом, рамкой или промокодом?',
+  bug: 'Что вы делали и что пошло не так? На каком экране?',
+  other: 'Опишите ваш вопрос.'
+};
+const TICKET_ST = { open: ['Открыто', 'info'], progress: ['В работе', 'warn'], resolved: ['Решено', 'ok'], rejected: ['Отклонено', ''] };
+const catOf = id => SUPPORT_CATS.find(c => c.id === id) || SUPPORT_CATS[SUPPORT_CATS.length - 1];
+
+function newSup() {
+  return { view: 'home', cat: null, target: null, match: null, matchFull: null, text: '', q: '', results: [], tickets: [], err: '' };
+}
+
+async function loadTickets() {
+  try { S.sup.tickets = (await rpc('my_tickets')) || []; S.sup.err = ''; }
+  catch (e) { S.sup.tickets = []; S.sup.err = errText(e); }
+}
+
+async function ensureMatchFull() {
+  const sp = S.sup;
+  if (!sp.match || sp.matchFull) return;
+  const id = sp.match.id;
+  const { data } = await sb.from('match_history').select('id,team_blue,team_orange').eq('id', id).maybeSingle();
+  if (sp.match && String(sp.match.id) === String(id)) { sp.matchFull = data || null; if (S.page === 'support' && sp.view === 'form') renderSupport(); }
+}
+const supMatchPlayers = () => {
+  const f = S.sup.matchFull;
+  return f ? [...(f.team_blue || []), ...(f.team_orange || [])].filter(p => p.id !== S.me.id) : [];
+};
+
+function supValid() {
+  const sp = S.sup, c = catOf(sp.cat), t = sp.text.trim();
+  if (t.length < 10 || t.length > 500) return false;
+  if (c.needTarget && !sp.target) return false;
+  if (c.needMatch && !sp.match) return false;
+  return true;
+}
+function updateSupportSubmit() {
+  const b = $('supSubmit'); if (b) b.disabled = !supValid();
+  setText('supCount', S.sup.text.length + ' / 500');
+}
+
+function supportHomeHtml() {
+  const sp = S.sup;
+  const cards = SUPPORT_CATS.map(c => `<button class="sp-card" type="button" style="--c:${c.color}" data-act="sup-pick" data-id="${c.id}">
+    <span class="sp-ico"><i class="fas ${c.icon}"></i></span><span class="sp-t">${c.title}</span><span class="sp-s">${c.sub}</span></button>`).join('');
+  const tickets = sp.tickets.map(tk => {
+    const c = catOf(tk.category), st = TICKET_ST[tk.status] || TICKET_ST.open;
+    return `<div class="tk" style="--c:${c.color}">
+      <div class="tk-top"><span class="sp-ico sm"><i class="fas ${c.icon}"></i></span>
+        <div class="tk-main"><b>${c.title}</b><span>${fmtDay(tk.created_at)}, ${fmtTime(tk.created_at)}${tk.match_number ? ' · матч #' + tk.match_number : ''}${tk.target_name ? ' · на ' + esc(tk.target_name) : ''}</span></div>
+        <span class="badge ${st[1]}">${st[0]}</span></div>
+      <div class="tk-text">${esc(tk.text)}</div>
+      ${tk.admin_reply ? `<div class="tk-reply"><i class="fas fa-headset"></i><div><b>Ответ поддержки</b><span>${esc(tk.admin_reply)}</span></div></div>` : ''}</div>`;
+  }).join('');
+  const body = sp.err
+    ? `<div class="empty"><i class="fas fa-triangle-exclamation"></i>Не удалось загрузить обращения.<br><span style="font-size:12px">${esc(sp.err)}</span></div>`
+    : (tickets || '<div class="empty"><i class="fas fa-inbox"></i>Обращений пока нет</div>');
+  return `<div class="sp-hero"><div class="sp-hero-ico"><i class="fas fa-headset"></i></div>
+      <div><h2>Центр поддержки</h2><p>Выберите, с чем нужна помощь. Администрация рассмотрит обращение, ответ появится здесь.</p></div></div>
+    <h3 class="lg-label">С чем нужна помощь</h3>
+    <div class="sp-grid">${cards}</div>
+    <div class="panel" style="margin-top:18px"><div class="panel-head"><h3>Мои обращения</h3><span class="aside">${sp.tickets.length}</span></div>${body}</div>`;
+}
+
+function supResultsHtml() {
+  const list = S.sup.results;
+  if (!S.sup.q.trim()) return '';
+  if (!list.length) return '<div class="empty" style="padding:12px">Никого не нашли</div>';
+  return '<div class="rows">' + list.map(u => `<div class="row link" data-act="sup-target" data-id="${esc(u.id)}">${avatarHtml(u, 34)}
+    <div class="row-main"><div class="row-title">${esc(u.username)}</div><div class="row-sub">ELO ${u.elo ?? '—'}</div></div></div>`).join('') + '</div>';
+}
+
+function supportFormHtml() {
+  const sp = S.sup, c = catOf(sp.cat);
+  let h = `<div class="sp-back"><button class="icon-btn" type="button" data-act="sup-back" aria-label="Назад"><i class="fas fa-chevron-left"></i></button>
+    <div class="sp-cat" style="--c:${c.color}"><span class="sp-ico sm"><i class="fas ${c.icon}"></i></span><div><b>${c.title}</b><span>${c.sub}</span></div></div></div>`;
+
+  if (c.needTarget) {
+    let inner;
+    if (sp.target) {
+      inner = `<div class="sp-sel">${avatarHtml(sp.target, 40)}<div class="row-main"><div class="row-title">${esc(sp.target.username)}</div>
+        <div class="row-sub">ELO ${sp.target.elo ?? '—'}</div></div><button class="btn btn-ghost btn-sm" type="button" data-act="sup-target-clear">Сменить</button></div>`;
+    } else {
+      const mp = supMatchPlayers();
+      inner = `${mp.length ? `<div class="sp-quick"><span>Игроки из выбранного матча</span><div class="sp-chips">${mp.map(p => `<button class="sp-chip" type="button" data-act="sup-target" data-id="${esc(p.id)}">${avatarHtml(p, 22)}${esc(p.username)}</button>`).join('')}</div></div>` : ''}
+        <input class="text-input" id="supSearch" type="search" autocomplete="off" placeholder="Найти игрока по нику" value="${esc(sp.q)}">
+        <div id="supResults">${supResultsHtml()}</div>`;
+    }
+    h += `<div class="panel"><div class="panel-head"><h3><i class="fas fa-user"></i> На кого жалоба</h3><span class="aside">обязательно</span></div>${inner}</div>`;
+  }
+
+  if (c.needMatch || c.needTarget) {
+    const rows = S.history.slice(0, 10).map(m => {
+      const on = sp.match && String(sp.match.id) === String(m.id), win = m.result === 'win';
+      return `<div class="sp-m ${on ? 'on' : ''}" data-act="sup-match" data-id="${m.id}">
+        <div class="map-thumb" style="width:52px;height:40px">${mapThumb(mapById(m.map))}</div>
+        <div class="main"><b>${esc(m.map || '—')} · ${win ? 'Победа' : 'Поражение'}</b><span>${fmtDay(m.match_date)}, ${fmtTime(m.match_date)}${m.match_number ? ' · #' + m.match_number : ''}${m.score_a != null ? ' · ' + m.score_a + ':' + m.score_b : ''}</span></div>
+        <i class="fas ${on ? 'fa-circle-check' : 'fa-circle'}"></i></div>`;
+    }).join('');
+    h += `<div class="panel"><div class="panel-head"><h3><i class="fas fa-gamepad"></i> Матч</h3><span class="aside">${c.needMatch ? 'обязательно' : 'по желанию'}</span></div>
+      ${rows || '<div class="empty" style="padding:14px"><i class="fas fa-gamepad"></i>Сыгранных матчей пока нет</div>'}</div>`;
+  }
+
+  h += `<div class="panel"><div class="panel-head"><h3><i class="fas fa-pen"></i> Описание</h3><span class="aside" id="supCount">${sp.text.length} / 500</span></div>
+    <textarea class="text-input sp-ta" id="supText" maxlength="500" placeholder="${esc(SUPPORT_HINTS[c.id])}">${esc(sp.text)}</textarea>
+    <p class="hint" style="text-align:left;margin-top:8px">Минимум 10 символов. Опишите всё по делу — так ответят быстрее.</p></div>
+    <button class="btn btn-primary btn-xl" type="button" id="supSubmit" data-act="sup-submit" ${supValid() ? '' : 'disabled'}><i class="fas fa-paper-plane"></i> Отправить обращение</button>`;
+  return h;
+}
+
+function renderSupport() {
+  const box = $('supportBody'); if (!box || !S.me) return;
+  box.innerHTML = S.sup.view === 'form' ? supportFormHtml() : supportHomeHtml();
+}
+
+async function supSearch(q) {
+  const sp = S.sup;
+  sp.q = q;
+  const clean = q.replace(/[%_\\,()]/g, '').trim();
+  if (!clean) { sp.results = []; const r = $('supResults'); if (r) r.innerHTML = ''; return; }
+  const { data } = await sb.from('users').select(PUBLIC_COLS).ilike('username', '%' + clean + '%').neq('id', S.me.id).limit(8);
+  if (sp.q !== q) return;
+  sp.results = data || [];
+  const r = $('supResults'); if (r) r.innerHTML = supResultsHtml();
+}
+const supSearchDeb = debounce(q => run(() => supSearch(q)), 300);
+
+async function submitTicket() {
+  const sp = S.sup;
+  if (!supValid()) return;
+  await rpc('create_ticket', {
+    p_category: sp.cat, p_text: sp.text.trim(),
+    p_target: sp.target ? sp.target.id : null,
+    p_match_ref: sp.match ? String(sp.match.id) : null,
+    p_match_number: sp.match && sp.match.match_number ? sp.match.match_number : null
+  });
+  S.sup = newSup();
+  toast('success', 'Обращение отправлено', 'Ответ появится в «Моих обращениях»');
+  await loadTickets();
+  renderSupport();
+  window.scrollTo({ top: 0 });
+}
+
 /* ───────────── Админка ───────────── */
 function renderAdmin() {
   const box = $('adminPanel'); if (!box) return;
   if (!S.me || !S.me.isadmin) { box.innerHTML = ''; return; }
-  const tabs = [['matches', 'Матчи'], ['players', 'Игроки'], ['queue', 'Очередь'], ['promos', 'Промокоды'], ['admins', 'Админы'], ['settings', 'Формат']];
+  const tabs = [['matches', 'Матчи'], ['players', 'Игроки'], ['queue', 'Очередь'], ['promos', 'Промокоды'], ['admins', 'Админы'], ['tickets', 'Обращения'], ['settings', 'Формат']];
   box.innerHTML = `<div class="panel" style="margin-top:14px"><div class="panel-head"><h3><i class="fas fa-user-shield"></i> Админ-панель</h3></div>
     <div class="adm-tabs">${tabs.map(([k, v]) => `<button class="${S.adminTab === k ? 'on' : ''}" data-act="adm-tab" data-tab="${k}">${v}</button>`).join('')}</div>
     <div id="admBody"><div class="empty">Загрузка…</div></div></div>`;
@@ -1222,6 +1375,21 @@ async function loadAdminTab() {
     body.innerHTML = `<div class="adm-row" style="margin:0 0 12px"><input class="text-input" id="admNewAdmin" placeholder="Ник игрока"><button class="btn btn-primary" data-act="adm-add-admin">Добавить</button></div>` +
       '<div class="rows">' + (data || []).map(a => `<div class="row"><div class="row-main"><div class="row-title">${esc(a.username)} 👑</div></div>
         <button class="btn btn-ghost btn-sm" data-act="adm-set-admin" data-id="${a.id}" data-value="0">Снять</button></div>`).join('') + '</div>';
+  } else if (tab === 'tickets') {
+    const all = !!S.admTkAll;
+    const list = await rpc('admin_tickets', { p_status: all ? 'all' : 'active' });
+    body.innerHTML = `<button class="btn btn-ghost btn-sm" data-act="adm-tk-filter" style="margin-bottom:10px">${all ? 'Только активные' : 'Показать все'}</button>` +
+      (list.length ? list.map(t => {
+        const c = catOf(t.category), st = TICKET_ST[t.status] || TICKET_ST.open;
+        return `<div class="adm-card"><div class="hdr"><b>#${t.id} · ${c.title}</b><span class="badge ${st[1]}">${st[0]}</span></div>
+          <div class="row-sub">${esc(t.username || '—')}${t.target_name ? ' → ' + esc(t.target_name) : ''}${t.match_number ? ' · матч #' + t.match_number : ''} · ${fmtDay(t.created_at)} ${fmtTime(t.created_at)}</div>
+          <div style="margin:8px 0;font-size:13px;word-break:break-word">${esc(t.text)}</div>
+          ${t.admin_reply ? `<div class="row-sub" style="margin-bottom:8px">Ответ: ${esc(t.admin_reply)}</div>` : ''}
+          <div class="adm-btns" style="grid-template-columns:repeat(3,1fr)">
+            <button class="btn btn-sm btn-ghost" data-act="adm-tk" data-id="${t.id}" data-st="progress">В работу</button>
+            <button class="btn btn-sm btn-ok" data-act="adm-tk" data-id="${t.id}" data-st="resolved">Решено</button>
+            <button class="btn btn-sm btn-danger" data-act="adm-tk" data-id="${t.id}" data-st="rejected">Отклонить</button></div></div>`;
+      }).join('') : '<div class="empty">Обращений нет</div>');
   } else if (tab === 'settings') {
     body.innerHTML = `<div class="stack"><label class="row-sub" for="admSize">Формат матча (очередь сбросится)</label>
       <select class="text-input" id="admSize">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${S.teamSize === n ? 'selected' : ''}>${n} на ${n}</option>`).join('')}</select>
@@ -1268,7 +1436,10 @@ async function admCancel(d) {
 
 /* ───────────── Действия (делегирование кликов) ───────────── */
 const ACTIONS = {
-  nav: d => navigate(d.page),
+  nav: d => { closeModal('settingsModal'); closeModal('notifModal'); navigate(d.page); },
+  settings: () => openModal('settingsModal'),
+  notifs: () => { renderNotifs(); openModal('notifModal'); },
+  support: () => { closeModal('settingsModal'); closeModal('notifModal'); navigate('support'); },
   close: d => closeModal(d.target),
   'auth-tab': d => switchAuthTab(d.tab),
   logout,
@@ -1302,6 +1473,37 @@ const ACTIONS = {
   'avatar-remove': removeAvatar,
   'frame-buy': buyFrame,
   'frame-use': useFrame,
+  'sup-pick': async d => { const sp = S.sup; sp.cat = d.id; sp.view = 'form'; sp.target = null; sp.q = ''; sp.results = []; renderSupport(); window.scrollTo({ top: 0 }); ensureMatchFull(); },
+  'sup-back': () => { S.sup.view = 'home'; renderSupport(); window.scrollTo({ top: 0 }); },
+  'sup-target': d => {
+    const u = S.sup.results.concat(supMatchPlayers()).find(x => String(x.id) === String(d.id));
+    if (u) { S.sup.target = u; renderSupport(); }
+  },
+  'sup-target-clear': () => { S.sup.target = null; S.sup.q = ''; S.sup.results = []; renderSupport(); },
+  'sup-match': async d => {
+    const sp = S.sup;
+    if (sp.match && String(sp.match.id) === String(d.id)) { sp.match = null; sp.matchFull = null; return renderSupport(); }
+    sp.match = S.history.find(x => String(x.id) === String(d.id)) || null; sp.matchFull = null;
+    renderSupport(); await ensureMatchFull();
+  },
+  'sup-submit': submitTicket,
+  'sup-from-match': d => {
+    S.sup = newSup();
+    S.sup.match = S.history.find(x => String(x.id) === String(d.id)) || null;
+    navigate('support');
+    ensureMatchFull();
+  },
+  'adm-tk-filter': () => { S.admTkAll = !S.admTkAll; loadAdminTab(); },
+  'adm-tk': async d => {
+    let reply = null;
+    if (d.st !== 'progress') {
+      reply = await dialog({ title: d.st === 'resolved' ? 'Закрыть обращение' : 'Отклонить обращение', text: 'Ответ игроку (необязательно)', input: '', ok: 'Готово' });
+      if (reply === null) return;
+    }
+    await rpc('admin_update_ticket', { p_id: Number(d.id), p_status: d.st, p_reply: (reply || '').trim() || null });
+    toast('success', 'Обновлено', '');
+    await loadAdminTab();
+  },
   'adm-tab': d => { S.adminTab = d.tab; renderAdmin(); },
   'adm-refresh': () => loadAdminTab(),
   'adm-open': () => { S.adminTab = 'matches'; navigate('profile'); setTimeout(() => $('adminPanel') && $('adminPanel').scrollIntoView({ behavior: 'smooth' }), 150); },
@@ -1373,13 +1575,17 @@ function bindEvents() {
       if (fn) run(fn, el.dataset, el);
       return;
     }
-    if (e.target.classList && e.target.classList.contains('overlay') && ['profileModal', 'matchModal'].includes(e.target.id)) closeModal(e.target.id);
+    if (e.target.classList && e.target.classList.contains('overlay') && ['profileModal', 'matchModal', 'settingsModal', 'notifModal'].includes(e.target.id)) closeModal(e.target.id);
+  });
+  document.addEventListener('input', e => {
+    if (e.target.id === 'supText') { S.sup.text = e.target.value; updateSupportSubmit(); }
+    else if (e.target.id === 'supSearch') { S.sup.q = e.target.value; supSearchDeb(e.target.value); }
   });
   document.addEventListener('change', e => {
     if (e.target.id === 'avatarFile') run(() => uploadAvatar(e.target.files[0]));
   });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeModal('profileModal'); closeModal('matchModal'); }
+    if (e.key === 'Escape') { ['profileModal', 'matchModal', 'settingsModal', 'notifModal'].forEach(closeModal); }
   });
   $('loginForm').addEventListener('submit', doLogin);
   $('registerForm').addEventListener('submit', doRegister);

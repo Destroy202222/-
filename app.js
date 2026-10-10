@@ -841,8 +841,8 @@ function renderProfile() {
         <div class="stat"><div class="k">Поражения</div><div class="v r">${u.losses}</div></div></div>
       <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:10px">
         <div class="stat"><div class="k">Лучшая серия</div><div class="v">${u.best_streak}</div></div>
-        <div class="stat"><div class="k">👍 Оценок</div><div class="v">${u.likes}</div></div>
-        <div class="stat"><div class="k">🔥 Популярность</div><div class="v">${u.popularity}</div></div></div>
+        <div class="stat"><div class="k">Оценок</div><div class="v">${u.likes}</div></div>
+        <div class="stat"><div class="k">Популярность</div><div class="v">${u.popularity}</div></div></div>
     </div>
     <div class="place"><span>Твоё место в рейтинге —</span><span class="num">#${S.rank || '—'}</span></div>
 

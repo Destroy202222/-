@@ -1205,3 +1205,15 @@ select.text-input{appearance:auto}
   .app{padding-left:300px}
   #page-home .hero-title{font-size:56px}
 }
+
+/* Подсказка по скриншотам (админ) */
+.ocr-hint{margin-top:8px;display:grid;gap:8px}
+.ocr-card{padding:12px;border-radius:var(--r-md);background:rgba(79,140,255,.08);border:1px solid rgba(79,140,255,.25);font-size:13px}
+.ocr-h{margin-bottom:6px;color:var(--muted)}
+.ocr-row{display:flex;align-items:center;gap:8px;margin-top:4px}
+.ocr-row i{color:var(--accent-hi);width:16px;text-align:center}
+.ocr-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ocr-chip{padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(255,255,255,.06)}
+.ocr-chip.ok{color:var(--win);background:rgba(61,220,151,.12)}
+.ocr-chip.bad{color:var(--live);background:rgba(255,77,109,.12)}
+.ocr-note{font-size:11px;color:var(--dim);text-align:center}

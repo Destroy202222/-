@@ -228,7 +228,7 @@ async function doRegister(e) {
   const p1 = $('regPass').value, p2 = $('regPass2').value;
   const bad = t => authMsg('registerMsg', 'error', t);
   if (!NICK_RE.test(nick)) return bad('Ник: 3–20 символов — буквы, цифры, _ и -');
-  if (gid.length < 3 || gid.length > 30) return bad('ID Standoff: от 3 до 30 символов');
+  if (gid.length < 3 || gid.length > 30) return bad('ID StandKnife: от 3 до 30 символов');
   if (p1.length < 8) return bad('Пароль — минимум 8 символов');
   if (p1 !== p2) return bad('Пароли не совпадают');
   const btn = $('registerBtn'); btn.disabled = true;
@@ -733,22 +733,23 @@ const lobbyOver = m => {
   if (lobbyLeft(m) <= 0) { S.overSeen[m.id] = true; return true; }
   return false;
 };
-function resultBoxHtml(m) {
+function cancelBoxHtml(m) {
   const players = m.blue.length + m.orange.length;
   const needed = (S.extra && S.extra.needed) || Math.min(CFG.cancelVotes, players);
   const votes = (S.extra && S.extra.match === String(m.id)) ? (S.extra.votes || 0) : 0;
   const voted = !!(S.extra && S.extra.match === String(m.id) && S.extra.voted);
   const segs = Array.from({ length: needed }, (_, i) => `<i class="${i < votes ? 'on' : ''}"></i>`).join('');
-  const shotPart = `<div class="rb-head"><div class="ico"><i class="fas fa-camera"></i></div>
-      <div class="txt"><b>Результат матча</b><span>Прикрепите скриншот итогов — админ засчитает победителя. После отправки вы выйдете из матча и сможете искать новый.</span></div></div>
-    <button class="btn btn-primary btn-xl" data-act="shot-pick"><i class="fas fa-image"></i> Прикрепить скриншот</button>
-    <button class="btn btn-ghost btn-block rb-skip" data-act="shot-skip">Я не сделал скриншот</button>`;
-  return `<div class="panel result-box">${shotPart}</div>
-    <div class="panel cancel-box">
+  return `<div class="panel cancel-box">
       <div class="cb-head"><div class="txt"><b>Отмена матча</b><span>Нужно ${needed} голосов игроков</span></div><div class="cb-count"><b>${votes}</b>/${needed}</div></div>
       <div class="cb-bar">${segs}</div>
       <button class="btn ${voted ? 'btn-ghost' : 'btn-danger'} btn-block" data-act="cancel-vote"><i class="fas ${voted ? 'fa-rotate-left' : 'fa-ban'}"></i> ${voted ? 'Отозвать голос' : 'Проголосовать за отмену'}</button>
     </div>`;
+}
+function resultBoxHtml() {
+  return `<div class="panel result-box"><div class="rb-head"><div class="ico"><i class="fas fa-camera"></i></div>
+      <div class="txt"><b>Результат матча</b><span>Прикрепите скриншот итогов — админ засчитает победителя. После отправки вы выйдете из матча и сможете искать новый.</span></div></div>
+    <button class="btn btn-primary btn-xl" data-act="shot-pick"><i class="fas fa-image"></i> Прикрепить скриншот</button>
+    <button class="btn btn-ghost btn-block rb-skip" data-act="shot-skip">Я не сделал скриншот</button></div>`;
 }
 
 function lobbyHtml(m, ds) {
@@ -760,14 +761,14 @@ function lobbyHtml(m, ds) {
       <div class="cap">Карта выбрана</div><div class="map">${esc(mp.name)}</div>
       <div class="host">${avatarHtml(host, 40)}
         <div class="meta"><div class="lbl">Хост лобби</div><div class="val">${esc(host.username || '—')}</div></div>
-        <div class="gid"><div class="lbl">Standoff 2 ID</div><div class="val">${esc(host.game_id || '—')}</div></div>
+        <div class="gid"><div class="lbl">StandKnife 2 ID</div><div class="val">${esc(host.game_id || '—')}</div></div>
         <button class="icon-btn" data-act="copy-host" aria-label="Скопировать ID хоста"><i class="fas fa-copy"></i></button>
       </div></div></div>
-    <div class="timer-box"><div class="ico"><i class="fas fa-hourglass-half"></i></div>
-      <div class="txt"><b id="lobbyLabel">${over ? 'Время на заход вышло' : 'Заход в лобби'}</b>Хост собирает игру. Результат можно отправить после таймера.</div>
-      <div class="t" id="lobbyTime">${mmss(lobbyLeft(m))}</div></div>
+    ${over ? cancelBoxHtml(m) : `<div class="timer-box"><div class="ico"><i class="fas fa-hourglass-half"></i></div>
+      <div class="txt"><b id="lobbyLabel">Заход в лобби</b>Хост собирает игру. Результат можно отправить после таймера.</div>
+      <div class="t" id="lobbyTime">${mmss(lobbyLeft(m))}</div></div>`}
     ${teamsHtml(m)}
-    <div id="reportBox" ${over ? '' : 'hidden'}>${over ? resultBoxHtml(m) : ''}</div>`;
+    <div id="reportBox" ${over ? '' : 'hidden'}>${over ? resultBoxHtml() : ''}</div>`;
 }
 
 async function banMap(d) {
@@ -971,7 +972,7 @@ function renderProfile() {
 
   body.innerHTML = `
     <div class="pf-banner${bnCls(S.banners[u.id])}">
-      <div class="logo">BNK<span>FACEIT</span></div>
+      <div class="logo">STANDKNIFE<span>FACEIT</span></div>
       <div class="pf-top">${avatarHtml(u, 84)}
         <div class="pf-id"><div class="no">#${S.rank || '—'}</div>
           <div class="name">${esc(u.username)}${u.isadmin ? ' <i class="fas fa-crown" style="color:var(--gold);font-size:15px"></i>' : ''}</div>

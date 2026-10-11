@@ -761,7 +761,7 @@ function lobbyHtml(m, ds) {
       <div class="cap">Карта выбрана</div><div class="map">${esc(mp.name)}</div>
       <div class="host">${avatarHtml(host, 40)}
         <div class="meta"><div class="lbl">Хост лобби</div><div class="val">${esc(host.username || '—')}</div></div>
-        <div class="gid"><div class="lbl">StandKnife 2 ID</div><div class="val">${esc(host.game_id || '—')}</div></div>
+        <div class="gid"><div class="lbl">StandKnife ID</div><div class="val">${esc(host.game_id || '—')}</div></div>
         <button class="icon-btn" data-act="copy-host" aria-label="Скопировать ID хоста"><i class="fas fa-copy"></i></button>
       </div></div></div>
     ${over ? cancelBoxHtml(m) : `<div class="timer-box"><div class="ico"><i class="fas fa-hourglass-half"></i></div>

@@ -1102,3 +1102,27 @@ select.text-input{appearance:auto}
 
 /* Название сдвинуто вправо, чтобы не заходило на кнопку поддержки */
 .hd-brand{left:calc(50% + 34px)}
+
+/* ═════ Призовой фонд ═════ */
+.prize{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(245,196,81,.10),rgba(15,22,51,.8) 55%);border:1px solid rgba(245,196,81,.28)}
+.prize-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.prize-ico{width:44px;height:44px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;color:#2a1c00;background:linear-gradient(135deg,#ffe08a,var(--gold));box-shadow:0 8px 22px rgba(245,196,81,.35)}
+.prize-ttl span{display:block;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.prize-ttl b{display:block;margin-top:3px;font-family:var(--f-display);font-size:22px;font-weight:800;line-height:1.1;color:var(--gold)}
+.prize-ttl b i{font-size:16px;margin:0 2px}
+.podium{gap:10px}
+.podium > div{position:relative;padding:14px 6px 12px;border-radius:var(--r-md);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02))}
+.podium .p1{padding-top:26px;padding-bottom:18px;border:1px solid rgba(245,196,81,.7);background:linear-gradient(180deg,rgba(245,196,81,.22),rgba(245,196,81,.04));box-shadow:0 0 26px rgba(245,196,81,.18)}
+.podium .p2{border:1px solid rgba(209,213,219,.5)}
+.podium .p3{border:1px solid rgba(205,127,50,.55)}
+.podium .crown{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:18px;color:var(--gold);filter:drop-shadow(0 2px 6px rgba(245,196,81,.6))}
+.podium .medal{width:28px;height:28px;margin:0 auto 6px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:800;font-size:14px;color:#1a1a1a;background:linear-gradient(135deg,#f3f4f6,#9ca3af)}
+.podium .p1 .medal{width:34px;height:34px;font-size:17px;background:linear-gradient(135deg,#ffe08a,var(--gold))}
+.podium .p3 .medal{background:linear-gradient(135deg,#f0b27a,#b8701f)}
+.podium .where{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.podium .sum{font-size:17px;font-weight:800;margin-top:6px;white-space:nowrap}
+.podium .p1 .sum{font-size:20px}
+.podium .cur{margin-top:3px;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.podium .cur i{color:var(--gold);margin-right:2px}
+.prize-note{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:10px 12px;border-radius:var(--r-md);background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.14)}
+.prize-note i{color:var(--accent-hi)}

@@ -1728,14 +1728,95 @@ async function loadMatchShots(m) {
     const r = await rpc('admin_match_shots', { p_match: String(m.id) });
     const shots = (r && r.shots) || [];
     shots.forEach(sh => { S.admShots[String(sh.id)] = sh.image; });
+    (S.admMatchObj = S.admMatchObj || {})[String(m.id)] = m; S.admShotList = S.admShotList || {}; S.admShotList[String(m.id)] = shots;
     const votes = (r && r.votes) || 0, needed = (r && r.needed) || CFG.cancelVotes;
     box.innerHTML = `<div class="am-sec-h"><i class="fas fa-images"></i> Скриншоты <span class="am-cnt">${shots.length}</span>
         <span class="am-votes ${votes ? 'hot' : ''}"><i class="fas fa-ban"></i> отмена ${votes}/${needed}</span></div>` +
       (shots.length
         ? `<div class="am-shots">${shots.map(sh => `<button class="shot ${admSideOf(m, sh.user_id)}" data-act="shot-view" data-sid="${esc(sh.id)}"><img src="${esc(sh.image)}" alt="Скриншот ${esc(sh.username)}"><span class="who">${esc(sh.username)}</span></button>`).join('')}</div>`
-        : '<div class="am-none">Игроки ещё не прислали скриншоты</div>');
+        : '<div class="am-none">Игроки ещё не прислали скриншоты</div>') +
+      (shots.length ? `<button class="btn btn-sm btn-ghost btn-block" data-act="ocr-run" data-id="${esc(m.id)}"><i class="fas fa-wand-magic-sparkles"></i> Подсказка по скриншотам</button><div class="ocr-hint" id="ocr-${esc(m.id)}"></div>` : '');
   } catch (e) {
     box.innerHTML = `<div class="am-sec-h"><i class="fas fa-images"></i> Скриншоты</div><div class="am-none">Не загрузились: ${esc(errText(e))}</div>`;
+  }
+}
+
+/* ───────── Подсказка админу: распознавание скриншотов (Tesseract.js, только в браузере админа) ───────── */
+let _tessP = null;
+function loadTesseract() {
+  if (window.Tesseract) return Promise.resolve();
+  if (_tessP) return _tessP;
+  _tessP = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+    s.onload = res; s.onerror = () => { _tessP = null; rej(new Error('Не удалось загрузить распознавание (проверьте сеть/VPN)')); };
+    document.head.appendChild(s);
+  });
+  return _tessP;
+}
+const ocrNorm = s => String(s || '').toLowerCase().replace(/ё/g, 'е').replace(/[^a-z0-9а-я]/g, '');
+function ocrLev(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+/* ник найден в тексте: точное вхождение или близкое окно (допускаем ~20% ошибок OCR) */
+function ocrFindName(name, text) {
+  const n = ocrNorm(name); if (n.length < 2) return 0;
+  if (text.includes(n)) return 1;
+  let best = 0;
+  for (const w of [n.length - 1, n.length, n.length + 1]) {
+    if (w < 2) continue;
+    for (let i = 0; i + w <= text.length; i++) {
+      const sim = 1 - ocrLev(n, text.slice(i, i + w)) / n.length;
+      if (sim > best) best = sim;
+    }
+  }
+  return best >= 0.8 ? best : 0;
+}
+function ocrAnalyze(m, raw) {
+  const text = ocrNorm(raw);
+  const names = p => (p.username || '');
+  const check = arr => arr.map(p => ({ name: names(p), ok: [names(p), names(p).replace(/\[[^\]]*\]/g, '')].some(n => ocrFindName(n, text) > 0) }));
+  const blue = check(m.blue), orange = check(m.orange);
+  const lines = raw.split(/\n/);
+  const nums = l => (l.match(/\d{1,2}/g) || []).map(Number);
+  const ctLine = lines.find(l => /оборон|\(\s*ct/i.test(l)), tLine = lines.find(l => /атак|\(\s*t\s*\)/i.test(l));
+  const scCT = ctLine ? nums(ctLine).slice(-1)[0] : undefined, scT = tLine ? nums(tLine)[0] : undefined;
+  let win = null;
+  const wl = lines.find(l => /побед/i.test(l)), ll = lines.find(l => /поражен/i.test(l));
+  if (wl) win = /атак|\(\s*t\s*\)/i.test(wl) ? 'T' : (/оборон|\(\s*ct/i.test(wl) ? 'CT' : null);
+  if (!win && ll) win = /атак|\(\s*t\s*\)/i.test(ll) ? 'CT' : (/оборон|\(\s*ct/i.test(ll) ? 'T' : null);
+  if (!win && scCT != null && scT != null && scCT !== scT) win = scCT > scT ? 'CT' : 'T';
+  const map = (raw.match(/sandstone|rust|province|hanami|zone\s*7|breeze|dune|sakura|bubble|pool|inferno|mirage/i) || [])[0] || null;
+  return { blue, orange, scCT, scT, win, map };
+}
+async function ocrRun(id) {
+  const m = (S.admMatchObj || {})[String(id)], shots = (S.admShotList || {})[String(id)] || [];
+  const box = $('ocr-' + id); if (!m || !box) return;
+  if (!shots.length) return toast('info', 'Нет скриншотов', '');
+  box.innerHTML = '<div class="am-none"><i class="fas fa-spinner fa-spin"></i> Распознаём… (первый раз дольше — загружается модель)</div>';
+  try {
+    await loadTesseract();
+    const out = [];
+    for (const sh of shots) {
+      const r = await Tesseract.recognize(sh.image, 'rus+eng');
+      out.push({ by: sh.username, an: ocrAnalyze(m, r.data.text || '') });
+    }
+    box.innerHTML = out.map(o => {
+      const a = o.an, chip = p => `<span class="ocr-chip ${p.ok ? 'ok' : 'bad'}"><i class="fas ${p.ok ? 'fa-check' : 'fa-xmark'}"></i> ${esc(p.name)}</span>`;
+      const found = [...a.blue, ...a.orange].filter(p => p.ok).length, total = a.blue.length + a.orange.length;
+      const sc = (a.scCT != null && a.scT != null) ? `${a.scCT}:${a.scT} (CT:T)` : 'счёт не распознан';
+      const w = a.win === 'CT' ? 'Победа: оборона (CT)' : a.win === 'T' ? 'Победа: атака (T)' : 'победитель не распознан';
+      return `<div class="ocr-card"><div class="ocr-h">Скриншот от <b>${esc(o.by)}</b></div>
+        <div class="ocr-row"><i class="fas fa-trophy"></i> ${w} · ${sc}${a.map ? ' · ' + esc(a.map) : ''}</div>
+        <div class="ocr-row"><i class="fas fa-users"></i> Ников найдено: <b>${found}/${total}</b></div>
+        <div class="ocr-chips">${a.blue.map(chip).join('')}${a.orange.map(chip).join('')}</div></div>`;
+    }).join('') + '<div class="ocr-note">Подсказка автоматическая и может ошибаться. Решение принимаете вы.</div>';
+  } catch (e) {
+    box.innerHTML = `<div class="am-none">Не получилось: ${esc(errText(e))}</div>`;
   }
 }
 
@@ -1880,6 +1961,7 @@ const ACTIONS = {
     renderProfile(); updateSearchUI();
     toast('success', 'Ник изменён', nick);
   },
+  'ocr-run': d => ocrRun(d.id),
   'shot-view': d => { const src = S.admShots[d.sid]; if (src) { $('shotImg').src = src; openModal('shotModal'); } },
   'copy-match': () => S.match && copyText(String(S.match.match_number || S.match.id)),
   'copy-host': () => { const h = S.match && S.match.blue[0]; if (h && h.game_id) copyText(h.game_id); },

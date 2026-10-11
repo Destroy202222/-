@@ -35,7 +35,9 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
     fetch: (url, opts = {}) => {
       const h = new Headers(opts.headers || {});
       if (SESSION) h.set('X-Client-Info', 'bnk/' + SESSION);
-      return fetch(url, { ...opts, headers: h });
+      /* таймаут: если сервер недоступен, не висим вечно */
+      const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 20000);
+      return fetch(url, { ...opts, headers: h, signal: opts.signal || ctl.signal }).finally(() => clearTimeout(tm));
     }
   }
 });

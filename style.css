@@ -1126,3 +1126,18 @@ select.text-input{appearance:auto}
 .podium .cur i{color:var(--gold);margin-right:2px}
 .prize-note{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:10px 12px;border-radius:var(--r-md);background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.14)}
 .prize-note i{color:var(--accent-hi)}
+
+/* Фикс: подиум не вылезает за панель */
+.prize{min-width:0}
+.prize-head{min-width:0}
+.prize-ttl{min-width:0}
+.prize-ttl b{font-size:18px;white-space:nowrap}
+.prize-ttl b i{font-size:14px}
+.podium{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.podium > div{min-width:0;padding-left:4px;padding-right:4px}
+.podium .sum{font-size:14px}
+.podium .p1 .sum{font-size:16px}
+.podium .where{font-size:10px;letter-spacing:.04em;white-space:nowrap}
+.podium .cur{font-size:9px;white-space:nowrap}
+.podium .medal{width:26px;height:26px;font-size:13px}
+.podium .p1 .medal{width:32px;height:32px;font-size:16px}

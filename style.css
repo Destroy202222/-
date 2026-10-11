@@ -1099,3 +1099,6 @@ select.text-input{appearance:auto}
 .pl{padding:10px 14px;border-top:none;border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s}
 .pl:last-child{border-bottom:none}
 .pl:hover{background:rgba(var(--tc),.08)}
+
+/* Название сдвинуто вправо, чтобы не заходило на кнопку поддержки */
+.hd-brand{left:calc(50% + 34px)}

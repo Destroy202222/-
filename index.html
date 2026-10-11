@@ -10,9 +10,56 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="style.css">
-<script defer src="https://telegram.org/js/telegram-web-app.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="app.js"></script>
+<script>
+/* Загрузчик: грузит библиотеки по очереди с таймаутами и запасными CDN,
+   чтобы приложение не зависало на «Подключаемся…», если один из хостов недоступен (часто на ПК/с VPN). */
+(function () {
+  function load(src, ms) {
+    return new Promise(function (resolve, reject) {
+      var el = document.createElement('script'), done = false;
+      var t = setTimeout(function () { if (!done) { done = true; el.remove(); reject(new Error('timeout ' + src)); } }, ms);
+      el.src = src;
+      el.onload = function () { if (!done) { done = true; clearTimeout(t); resolve(); } };
+      el.onerror = function () { if (!done) { done = true; clearTimeout(t); el.remove(); reject(new Error('error ' + src)); } };
+      document.head.appendChild(el);
+    });
+  }
+  function firstOk(list, ms) {
+    return list.reduce(function (p, src) { return p.catch(function () { return load(src, ms); }); }, Promise.reject());
+  }
+  function fail(msg) {
+    var st = document.getElementById('splashStatus'), bt = document.getElementById('splashRetry');
+    if (st) st.textContent = msg;
+    if (bt) bt.hidden = false;
+  }
+  window.__splashFail = fail;
+  var SB = [
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
+    'https://fastly.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
+    'https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
+  ];
+  function start() {
+    var tg = load('https://telegram.org/js/telegram-web-app.js', 4000).catch(function () { /* без Telegram SDK работаем как обычный сайт */ });
+    var sb = firstOk(SB, 7000);
+    Promise.all([tg, sb]).then(function () { return load('app.js', 10000); })
+      .catch(function (e) {
+        console.error('boot', e);
+        fail('Не удалось загрузить приложение. Проверьте интернет или отключите VPN/блокировщики и повторите.');
+      });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  /* Если что-то зависло уже после загрузки скриптов */
+  setTimeout(function () {
+    var sp = document.getElementById('splash');
+    if (sp && !sp.classList.contains('hide')) fail('Долго грузится… Проверьте интернет/VPN и повторите.');
+  }, 15000);
+  window.addEventListener('error', function (e) {
+    var sp = document.getElementById('splash');
+    if (sp && !sp.classList.contains('hide')) fail('Ошибка запуска: ' + (e && e.message ? e.message : 'неизвестная') );
+  });
+})();
+</script>
 </head>
 <body>
 
@@ -21,6 +68,7 @@
   <div class="splash-ring"></div>
   <div class="splash-name">STANDKNIFE FACEIT</div>
   <div class="splash-status" id="splashStatus">Подключаемся…</div>
+  <button class="btn btn-primary" id="splashRetry" type="button" hidden onclick="location.reload()" style="margin-top:16px">Повторить</button>
 </div>
 
 <!-- Уведомление -->

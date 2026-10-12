@@ -2425,10 +2425,12 @@ const VOICE_ICE = [
   /* Для части мобильных сетей нужен TURN-сервер. Добавьте сюда свой:
      , { urls: 'turn:turn.example.com:3478', username: 'user', credential: 'pass' } */
 ];
+let _vv = 1.8; try { _vv = parseFloat(localStorage.getItem('bnk_voice_vol')) || 1.8; } catch (e) { /* ок */ }
 const V = {
+  vol: Math.min(3, Math.max(0.3, _vv)), out: null,
   room: null, ch: null, ready: false, joined: false, joining: false,
   mic: null, muted: false, deaf: false, wasMuted: false,
-  peers: {}, here: {}, hold: {}, ctx: null, ana: null, lost: 0,
+  peers: {}, here: {}, seen: {}, st: '', hold: {}, ctx: null, ana: null, lost: 0,
   dismissed: '', announced: new Set(), timers: {}
 };
 
@@ -2477,23 +2479,43 @@ function voiceSync() {
   voiceRender();
 }
 function voiceOpen(room) {
-  V.room = room; V.ready = false; V.here = {};
+  V.room = room; V.ready = false; V.here = {}; V.seen = {}; V.st = 'подключаемся…';
   const ch = sb.channel('voice:' + room, { config: { broadcast: { self: false }, presence: { key: S.me.id } } });
   V.ch = ch;
   ch.on('broadcast', { event: 'sig' }, ({ payload }) => voiceSignal(payload))
+    .on('broadcast', { event: 'hi' }, ({ payload }) => voiceHi(payload))
     .on('presence', { event: 'sync' }, voicePresence)
-    .subscribe(st => {
+    .subscribe((st, err) => {
       if (V.ch !== ch) return;
-      if (st === 'SUBSCRIBED') { V.ready = true; if (V.joined) voiceTrack(); }
+      V.st = st === 'SUBSCRIBED' ? 'подключён' : (st === 'CHANNEL_ERROR' ? 'ошибка' + (err && err.message ? ': ' + err.message : '') : st === 'TIMED_OUT' ? 'нет ответа' : String(st).toLowerCase());
+      if (st === 'SUBSCRIBED') { V.ready = true; if (V.joined) { voiceTrack(); voiceHello(true); } }
       else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT' || st === 'CLOSED') V.ready = false;
+      voiceRender();
     });
 }
 function voiceTrack() {
+  voiceHello(false);
   try { return V.ch && V.ch.track({ muted: V.muted, deaf: V.deaf, t: Date.now() }); } catch (e) { /* ок */ }
 }
-function voicePresence() {
+/* Запасной способ узнать, кто в войсе: короткие «я здесь» раз в 4 секунды (если presence не доходит) */
+function voiceHello(reply, bye) {
+  try { V.ch && V.ch.send({ type: 'broadcast', event: 'hi', payload: { from: S.me.id, muted: V.muted, deaf: V.deaf, reply: !!reply, bye: !!bye } }); } catch (e) { /* ок */ }
+}
+function voiceHi(m) {
+  if (!m || !S.me || m.from === S.me.id || !voiceMates().has(m.from)) return;
+  if (m.bye) delete V.seen[m.from];
+  else {
+    V.seen[m.from] = { muted: !!m.muted, deaf: !!m.deaf, ts: Date.now() };
+    if (m.reply && V.joined) voiceHello(false);
+  }
+  voiceRecalc();
+}
+function voicePresence() { voiceRecalc(); }
+function voiceRecalc() {
   if (!V.ch || !S.me) return;
-  const st = V.ch.presenceState(), mates = voiceMates(), here = {};
+  const st = V.ch.presenceState(), mates = voiceMates(), here = {}, now = Date.now();
+  Object.keys(V.seen).forEach(id => { if (now - V.seen[id].ts > 14000) delete V.seen[id]; });
+  Object.keys(V.seen).forEach(id => { if (mates.has(id)) here[id] = { muted: V.seen[id].muted, deaf: V.seen[id].deaf }; });
   Object.keys(st).forEach(id => {
     if (id === S.me.id || !mates.has(id)) return;
     const meta = st[id][st[id].length - 1] || {};
@@ -2537,19 +2559,34 @@ function voiceNewPeer(id) {
   pc.onconnectionstatechange = () => voiceRender();
   return p;
 }
+/* Звук собеседников идёт через Web Audio, а не через <audio>: так телефон играет его как медиа,
+   из основного динамика, а не как разговор через ухо. Заодно есть регулировка громкости с усилением. */
+function voiceBuildOut() {
+  if (V.out || !V.ctx) return;
+  const g = V.ctx.createGain(), c = V.ctx.createDynamicsCompressor();
+  c.threshold.value = -14; c.knee.value = 12; c.ratio.value = 6; c.attack.value = 0.003; c.release.value = 0.2;
+  g.connect(c); c.connect(V.ctx.destination);
+  V.out = { g, c }; voiceApplyVol();
+}
+function voiceApplyVol() { if (V.out) V.out.g.gain.value = V.deaf ? 0 : V.vol; }
 function voiceAttach(p, stream) {
   if (!p.audio) {
     const a = document.createElement('audio');
     a.autoplay = true; a.setAttribute('playsinline', '');
     $('voiceAudio').appendChild(a); p.audio = a;
   }
-  p.audio.srcObject = stream; p.audio.muted = V.deaf;
+  p.audio.srcObject = stream;
   p.audio.play().catch(() => {});
+  p.viaCtx = false;
   try {
+    voiceBuildOut();
+    if (V.ctx.state !== 'running') V.ctx.resume().catch(() => {});
     const src = V.ctx.createMediaStreamSource(stream), an = V.ctx.createAnalyser();
     an.fftSize = 256; src.connect(an);
+    if (V.out) { src.connect(V.out.g); p.viaCtx = true; }
     p.ana = { an, src, buf: new Uint8Array(an.fftSize) };
-  } catch (e) { /* без индикатора речи */ }
+  } catch (e) { /* запасной вариант — обычный <audio> */ }
+  p.audio.muted = p.viaCtx ? true : V.deaf;   // через Web Audio <audio> заглушён, чтобы не играть дважды
 }
 async function voiceCall(id) {
   if (!V.joined) return;
@@ -2592,6 +2629,7 @@ function voiceEnsure(id) {
   else if (p && bad) voiceSend(id, 'retry');
 }
 function voiceWatchdog() {
+  if (V.ctx && V.ctx.state === 'suspended') V.ctx.resume().catch(() => {});
   Object.keys(V.here).forEach(id => {
     const p = V.peers[id];
     const stuck = !p || (p.pc.connectionState !== 'connected' && Date.now() - p.since > 12000);
@@ -2635,6 +2673,7 @@ async function voiceJoin() {
     if (typeof RTCPeerConnection === 'undefined') throw new Error('Браузер не поддерживает голосовой чат');
     if (!V.ctx) V.ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (V.ctx.resume) V.ctx.resume();
+    voiceBuildOut();
     V.mic = await voiceGetMic();
     V.muted = !V.mic; V.deaf = false;
     if (V.mic) voiceWatchLocal();
@@ -2644,6 +2683,8 @@ async function voiceJoin() {
     await voiceTrack();
     V.timers.vu = setInterval(voiceLevels, 120);
     V.timers.wd = setInterval(voiceWatchdog, 4000);
+    V.timers.hb = setInterval(() => { voiceHello(false); voiceRecalc(); }, 4000);
+    voiceHello(true);
     Object.keys(V.here).forEach(voiceEnsure);
     toast('success', 'Вы в войсе', V.mic ? 'Микрофон включён' : 'Вы только слушаете');
   } catch (e) {
@@ -2655,8 +2696,9 @@ function voiceLeave(silent) {
   Object.keys(V.peers).forEach(voiceDrop);
   if (V.mic) V.mic.getTracks().forEach(t => t.stop());
   if (V.ana) { try { V.ana.src.disconnect(); } catch (e) { /* ок */ } }
-  V.mic = null; V.ana = null; V.joined = false; V.muted = false; V.deaf = false; V.hold = {};
+  V.mic = null; V.ana = null; V.joined = false; V.muted = false; V.deaf = false; V.hold = {}; V.seen = {};
   Object.values(V.timers).forEach(clearInterval); V.timers = {};
+  if (V.ch && V.ready) voiceHello(false, true);
   try { V.ch && V.ch.untrack(); } catch (e) { /* ок */ }
   if (!silent) toast('info', 'Вы вышли из войса', '');
   voiceRender();
@@ -2664,7 +2706,7 @@ function voiceLeave(silent) {
 function voiceStop(msg) {
   voiceLeave(true);
   if (V.ch) { try { sb.removeChannel(V.ch); } catch (e) { /* ок */ } }
-  V.ch = null; V.room = null; V.ready = false; V.here = {}; V.announced.clear(); V.lost = 0;
+  V.ch = null; V.room = null; V.ready = false; V.here = {}; V.seen = {}; V.st = ''; V.announced.clear(); V.lost = 0;
   if (msg) toast('info', msg, '');
   voiceRender();
 }
@@ -2684,7 +2726,7 @@ async function voiceMute() {
   if (V.deaf && !V.muted) { V.deaf = false; voiceApplyDeaf(); }
   voiceApplyMute(); voiceTrack(); voiceRender();
 }
-function voiceApplyDeaf() { Object.values(V.peers).forEach(p => { if (p.audio) p.audio.muted = V.deaf; }); }
+function voiceApplyDeaf() { voiceApplyVol(); Object.values(V.peers).forEach(p => { if (p.audio) p.audio.muted = p.viaCtx ? true : V.deaf; }); }
 function voiceDeafen() {
   if (!V.joined) return;
   V.deaf = !V.deaf;
@@ -2748,7 +2790,10 @@ function voiceCardHtml() {
     <div class="vc-head">${vWave}
       <div class="vc-ttl"><b>Голосовой чат</b><span>${esc(voiceSub(list))}</span></div>
       ${V.joined ? '<span class="vlive">LIVE</span>' : vJoinBtn()}</div>
-    ${V.joined ? `<div class="vc-users">${list.map(x => vChip(x, 46)).join('')}</div><div class="vc-ctl">${vControls()}</div>` : ''}
+    ${V.joined ? `<div class="vc-users">${list.map(x => vChip(x, 46)).join('')}</div>
+      <div class="vc-vol"><i class="fas fa-volume-low"></i><input class="vvol" type="range" min="30" max="300" step="5" aria-label="Громкость"><span class="vvol-n"></span></div>
+      <div class="vc-ctl">${vControls()}</div>` : ''}
+    <div class="vc-st">Связь: ${esc(V.st || '—')}${V.joined ? ' · слышно: ' + list.filter(x => !x.me && x.conn).length : ''}</div>
   </div>`;
 }
 function voiceBarHtml() {
@@ -2785,8 +2830,18 @@ function voiceRender() {
   if (bar) { bar.hidden = !inMatch; voiceSet(bar, inMatch ? voiceBarHtml() : ''); }
   const dock = voiceDockHtml(), dEl = $('voiceDock');
   if (dEl) { dEl.hidden = !dock; voiceSet(dEl, dock); }
-  voiceApplySpeak();
+  voiceApplySpeak(); voiceSyncVol();
 }
+function voiceSyncVol() {
+  document.querySelectorAll('.vvol').forEach(el => { if (document.activeElement !== el) el.value = String(Math.round(V.vol * 100)); });
+  document.querySelectorAll('.vvol-n').forEach(el => { el.textContent = Math.round(V.vol * 100) + '%'; });
+}
+document.addEventListener('input', e => {
+  if (!e.target.classList || !e.target.classList.contains('vvol')) return;
+  V.vol = Math.min(3, Math.max(0.3, (parseInt(e.target.value) || 100) / 100));
+  try { localStorage.setItem('bnk_voice_vol', String(V.vol)); } catch (err) { /* ок */ }
+  voiceApplyVol(); voiceSyncVol();
+});
 window.addEventListener('pagehide', () => { try { if (V.joined && V.ch) V.ch.untrack(); } catch (e) { /* ок */ } });
 
 init();

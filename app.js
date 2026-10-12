@@ -686,12 +686,30 @@ function renderMatch(force) {
     : '';
 }
 
+/* Теги кланов перед ником */
+S.clanTags = S.clanTags || {}; const _tagAsked = new Set();
+const ctag = id => (S.clanTags[id] ? `<em class="cl-tag">[${esc(S.clanTags[id])}]</em> ` : '');
+async function loadClanTags(ids) {
+  const need = ids.filter(id => id && !_tagAsked.has(id));
+  if (!need.length) return false;
+  need.forEach(id => _tagAsked.add(id));
+  try {
+    const r = await rpc('clan_tags', { p_ids: need });
+    let added = false;
+    for (const k in (r || {})) { S.clanTags[k] = r[k]; added = true; }
+    return added;
+  } catch (e) { need.forEach(id => _tagAsked.delete(id)); return false; }
+}
+function ensureClanTags(ids) {
+  loadClanTags(ids).then(added => { if (added && S.page === 'match') renderMatch(true); });
+}
 function plHtml(p, isCap, dotColor) {
   return `<div class="pl${bnCls(S.banners[p.id])}" data-act="player" data-id="${esc(p.id)}">${avatarHtml(p, 32)}
-    <div class="body"><div class="nm">${esc(p.username)}${dotColor ? `<span class="pdot" style="background:${dotColor}" title="Одна пати"></span>` : ''}</div>
+    <div class="body"><div class="nm">${ctag(p.id)}${esc(p.username)}${dotColor ? `<span class="pdot" style="background:${dotColor}" title="Одна пати"></span>` : ''}</div>
     <div class="meta">${isCap ? '<i class="fas fa-crown crown"></i> капитан · ' : ''}ELO ${p.elo ?? 300}</div></div>${lvlChip(p.elo)}</div>`;
 }
 function teamsHtml(m) {
+  ensureClanTags([...m.blue, ...m.orange].map(p => p.id));
   const count = {};
   [...m.blue, ...m.orange].forEach(p => { if (p.party_id) count[p.party_id] = (count[p.party_id] || 0) + 1; });
   const color = {}; let ci = 0;
@@ -1083,7 +1101,7 @@ async function openMatchDetails(d) {
   const win = h.result === 'win', delta = h.elo_change || 0, mp = mapById(h.map);
   const blue = h.team_blue || [], orange = h.team_orange || [];
   const all = [...blue, ...orange];
-  await loadBanners(all.map(p => p.id));
+  await Promise.all([loadBanners(all.map(p => p.id)), loadClanTags(all.map(p => p.id))]);
   const hasStats = all.some(p => p.kills != null);
   const best = hasStats ? all.reduce((a, b) => ((b.kills || 0) > ((a && a.kills) || 0) ? b : a), null) : null;
   const kdOf = p => (p.kills == null ? '—' : ((p.deaths > 0 ? p.kills / p.deaths : p.kills)).toFixed(2));
@@ -1096,7 +1114,7 @@ async function openMatchDetails(d) {
       const c = p.elo_change, me = p.id === S.me.id, mvp = best && best.id === p.id && (p.kills || 0) > 0;
       return `<div class="mv-pl${bnCls(S.banners[p.id])} ${me ? 'me' : ''}" data-act="player" data-id="${esc(p.id)}">
         <div class="mv-top">${avatarHtml(p, 36)}
-          <div class="mv-nm"><div class="n">${esc(p.username)}${mvp ? ' <i class="fas fa-star mv-star" title="Лучший по киллам"></i>' : ''}${me ? ' <span class="mv-you">вы</span>' : ''}</div>
+          <div class="mv-nm"><div class="n">${ctag(p.id)}${esc(p.username)}${mvp ? ' <i class="fas fa-star mv-star" title="Лучший по киллам"></i>' : ''}${me ? ' <span class="mv-you">вы</span>' : ''}</div>
             <div class="s">ELO ${p.elo ?? 300}</div></div>
           ${c != null ? `<div class="mv-elo ${c >= 0 ? 'p' : 'n'}">${c >= 0 ? '+' : ''}${c}</div>` : ''}${lvlChip(p.elo)}</div>
         ${hasStats ? `<div class="mv-stats">
@@ -2165,6 +2183,127 @@ async function init() {
     if (s) { s.classList.add('hide'); setTimeout(() => s.remove(), 500); }
   }
 }
+
+
+/* ───────── Кланы ───────── */
+S.clanState = null; S.clanView = null; S.topTab = 'players'; S.clanAv = '';
+PAGES.push('clan');
+const clanAvHtml = (c, size = 56) => c.avatar
+  ? `<span class="cl-av" style="--s:${size}px"><img src="${esc(c.avatar)}" alt=""></span>`
+  : `<span class="cl-av ph" style="--s:${size}px">${esc((c.tag || '?').slice(0, 2))}</span>`;
+async function loadClan() {
+  try { S.clanState = await rpc('clan_state'); } catch (e) { S.clanState = S.clanState || { clan: null, invites: [] }; }
+  return S.clanState;
+}
+const myClan = () => (S.clanState && S.clanState.clan) || null;
+const isClanOwner = () => !!(myClan() && S.me && myClan().owner_id === S.me.id);
+
+function clanCardHtml() {
+  const st = S.clanState, c = myClan(), inv = st ? st.invites.length : 0;
+  if (c) return `<div class="cl-card" data-act="clan-open" data-id="${c.id}">${clanAvHtml(c, 46)}
+    <div class="cl-card-main"><small>Мой клан</small><b><em>[${esc(c.tag)}]</em> ${esc(c.name)}</b></div>
+    <span class="cl-count">${c.members.length}/${c.max}</span><i class="fas fa-chevron-right"></i></div>`;
+  return `<div class="cl-card empty" data-act="clan-open" data-id="">
+    <span class="cl-av ph" style="--s:46px"><i class="fas fa-shield-halved"></i></span>
+    <div class="cl-card-main"><small>Кланы</small><b>Создать клан</b></div>
+    ${inv ? `<span class="cl-count hot">${inv} приглаш.</span>` : ''}<i class="fas fa-chevron-right"></i></div>`;
+}
+function paintClanCard() { const el = $('clanCard'); if (el && S.clanState) el.innerHTML = clanCardHtml(); }
+
+const _renderProfile = renderProfile;
+renderProfile = function () {
+  _renderProfile();
+  const body = $('profileBody'); if (!body) return;
+  body.insertAdjacentHTML('afterbegin', '<div id="clanCard" class="cl-slot"></div>');
+  paintClanCard();
+  loadClan().then(() => { if (S.page === 'profile') paintClanCard(); });
+};
+
+const _loadFriends = loadFriends;
+loadFriends = async function () { await loadClan(); return _loadFriends(); };
+const _friendRowHtml = friendRowHtml;
+friendRowHtml = function (u) {
+  let h = _friendRowHtml(u);
+  if (isClanOwner() && S.friends.some(x => x.id === u.id) && myClan().members.length < myClan().max && !myClan().members.some(m => m.id === u.id)) {
+    const btn = `<button class="btn btn-primary btn-sm" data-act="clan-invite" data-id="${u.id}"><i class="fas fa-shield-halved"></i> В клан</button>`;
+    h = h.replace('<button class="btn btn-ghost btn-sm" data-act="friend-remove"', btn + '<button class="btn btn-ghost btn-sm" data-act="friend-remove"');
+  }
+  return h;
+};
+
+const _navigate = navigate;
+navigate = function (page) { _navigate(page); if (page === 'clan') renderClanPage(); };
+
+const _renderTop = renderTop;
+renderTop = async function () {
+  document.querySelectorAll('#topTabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === S.topTab));
+  const t = document.querySelector('#page-top .page-title'); if (t) t.textContent = S.topTab === 'clans' ? 'Топ кланов' : 'Топ игроков';
+  const chip = $('myRank'); if (chip) chip.style.display = S.topTab === 'clans' ? 'none' : '';
+  if (S.topTab !== 'clans') return _renderTop();
+  const box = $('topList');
+  try {
+    const list = await rpc('top_clans');
+    box.innerHTML = list.length ? '<div class="rows">' + list.map((c, i) => `<div class="row link" data-act="clan-open" data-id="${c.id}">
+      <div class="top-rank ${i < 3 ? 'r' + (i + 1) : ''}">#${i + 1}</div>${clanAvHtml(c, 40)}
+      <div class="row-main"><div class="row-title"><em class="cl-tag">[${esc(c.tag)}]</em> ${esc(c.name)}</div><div class="row-sub">${c.members}/10 игроков · средний ELO ${c.avg}</div></div>
+      <div class="top-elo">${c.total}<small>ELO</small></div></div>`).join('') + '</div>'
+      : '<div class="empty">Кланов пока нет — создайте первый в профиле</div>';
+  } catch (e) { box.innerHTML = `<div class="empty">Не удалось загрузить: ${esc(errText(e))}</div>`; }
+};
+
+async function renderClanPage() {
+  const body = $('clanBody'); if (!body) return;
+  body.innerHTML = '<div class="empty">Загрузка…</div>';
+  const st = await loadClan();
+  let c = null;
+  try { c = S.clanView ? await rpc('clan_get', { p_clan: S.clanView }) : st.clan; } catch (e) { /* ниже покажем пусто */ }
+  const back = '<button class="btn btn-ghost btn-sm cl-back" data-act="nav" data-page="profile"><i class="fas fa-arrow-left"></i> Назад</button>';
+  if (!c) return renderClanCreate(body, st, back);
+  const mine = st.clan && st.clan.id === c.id, owner = mine && c.owner_id === S.me.id;
+  const total = c.members.reduce((s, m) => s + m.elo, 0), avg = c.members.length ? Math.round(total / c.members.length) : 0;
+  body.innerHTML = `${back}
+    <div class="cl-hero">${clanAvHtml(c, 84)}<div class="cl-hero-main"><span class="cl-tag big">[${esc(c.tag)}]</span><h2>${esc(c.name)}</h2></div></div>
+    <div class="cl-stats"><div><b>${c.members.length}<small>/${c.max}</small></b><span>Игроков</span></div><div><b>${avg}</b><span>Средний ELO</span></div><div><b>${total}</b><span>Общий ELO</span></div></div>
+    <div class="panel"><div class="panel-head"><h3>Участники</h3></div><div class="rows">${c.members.map((m, i) => `<div class="row link ${m.id === S.me.id ? 'me' : ''}" data-act="player" data-id="${m.id}">
+      <div class="top-rank ${i < 3 ? 'r' + (i + 1) : ''}">#${i + 1}</div>${avatarHtml(m, 40)}
+      <div class="row-main"><div class="row-title">${esc(m.username)} ${m.isowner ? '<span class="cl-owner"><i class="fas fa-crown"></i> Лидер</span>' : ''}</div><div class="row-sub">ELO ${m.elo}</div></div>${lvlChip(m.elo)}</div>`).join('')}</div></div>
+    ${owner ? '<div class="cl-hint"><i class="fas fa-user-plus"></i> Чтобы пригласить игрока, откройте «Друзья» и нажмите «В клан» у друга.</div>' : ''}
+    ${mine ? '<button class="btn btn-ghost btn-block cl-leave" data-act="clan-leave"><i class="fas fa-right-from-bracket"></i> Покинуть клан</button>' : ''}`;
+}
+function renderClanCreate(body, st, back) {
+  const inv = st.invites.map(i => `<div class="row"><div class="row-main" style="display:flex;gap:12px;align-items:center">${clanAvHtml(i, 40)}
+      <div><div class="row-title"><em class="cl-tag">[${esc(i.tag)}]</em> ${esc(i.name)}</div><div class="row-sub">Приглашает ${esc(i.from)} · ${i.members}/10</div></div></div>
+      <div class="row-actions"><button class="btn btn-ok btn-sm" data-act="clan-accept" data-id="${i.id}">Принять</button><button class="btn btn-ghost btn-sm" data-act="clan-decline" data-id="${i.id}">Отклонить</button></div></div>`).join('');
+  body.innerHTML = `${back}
+    ${inv ? `<div class="panel"><div class="panel-head"><h3>Приглашения в клан</h3></div><div class="rows">${inv}</div></div>` : ''}
+    <div class="panel cl-create"><div class="panel-head"><h3>Создать клан</h3></div>
+      <button class="cl-pick" type="button" data-act="clan-av" id="clanPick">${S.clanAv ? `<img src="${S.clanAv}" alt="">` : '<i class="fas fa-camera"></i><span>Аватарка</span>'}</button>
+      <input type="file" id="clanFile" accept="image/*" hidden>
+      <label class="cl-lbl">Название клана</label><input class="text-input" id="clanName" maxlength="20" placeholder="От 3 до 20 символов" autocomplete="off">
+      <label class="cl-lbl">Тег (5 букв или цифр)</label><input class="text-input cl-taginp" id="clanTag" maxlength="5" placeholder="ABCDE" autocomplete="off" autocapitalize="characters">
+      <button class="btn btn-primary btn-block" data-act="clan-create"><i class="fas fa-shield-halved"></i> Создать клан</button>
+      <p class="cl-hint2">В клане до 10 игроков. Приглашать можно друзей.</p></div>`;
+  const tag = $('clanTag'); if (tag) tag.addEventListener('input', () => { tag.value = tag.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); });
+}
+document.addEventListener('change', e => {
+  if (e.target.id !== 'clanFile') return;
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  resizeToDataUrl(f, 128).then(d => { S.clanAv = d; const p = $('clanPick'); if (p) p.innerHTML = `<img src="${d}" alt="">`; }).catch(err => toast('error', 'Ошибка', errText(err)));
+});
+Object.assign(ACTIONS, {
+  'top-tab': d => { S.topTab = d.tab; renderTop(); },
+  'clan-open': d => { S.clanView = d.id || null; navigate('clan'); },
+  'clan-av': () => { const f = $('clanFile'); if (f) f.click(); },
+  'clan-create': async () => {
+    await rpc('create_clan', { p_tag: $('clanTag').value, p_name: $('clanName').value, p_avatar: S.clanAv || null });
+    S.clanAv = ''; S.clanView = null; toast('success', 'Клан создан', ''); await renderClanPage();
+  },
+  'clan-invite': async d => { await rpc('invite_to_clan', { p_friend: d.id }); toast('success', 'Приглашение в клан отправлено', ''); },
+  'clan-accept': async d => { await rpc('respond_clan_invite', { p_invite: d.id, p_accept: true }); toast('success', 'Вы вступили в клан', ''); S.clanView = null; await renderClanPage(); },
+  'clan-decline': async d => { await rpc('respond_clan_invite', { p_invite: d.id, p_accept: false }); await renderClanPage(); },
+  'clan-leave': async () => { if (!confirm('Покинуть клан?')) return; await rpc('leave_clan'); S.clanView = null; S.clanState = null; navigate('profile'); }
+});
+
 
 init();
 

@@ -246,6 +246,7 @@ async function doRegister(e) {
 
 function showAuth(message) {
   stopLoops(); stopChat();
+  voiceStop();
   S.me = null; S.match = null; S.party = null; S.invites = []; S.sup = newSup(); S.news = []; S.newsLoaded = false; S.banners = {}; S.myBanners = { owned: [], active: '' }; S.bnMatch = null;
   S.queue = { searching: false, since: null, count: 0, need: S.teamSize * 2 };
   $('app').hidden = true;
@@ -302,6 +303,7 @@ async function pollTick() {
     else if (S.match.status === 'active') await pullChat();
     if (S.tick % 2 === 0) await loadParty().catch(() => {});
     if (S.tick % 4 === 0) await loadFriends().catch(() => {});
+    voiceSync();
     if (S.tick % 8 === 0) await loadSettings().catch(() => {});
     if (S.tick % 4 === 2) await loadNews().catch(() => {});
   } catch (e) { /* сеть моргнула — повторим */ }
@@ -368,6 +370,7 @@ function navigate(page) {
     b.classList.toggle('active', bp === page || (bp === 'matches' && page === 'match') || (bp === 'profile' && (page === 'matchview' || page === 'admin')));
   });
   window.scrollTo({ top: 0 });
+  voiceRender();
   if (page === 'home') loadStats();
   if (page === 'matches') { loadParty().catch(() => {}); loadStats(); refreshMe().then(updateSearchUI).catch(() => {}); updateSearchUI(); }
   if (page === 'match') renderMatch(true);
@@ -533,6 +536,7 @@ async function loadParty() {
   S.invites = (inv.data || []).filter(i => Date.now() - toMs(i.created_at) < 10 * 60 * 1000);
   if (S.invites.length) await fetchUsers(S.invites.map(i => i.from_id));
   renderParty();
+  voiceSync();
   updateSearchUI();
   updateFriendBadges();
 }
@@ -559,9 +563,11 @@ function renderParty() {
         <div class="row-sub">ELO ${u.elo ?? '—'}</div></div>
         ${iLead && id !== S.me.id ? `<button class="btn btn-danger btn-sm" data-act="party-kick" data-id="${id}">Убрать</button>` : ''}</div>`;
     }).join('') + '</div>';
+    if (p.members.length > 1) html += '<div id="voiceCard">' + voiceCardHtml() + '</div>';
     html += `<button class="btn btn-ghost btn-block" style="margin-top:10px" data-act="party-leave">${iLead ? 'Распустить пати' : 'Выйти из пати'}</button>`;
   }
-  el.innerHTML = html;
+  if (el._h !== html) { el._h = html; el.innerHTML = html; }
+  voiceApplySpeak();
 }
 
 /* ───────────── Матч: синхронизация ───────────── */
@@ -2065,6 +2071,11 @@ const ACTIONS = {
   'party-accept': async d => { await rpc('party_accept', { p_invite: d.id }); toast('success', 'Вы в пати', ''); await loadParty(); },
   'party-decline': async d => { await rpc('party_decline', { p_invite: d.id }); await loadParty(); },
   'party-leave': async () => { await rpc('party_leave'); await loadParty(); await syncQueue(); },
+  'voice-join': () => { V.dismissed = ''; return voiceJoin(); },
+  'voice-leave': () => voiceLeave(),
+  'voice-mute': voiceMute,
+  'voice-deafen': voiceDeafen,
+  'voice-dismiss': () => { V.dismissed = V.room; voiceRender(); },
   'party-kick': async d => { await rpc('party_kick', { p_user: d.id }); await loadParty(); },
   'avatar-remove': removeAvatar,
   'banner-buy': buyBanner,
@@ -2404,6 +2415,379 @@ Object.assign(ACTIONS, {
     }, 3000);
   }
 });
+
+/* ───────────── Голосовой чат пати ─────────────
+   Звук идёт напрямую между игроками (WebRTC), а «рукопожатие» — через Realtime-канал Supabase
+   «voice:<id пати>» (broadcast + presence). Новых таблиц и SQL не нужно.
+   Работает и в лобби, и во время матча: комната привязана к пати, а не к странице. */
+const VOICE_ICE = [
+  { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] }
+  /* Для части мобильных сетей нужен TURN-сервер. Добавьте сюда свой:
+     , { urls: 'turn:turn.example.com:3478', username: 'user', credential: 'pass' } */
+];
+const V = {
+  room: null, ch: null, ready: false, joined: false, joining: false,
+  mic: null, muted: false, deaf: false, wasMuted: false,
+  peers: {}, here: {}, hold: {}, ctx: null, ana: null, lost: 0,
+  dismissed: '', announced: new Set(), timers: {}
+};
+
+/* Кто в голосовой комнате: участники пати + одно-пати игроки текущего матча */
+function voiceMates() {
+  const ids = new Set();
+  if (!S.me) return ids;
+  if (S.party) S.party.members.forEach(id => ids.add(id));
+  const m = S.match;
+  if (m && m.status === 'active') {
+    const all = [...m.blue, ...m.orange], mine = all.find(p => p.id === S.me.id);
+    if (mine && mine.party_id) all.forEach(p => { if (p.party_id === mine.party_id) ids.add(p.id); });
+  }
+  return ids;
+}
+function voiceRoom() {
+  if (!S.me) return null;
+  if (S.party && S.party.id) return String(S.party.id);
+  const m = S.match;
+  if (m && m.status === 'active') {
+    const mine = [...m.blue, ...m.orange].find(p => p.id === S.me.id);
+    if (mine && mine.party_id) return String(mine.party_id);
+  }
+  return null;
+}
+function voiceUser(id) {
+  if (S.users[id]) return S.users[id];
+  const m = S.match;
+  const p = m && [...m.blue, ...m.orange].find(x => x.id === id);
+  return p || { username: 'Игрок' };
+}
+
+/* Подписка на комнату (следим за тем, кто в войсе, даже пока сами не вошли) */
+function voiceSync() {
+  if (!S.me) return;
+  const room = voiceRoom();
+  if (!room || voiceMates().size < 2) {
+    if (V.joined && ++V.lost < 3) return;
+    if (V.room || V.joined) voiceStop(V.joined ? 'Пати закрыта — войс отключён' : '');
+    return voiceRender();
+  }
+  V.lost = 0;
+  if (V.room !== room) { voiceStop(); voiceOpen(room); }
+  const mates = voiceMates();
+  Object.keys(V.peers).forEach(id => { if (!mates.has(id)) voiceDrop(id); });
+  voiceRender();
+}
+function voiceOpen(room) {
+  V.room = room; V.ready = false; V.here = {};
+  const ch = sb.channel('voice:' + room, { config: { broadcast: { self: false }, presence: { key: S.me.id } } });
+  V.ch = ch;
+  ch.on('broadcast', { event: 'sig' }, ({ payload }) => voiceSignal(payload))
+    .on('presence', { event: 'sync' }, voicePresence)
+    .subscribe(st => {
+      if (V.ch !== ch) return;
+      if (st === 'SUBSCRIBED') { V.ready = true; if (V.joined) voiceTrack(); }
+      else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT' || st === 'CLOSED') V.ready = false;
+    });
+}
+function voiceTrack() {
+  try { return V.ch && V.ch.track({ muted: V.muted, deaf: V.deaf, t: Date.now() }); } catch (e) { /* ок */ }
+}
+function voicePresence() {
+  if (!V.ch || !S.me) return;
+  const st = V.ch.presenceState(), mates = voiceMates(), here = {};
+  Object.keys(st).forEach(id => {
+    if (id === S.me.id || !mates.has(id)) return;
+    const meta = st[id][st[id].length - 1] || {};
+    here[id] = { muted: !!meta.muted, deaf: !!meta.deaf };
+  });
+  V.here = here;
+  [...V.announced].forEach(id => { if (!here[id]) V.announced.delete(id); });
+  if (!V.joined) {
+    Object.keys(here).forEach(id => {
+      if (V.announced.has(id)) return;
+      V.announced.add(id);
+      toast('info', 'Пати в войсе', voiceUser(id).username + ' зашёл в голосовой чат');
+    });
+  } else {
+    Object.keys(V.peers).forEach(id => { if (!here[id]) voiceDrop(id); });
+    Object.keys(here).forEach(voiceEnsure);
+  }
+  if (!Object.keys(here).length) V.dismissed = '';
+  voiceRender();
+}
+
+/* ── WebRTC ── */
+const voiceTrackOf = () => (V.mic && V.mic.getAudioTracks()[0]) || null;
+const voiceTr = p => p.pc.getTransceivers().find(t => t.receiver && t.receiver.track && t.receiver.track.kind === 'audio');
+
+function voiceSend(to, kind, data) {
+  try { V.ch && V.ch.send({ type: 'broadcast', event: 'sig', payload: { to, from: S.me.id, kind, data } }); } catch (e) { /* ок */ }
+}
+function voiceNewPeer(id) {
+  voiceDrop(id);
+  const pc = new RTCPeerConnection({ iceServers: VOICE_ICE });
+  const p = { id, pc, pend: [], cq: [], cqt: null, remote: false, since: Date.now(), audio: null, ana: null };
+  V.peers[id] = p;
+  const flush = () => { clearTimeout(p.cqt); p.cqt = null; if (p.cq.length) { voiceSend(id, 'ice', p.cq); p.cq = []; } };
+  pc.onicecandidate = e => {
+    if (!e.candidate) return flush();
+    p.cq.push(e.candidate.toJSON());
+    if (!p.cqt) p.cqt = setTimeout(flush, 120);
+  };
+  pc.ontrack = e => voiceAttach(p, e.streams[0] || new MediaStream([e.track]));
+  pc.onconnectionstatechange = () => voiceRender();
+  return p;
+}
+function voiceAttach(p, stream) {
+  if (!p.audio) {
+    const a = document.createElement('audio');
+    a.autoplay = true; a.setAttribute('playsinline', '');
+    $('voiceAudio').appendChild(a); p.audio = a;
+  }
+  p.audio.srcObject = stream; p.audio.muted = V.deaf;
+  p.audio.play().catch(() => {});
+  try {
+    const src = V.ctx.createMediaStreamSource(stream), an = V.ctx.createAnalyser();
+    an.fftSize = 256; src.connect(an);
+    p.ana = { an, src, buf: new Uint8Array(an.fftSize) };
+  } catch (e) { /* без индикатора речи */ }
+}
+async function voiceCall(id) {
+  if (!V.joined) return;
+  const p = voiceNewPeer(id), t = voiceTrackOf();
+  p.pc.addTransceiver(t || 'audio', { direction: 'sendrecv' });
+  const offer = await p.pc.createOffer();
+  await p.pc.setLocalDescription(offer);
+  voiceSend(id, 'offer', { type: offer.type, sdp: offer.sdp });
+}
+async function voiceAnswer(id, offer) {
+  const p = voiceNewPeer(id);
+  await p.pc.setRemoteDescription(offer); p.remote = true;
+  const tr = voiceTr(p), t = voiceTrackOf();
+  if (tr) { tr.direction = 'sendrecv'; if (t) await tr.sender.replaceTrack(t); }
+  const ans = await p.pc.createAnswer();
+  await p.pc.setLocalDescription(ans);
+  voiceSend(id, 'answer', { type: ans.type, sdp: ans.sdp });
+  await voiceFlush(p);
+}
+async function voiceFlush(p) {
+  while (p.pend.length) await p.pc.addIceCandidate(p.pend.shift()).catch(() => {});
+}
+async function voiceSignal(m) {
+  if (!V.joined || !m || m.to !== S.me.id || !voiceMates().has(m.from)) return;
+  try {
+    const p = V.peers[m.from];
+    if (m.kind === 'offer') await voiceAnswer(m.from, m.data);
+    else if (m.kind === 'answer') {
+      if (p && p.pc.signalingState === 'have-local-offer') { await p.pc.setRemoteDescription(m.data); p.remote = true; await voiceFlush(p); }
+    } else if (m.kind === 'ice') {
+      if (!p) return;
+      (Array.isArray(m.data) ? m.data : []).forEach(c => (p.remote ? p.pc.addIceCandidate(c).catch(() => {}) : p.pend.push(c)));
+    } else if (m.kind === 'retry') { if (S.me.id < m.from) voiceCall(m.from).catch(() => {}); }
+  } catch (e) { /* пересоберёт сторожевой таймер */ }
+}
+/* Инициатор — игрок с меньшим id: так два игрока не звонят друг другу одновременно */
+function voiceEnsure(id) {
+  const p = V.peers[id], bad = !p || ['failed', 'closed'].includes(p.pc.connectionState);
+  if (S.me.id < id) { if (bad) voiceCall(id).catch(() => {}); }
+  else if (p && bad) voiceSend(id, 'retry');
+}
+function voiceWatchdog() {
+  Object.keys(V.here).forEach(id => {
+    const p = V.peers[id];
+    const stuck = !p || (p.pc.connectionState !== 'connected' && Date.now() - p.since > 12000);
+    if (!stuck) return;
+    if (S.me.id < id) voiceCall(id).catch(() => {}); else voiceSend(id, 'retry');
+  });
+}
+function voiceDrop(id) {
+  const p = V.peers[id]; if (!p) return;
+  clearTimeout(p.cqt);
+  try { p.pc.close(); } catch (e) { /* ок */ }
+  if (p.ana) { try { p.ana.src.disconnect(); } catch (e) { /* ок */ } }
+  if (p.audio) { p.audio.srcObject = null; p.audio.remove(); }
+  delete V.peers[id]; delete V.hold[id];
+}
+
+/* ── Вход, выход, кнопки ── */
+async function voiceGetMic() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    toast('info', 'Микрофон недоступен', 'Вы будете слышать пати, но вас не услышат. Попробуйте открыть сайт в браузере.');
+    return null;
+  }
+  try {
+    return await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+  } catch (e) {
+    toast('info', 'Нет доступа к микрофону', 'Разрешите микрофон в настройках — пока вы только слушаете');
+    return null;
+  }
+}
+function voiceWatchLocal() {
+  try {
+    const src = V.ctx.createMediaStreamSource(V.mic), an = V.ctx.createAnalyser();
+    an.fftSize = 256; src.connect(an);
+    V.ana = { an, src, buf: new Uint8Array(an.fftSize) };
+  } catch (e) { /* ок */ }
+}
+async function voiceJoin() {
+  if (V.joined || V.joining || !V.room) return;
+  V.joining = true; voiceRender();
+  try {
+    if (typeof RTCPeerConnection === 'undefined') throw new Error('Браузер не поддерживает голосовой чат');
+    if (!V.ctx) V.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (V.ctx.resume) V.ctx.resume();
+    V.mic = await voiceGetMic();
+    V.muted = !V.mic; V.deaf = false;
+    if (V.mic) voiceWatchLocal();
+    for (let i = 0; i < 40 && !V.ready; i++) await new Promise(r => setTimeout(r, 150));
+    if (!V.ready) throw new Error('Нет связи с сервером голоса. Попробуйте ещё раз.');
+    V.joined = true;
+    await voiceTrack();
+    V.timers.vu = setInterval(voiceLevels, 120);
+    V.timers.wd = setInterval(voiceWatchdog, 4000);
+    Object.keys(V.here).forEach(voiceEnsure);
+    toast('success', 'Вы в войсе', V.mic ? 'Микрофон включён' : 'Вы только слушаете');
+  } catch (e) {
+    voiceLeave(true);
+    toast('error', 'Не удалось войти в войс', errText(e));
+  } finally { V.joining = false; voiceRender(); }
+}
+function voiceLeave(silent) {
+  Object.keys(V.peers).forEach(voiceDrop);
+  if (V.mic) V.mic.getTracks().forEach(t => t.stop());
+  if (V.ana) { try { V.ana.src.disconnect(); } catch (e) { /* ок */ } }
+  V.mic = null; V.ana = null; V.joined = false; V.muted = false; V.deaf = false; V.hold = {};
+  Object.values(V.timers).forEach(clearInterval); V.timers = {};
+  try { V.ch && V.ch.untrack(); } catch (e) { /* ок */ }
+  if (!silent) toast('info', 'Вы вышли из войса', '');
+  voiceRender();
+}
+function voiceStop(msg) {
+  voiceLeave(true);
+  if (V.ch) { try { sb.removeChannel(V.ch); } catch (e) { /* ок */ } }
+  V.ch = null; V.room = null; V.ready = false; V.here = {}; V.announced.clear(); V.lost = 0;
+  if (msg) toast('info', msg, '');
+  voiceRender();
+}
+function voiceApplyMute() {
+  if (V.mic) V.mic.getAudioTracks().forEach(t => { t.enabled = !V.muted; });
+}
+async function voiceMute() {
+  if (!V.joined) return;
+  if (!V.mic) {                       // заходили без микрофона — пробуем ещё раз
+    V.mic = await voiceGetMic();
+    if (!V.mic) return;
+    voiceWatchLocal();
+    const t = voiceTrackOf();
+    Object.values(V.peers).forEach(p => { const tr = voiceTr(p); if (tr && t) tr.sender.replaceTrack(t).catch(() => {}); });
+    V.muted = false;
+  } else V.muted = !V.muted;
+  if (V.deaf && !V.muted) { V.deaf = false; voiceApplyDeaf(); }
+  voiceApplyMute(); voiceTrack(); voiceRender();
+}
+function voiceApplyDeaf() { Object.values(V.peers).forEach(p => { if (p.audio) p.audio.muted = V.deaf; }); }
+function voiceDeafen() {
+  if (!V.joined) return;
+  V.deaf = !V.deaf;
+  if (V.deaf) { V.wasMuted = V.muted; V.muted = true; } else V.muted = V.wasMuted || !V.mic;
+  voiceApplyDeaf(); voiceApplyMute(); voiceTrack(); voiceRender();
+}
+
+/* ── Индикатор речи ── */
+function voiceRms(a) {
+  a.an.getByteTimeDomainData(a.buf);
+  let s = 0; for (let i = 0; i < a.buf.length; i++) { const v = (a.buf[i] - 128) / 128; s += v * v; }
+  return Math.sqrt(s / a.buf.length);
+}
+function voiceLevels() {
+  if (!S.me) return;
+  const now = Date.now();
+  if (V.ana && !V.muted && voiceRms(V.ana) > 0.03) V.hold[S.me.id] = now + 350;
+  Object.keys(V.peers).forEach(id => { const a = V.peers[id].ana; if (a && voiceRms(a) > 0.03) V.hold[id] = now + 350; });
+  voiceApplySpeak();
+}
+function voiceApplySpeak() {
+  const now = Date.now(); let any = false;
+  document.querySelectorAll('[data-vu]').forEach(el => {
+    const on = (V.hold[el.dataset.vu] || 0) > now; if (on) any = true;
+    el.classList.toggle('speaking', on);
+  });
+  document.querySelectorAll('.vc,.vbar,.vdock').forEach(el => el.classList.toggle('talking', any));
+}
+
+/* ── Отрисовка ── */
+function voiceList() {
+  return [...voiceMates()].map(id => {
+    const me = id === S.me.id, meta = me ? { muted: V.muted, deaf: V.deaf } : (V.here[id] || {}), p = V.peers[id];
+    return { id, me, u: voiceUser(id), inV: me ? V.joined : !!V.here[id], muted: !!meta.muted, deaf: !!meta.deaf,
+      conn: me || !!(p && p.pc.connectionState === 'connected') };
+  });
+}
+const vWave = '<span class="vwave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>';
+function vChip(x, size) {
+  const badge = x.inV && (x.deaf || x.muted) ? `<i class="vbadge fas ${x.deaf ? 'fa-volume-xmark' : 'fa-microphone-slash'}"></i>` : '';
+  return `<div class="vm ${x.inV ? 'in' : ''}"><span class="vu" data-vu="${esc(x.id)}">${avatarHtml(x.u, size)}${badge}</span>
+    <span class="vn">${esc(x.u.username || 'Игрок')}${x.me ? ' · вы' : ''}</span>
+    ${x.inV && !x.me && !x.conn ? '<small class="vs">подключение…</small>' : ''}</div>`;
+}
+function vControls() {
+  return `<button class="vbtn ${V.muted ? 'off' : ''}" data-act="voice-mute" aria-label="Микрофон"><i class="fas ${V.muted ? 'fa-microphone-slash' : 'fa-microphone'}"></i></button>
+    <button class="vbtn ${V.deaf ? 'off' : ''}" data-act="voice-deafen" aria-label="Звук"><i class="fas ${V.deaf ? 'fa-volume-xmark' : 'fa-headphones'}"></i></button>
+    <button class="vbtn leave" data-act="voice-leave" aria-label="Выйти из войса"><i class="fas fa-phone-slash"></i></button>`;
+}
+function voiceSub(list) {
+  const others = list.filter(x => !x.me && x.inV).map(x => x.u.username);
+  if (V.joined) return 'В войсе: ' + list.filter(x => x.inV).length + ' из ' + list.length;
+  return others.length ? others.join(', ') + (others.length > 1 ? ' уже в войсе' : ' уже в войсе') : 'Говорите с пати, даже во время матча';
+}
+const vJoinBtn = (cls = '') => `<button class="btn btn-primary btn-sm ${cls}" data-act="voice-join" ${V.joining ? 'disabled' : ''}>${V.joining ? 'Входим…' : '<i class="fas fa-headset"></i> Войти'}</button>`;
+
+function voiceCardHtml() {
+  if (!V.room) return '';
+  const list = voiceList(), live = !V.joined && list.some(x => !x.me && x.inV);
+  return `<div class="vc ${V.joined ? 'on' : ''} ${live ? 'live' : ''}">
+    <div class="vc-head">${vWave}
+      <div class="vc-ttl"><b>Голосовой чат</b><span>${esc(voiceSub(list))}</span></div>
+      ${V.joined ? '<span class="vlive">LIVE</span>' : vJoinBtn()}</div>
+    ${V.joined ? `<div class="vc-users">${list.map(x => vChip(x, 46)).join('')}</div><div class="vc-ctl">${vControls()}</div>` : ''}
+  </div>`;
+}
+function voiceBarHtml() {
+  const list = voiceList(), live = !V.joined && list.some(x => !x.me && x.inV);
+  return `<div class="vbar ${V.joined ? 'on' : ''} ${live ? 'live' : ''}">${vWave}
+    ${V.joined
+      ? `<div class="vb-av">${list.filter(x => x.inV).map(x => vChip(x, 30)).join('')}</div><div class="vb-ctl">${vControls()}</div>`
+      : `<div class="vb-main"><b>Войс пати</b><small>${esc(voiceSub(list))}</small></div>${vJoinBtn()}`}
+  </div>`;
+}
+function voiceDockHtml() {
+  if (!V.room || S.page === 'match' || S.page === 'matches') return '';
+  const list = voiceList();
+  if (V.joined) {
+    return `<div class="vdock on">${vWave}<div class="vd-av">${list.filter(x => x.inV).map(x => vChip(x, 28)).join('')}</div>
+      <div class="vb-ctl"><button class="vbtn sm ${V.muted ? 'off' : ''}" data-act="voice-mute" aria-label="Микрофон"><i class="fas ${V.muted ? 'fa-microphone-slash' : 'fa-microphone'}"></i></button>
+      <button class="vbtn sm leave" data-act="voice-leave" aria-label="Выйти из войса"><i class="fas fa-phone-slash"></i></button></div></div>`;
+  }
+  if (list.some(x => !x.me && x.inV) && V.dismissed !== V.room) {
+    return `<div class="vdock live">${vWave}<button class="vd-join" data-act="voice-join"><b>Пати в войсе</b><small>${esc(voiceSub(list))}</small></button>
+      <button class="vbtn sm" data-act="voice-dismiss" aria-label="Скрыть"><i class="fas fa-xmark"></i></button></div>`;
+  }
+  return '';
+}
+function voiceSet(el, html) {
+  if (!el || el._h === html) return;
+  el._h = html; el.innerHTML = html;
+}
+function voiceRender() {
+  if (!S.me) return;
+  voiceSet($('voiceCard'), voiceCardHtml());
+  const inMatch = S.match && S.match.status === 'active' && !!V.room;
+  const bar = $('voiceMatchBar');
+  if (bar) { bar.hidden = !inMatch; voiceSet(bar, inMatch ? voiceBarHtml() : ''); }
+  const dock = voiceDockHtml(), dEl = $('voiceDock');
+  if (dEl) { dEl.hidden = !dock; voiceSet(dEl, dock); }
+  voiceApplySpeak();
+}
+window.addEventListener('pagehide', () => { try { if (V.joined && V.ch) V.ch.untrack(); } catch (e) { /* ок */ } });
 
 init();
 

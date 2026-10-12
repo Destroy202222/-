@@ -1242,9 +1242,10 @@ select.text-input{appearance:auto}
 .tg-pill button{border:none;background:none;color:inherit;font:inherit;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent;position:relative;z-index:1}
 .tg-ico{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;background:linear-gradient(135deg,#38bdf8,#2563eb);box-shadow:0 4px 12px rgba(37,99,235,.5),inset 0 1px 0 rgba(255,255,255,.35)}
 .tg-body{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;white-space:nowrap}
-.tg-body small{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#7dd3fc;line-height:1}
-.tg-body span{font-size:12.5px;font-weight:700;letter-spacing:.005em;color:#f1f5ff;line-height:1.1}
+.tg-body small{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#7dd3fc;line-height:1}
+.tg-body span{font-size:13px;font-weight:700;letter-spacing:.005em;color:#f1f5ff;line-height:1.1}
 .tg-go{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;background:linear-gradient(135deg,#38bdf8,#2563eb)!important;box-shadow:0 3px 10px rgba(37,99,235,.45)}
-.tg-min{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.07)!important}
-.tg-min:hover{color:#fff}
+.tg-min{width:26px;height:26px;border-radius:50%;display:flex!important;align-items:center;justify-content:center;font-size:12px;color:#fff;background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.22)!important;opacity:1}
+.tg-min i{display:block;color:#fff}
+.tg-min:active{background:rgba(255,255,255,.28)!important}
 @media (min-width:1024px){.tg-wrap{bottom:24px;padding:0 28px}.tg-body span{font-size:13.5px}}

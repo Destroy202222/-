@@ -1287,3 +1287,12 @@ select.text-input{appearance:auto}
 .cl-lbl{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
 .cl-taginp{text-transform:uppercase;letter-spacing:.3em;text-align:center;font-weight:800}
 @media (min-width:1024px){#page-clan{max-width:820px;margin-left:auto;margin-right:auto}}
+
+.ocr-th{display:flex;justify-content:space-between;margin-top:10px;padding:0 2px 4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+.ocr-pl{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 2px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.05)}
+.ocr-pl .ocr-n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ocr-pl .fa-check{color:var(--win)}.ocr-pl .fa-xmark{color:var(--live)}
+.ocr-pl.miss{opacity:.6}
+.ocr-kda{flex:none;font-variant-numeric:tabular-nums;color:var(--muted)}
+.ocr-kda b{color:var(--text)}
+.ocr-kda.low b{color:#ffd166}

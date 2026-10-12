@@ -40,7 +40,7 @@
     'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
   ];
   function start() {
-    var tg = load('https://telegram.org/js/telegram-web-app.js', 4000).catch(function () { /* без Telegram SDK работаем как обычный сайт */ });
+    var tg = load('https://telegram.org/js/telegram-web-app.js', 8000).catch(function () { /* без Telegram SDK работаем как обычный сайт */ });
     var sb = firstOk(SB, 7000);
     Promise.all([tg, sb]).then(function () { return load('app.js', 10000); })
       .catch(function (e) {

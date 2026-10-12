@@ -2168,24 +2168,28 @@ async function init() {
 
 init();
 
-/* ───────── Плашка подписки на Telegram-канал ───────── */
+/* ───────── Плашка подписки на спонсора ───────── */
 (function () {
   const URL_TG = 'https://t.me/win11er', IDLE_MS = 10000;
   const wrap = document.getElementById('tgPromo'), pill = document.getElementById('tgPill');
   if (!wrap || !pill) return;
-  let timer = null;
-  const collapse = () => { clearTimeout(timer); pill.classList.add('collapsed'); };
-  const arm = () => { clearTimeout(timer); timer = setTimeout(collapse, IDLE_MS); };
-  const expand = () => { pill.classList.remove('collapsed'); arm(); };
+  let timer = null, gone = false;
+  /* закрытие: плашка уходит полностью, значка не остаётся */
+  const close = () => {
+    if (gone) return; gone = true; clearTimeout(timer);
+    pill.classList.add('out');
+    setTimeout(() => { wrap.hidden = true; }, 400);
+  };
+  const arm = () => { clearTimeout(timer); timer = setTimeout(close, IDLE_MS); };
   const open = () => {
     try { if (TG && TG.openTelegramLink) return TG.openTelegramLink(URL_TG); } catch (e) { /* ниже запасной способ */ }
     window.open(URL_TG, '_blank', 'noopener');
   };
-  document.getElementById('tgIco').addEventListener('click', () => pill.classList.contains('collapsed') ? expand() : open());
+  document.getElementById('tgIco').addEventListener('click', open);
   document.getElementById('tgOpen').addEventListener('click', open);
   document.getElementById('tgGo').addEventListener('click', open);
-  document.getElementById('tgMin').addEventListener('click', collapse);
-  ['pointerdown', 'pointermove', 'touchstart', 'keydown'].forEach(ev => pill.addEventListener(ev, () => { if (!pill.classList.contains('collapsed')) arm(); }, { passive: true }));
-  /* показываем через пару секунд после запуска: раскрыта 10 секунд, потом сворачивается сама */
-  setTimeout(() => { wrap.hidden = false; requestAnimationFrame(() => expand()); }, 2500);
+  document.getElementById('tgMin').addEventListener('click', close);
+  ['pointerdown', 'pointermove', 'touchstart', 'keydown'].forEach(ev => pill.addEventListener(ev, () => { if (!gone) arm(); }, { passive: true }));
+  /* показываем через пару секунд после запуска; без действий через 10 секунд уходит сама */
+  setTimeout(() => { wrap.hidden = false; arm(); }, 2500);
 })();

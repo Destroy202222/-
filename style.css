@@ -1296,3 +1296,6 @@ select.text-input{appearance:auto}
 .ocr-kda{flex:none;font-variant-numeric:tabular-nums;color:var(--muted)}
 .ocr-kda b{color:var(--text)}
 .ocr-kda.low b{color:#ffd166}
+
+.cl-card.tgc{cursor:default;gap:10px;margin-top:10px;background:linear-gradient(135deg,rgba(56,189,248,.13),rgba(37,99,235,.1));border-color:rgba(56,189,248,.3)}
+.cl-card.tgc .btn{flex:none}

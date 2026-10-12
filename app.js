@@ -1794,48 +1794,110 @@ function ocrFindName(name, text) {
   }
   return best >= 0.8 ? best : 0;
 }
-function ocrAnalyze(m, raw) {
-  const text = ocrNorm(raw);
-  const names = p => (p.username || '');
-  const check = arr => arr.map(p => ({ name: names(p), ok: [names(p), names(p).replace(/\[[^\]]*\]/g, '')].some(n => ocrFindName(n, text) > 0) }));
-  const blue = check(m.blue), orange = check(m.orange);
-  const lines = raw.split(/\n/);
-  const nums = l => (l.match(/\d{1,2}/g) || []).map(Number);
-  const ctLine = lines.find(l => /оборон|\(\s*ct/i.test(l)), tLine = lines.find(l => /атак|\(\s*t\s*\)/i.test(l));
-  const scCT = ctLine ? nums(ctLine).slice(-1)[0] : undefined, scT = tLine ? nums(tLine)[0] : undefined;
+/* Строки из слов Tesseract по одной половине скриншота (левая/правая таблица) */
+function ocrSideLines(words, x0, x1) {
+  const cy = w => (w.bbox.y0 + w.bbox.y1) / 2, cx = w => (w.bbox.x0 + w.bbox.x1) / 2;
+  const ws = words.filter(w => (w.text || '').trim() && cx(w) >= x0 && cx(w) < x1).sort((p, q) => cy(p) - cy(q));
+  if (!ws.length) return [];
+  const hs = ws.map(w => w.bbox.y1 - w.bbox.y0).sort((p, q) => p - q), tol = Math.max(6, hs[Math.floor(hs.length / 2)] * 0.6);
+  const lines = [];
+  ws.forEach(w => {
+    const l = lines[lines.length - 1];
+    if (l && Math.abs(cy(w) - l.y) <= tol) { l.w.push(w); l.y = (l.y * (l.w.length - 1) + cy(w)) / l.w.length; } else lines.push({ y: cy(w), w: [w] });
+  });
+  return lines.map(l => l.w.sort((p, q) => cx(p) - cx(q)).map(w => w.text).join(' '));
+}
+/* У(убийства) П(помощь) С(смерти) Счёт Пинг — разбор справа налево; сверяем счёт ≈ 2*У + П (+ бонусы) */
+function ocrStatsFromLine(line) {
+  const t = (line.replace(/\d+\s*[$S]/g, ' ').match(/\d+/g) || []).filter(x => x.length <= 3).map(Number);
+  const okK = (k, a, d) => k <= 60 && a <= 60 && d <= 60;
+  const okS = (k, a, sc) => sc >= 2 * k + a - 1 && sc <= 2 * k + a + 14;
+  if (t.length >= 5) { const [k, a, d, sc] = t.slice(-5); if (okK(k, a, d) && okS(k, a, sc)) return { k, a, d, conf: 'ok' }; }
+  if (t.length >= 4) { const [k, a, d, sc] = t.slice(-4); if (okK(k, a, d) && okS(k, a, sc)) return { k, a, d, conf: 'ok' }; }
+  if (t.length >= 3) { const [k, a, d] = t.slice(-3); if (okK(k, a, d)) return { k, a, d, conf: 'low' }; }
+  return null;
+}
+function ocrAnalyze(m, words, width) {
+  const mid = width / 2;
+  const sideL = ocrSideLines(words, 0, mid), sideR = ocrSideLines(words, mid, width + 1);
+  const sides = { L: sideL, R: sideR };
+  const variants = p => [p.username || '', (p.username || '').replace(/\[[^\]]*\]/g, '')];
+  const sim = (p, line) => Math.max(...variants(p).map(n => ocrFindName(n, ocrNorm(line))));
+  const countIn = (arr, lines) => arr.filter(p => lines.some(l => sim(p, l) > 0)).length;
+  const blueLeft = countIn(m.blue, sideL) + countIn(m.orange, sideR), blueRight = countIn(m.blue, sideR) + countIn(m.orange, sideL);
+  const found = blueLeft + blueRight > 0;
+  const blueSide = blueLeft >= blueRight ? 'L' : 'R';
+  const sideOf = team => (team === 'blue') === (blueSide === 'L') ? 'L' : 'R';
+  const head = (lines, key) => {
+    const hdr = lines.slice(0, 4).find(l => /оборон|атак|\(\s*ct|\(\s*t\s*\)/i.test(l));
+    const nums = hdr ? (hdr.match(/\d{1,2}/g) || []).map(Number) : [];
+    return { win: lines.slice(0, 4).some(l => /побед/i.test(l)), lose: lines.slice(0, 4).some(l => /поражен/i.test(l)),
+             score: nums.length ? (key === 'L' ? nums[nums.length - 1] : nums[0]) : null };
+  };
+  const hb = head(sides[sideOf('blue')], sideOf('blue')), ho = head(sides[sideOf('orange')], sideOf('orange'));
   let win = null;
-  const wl = lines.find(l => /побед/i.test(l)), ll = lines.find(l => /поражен/i.test(l));
-  if (wl) win = /атак|\(\s*t\s*\)/i.test(wl) ? 'T' : (/оборон|\(\s*ct/i.test(wl) ? 'CT' : null);
-  if (!win && ll) win = /атак|\(\s*t\s*\)/i.test(ll) ? 'CT' : (/оборон|\(\s*ct/i.test(ll) ? 'T' : null);
-  if (!win && scCT != null && scT != null && scCT !== scT) win = scCT > scT ? 'CT' : 'T';
-  const map = (raw.match(/sandstone|rust|province|hanami|zone\s*7|breeze|dune|sakura|bubble|pool|inferno|mirage/i) || [])[0] || null;
-  return { blue, orange, scCT, scT, win, map };
+  if (found) { if (hb.win && !ho.win) win = 'blue'; else if (ho.win && !hb.win) win = 'orange'; else if (hb.lose && !ho.lose) win = 'orange'; else if (ho.lose && !hb.lose) win = 'blue';
+    else if (hb.score != null && ho.score != null && hb.score !== ho.score) win = hb.score > ho.score ? 'blue' : 'orange'; }
+  const players = [...m.blue.map(p => ({ p, team: 'blue' })), ...m.orange.map(p => ({ p, team: 'orange' }))].map(({ p, team }) => {
+    const lines = sides[sideOf(team)];
+    let best = null, bs = 0;
+    lines.forEach(l => { const s = sim(p, l); if (s > bs) { bs = s; best = l; } });
+    const st = best ? ocrStatsFromLine(best) : null;
+    return { id: p.id, name: p.username, team, ok: bs > 0, k: st ? st.k : null, d: st ? st.d : null, a: st ? st.a : null, conf: st ? st.conf : null };
+  });
+  const txt = words.map(w => w.text).join(' ');
+  const map = (txt.match(/sandstone|rust|province|hanami|zone\s*7|breeze|dune|sakura|bubble|pool|inferno|mirage/i) || [])[0] || null;
+  return { found, win, scBlue: hb.score, scOrange: ho.score, players, map };
 }
 async function ocrRun(id) {
   const m = (S.admMatchObj || {})[String(id)], shots = (S.admShotList || {})[String(id)] || [];
   const box = $('ocr-' + id); if (!m || !box) return;
   if (!shots.length) return toast('info', 'Нет скриншотов', '');
   box.innerHTML = '<div class="am-none"><i class="fas fa-spinner fa-spin"></i> Распознаём… (первый раз дольше — загружается модель)</div>';
+  let worker = null;
   try {
     await loadTesseract();
+    worker = await Tesseract.createWorker('rus+eng');
+    try { await worker.setParameters({ tessedit_pageseg_mode: '11' }); } catch (e) { /* не критично */ }
+    S.ocrRes = S.ocrRes || {}; S.ocrRes[id] = [];
     const out = [];
     for (const sh of shots) {
-      const r = await Tesseract.recognize(sh.image, 'rus+eng');
-      out.push({ by: sh.username, an: ocrAnalyze(m, r.data.text || '') });
+      const dim = await new Promise(res => { const im = new Image(); im.onload = () => res({ w: im.naturalWidth, h: im.naturalHeight }); im.onerror = () => res({ w: 1280, h: 720 }); im.src = sh.image; });
+      const r = await worker.recognize(sh.image);
+      const words = (r.data.words || []).filter(w => w && w.bbox);
+      if (!words.length) throw new Error('не удалось определить расположение текста');
+      const an = ocrAnalyze(m, words, dim.w);
+      S.ocrRes[id].push(an); out.push({ by: sh.username, an, idx: S.ocrRes[id].length - 1 });
     }
     box.innerHTML = out.map(o => {
-      const a = o.an, chip = p => `<span class="ocr-chip ${p.ok ? 'ok' : 'bad'}"><i class="fas ${p.ok ? 'fa-check' : 'fa-xmark'}"></i> ${esc(p.name)}</span>`;
-      const found = [...a.blue, ...a.orange].filter(p => p.ok).length, total = a.blue.length + a.orange.length;
-      const sc = (a.scCT != null && a.scT != null) ? `${a.scCT}:${a.scT} (CT:T)` : 'счёт не распознан';
-      const w = a.win === 'CT' ? 'Победа: оборона (CT)' : a.win === 'T' ? 'Победа: атака (T)' : 'победитель не распознан';
+      const a = o.an, nm = t => t === 'blue' ? 'Спецназ' : 'Террористы';
+      const found = a.players.filter(p => p.ok).length;
+      const sc = a.scBlue != null && a.scOrange != null ? `${a.scBlue}:${a.scOrange}` : 'счёт не распознан';
+      const w = a.win ? `Победа: <b>${nm(a.win)}</b>` : 'победитель не распознан';
+      const rows = a.players.map(p => `<div class="ocr-pl ${p.ok ? '' : 'miss'}"><span class="ocr-n">${p.ok ? '<i class="fas fa-check"></i>' : '<i class="fas fa-xmark"></i>'} ${esc(p.name)}</span>
+        <span class="ocr-kda ${p.conf || ''}">${p.k != null ? `<b>${p.k}</b> / <b>${p.d}</b> / <b>${p.a}</b>` : '—'}</span></div>`).join('');
       return `<div class="ocr-card"><div class="ocr-h">Скриншот от <b>${esc(o.by)}</b></div>
-        <div class="ocr-row"><i class="fas fa-trophy"></i> ${w} · ${sc}${a.map ? ' · ' + esc(a.map) : ''}</div>
-        <div class="ocr-row"><i class="fas fa-users"></i> Ников найдено: <b>${found}/${total}</b></div>
-        <div class="ocr-chips">${a.blue.map(chip).join('')}${a.orange.map(chip).join('')}</div></div>`;
-    }).join('') + '<div class="ocr-note">Подсказка автоматическая и может ошибаться. Решение принимаете вы.</div>';
+        <div class="ocr-row"><i class="fas fa-trophy"></i> ${w} · счёт ${sc}${a.map ? ' · ' + esc(a.map) : ''}</div>
+        <div class="ocr-row"><i class="fas fa-users"></i> Ников найдено: <b>${found}/${a.players.length}</b></div>
+        <div class="ocr-th"><span>Игрок</span><span>K / D / A</span></div>${rows}
+        <button class="btn btn-primary btn-sm btn-block" style="margin-top:10px" data-act="ocr-apply" data-id="${esc(id)}" data-idx="${o.idx}"><i class="fas fa-pen"></i> Подставить в форму</button></div>`;
+    }).join('') + '<div class="ocr-note">Подсказка автоматическая и может ошибаться: сверьте со скриншотом. Значения «К / D / A» = убийства / смерти / помощь. Зачёт делаете вы.</div>';
   } catch (e) {
     box.innerHTML = `<div class="am-none">Не получилось: ${esc(errText(e))}</div>`;
-  }
+  } finally { if (worker) { try { await worker.terminate(); } catch (e) { /* ок */ } } }
+}
+function ocrApply(id, idx) {
+  const an = ((S.ocrRes || {})[id] || [])[idx]; if (!an) return;
+  const card = document.querySelector(`[data-card="${id}"]`); if (!card) return;
+  if (an.win) ACTIONS['adm-pick']({ id, side: an.win });
+  const set = (sel, v) => { const el = card.querySelector(sel); if (el && v != null) el.value = v; };
+  set('.sa', an.scBlue); set('.sb', an.scOrange);
+  an.players.forEach(p => {
+    if (p.k == null) return;
+    const row = card.querySelector(`[data-pid="${p.id}"]`); if (!row) return;
+    row.querySelector('.k').value = p.k; row.querySelector('.d').value = p.d; row.querySelector('.a').value = p.a;
+  });
+  toast('success', 'Подставлено в форму', 'Проверьте данные и нажмите «Засчитать»');
 }
 
 async function loadAdminTab() {
@@ -1980,6 +2042,7 @@ const ACTIONS = {
     toast('success', 'Ник изменён', nick);
   },
   'ocr-run': d => ocrRun(d.id),
+  'ocr-apply': d => ocrApply(d.id, +d.idx),
   'shot-view': d => { const src = S.admShots[d.sid]; if (src) { $('shotImg').src = src; openModal('shotModal'); } },
   'copy-match': () => S.match && copyText(String(S.match.match_number || S.match.id)),
   'copy-host': () => { const h = S.match && S.match.blue[0]; if (h && h.game_id) copyText(h.game_id); },

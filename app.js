@@ -2368,6 +2368,43 @@ Object.assign(ACTIONS, {
 });
 
 
+
+/* ───────── Уведомления в Telegram ───────── */
+const TG_BOT = 'skfaceitbot';
+S.tg = null;
+async function loadTg() { try { S.tg = await rpc('tg_status'); } catch (e) { S.tg = S.tg || { linked: false, enabled: false }; } return S.tg; }
+function tgCardHtml() {
+  const t = S.tg;
+  if (!t) return '';
+  if (!t.linked) return `<div class="cl-card tgc"><span class="cl-av ph" style="--s:46px;background:linear-gradient(135deg,#38bdf8,#2563eb)"><i class="fas fa-paper-plane"></i></span>
+    <div class="cl-card-main"><small>Telegram</small><b>Уведомления в боте</b></div>
+    <button class="btn btn-primary btn-sm" data-act="tg-connect">Подключить</button></div>`;
+  return '';   // подключено — блок из профиля полностью убирается
+}
+function paintTg() { const el = $('tgCard'); if (!el) return; const h = tgCardHtml(); el.innerHTML = h; el.style.display = h ? '' : 'none'; }
+const _renderProfile2 = renderProfile;
+renderProfile = function () {
+  _renderProfile2();
+  const anchor = $('clanCard');
+  const html = '<div id="tgCard" class="cl-slot"></div>';
+  if (anchor) anchor.insertAdjacentHTML('afterend', html); else { const b = $('profileBody'); if (b) b.insertAdjacentHTML('afterbegin', html); }
+  paintTg();
+  loadTg().then(() => { if (S.page === 'profile') paintTg(); });
+};
+Object.assign(ACTIONS, {
+  'tg-connect': async () => {
+    const r = await rpc('tg_link_start');
+    const url = `https://t.me/${TG_BOT}?start=${r.code}`;
+    try { if (TG && TG.openTelegramLink) TG.openTelegramLink(url); else window.open(url, '_blank', 'noopener'); } catch (e) { window.open(url, '_blank', 'noopener'); }
+    toast('info', 'Нажмите «Start» в боте', 'После этого вернитесь в приложение');
+    let n = 0; const iv = setInterval(async () => {
+      n++; await loadTg();
+      if (S.page === 'profile') paintTg();
+      if ((S.tg && S.tg.linked) || n >= 30) { clearInterval(iv); if (S.tg && S.tg.linked) toast('success', 'Уведомления подключены', ''); }
+    }, 3000);
+  }
+});
+
 init();
 
 /* ───────── Плашка подписки на спонсора ───────── */

@@ -206,12 +206,67 @@ b,strong{font-weight:800}
   font-weight:800;font-size:calc(var(--s) * .4);color:#fff;
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
 }
-.av.frame_bronze{background:linear-gradient(135deg,#cd7f32,#8b5a2b)}
-.av.frame_silver{background:linear-gradient(135deg,#e5e7eb,#8a8f98)}
-.av.frame_gold{background:linear-gradient(135deg,#ffd700,#a855f7);box-shadow:0 0 14px rgba(255,215,0,.45)}
-.av.frame_neon{background:linear-gradient(135deg,#22c55e,#00d4ff);box-shadow:0 0 16px rgba(34,197,94,.55)}
-.av.frame_fire{background:linear-gradient(135deg,#ff3b6b,#ffb238);box-shadow:0 0 18px rgba(255,59,107,.55)}
-.av.frame_diamond{background:linear-gradient(135deg,#7dd3fc,#a78bfa,#f0abfc);box-shadow:0 0 20px rgba(130,190,255,.6)}
+/* — Рамки: переливающееся кольцо + зазор до аватара + свечение — */
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes ringSpin{to{--ang:360deg}}
+@keyframes goldGlow{0%,100%{box-shadow:0 0 10px rgba(255,200,40,.45),0 0 22px rgba(255,170,0,.2)}50%{box-shadow:0 0 16px rgba(255,215,60,.8),0 0 34px rgba(255,170,0,.4)}}
+@keyframes neonPulse{0%,100%{box-shadow:0 0 8px rgba(34,197,94,.6),0 0 18px rgba(0,212,255,.3)}50%{box-shadow:0 0 14px rgba(34,197,94,.95),0 0 32px rgba(0,212,255,.55)}}
+@keyframes fireFlicker{0%,100%{box-shadow:0 0 12px rgba(255,90,40,.6),0 -4px 20px rgba(255,190,50,.35)}25%{box-shadow:0 0 16px rgba(255,70,60,.85),0 -7px 26px rgba(255,200,60,.5)}50%{box-shadow:0 0 11px rgba(255,100,30,.55),0 -3px 18px rgba(255,180,40,.3)}75%{box-shadow:0 0 18px rgba(255,60,80,.8),0 -8px 28px rgba(255,210,70,.5)}}
+@keyframes sparkle{0%,100%{transform:scale(.4) rotate(0);opacity:0}50%{transform:scale(1) rotate(45deg);opacity:1}}
+
+.av[class*="frame_"]{
+  position:relative;
+  padding:max(3px,calc(var(--s) * .085));
+  background-size:100% 100%;
+  animation:ringSpin 8s linear infinite;
+}
+/* тёмный зазор между кольцом и аватаркой */
+.av[class*="frame_"] .av-in{
+  box-shadow:0 0 0 max(1px,calc(var(--s) * .028)) #070b1c, inset 0 0 8px rgba(0,0,0,.45);
+}
+/* блик по краю кольца */
+.av[class*="frame_"]::before{
+  content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.22), inset 0 2px 2px rgba(255,255,255,.18);
+}
+
+.av.frame_bronze{
+  background:conic-gradient(from var(--ang),#7a4a1f,#e9a45c,#cd7f32,#6b3f17,#f0b270,#a8692a,#7a4a1f);
+  box-shadow:0 0 10px rgba(205,127,50,.45);
+  animation-duration:12s;
+}
+.av.frame_silver{
+  background:conic-gradient(from var(--ang),#6b7280,#f9fafb,#9ca3af,#e5e7eb,#6b7280,#ffffff,#8a8f98,#6b7280);
+  box-shadow:0 0 12px rgba(220,230,255,.45);
+  animation-duration:10s;
+}
+.av.frame_gold{
+  background:conic-gradient(from var(--ang),#a16207,#ffd700,#fff3b0,#f5c451,#b8860b,#ffe066,#a16207);
+  animation:ringSpin 6s linear infinite, goldGlow 2.6s ease-in-out infinite;
+}
+.av.frame_neon{
+  background:conic-gradient(from var(--ang),#22c55e,#00d4ff,#a3ffd6,#22c55e,#00ffa3,#00d4ff,#22c55e);
+  animation:ringSpin 4s linear infinite, neonPulse 1.8s ease-in-out infinite;
+}
+.av.frame_fire{
+  background:conic-gradient(from var(--ang),#ff2d55,#ff7a18,#ffd23f,#ff7a18,#ff2d55,#c1121f,#ff2d55);
+  animation:ringSpin 3.5s linear infinite, fireFlicker 1.3s ease-in-out infinite;
+}
+.av.frame_diamond{
+  background:conic-gradient(from var(--ang),#7dd3fc,#ffffff,#a78bfa,#f0abfc,#ffffff,#67e8f9,#7dd3fc);
+  box-shadow:0 0 16px rgba(130,190,255,.65),0 0 30px rgba(167,139,250,.3);
+  animation-duration:5s;
+}
+/* искорка на алмазной рамке */
+.av.frame_diamond::after{
+  content:"";position:absolute;top:-6%;right:-6%;width:calc(var(--s) * .3);height:calc(var(--s) * .3);
+  background:#fff;pointer-events:none;filter:drop-shadow(0 0 4px #bfe6ff);
+  clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);
+  animation:sparkle 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion:reduce){
+  .av[class*="frame_"],.av.frame_diamond::after{animation:none}
+}
 
 /* ───────── Модалки ───────── */
 .overlay{
@@ -559,13 +614,32 @@ b,strong{font-weight:800}
 .shop-me{display:flex;align-items:center;gap:16px}
 .shop-me .upload{flex:1;display:flex;flex-direction:column;gap:8px}
 .shop-me input[type=file]{display:none}
-.frames{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.frame{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 10px;text-align:center}
-.frame.active{border-color:var(--accent)}
+.frames{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.frame{
+  --fc:130,190,255;
+  position:relative;overflow:hidden;text-align:center;
+  padding:20px 10px 14px;border-radius:var(--r-md);border:1px solid var(--line);
+  background:radial-gradient(120% 85% at 50% 0%,rgba(var(--fc),.18),transparent 65%),var(--surface);
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.frame:has(.frame_bronze){--fc:205,127,50}
+.frame:has(.frame_silver){--fc:200,210,225}
+.frame:has(.frame_gold){--fc:255,205,50}
+.frame:has(.frame_neon){--fc:34,197,94}
+.frame:has(.frame_fire){--fc:255,90,60}
+.frame:has(.frame_diamond){--fc:130,190,255}
+.frame:hover{transform:translateY(-3px);border-color:rgba(var(--fc),.55);box-shadow:0 10px 26px rgba(var(--fc),.2)}
 .frame.owned{border-color:rgba(61,220,151,.5)}
-.frame .av{margin:0 auto 10px}
-.frame .nm{font-weight:800;font-size:13px}
-.frame .pr{color:var(--accent-hi);font-weight:800;font-size:13px;margin:2px 0 8px}
+.frame.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 10px 28px rgba(79,140,255,.28)}
+.frame.active::after{
+  content:"НАДЕТА";position:absolute;top:8px;right:8px;
+  font-size:9px;font-weight:800;letter-spacing:.06em;padding:3px 7px;border-radius:99px;
+  background:var(--accent);color:#fff;
+}
+.frame .av{--s:76px !important;margin:0 auto 14px}
+.frame .nm{font-weight:800;font-size:13px;letter-spacing:.02em}
+.frame .pr{color:var(--accent-hi);font-weight:800;font-size:13px;margin:2px 0 10px}
+.frame.owned .pr{color:var(--win)}
 
 /* ───────── Админка ───────── */
 .adm-tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px}

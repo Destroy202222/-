@@ -1418,3 +1418,12 @@ select.text-input{appearance:auto}
 .vvol::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.45)}
 .vvol::-moz-range-track{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
 .vvol::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--accent)}
+
+
+/* ═════ Поддержка: подсказка вместо «мёртвой» кнопки, кнопка не прячется за плашками ═════ */
+#page-support{padding-bottom:36px}
+.app.has-dock{padding-bottom:calc(180px + var(--safe-b))}
+.btn.not-ready{opacity:.55}
+.btn.busy{opacity:.7;pointer-events:none}
+.sup-need{min-height:18px;margin-top:10px;text-align:center;font-size:12px;font-weight:700;color:var(--gold)}
+.sup-need:empty{display:none}

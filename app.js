@@ -376,6 +376,7 @@ function navigate(page) {
   if (page === 'match') renderMatch(true);
   if (page === 'profile') { renderProfile(); refreshMe().then(() => S.page === 'profile' && renderProfile()).catch(() => {}); loadHistory().catch(() => {}); }
   if (page === 'admin') { if (!S.me || !S.me.isadmin) return navigate('profile'); renderAdmin(); }
+  if (page === 'player') renderPlayerPage();
   if (page === 'friends') loadFriends().catch(() => {});
   if (page === 'top') renderTop();
   if (page === 'wallet') renderBalance();
@@ -975,17 +976,16 @@ function achievements(u) {
   ];
 }
 
-function renderProfile() {
-  const u = S.me; if (!u) return;
-  const body = $('profileBody'); if (!body) return;
+function profileHtml(u, o) {
+  const p = o.p || '';
   const L = levelOf(u.elo), prog = levelProgress(u.elo), col = lvlColor(L.lvl);
   const st = profileStats(u);
   const wr = u.matches ? Math.round(u.wins / u.matches * 100) : 0;
   const toNext = L.max === Infinity ? 'Максимальный уровень' : `До уровня ${L.lvl + 1}: ${L.max + 1 - u.elo} ELO`;
   const ringLen = 2 * Math.PI * 34, kdFill = st.kd === null ? 0 : Math.min(1, st.kd / 3);
-  const recent = S.history.slice(0, 8);
+  const recent = o.hist.slice(0, 8);
   const wlWins = recent.filter(h => h.result === 'win').length;
-  const rows = S.history.slice(0, 10).map(h => {
+  const rows = o.hist.slice(0, 10).map(h => {
     const win = h.result === 'win', d = h.elo_change || 0, mp = mapById(h.map);
     const kda = h.kills != null ? `${h.kills}/${h.deaths}/${h.assists}` : '';
     return `<div class="hist ${win ? 'win' : 'lose'}" data-act="match-details" data-id="${h.id}">
@@ -996,16 +996,17 @@ function renderProfile() {
   }).join('') || '<div class="empty"><i class="fas fa-gamepad"></i>Матчей пока нет</div>';
   const today = new Date();
 
-  body.innerHTML = `
+  return `
     <div class="pf-banner${bnCls(S.banners[u.id])}">
       <div class="logo">STANDKNIFE<span>FACEIT</span></div>
       <div class="pf-top">${avatarHtml(u, 84)}
-        <div class="pf-id"><div class="no">#${S.rank || '—'}</div>
+        <div class="pf-id"><div class="no">#${o.rank || '—'}</div>
           <div class="name">${esc(u.username)}${u.isadmin ? ' <i class="fas fa-crown" style="color:var(--gold);font-size:15px"></i>' : ''}</div>
           <div class="gid">ID: ${esc(u.game_id || '—')}</div></div></div>
       <div class="chips"><span class="chip">LVL ${L.lvl}</span>${u.isadmin ? '<span class="chip pr"><i class="fas fa-crown"></i> ADMIN</span>' : ''}<span class="chip">${u.elo} ELO</span></div>
-      <div class="dt">${pad(today.getDate())}.${pad(today.getMonth() + 1)}.${today.getFullYear()}</div>
+      <div class="dt">${o.isMe || !u.registered ? `${pad(today.getDate())}.${pad(today.getMonth() + 1)}.${today.getFullYear()}` : 'в игре с ' + fmtDay(u.registered)}</div>
     </div>
+    ${o.afterBanner || ''}
 
     <div class="panel">
       <div class="panel-head"><h3><i class="fas fa-chart-simple"></i> Статистика</h3><span class="pill-soft">${toNext}</span></div>
@@ -1039,32 +1040,39 @@ function renderProfile() {
         <div class="stat"><div class="k">Популярность</div><div class="v">${u.popularity}</div></div></div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h3><i class="fas fa-chart-line"></i> Динамика ELO</h3><span class="pill-soft" id="chartDelta">—</span></div>
-      <div class="chart-top"><div><span class="big num" id="chartElo">${u.elo}</span></div><div class="date" id="chartDate"></div></div>
-      <div class="chart" id="eloChart"></div>
-      <div class="chart-mm"><span>мин <b id="chartMin">—</b></span><span>макс <b id="chartMax">—</b></span></div>
-      <div class="dots" id="chartDots"></div>
+      <div class="panel-head"><h3><i class="fas fa-chart-line"></i> Динамика ELO</h3><span class="pill-soft" id="${p}chartDelta">—</span></div>
+      <div class="chart-top"><div><span class="big num" id="${p}chartElo">${u.elo}</span></div><div class="date" id="${p}chartDate"></div></div>
+      <div class="chart" id="${p}eloChart"></div>
+      <div class="chart-mm"><span>мин <b id="${p}chartMin">—</b></span><span>макс <b id="${p}chartMax">—</b></span></div>
+      <div class="dots" id="${p}chartDots"></div>
     </div>
 
     <div class="panel"><div class="panel-head"><h3>Последние матчи</h3><span class="pill-soft">${recent.length ? Math.round(wlWins / recent.length * 100) + '% W' : '—'}</span></div>
       <div class="wl">${recent.map(h => `<i class="${h.result === 'win' ? 'w' : 'l'}">${h.result === 'win' ? 'W' : 'L'}</i>`).join('')}</div>
       ${u.win_streak > 0 ? `<div class="series">Серия: <b>${u.win_streak} ${u.win_streak === 1 ? 'победа' : 'побед'} подряд</b></div>` : ''}
       ${rows}</div>
-    ${u.isadmin ? '<button class="btn btn-primary btn-block" data-act="nav" data-page="admin" style="margin-bottom:10px"><i class="fas fa-user-shield"></i> Админ-панель</button>' : ''}
-    <button class="btn btn-ghost btn-block" data-act="logout"><i class="fas fa-sign-out-alt"></i> Выйти</button>`;
-  renderEloChart();
+    ${o.footer || ''}`;
 }
 
-function renderEloChart() {
-  const box = $('eloChart'); if (!box) return;
-  const rows = S.history.slice().reverse();
+function renderProfile() {
+  const u = S.me; if (!u) return;
+  const body = $('profileBody'); if (!body) return;
+  const footer = `${u.isadmin ? '<button class="btn btn-primary btn-block" data-act="nav" data-page="admin" style="margin-bottom:10px"><i class="fas fa-user-shield"></i> Админ-панель</button>' : ''}
+    <button class="btn btn-ghost btn-block" data-act="logout"><i class="fas fa-sign-out-alt"></i> Выйти</button>`;
+  body.innerHTML = profileHtml(u, { p: '', rank: S.rank, hist: S.history, isMe: true, footer });
+  renderEloChart(u, S.history, '');
+}
+
+function renderEloChart(u = S.me, hist = S.history, p = '') {
+  const box = $(p + 'eloChart'); if (!box) return;
+  const rows = hist.slice().reverse();
   if (!rows.length) {
-    box.innerHTML = '<div class="empty" style="padding:30px 0">Сыграйте матч — здесь появится график</div>';
+    box.innerHTML = `<div class="empty" style="padding:30px 0">${S.me && String(u.id) === String(S.me.id) ? 'Сыграйте матч — здесь появится график' : 'Данных по матчам пока нет'}</div>`;
     return;
   }
   const deltas = rows.map(r => r.elo_change || 0);
   const total = deltas.reduce((a, b) => a + b, 0);
-  let acc = S.me.elo - total;
+  let acc = u.elo - total;
   const pts = [acc]; deltas.forEach(d => { acc += d; pts.push(acc); });
   const dates = [rows[0].match_date, ...rows.map(r => r.match_date)];
   const W = box.clientWidth || 320, H = 120, padX = 8, padT = 10, padB = 10;
@@ -1074,17 +1082,17 @@ function renderEloChart() {
   const line = xs.map((x, i) => (i ? 'L' : 'M') + x.toFixed(1) + ' ' + ys[i].toFixed(1)).join(' ');
   const area = `${line} L${xs[xs.length - 1].toFixed(1)} ${H - padB} L${xs[0].toFixed(1)} ${H - padB} Z`;
   box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
-    <defs><linearGradient id="eloGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f472b6" stop-opacity=".45"/><stop offset="1" stop-color="#f472b6" stop-opacity="0"/></linearGradient></defs>
-    <path class="area" fill="url(#eloGrad)" d="${area}"/><path class="line" style="stroke:#f9a8d4;filter:drop-shadow(0 0 6px rgba(244,114,182,.6))" d="${line}"/>
-    <line class="cursor" id="cLine" x1="0" x2="0" y1="0" y2="${H - padB}"/><circle class="dot" id="cDot" r="5" cx="0" cy="0" style="stroke:#f9a8d4"/></svg>`;
-  const delta = $('chartDelta');
+    <defs><linearGradient id="eloGrad${p}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f472b6" stop-opacity=".45"/><stop offset="1" stop-color="#f472b6" stop-opacity="0"/></linearGradient></defs>
+    <path class="area" fill="url(#eloGrad${p})" d="${area}"/><path class="line" style="stroke:#f9a8d4;filter:drop-shadow(0 0 6px rgba(244,114,182,.6))" d="${line}"/>
+    <line class="cursor" id="${p}cLine" x1="0" x2="0" y1="0" y2="${H - padB}"/><circle class="dot" id="${p}cDot" r="5" cx="0" cy="0" style="stroke:#f9a8d4"/></svg>`;
+  const delta = $(p + 'chartDelta');
   delta.textContent = (total >= 0 ? '+' : '') + total + ' за ' + rows.length + ' матч.';
-  setText('chartMin', min); setText('chartMax', max);
-  $('chartDots').innerHTML = rows.slice(-10).map((r, i) => `<i class="${r.result === 'win' ? 'w' : 'l'}">${i + 1}</i>`).join('');
+  setText(p + 'chartMin', min); setText(p + 'chartMax', max);
+  $(p + 'chartDots').innerHTML = rows.slice(-10).map((r, i) => `<i class="${r.result === 'win' ? 'w' : 'l'}">${i + 1}</i>`).join('');
   const put = i => {
-    $('cLine').setAttribute('x1', xs[i]); $('cLine').setAttribute('x2', xs[i]);
-    $('cDot').setAttribute('cx', xs[i]); $('cDot').setAttribute('cy', ys[i]);
-    setText('chartElo', pts[i]); setText('chartDate', fmtDay(dates[i]));
+    $(p + 'cLine').setAttribute('x1', xs[i]); $(p + 'cLine').setAttribute('x2', xs[i]);
+    $(p + 'cDot').setAttribute('cx', xs[i]); $(p + 'cDot').setAttribute('cy', ys[i]);
+    setText(p + 'chartElo', pts[i]); setText(p + 'chartDate', fmtDay(dates[i]));
   };
   put(pts.length - 1);
   const pick = ev => {
@@ -1099,6 +1107,7 @@ function renderEloChart() {
 
 async function openMatchDetails(d) {
   closeModal('notifModal');
+  S.mvBack = S.page === 'player' ? 'player' : 'profile';
   navigate('matchview');
   const body = $('matchViewBody');
   body.innerHTML = '<div class="empty">Загрузка…</div>';
@@ -1136,7 +1145,7 @@ async function openMatchDetails(d) {
   const mine = blue.some(p => p.id === S.me.id) ? 'blue' : (orange.some(p => p.id === S.me.id) ? 'orange' : null);
   $('matchViewBody').innerHTML = `
     <div class="match-top">
-      <button class="icon-btn" data-act="nav" data-page="profile" aria-label="Назад"><i class="fas fa-chevron-left"></i></button>
+      <button class="icon-btn" data-act="nav" data-page="${S.mvBack || 'profile'}" aria-label="Назад"><i class="fas fa-chevron-left"></i></button>
       <div class="ttl"><b>Матч${h.match_number ? ' #' + h.match_number : ''}</b><span>${fmtDay(h.match_date)}, ${fmtTime(h.match_date)} · рейтинг</span></div>
       <span class="pill ${win ? '' : 'live'}">${win ? 'Победа' : 'Поражение'}</span>
     </div>
@@ -1149,35 +1158,60 @@ async function openMatchDetails(d) {
     ${team(blue, 'blue', 'Спецназ', 'fa-shield-halved', h.winner === 'blue')}
     ${team(orange, 'orange', 'Террористы', 'fa-fire', h.winner === 'orange')}
     ${hasStats ? '' : '<div class="panel"><div class="empty" style="padding:6px">Подробная статистика по этому матчу не вводилась админом</div></div>'}
-    <button class="btn btn-ghost btn-block" data-act="sup-from-match" data-id="${h.id}"><i class="fas fa-headset"></i> Сообщить о проблеме с матчем</button>`;
+    ${S.mvBack === 'player' ? '' : `<button class="btn btn-ghost btn-block" data-act="sup-from-match" data-id="${h.id}"><i class="fas fa-headset"></i> Сообщить о проблеме с матчем</button>`}`;
   window.scrollTo({ top: 0 });
 }
 
+/* Чужой профиль — тот же макет, что и свой, отдельной страницей */
+PAGES.push('player');
+S.pv = null; S.pvFrom = 'top'; S.mvBack = 'profile';
+const HIST_COLS = 'id,map,result,elo_change,match_date,winner,score_a,score_b,kills,deaths,assists,match_number';
+
 async function openPlayer(d) {
-  openModal('profileModal');
-  const body = $('profileModalBody');
-  body.innerHTML = '<div class="empty">Загрузка…</div>';
-  const [u] = await fetchUsers([d.id], true);
-  if (!u) { body.innerHTML = '<div class="empty">Игрок не найден</div>'; return; }
-  const isMe = u.id === S.me.id, isFriend = S.friends.some(f => f.id === u.id);
-  const wr = u.matches ? Math.round(u.wins / u.matches * 100) : 0;
-  let actions = '';
-  if (!isMe) {
-    actions = `<div style="display:flex;gap:8px;margin-top:14px">
-      ${isFriend ? `<button class="btn btn-danger" style="flex:1" data-act="friend-remove" data-id="${u.id}">Убрать из друзей</button>`
-        : `<button class="btn btn-primary" style="flex:1" data-act="friend-add" data-id="${u.id}">Добавить в друзья</button>`}
-      <button class="btn btn-ghost" data-act="like" data-id="${u.id}" aria-label="Оценить игрока">👍</button></div>`;
-  }
-  body.innerHTML = `<div class="pf-modal-top">${avatarHtml(u, 72)}<div><div class="nm">${esc(u.username)} ${u.isadmin ? '👑' : ''}</div>
-    <div class="sub">${lvlChip(u.elo)} &nbsp;ELO ${u.elo} · в игре с ${fmtDay(u.registered)}</div></div></div>
-    <div class="stat-grid">
-      <div class="stat"><div class="k">Матчей</div><div class="v">${u.matches}</div></div>
-      <div class="stat"><div class="k">Победы</div><div class="v g">${u.wins}</div></div>
-      <div class="stat"><div class="k">Поражения</div><div class="v r">${u.losses}</div></div>
-      <div class="stat"><div class="k">Винрейт</div><div class="v">${wr}%</div></div>
-      <div class="stat"><div class="k">K/D</div><div class="v">${fx(profileStats(u).kd)}</div></div>
-      <div class="stat"><div class="k">Оценок</div><div class="v">${u.likes}</div></div>
-      <div class="stat"><div class="k">Лучшая серия</div><div class="v">${u.best_streak}</div></div></div>${actions}`;
+  closeModal('notifModal'); closeModal('settingsModal');
+  if (S.me && String(d.id) === String(S.me.id)) return navigate('profile');
+  if (S.page !== 'player') S.pvFrom = S.page;
+  S.pv = { id: d.id, u: null, hist: [], rank: null, loading: true, err: '' };
+  navigate('player');
+  await loadPlayerPage(d.id);
+}
+
+async function loadPlayerPage(id) {
+  const pv = S.pv;
+  const [u] = await fetchUsers([id], true);
+  if (S.pv !== pv) return;
+  pv.loading = false;
+  if (!u) { pv.err = 'Игрок не найден'; return renderPlayerPage(); }
+  pv.u = u;
+  renderPlayerPage();
+  const hist = (async () => {
+    const { data, error } = await sb.from('match_history').select(HIST_COLS).eq('user_id', u.id).order('match_date', { ascending: false }).limit(30);
+    return error ? [] : (data || []);
+  })().catch(() => []);
+  const rank = (async () => {
+    const { count, error } = await sb.from('users').select('id', { count: 'exact', head: true }).gt('elo', u.elo);
+    return error ? null : (count || 0) + 1;
+  })().catch(() => null);
+  const banner = loadBanners([u.id]).catch(() => {});
+  const [h, r] = await Promise.all([hist, rank, banner]);
+  if (S.pv !== pv) return;
+  pv.hist = h; pv.rank = r;
+  if (S.page === 'player') renderPlayerPage();
+}
+
+function renderPlayerPage() {
+  const box = $('playerBody'); if (!box) return;
+  const pv = S.pv;
+  const bar = '<div class="pv-bar"><button class="icon-btn" data-act="pv-back" aria-label="Назад"><i class="fas fa-chevron-left"></i></button><b>Профиль игрока</b></div>';
+  if (!pv || pv.loading) { box.innerHTML = bar + '<div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Загрузка…</div>'; return; }
+  if (!pv.u) { box.innerHTML = bar + `<div class="empty"><i class="fas fa-user-slash"></i>${esc(pv.err || 'Игрок не найден')}</div>`; return; }
+  const u = pv.u, isFriend = S.friends.some(f => String(f.id) === String(u.id));
+  const actions = `<div class="pv-actions">
+      ${isFriend ? `<button class="btn btn-danger" data-act="friend-remove" data-id="${esc(u.id)}">Убрать из друзей</button>`
+        : `<button class="btn btn-primary" data-act="friend-add" data-id="${esc(u.id)}"><i class="fas fa-user-plus"></i> Добавить в друзья</button>`}
+      <button class="btn btn-ghost" data-act="like" data-id="${esc(u.id)}" aria-label="Оценить игрока">👍</button></div>`;
+  box.innerHTML = bar + profileHtml(u, { p: 'pv', rank: pv.rank, hist: pv.hist, isMe: false, afterBanner: actions, footer: '' });
+  renderEloChart(u, pv.hist, 'pv');
 }
 
 /* ───────────── Друзья ───────────── */
@@ -1550,7 +1584,7 @@ const TICKET_ST = { open: ['Открыто', 'info'], progress: ['В работ�
 const catOf = id => SUPPORT_CATS.find(c => c.id === id) || SUPPORT_CATS[SUPPORT_CATS.length - 1];
 
 function newSup() {
-  return { view: 'home', cat: null, target: null, match: null, matchFull: null, text: '', q: '', results: [], tickets: [], err: '' };
+  return { view: 'home', cat: null, target: null, match: null, matchFull: null, text: '', q: '', results: [], tickets: [], err: '', image: '' };
 }
 
 async function loadTickets() {
@@ -1593,6 +1627,7 @@ function supportHomeHtml() {
         <div class="tk-main"><b>${c.title}</b><span>${fmtDay(tk.created_at)}, ${fmtTime(tk.created_at)}${tk.match_number ? ' · матч #' + tk.match_number : ''}${tk.target_name ? ' · на ' + esc(tk.target_name) : ''}</span></div>
         <span class="badge ${st[1]}">${st[0]}</span></div>
       <div class="tk-text">${esc(tk.text)}</div>
+      ${tk.has_image ? `<button class="tk-img" type="button" data-act="tk-img" data-id="${tk.id}"><i class="fas fa-image"></i> Скриншот</button>` : ''}
       ${tk.admin_reply ? `<div class="tk-reply"><i class="fas fa-headset"></i><div><b>Ответ поддержки</b><span>${esc(tk.admin_reply)}</span></div></div>` : ''}</div>`;
   }).join('');
   const body = sp.err
@@ -1647,6 +1682,12 @@ function supportFormHtml() {
   h += `<div class="panel"><div class="panel-head"><h3><i class="fas fa-pen"></i> Описание</h3><span class="aside" id="supCount">${sp.text.length} / 500</span></div>
     <textarea class="text-input sp-ta" id="supText" maxlength="500" placeholder="${esc(SUPPORT_HINTS[c.id])}">${esc(sp.text)}</textarea>
     <p class="hint" style="text-align:left;margin-top:8px">Минимум 10 символов. Опишите всё по делу — так ответят быстрее.</p></div>
+    <div class="panel"><div class="panel-head"><h3><i class="fas fa-paperclip"></i> Скриншот</h3><span class="aside">по желанию</span></div>
+      ${sp.image
+        ? `<div class="sp-shot"><img src="${sp.image}" alt="Прикреплённый скриншот"><button class="btn btn-ghost btn-sm" type="button" data-act="sup-img-clear"><i class="fas fa-xmark"></i> Убрать</button></div>`
+        : `<button class="btn btn-ghost btn-block" type="button" data-act="sup-img-pick"><i class="fas fa-image"></i> Прикрепить скриншот</button>
+           <p class="hint" style="text-align:left;margin-top:8px">Скриншот сам сожмётся. Подойдут JPG, PNG, WEBP.</p>`}
+      <input type="file" id="supFile" accept="image/*" hidden></div>
     <button class="btn btn-primary btn-xl" type="button" id="supSubmit" data-act="sup-submit" ${supValid() ? '' : 'disabled'}><i class="fas fa-paper-plane"></i> Отправить обращение</button>`;
   return h;
 }
@@ -1668,17 +1709,38 @@ async function supSearch(q) {
 }
 const supSearchDeb = debounce(q => run(() => supSearch(q)), 300);
 
+async function supAttach(file) {
+  if (!file) return;
+  if (!/^image\//.test(file.type)) return toast('error', 'Нужна картинка', 'Выберите скриншот в формате JPG, PNG или WEBP');
+  if (file.size > 20 * 1024 * 1024) return toast('error', 'Файл слишком большой', 'Максимум 20 МБ');
+  let data = await resizeShot(file);
+  if (data.length > 650000) data = await resizeShot(file, 1000, 0.6);
+  S.sup.image = data;
+  renderSupport();
+}
+
 async function submitTicket() {
   const sp = S.sup;
   if (!supValid()) return;
-  await rpc('create_ticket', {
+  const args = {
     p_category: sp.cat, p_text: sp.text.trim(),
     p_target: sp.target ? sp.target.id : null,
     p_match_ref: sp.match ? String(sp.match.id) : null,
     p_match_number: sp.match && sp.match.match_number ? sp.match.match_number : null
-  });
+  };
+  let noImage = false;
+  if (sp.image) {
+    try { await rpc('create_ticket', { ...args, p_image: sp.image }); }
+    catch (e) {
+      // на сервере ещё нет приёма скриншотов — отправляем обращение без него
+      if (!/p_image|schema cache|Could not find|PGRST202/i.test(errText(e) + ' ' + (e.code || ''))) throw e;
+      noImage = true;
+      await rpc('create_ticket', args);
+    }
+  } else await rpc('create_ticket', args);
   S.sup = newSup();
-  toast('success', 'Обращение отправлено', 'Ответ появится в «Моих обращениях»');
+  if (noImage) toast('info', 'Обращение отправлено без скриншота', 'На сервере пока не включена загрузка скриншотов');
+  else toast('success', 'Обращение отправлено', 'Ответ появится в «Моих обращениях»');
   await loadTickets();
   renderSupport();
   window.scrollTo({ top: 0 });
@@ -1686,7 +1748,7 @@ async function submitTicket() {
 
 /* ───────────── Админка ───────────── */
 const ADM_TABS = [
-  ['matches', 'fa-gamepad', 'Матчи'], ['tickets', 'fa-headset', 'Обращения'], ['players', 'fa-users', 'Игроки'],
+  ['matches', 'fa-gamepad', 'Матчи'], ['done', 'fa-clipboard-check', 'Сыгранные'], ['tickets', 'fa-headset', 'Обращения'], ['players', 'fa-users', 'Игроки'],
   ['news', 'fa-bullhorn', 'Новости'], ['promos', 'fa-ticket', 'Промо'], ['queue', 'fa-hourglass-half', 'Очередь'],
   ['admins', 'fa-crown', 'Админы'], ['settings', 'fa-sliders', 'Формат']
 ];
@@ -1914,6 +1976,16 @@ async function loadAdminTab() {
     setAdmBadge('matches', list.length);
     body.innerHTML = list.length ? list.map(admMatchCard).join('') : '<div class="empty"><i class="fas fa-gamepad"></i>Активных матчей нет</div>';
     list.filter(m => m.status === 'active').forEach(m => loadMatchShots(m));
+  } else if (tab === 'done') {
+    let list;
+    try { list = (await rpc('admin_done_matches', { p_limit: 40 })) || []; }
+    catch (e) {
+      body.innerHTML = `<div class="empty"><i class="fas fa-triangle-exclamation"></i>Список сыгранных матчей не загрузился.<br><span style="font-size:12px">${esc(errText(e))}</span><br><span style="font-size:12px">Если функции ещё нет в БД — выполните SQL из файла admin_done_matches.sql</span></div>`;
+      return;
+    }
+    S.admEditSide = {};
+    body.innerHTML = '<div class="adm-bar"><div><b>Засчитанные матчи</b><span>Последние ' + list.length + ' · можно изменить результат или отменить</span></div></div>' +
+      (list.length ? list.map(admDoneCard).join('') : '<div class="empty"><i class="fas fa-clipboard-check"></i>Засчитанных матчей пока нет</div>');
   } else if (tab === 'players') {
     body.innerHTML = `<div class="adm-search"><i class="fas fa-magnifying-glass"></i><input class="text-input" id="admSearch" placeholder="Поиск по нику" autocomplete="off"></div><div id="admPlayers"></div>`;
     $('admSearch').addEventListener('input', debounce(() => fillAdminPlayers(), 350));
@@ -1959,6 +2031,7 @@ async function loadAdminTab() {
             <div class="tk-ttl"><b>#${t.id} · ${esc(c.title)}</b><span>${esc(t.username || '—')}${t.target_name ? ' → ' + esc(t.target_name) : ''}${t.match_number ? ' · матч #' + t.match_number : ''} · ${fmtDay(t.created_at)} ${fmtTime(t.created_at)}</span></div>
             <span class="badge ${st[1]}">${st[0]}</span></div>
           <div class="tk-text">${esc(t.text)}</div>
+          ${t.has_image ? `<button class="tk-img" type="button" data-act="tk-img" data-id="${t.id}"><i class="fas fa-image"></i> Скриншот</button>` : ''}
           ${t.admin_reply ? `<div class="tk-reply"><i class="fas fa-reply"></i> ${esc(t.admin_reply)}</div>` : ''}
           <div class="adm-btns" style="grid-template-columns:repeat(3,1fr);margin:10px 0 0">
             <button class="btn btn-sm btn-ghost" data-act="adm-tk" data-id="${t.id}" data-st="progress">В работу</button>
@@ -2017,6 +2090,65 @@ async function admCancel(d) {
   if ($('admBody')) loadAdminTab().catch(() => {});
 }
 
+/* Засчитанные матчи: просмотр, правка результата, отмена */
+function admDoneCard(m) {
+  const sideName = s => (s === 'blue' ? 'Спецназ' : 'Террористы');
+  const pl = p => `<div class="am-p dn-p">${avatarHtml(p, 24)}<span>${esc(p.username)}</span>
+    ${p.kills != null ? `<em class="dn-kda">${p.kills}/${p.deaths}/${p.assists}</em>` : ''}
+    ${p.elo_change != null ? `<b class="dn-elo ${p.elo_change >= 0 ? 'p' : 'n'}">${p.elo_change >= 0 ? '+' : ''}${p.elo_change}</b>` : ''}</div>`;
+  const team = (arr, cls, title, icon, side) => `<div class="am-team ${cls}"><h5><i class="fas ${icon}"></i> ${title}${m.winner === side ? ' 🏆' : ''}</h5>${(arr || []).map(pl).join('')}</div>`;
+  const row = p => `<div class="adm-pl" data-pid="${esc(p.id)}"><span>${esc(p.username)}</span>
+    <input class="text-input k" type="number" min="0" inputmode="numeric" value="${p.kills ?? ''}" aria-label="K ${esc(p.username)}"><input class="text-input d" type="number" min="0" inputmode="numeric" value="${p.deaths ?? ''}" aria-label="D ${esc(p.username)}"><input class="text-input a" type="number" min="0" inputmode="numeric" value="${p.assists ?? ''}" aria-label="A ${esc(p.username)}"></div>`;
+  const blue = m.blue || [], orange = m.orange || [];
+  const score = m.score_a != null ? `${m.score_a}:${m.score_b}` : 'без счёта';
+  return `<div class="am-card done" data-dcard="${m.id}">
+    <div class="am-top"><div class="am-num">#${m.match_number ?? '—'}</div>
+      <div class="dn-meta"><b>${esc(m.map || '—')}</b><span>${m.finished_at ? fmtDay(m.finished_at) + ', ' + fmtTime(m.finished_at) : ''}</span></div>
+      <span class="badge ok">${sideName(m.winner)} · ${score}</span></div>
+    <div class="am-teams">${team(blue, 'blue', 'Спецназ', 'fa-shield-halved', 'blue')}${team(orange, 'orange', 'Террористы', 'fa-fire', 'orange')}</div>
+    <div class="adm-btns" style="grid-template-columns:1fr 1fr;margin:10px 0 0">
+      <button class="btn btn-sm btn-ghost" data-act="adm-done-toggle" data-id="${m.id}"><i class="fas fa-pen"></i> Изменить результат</button>
+      <button class="btn btn-sm btn-danger" data-act="adm-done-cancel" data-id="${m.id}"><i class="fas fa-rotate-left"></i> Отменить матч</button></div>
+    <div class="am-sec dn-edit" id="dn-edit-${m.id}" hidden>
+      <div class="am-sec-h"><i class="fas fa-trophy"></i> Новый результат</div>
+      <div class="am-win">
+        <button class="seg blue ${m.winner === 'blue' ? 'on' : ''}" data-act="adm-done-pick" data-id="${m.id}" data-side="blue"><i class="fas fa-shield-halved"></i> Спецназ</button>
+        <button class="seg orange ${m.winner === 'orange' ? 'on' : ''}" data-act="adm-done-pick" data-id="${m.id}" data-side="orange"><i class="fas fa-fire"></i> Террористы</button></div>
+      <div class="adm-score"><input class="text-input sa" type="number" min="0" inputmode="numeric" value="${m.score_a ?? ''}" placeholder="0" aria-label="Счёт спецназа"><span class="muted">:</span><input class="text-input sb" type="number" min="0" inputmode="numeric" value="${m.score_b ?? ''}" placeholder="0" aria-label="Счёт террористов"></div>
+      <details class="am-kda"><summary><i class="fas fa-chart-simple"></i> K/D/A игроков <small>необязательно</small></summary>
+        <div class="adm-pl head"><span>Игрок</span><span>K</span><span>D</span><span>A</span></div>
+        <div class="am-kt">Спецназ</div>${blue.map(row).join('')}<div class="am-kt">Террористы</div>${orange.map(row).join('')}</details>
+      <p class="hint" style="text-align:left;margin:8px 0">ELO игроков будет пересчитано заново по новому результату.</p>
+      <button class="btn btn-primary btn-block" data-act="adm-done-save" data-id="${m.id}"><i class="fas fa-floppy-disk"></i> Сохранить изменения</button></div></div>`;
+}
+
+async function admDoneSave(d) {
+  const card = document.querySelector(`[data-dcard="${d.id}"]`); if (!card) return;
+  const side = (S.admEditSide || {})[d.id] || (card.querySelector('.seg.on') ? card.querySelector('.seg.on').dataset.side : '');
+  if (!side) return toast('error', 'Выберите победителя', 'Нажмите «Спецназ» или «Террористы»');
+  const ok = await dialog({ title: 'Изменить результат матча?', text: 'Старый результат откатится, ELO и статистика всех игроков пересчитаются заново.', ok: 'Сохранить' });
+  if (!ok) return;
+  const num = sel => { const el = card.querySelector(sel), n = el ? parseInt(el.value, 10) : NaN; return Number.isFinite(n) ? n : null; };
+  const stats = {};
+  card.querySelectorAll('[data-pid]').forEach(r => {
+    const g = c => { const n = parseInt(r.querySelector(c).value, 10); return Number.isFinite(n) ? n : null; };
+    const k = g('.k'), dd = g('.d'), a = g('.a');
+    if (k !== null || dd !== null || a !== null) stats[r.dataset.pid] = { k: k || 0, d: dd || 0, a: a || 0 };
+  });
+  await rpc('admin_edit_match', { p_match: d.id, p_winner: side, p_score_a: num('.sa'), p_score_b: num('.sb'), p_stats: stats });
+  toast('success', 'Результат изменён', 'ELO пересчитано');
+  refreshMe().catch(() => {});
+  if ($('admBody')) loadAdminTab().catch(() => {});
+}
+async function admDoneCancel(d) {
+  const ok = await dialog({ title: 'Отменить засчитанный матч?', text: 'ELO и статистика всех игроков вернутся к значениям до матча. Матч пропадёт из их истории.', ok: 'Отменить матч', danger: true });
+  if (!ok) return;
+  await rpc('admin_revert_match', { p_match: d.id });
+  toast('info', 'Матч отменён', 'Рейтинг игроков возвращён');
+  refreshMe().catch(() => {});
+  if ($('admBody')) loadAdminTab().catch(() => {});
+}
+
 /* ───────────── Действия (делегирование кликов) ───────────── */
 const ACTIONS = {
   nav: d => { closeModal('settingsModal'); closeModal('notifModal'); navigate(d.page); },
@@ -2053,10 +2185,11 @@ const ACTIONS = {
   'copy-match': () => S.match && copyText(String(S.match.match_number || S.match.id)),
   'copy-host': () => { const h = S.match && S.match.blue[0]; if (h && h.game_id) copyText(h.game_id); },
   player: openPlayer,
+  'pv-back': () => navigate(S.pvFrom && S.pvFrom !== 'player' ? S.pvFrom : 'top'),
   'match-details': openMatchDetails,
   like: async d => { await rpc('like_player', { p_target: d.id }); toast('success', 'Оценка засчитана', ''); openPlayer(d); },
   'friends-tab': d => { S.tab = d.tab; renderFriends(); },
-  'friend-add': d => friendOp('send_friend_request', { p_to: d.id }, 'Заявка отправлена').then(() => $('profileModal').classList.contains('active') && openPlayer(d)),
+  'friend-add': d => friendOp('send_friend_request', { p_to: d.id }, 'Заявка отправлена').then(() => S.page === 'player' && openPlayer(d)),
   'friend-accept': d => friendOp('accept_friend_request', { p_from: d.id }, 'Друг добавлен'),
   'friend-decline': d => friendOp('decline_friend_request', { p_from: d.id }),
   'friend-cancel': d => friendOp('cancel_friend_request', { p_to: d.id }),
@@ -2064,7 +2197,7 @@ const ACTIONS = {
     const ok = await dialog({ title: 'Удалить из друзей?', ok: 'Удалить', danger: true });
     if (!ok) return;
     await friendOp('remove_friend', { p_friend: d.id }, 'Удалён из друзей');
-    if ($('profileModal').classList.contains('active')) closeModal('profileModal');
+    if (S.page === 'player') openPlayer(d);
     await loadParty();
   },
   'party-invite': async d => { await rpc('party_invite', { p_friend: d.id }); toast('success', 'Приглашение отправлено', ''); await loadParty(); renderFriends(); },
@@ -2096,6 +2229,13 @@ const ACTIONS = {
     renderSupport(); await ensureMatchFull();
   },
   'sup-submit': submitTicket,
+  'sup-img-pick': () => { const f = $('supFile'); if (f) f.click(); },
+  'sup-img-clear': () => { S.sup.image = ''; renderSupport(); },
+  'tk-img': async d => {
+    const img = await rpc('ticket_image', { p_id: Number(d.id) });
+    if (!img) return toast('error', 'Скриншот не найден', '');
+    $('shotImg').src = img; openModal('shotModal');
+  },
   'sup-from-match': d => {
     S.sup = newSup();
     S.sup.match = S.history.find(x => String(x.id) === String(d.id)) || null;
@@ -2136,6 +2276,14 @@ const ACTIONS = {
   },
   'adm-finish': admFinish,
   'adm-cancel': admCancel,
+  'adm-done-toggle': d => { const el = $('dn-edit-' + d.id); if (el) el.hidden = !el.hidden; },
+  'adm-done-pick': d => {
+    (S.admEditSide = S.admEditSide || {})[d.id] = d.side;
+    const card = document.querySelector(`[data-dcard="${d.id}"]`);
+    if (card) card.querySelectorAll('.seg').forEach(b => b.classList.toggle('on', b.dataset.side === d.side));
+  },
+  'adm-done-save': admDoneSave,
+  'adm-done-cancel': admDoneCancel,
   'adm-rating': async d => {
     const v = await dialog({ title: 'Рейтинг ' + d.nick, input: d.elo, ok: 'Сохранить' });
     if (v === null) return;
@@ -2211,6 +2359,7 @@ function bindEvents() {
   document.addEventListener('change', e => {
     if (e.target.id === 'avatarFile') run(() => uploadAvatar(e.target.files[0]));
     else if (e.target.id === 'shotFile') { const f = e.target.files[0]; e.target.value = ''; run(() => uploadShot(f)); }
+    else if (e.target.id === 'supFile') { const f = e.target.files[0]; e.target.value = ''; run(() => supAttach(f)); }
   });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { ['profileModal', 'matchModal', 'settingsModal', 'notifModal', 'shotModal'].forEach(closeModal); }

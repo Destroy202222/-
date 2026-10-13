@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="tournament.css">
 <script>
 /* Загрузчик: грузит библиотеки по очереди с таймаутами и запасными CDN,
    чтобы приложение не зависало на «Подключаемся…», если один из хостов недоступен (часто на ПК/с VPN). */
@@ -43,6 +44,7 @@
     var tg = load('https://telegram.org/js/telegram-web-app.js', 8000).catch(function () { /* без Telegram SDK работаем как обычный сайт */ });
     var sb = firstOk(SB, 7000);
     Promise.all([tg, sb]).then(function () { return load('app.js', 10000); })
+      .then(function () { return load('tournament.js', 10000).catch(function (e) { console.error('tournament', e); }); })
       .catch(function (e) {
         console.error('boot', e);
         fail('Не удалось загрузить приложение. Проверьте интернет или отключите VPN/блокировщики и повторите.');
@@ -140,6 +142,21 @@
   </div>
 </div>
 
+<!-- Создание турнира (админ) -->
+<div class="overlay center" id="tourModal" aria-hidden="true">
+  <div class="sheet">
+    <button class="sheet-close" data-act="close" data-target="tourModal" aria-label="Закрыть">×</button>
+    <h3 class="sheet-title">Новый турнир кланов</h3>
+    <div class="field"><label for="trName">Название</label><input class="text-input" id="trName" maxlength="40" placeholder="Турнир кланов" autocomplete="off"></div>
+    <div class="field"><label for="trSlots">Сколько команд</label>
+      <select class="text-input" id="trSlots"><option value="2">2 команды</option><option value="4">4 команды</option><option value="8" selected>8 команд</option><option value="16">16 команд</option></select></div>
+    <div class="field"><label for="trSize">Формат матча</label>
+      <select class="text-input" id="trSize"><option value="1">1 на 1</option><option value="2">2 на 2</option><option value="3">3 на 3</option><option value="4">4 на 4</option><option value="5" selected>5 на 5</option></select></div>
+    <div class="field"><label for="trPrize">Призовой фонд (голда)</label><input class="text-input" id="trPrize" type="number" min="0" inputmode="numeric" placeholder="100000"></div>
+    <button class="btn btn-primary btn-xl" data-act="tr-create"><i class="fas fa-trophy"></i> Создать турнир</button>
+  </div>
+</div>
+
 <!-- Диалог подтверждения / ввода -->
 <div class="overlay center" id="dialog" style="z-index:9500">
   <div class="sheet">
@@ -216,6 +233,7 @@
       <div><div class="num" id="statInMatch">0</div><div class="k">в матче</div></div>
       <div><div class="num" id="statMatches">0</div><div class="k">матчей сыграно</div></div>
     </div>
+    <div class="tr-slot" id="tourSlot"></div>
     <div class="panel prize">
       <div class="prize-head">
         <div class="prize-ico"><i class="fas fa-trophy"></i></div>
@@ -301,6 +319,9 @@
   <section class="page" id="page-matchview">
     <div id="matchViewBody"><div class="empty">Загрузка…</div></div>
   </section>
+
+  <!-- Турнир кланов -->
+  <section class="page" id="page-tournament"><div id="tourBody"></div></section>
 
   <!-- Профиль -->
   <section class="page" id="page-clan"><div id="clanBody"></div></section>

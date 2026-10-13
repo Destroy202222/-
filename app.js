@@ -616,6 +616,7 @@ function applyMatch(m) {
     if (prev && prev.status === 'pending') toast('success', 'Матч начался', 'Сначала баним карты');
     if (S.page !== 'match') navigate('match');
   }
+  voiceSync();   // матч начался — переносим из войса пати в войс команды
   renderMatch();
 }
 
@@ -637,6 +638,7 @@ function matchEnded(prev) {
     loadHistory().catch(() => {});
   }
   syncQueue().catch(() => {});
+  voiceSync();   // матч закончился — возвращаем в войс пати
   if (S.page === 'match') navigate(prev.status === 'pending' ? 'matches' : 'profile');
 }
 
@@ -1604,15 +1606,20 @@ const supMatchPlayers = () => {
   return f ? [...(f.team_blue || []), ...(f.team_orange || [])].filter(p => p.id !== S.me.id) : [];
 };
 
-function supValid() {
+/* Что ещё не заполнено (пустая строка — можно отправлять). Матч обязателен, только если у игрока есть сыгранные матчи. */
+function supMissing() {
   const sp = S.sup, c = catOf(sp.cat), t = sp.text.trim();
-  if (t.length < 10 || t.length > 500) return false;
-  if (c.needTarget && !sp.target) return false;
-  if (c.needMatch && !sp.match) return false;
-  return true;
+  if (c.needTarget && !sp.target) return 'Выберите игрока, на которого жалоба';
+  if (c.needMatch && !sp.match && S.history.length) return 'Выберите матч из списка';
+  if (t.length < 10) return 'Опишите проблему — минимум 10 символов (сейчас ' + t.length + ')';
+  if (t.length > 500) return 'Описание длиннее 500 символов';
+  return '';
 }
+const supValid = () => !supMissing();
 function updateSupportSubmit() {
-  const b = $('supSubmit'); if (b) b.disabled = !supValid();
+  const m = supMissing(), b = $('supSubmit');
+  if (b) b.classList.toggle('not-ready', !!m);
+  setText('supHint', m);
   setText('supCount', S.sup.text.length + ' / 500');
 }
 
@@ -1688,7 +1695,8 @@ function supportFormHtml() {
         : `<button class="btn btn-ghost btn-block" type="button" data-act="sup-img-pick"><i class="fas fa-image"></i> Прикрепить скриншот</button>
            <p class="hint" style="text-align:left;margin-top:8px">Скриншот сам сожмётся. Подойдут JPG, PNG, WEBP.</p>`}
       <input type="file" id="supFile" accept="image/*" hidden></div>
-    <button class="btn btn-primary btn-xl" type="button" id="supSubmit" data-act="sup-submit" ${supValid() ? '' : 'disabled'}><i class="fas fa-paper-plane"></i> Отправить обращение</button>`;
+    <button class="btn btn-primary btn-xl ${supValid() ? '' : 'not-ready'}" type="button" id="supSubmit" data-act="sup-submit"><i class="fas fa-paper-plane"></i> Отправить обращение</button>
+    <p class="sup-need" id="supHint">${esc(supMissing())}</p>`;
   return h;
 }
 
@@ -1719,25 +1727,34 @@ async function supAttach(file) {
   renderSupport();
 }
 
+const supSigErr = e => /p_image|p_match|p_target|schema cache|Could not find|PGRST202|PGRST203/i.test(errText(e) + ' ' + ((e && e.code) || ''));
 async function submitTicket() {
   const sp = S.sup;
-  if (!supValid()) return;
+  const miss = supMissing();
+  if (miss) { toast('error', 'Обращение не заполнено', miss); return; }
+  if (sp.sending) return;
   const args = {
     p_category: sp.cat, p_text: sp.text.trim(),
     p_target: sp.target ? sp.target.id : null,
     p_match_ref: sp.match ? String(sp.match.id) : null,
     p_match_number: sp.match && sp.match.match_number ? sp.match.match_number : null
   };
-  let noImage = false;
-  if (sp.image) {
-    try { await rpc('create_ticket', { ...args, p_image: sp.image }); }
-    catch (e) {
-      // на сервере ещё нет приёма скриншотов — отправляем обращение без него
-      if (!/p_image|schema cache|Could not find|PGRST202/i.test(errText(e) + ' ' + (e.code || ''))) throw e;
-      noImage = true;
-      await rpc('create_ticket', args);
+  /* Пробуем от полного набора полей к минимальному: если сервер не знает лишний параметр, заявка всё равно уйдёт. */
+  const tries = [];
+  if (sp.image) tries.push({ a: { ...args, p_image: sp.image }, img: true });
+  tries.push({ a: args });
+  tries.push({ a: { p_category: args.p_category, p_text: args.p_text, p_target: args.p_target, p_match_ref: args.p_match_ref } });
+  tries.push({ a: { p_category: args.p_category, p_text: args.p_text, p_target: args.p_target } });
+  let noImage = !!sp.image, lastErr = null, sent = false;
+  sp.sending = true;
+  const btn = $('supSubmit'); if (btn) btn.classList.add('busy');
+  try {
+    for (const t of tries) {
+      try { await rpc('create_ticket', t.a); sent = true; if (t.img) noImage = false; break; }
+      catch (e) { lastErr = e; if (!supSigErr(e)) throw e; }
     }
-  } else await rpc('create_ticket', args);
+  } finally { sp.sending = false; if (btn) btn.classList.remove('busy'); }
+  if (!sent) throw lastErr || new Error('Не удалось отправить обращение');
   S.sup = newSup();
   if (noImage) toast('info', 'Обращение отправлено без скриншота', 'На сервере пока не включена загрузка скриншотов');
   else toast('success', 'Обращение отправлено', 'Ответ появится в «Моих обращениях»');
@@ -2583,26 +2600,30 @@ const V = {
   dismissed: '', announced: new Set(), timers: {}
 };
 
-/* Кто в голосовой комнате: участники пати + одно-пати игроки текущего матча */
+/* Пока идёт матч — войс у каждой команды свой («team»). Вне матча — войс пати («party»).
+   Когда матч начинается, тех, кто сидел в войсе пати, автоматически переносит в войс команды,
+   а после матча — обратно в пати. */
+function voiceTeam() {
+  const m = S.match;
+  if (!S.me || !m || m.status !== 'active' || !m.blue || !m.orange) return null;
+  const side = m.blue.some(p => p.id === S.me.id) ? 'blue' : (m.orange.some(p => p.id === S.me.id) ? 'orange' : '');
+  if (!side) return null;
+  return { side, id: m.id, players: m[side] };
+}
+const voiceIsTeam = () => !!V.room && V.room.indexOf('match-') === 0;
 function voiceMates() {
   const ids = new Set();
   if (!S.me) return ids;
+  const t = voiceTeam();
+  if (t) { t.players.forEach(p => ids.add(p.id)); return ids; }
   if (S.party) S.party.members.forEach(id => ids.add(id));
-  const m = S.match;
-  if (m && m.status === 'active') {
-    const all = [...m.blue, ...m.orange], mine = all.find(p => p.id === S.me.id);
-    if (mine && mine.party_id) all.forEach(p => { if (p.party_id === mine.party_id) ids.add(p.id); });
-  }
   return ids;
 }
 function voiceRoom() {
   if (!S.me) return null;
+  const t = voiceTeam();
+  if (t) return 'match-' + t.id + '-' + t.side;
   if (S.party && S.party.id) return String(S.party.id);
-  const m = S.match;
-  if (m && m.status === 'active') {
-    const mine = [...m.blue, ...m.orange].find(p => p.id === S.me.id);
-    if (mine && mine.party_id) return String(mine.party_id);
-  }
   return null;
 }
 function voiceUser(id) {
@@ -2618,14 +2639,26 @@ function voiceSync() {
   const room = voiceRoom();
   if (!room || voiceMates().size < 2) {
     if (V.joined && ++V.lost < 3) return;
-    if (V.room || V.joined) voiceStop(V.joined ? 'Пати закрыта — войс отключён' : '');
+    if (V.room || V.joined) voiceStop(V.joined ? (voiceIsTeam() ? 'Матч окончен — войс отключён' : 'Пати закрыта — войс отключён') : '');
     return voiceRender();
   }
   V.lost = 0;
-  if (V.room !== room) { voiceStop(); voiceOpen(room); }
+  if (V.room !== room) voiceSwitch(room);
   const mates = voiceMates();
   Object.keys(V.peers).forEach(id => { if (!mates.has(id)) voiceDrop(id); });
   voiceRender();
+}
+/* Смена комнаты (пати ⇄ команда матча). Если игрок был в войсе — переносим его сразу,
+   микрофон и состояние «выкл. микрофон / звук» сохраняем, чтобы не просить разрешение заново. */
+function voiceSwitch(room) {
+  const was = V.joined && !!V.room, toTeam = room.indexOf('match-') === 0;
+  const keep = was ? { muted: V.muted, deaf: V.deaf, wasMuted: V.wasMuted } : null;
+  voiceStop('', was);
+  voiceOpen(room);
+  if (was) {
+    toast('info', toTeam ? 'Войс команды' : 'Войс пати', toTeam ? 'Матч начался — вы в голосовом чате команды' : 'Матч окончен — вы вернулись в войс пати');
+    voiceJoin(keep).catch(() => {});
+  }
 }
 function voiceOpen(room) {
   V.room = room; V.ready = false; V.here = {}; V.seen = {}; V.st = 'подключаемся…';
@@ -2676,7 +2709,7 @@ function voiceRecalc() {
     Object.keys(here).forEach(id => {
       if (V.announced.has(id)) return;
       V.announced.add(id);
-      toast('info', 'Пати в войсе', voiceUser(id).username + ' зашёл в голосовой чат');
+      toast('info', voiceIsTeam() ? 'Команда в войсе' : 'Пати в войсе', voiceUser(id).username + ' зашёл в голосовой чат');
     });
   } else {
     Object.keys(V.peers).forEach(id => { if (!here[id]) voiceDrop(id); });
@@ -2815,17 +2848,22 @@ function voiceWatchLocal() {
     V.ana = { an, src, buf: new Uint8Array(an.fftSize) };
   } catch (e) { /* ок */ }
 }
-async function voiceJoin() {
+async function voiceJoin(keep) {
   if (V.joined || V.joining || !V.room) return;
+  if (keep && !('muted' in keep)) keep = null;   // вызов из кнопки — состояния нет
   V.joining = true; voiceRender();
   try {
     if (typeof RTCPeerConnection === 'undefined') throw new Error('Браузер не поддерживает голосовой чат');
     if (!V.ctx) V.ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (V.ctx.resume) V.ctx.resume();
     voiceBuildOut();
-    V.mic = await voiceGetMic();
-    V.muted = !V.mic; V.deaf = false;
-    if (V.mic) voiceWatchLocal();
+    const live = V.mic && V.mic.getAudioTracks().some(t => t.readyState === 'live');
+    if (!live) { V.mic = await voiceGetMic(); V.ana = null; }
+    if (V.mic && !V.ana) voiceWatchLocal();
+    V.muted = keep ? (keep.muted || !V.mic) : !V.mic;
+    V.deaf = keep ? !!keep.deaf : false;
+    V.wasMuted = keep ? !!keep.wasMuted : false;
+    voiceApplyMute(); voiceApplyVol();
     for (let i = 0; i < 40 && !V.ready; i++) await new Promise(r => setTimeout(r, 150));
     if (!V.ready) throw new Error('Нет связи с сервером голоса. Попробуйте ещё раз.');
     V.joined = true;
@@ -2835,25 +2873,28 @@ async function voiceJoin() {
     V.timers.hb = setInterval(() => { voiceHello(false); voiceRecalc(); }, 4000);
     voiceHello(true);
     Object.keys(V.here).forEach(voiceEnsure);
-    toast('success', 'Вы в войсе', V.mic ? 'Микрофон включён' : 'Вы только слушаете');
+    if (!keep) toast('success', 'Вы в войсе', V.mic ? 'Микрофон включён' : 'Вы только слушаете');
   } catch (e) {
     voiceLeave(true);
     toast('error', 'Не удалось войти в войс', errText(e));
   } finally { V.joining = false; voiceRender(); }
 }
-function voiceLeave(silent) {
+function voiceLeave(silent, keepMic) {
   Object.keys(V.peers).forEach(voiceDrop);
-  if (V.mic) V.mic.getTracks().forEach(t => t.stop());
-  if (V.ana) { try { V.ana.src.disconnect(); } catch (e) { /* ок */ } }
-  V.mic = null; V.ana = null; V.joined = false; V.muted = false; V.deaf = false; V.hold = {}; V.seen = {};
+  if (!keepMic) {
+    if (V.mic) V.mic.getTracks().forEach(t => t.stop());
+    if (V.ana) { try { V.ana.src.disconnect(); } catch (e) { /* ок */ } }
+    V.mic = null; V.ana = null;
+  }
+  V.joined = false; V.muted = false; V.deaf = false; V.hold = {}; V.seen = {};
   Object.values(V.timers).forEach(clearInterval); V.timers = {};
   if (V.ch && V.ready) voiceHello(false, true);
   try { V.ch && V.ch.untrack(); } catch (e) { /* ок */ }
   if (!silent) toast('info', 'Вы вышли из войса', '');
   voiceRender();
 }
-function voiceStop(msg) {
-  voiceLeave(true);
+function voiceStop(msg, keepMic) {
+  voiceLeave(true, keepMic);
   if (V.ch) { try { sb.removeChannel(V.ch); } catch (e) { /* ок */ } }
   V.ch = null; V.room = null; V.ready = false; V.here = {}; V.seen = {}; V.st = ''; V.announced.clear(); V.lost = 0;
   if (msg) toast('info', msg, '');
@@ -2928,12 +2969,12 @@ function vControls() {
 function voiceSub(list) {
   const others = list.filter(x => !x.me && x.inV).map(x => x.u.username);
   if (V.joined) return 'В войсе: ' + list.filter(x => x.inV).length + ' из ' + list.length;
-  return others.length ? others.join(', ') + (others.length > 1 ? ' уже в войсе' : ' уже в войсе') : 'Говорите с пати, даже во время матча';
+  return others.length ? others.join(', ') + ' уже в войсе' : (voiceIsTeam() ? 'Голосовой чат вашей команды' : 'Говорите с пати');
 }
 const vJoinBtn = (cls = '') => `<button class="btn btn-primary btn-sm ${cls}" data-act="voice-join" ${V.joining ? 'disabled' : ''}>${V.joining ? 'Входим…' : '<i class="fas fa-headset"></i> Войти'}</button>`;
 
 function voiceCardHtml() {
-  if (!V.room) return '';
+  if (!V.room || voiceIsTeam()) return '';
   const list = voiceList(), live = !V.joined && list.some(x => !x.me && x.inV);
   return `<div class="vc ${V.joined ? 'on' : ''} ${live ? 'live' : ''}">
     <div class="vc-head">${vWave}
@@ -2950,7 +2991,7 @@ function voiceBarHtml() {
   return `<div class="vbar ${V.joined ? 'on' : ''} ${live ? 'live' : ''}">${vWave}
     ${V.joined
       ? `<div class="vb-av">${list.filter(x => x.inV).map(x => vChip(x, 30)).join('')}</div><div class="vb-ctl">${vControls()}</div>`
-      : `<div class="vb-main"><b>Войс пати</b><small>${esc(voiceSub(list))}</small></div>${vJoinBtn()}`}
+      : `<div class="vb-main"><b>${voiceIsTeam() ? 'Войс команды' : 'Войс пати'}</b><small>${esc(voiceSub(list))}</small></div>${vJoinBtn()}`}
   </div>`;
 }
 function voiceDockHtml() {
@@ -2962,7 +3003,7 @@ function voiceDockHtml() {
       <button class="vbtn sm leave" data-act="voice-leave" aria-label="Выйти из войса"><i class="fas fa-phone-slash"></i></button></div></div>`;
   }
   if (list.some(x => !x.me && x.inV) && V.dismissed !== V.room) {
-    return `<div class="vdock live">${vWave}<button class="vd-join" data-act="voice-join"><b>Пати в войсе</b><small>${esc(voiceSub(list))}</small></button>
+    return `<div class="vdock live">${vWave}<button class="vd-join" data-act="voice-join"><b>${voiceIsTeam() ? 'Команда в войсе' : 'Пати в войсе'}</b><small>${esc(voiceSub(list))}</small></button>
       <button class="vbtn sm" data-act="voice-dismiss" aria-label="Скрыть"><i class="fas fa-xmark"></i></button></div>`;
   }
   return '';
@@ -2979,6 +3020,7 @@ function voiceRender() {
   if (bar) { bar.hidden = !inMatch; voiceSet(bar, inMatch ? voiceBarHtml() : ''); }
   const dock = voiceDockHtml(), dEl = $('voiceDock');
   if (dEl) { dEl.hidden = !dock; voiceSet(dEl, dock); }
+  const appEl = $('app'); if (appEl) appEl.classList.toggle('has-dock', !!dock);
   voiceApplySpeak(); voiceSyncVol();
 }
 function voiceSyncVol() {

@@ -1,0 +1,114 @@
+/* ═════ Турнир кланов ═════ */
+.tr-slot{margin:18px 0 14px}
+.tr-slot:empty{display:none}
+@media (min-width:1024px){#page-home .tr-slot{grid-column:1 / -1}}
+
+.tr-card{
+  position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;padding:16px;
+  border-radius:var(--r-lg);cursor:pointer;transition:transform .15s;
+  background:radial-gradient(120% 140% at 0 0,rgba(245,196,81,.22),transparent 60%),linear-gradient(135deg,rgba(79,140,255,.16),rgba(236,72,153,.14)),var(--surface);
+  border:1px solid rgba(245,196,81,.42);box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+.tr-card:active{transform:scale(.985)}
+.tr-card.tr-create{border-style:dashed;background:linear-gradient(135deg,rgba(79,140,255,.12),rgba(236,72,153,.1)),var(--surface)}
+.tr-ico{width:52px;height:52px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;color:#2a1c00;background:linear-gradient(135deg,#ffe08a,var(--gold));box-shadow:0 8px 22px rgba(245,196,81,.35)}
+.tr-main{flex:1;min-width:0}
+.tr-main small{display:block;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.tr-main b{display:block;font-family:var(--f-display);font-size:16px;margin:2px 0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tr-chips{display:flex;flex-wrap:wrap;gap:6px}
+.tr-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;background:rgba(255,255,255,.08);border:1px solid var(--line-strong)}
+.tr-chip i{color:var(--gold)}
+.tr-chip.live{color:#ff8fa3;background:rgba(255,77,109,.14);border-color:rgba(255,77,109,.4)}
+.tr-chip.ok{color:var(--win);background:rgba(61,220,151,.14);border-color:rgba(61,220,151,.4)}
+.tr-card>i.fa-chevron-right{color:var(--muted)}
+
+.tr-hero{
+  position:relative;overflow:hidden;padding:20px 16px;margin-bottom:14px;border-radius:var(--r-lg);text-align:center;
+  border:1px solid rgba(245,196,81,.4);
+  background:radial-gradient(90% 120% at 50% 0%,rgba(245,196,81,.25),transparent 65%),linear-gradient(160deg,#0d1640,#1a1040);
+}
+.tr-hero .tr-ico{margin:0 auto 10px;width:60px;height:60px;font-size:26px}
+.tr-hero h2{font-family:var(--f-display);font-size:21px;letter-spacing:-.02em;word-break:break-word}
+.tr-hero .tr-chips{justify-content:center;margin-top:10px}
+.tr-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.tr-tiles>div{padding:10px 4px;border-radius:var(--r-md);background:rgba(0,0,0,.28);border:1px solid var(--line)}
+.tr-tiles span{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tr-tiles b{display:block;margin-top:4px;font-family:var(--f-display);font-size:15px;white-space:nowrap}
+.tr-tiles .gold{color:var(--gold)}
+
+.tr-note{font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:12px}
+.tr-state{display:flex;align-items:center;gap:10px;padding:11px 12px;margin-bottom:12px;border-radius:var(--r-md);font-size:13px;font-weight:700;background:rgba(79,140,255,.12);border:1px solid var(--line-strong)}
+.tr-state.ok{background:rgba(61,220,151,.12);border-color:rgba(61,220,151,.4);color:var(--win)}
+.tr-state.bad{background:rgba(255,77,109,.1);border-color:rgba(255,77,109,.4);color:#ff8fa3}
+.tr-btns{display:flex;gap:8px;flex-wrap:wrap}
+.tr-btns .btn{flex:1}
+
+/* Расстановка сетки (админ) */
+.sd-m{display:grid;grid-template-columns:1fr;gap:6px;padding:10px;margin-bottom:8px;border-radius:var(--r-md);background:rgba(0,0,0,.2);border:1px solid var(--line)}
+.sd-m b{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.sd-m .vs{text-align:center;font-size:11px;font-weight:800;color:var(--accent-2);letter-spacing:.2em}
+.sd-m select{width:100%}
+
+/* ───── Турнирная сетка ───── */
+.tr-champ{
+  display:flex;align-items:center;gap:14px;padding:18px;margin-bottom:14px;border-radius:var(--r-lg);
+  background:radial-gradient(100% 140% at 50% 0%,rgba(245,196,81,.3),transparent 70%),var(--surface);
+  border:1px solid rgba(245,196,81,.6);box-shadow:0 0 34px rgba(245,196,81,.2);
+}
+.tr-champ .cc{flex:1;min-width:0}
+.tr-champ small{display:block;font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.tr-champ b{display:block;font-family:var(--f-display);font-size:19px;margin-top:3px;word-break:break-word}
+.tr-champ>i{font-size:28px;color:var(--gold);filter:drop-shadow(0 2px 8px rgba(245,196,81,.6))}
+
+.br-scroll{overflow-x:auto;overflow-y:hidden;padding:6px 2px 16px;margin:0 -4px;-webkit-overflow-scrolling:touch}
+.br-wrap{display:flex;gap:28px;min-width:max-content;align-items:stretch;padding:0 6px}
+.br-col{width:204px;flex-shrink:0;display:flex;flex-direction:column}
+.br-h{
+  text-align:center;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-hi);
+  padding:7px 0;margin-bottom:12px;border-radius:99px;background:rgba(79,140,255,.12);border:1px solid var(--line-strong);
+}
+.br-col:last-child .br-h{color:var(--gold);background:rgba(245,196,81,.12);border-color:rgba(245,196,81,.4)}
+.br-body{flex:1;display:flex;flex-direction:column;min-height:var(--h,200px)}
+.br-pair{flex:1;display:flex;flex-direction:column;position:relative}
+.br-slot{flex:1;display:flex;align-items:center;position:relative;padding:5px 0}
+/* линии-соединители */
+.br-slot:not(.last)::after{content:'';position:absolute;right:-14px;top:50%;width:14px;height:2px;margin-top:-1px;background:rgba(143,208,255,.4)}
+.br-pair::after{content:'';position:absolute;right:-14px;top:25%;bottom:25%;width:2px;margin-right:0;background:rgba(143,208,255,.4)}
+.br-pair::before{content:'';position:absolute;right:-28px;top:50%;width:14px;height:2px;margin-top:-1px;background:rgba(143,208,255,.4)}
+
+.br-m{
+  position:relative;width:100%;border-radius:14px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(23,32,70,.95),rgba(15,22,51,.95));
+  border:1px solid var(--line-strong);box-shadow:0 8px 20px rgba(0,0,0,.32);
+}
+.br-m.done{border-color:rgba(61,220,151,.35)}
+.br-col:last-child .br-m{border-color:rgba(245,196,81,.5);box-shadow:0 0 26px rgba(245,196,81,.16)}
+.br-t{display:flex;align-items:center;gap:8px;padding:8px 10px;min-height:44px;font-size:12.5px;font-weight:800}
+.br-t+.br-t{border-top:1px solid var(--line)}
+.br-t[data-act]{cursor:pointer;transition:background .15s}
+.br-t[data-act]:hover,.br-t[data-act]:active{background:rgba(79,140,255,.18)}
+.br-t .cl-av{--s:26px;flex-shrink:0}
+.br-t.win{background:linear-gradient(90deg,rgba(61,220,151,.22),transparent);box-shadow:inset 3px 0 0 var(--win)}
+.br-t.lose{opacity:.42}
+.br-t.tbd{color:var(--dim);font-weight:600}
+.br-t.tbd .cl-av{opacity:.5}
+.br-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.br-crown{color:var(--gold);font-size:12px}
+.br-undo{display:block;width:100%;padding:5px 0;font-size:11px;font-weight:800;color:var(--muted);background:rgba(0,0,0,.25);border-top:1px solid var(--line)}
+.br-hint{font-size:12px;color:var(--dim);text-align:center;margin:2px 0 12px}
+
+/* Состав клана */
+.tr-roster{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px}
+.row-main .tr-roster{margin:4px 0 0}
+.tr-roster span{padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700;background:rgba(255,255,255,.07);border:1px solid var(--line)}
+.rp-count{text-align:center;margin-bottom:10px;font-size:13px;font-weight:800;color:var(--muted)}
+.rp-count b{font-family:var(--f-display);font-size:20px;color:var(--text)}
+.rp-count.ok b{color:var(--win)}
+.rp-list{max-height:46vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.rp-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r-md);cursor:pointer;background:var(--surface-2);border:1px solid var(--line);transition:border-color .15s,background .15s}
+.rp-row.on{border-color:var(--accent);background:rgba(79,140,255,.14)}
+.rp-row>i{color:var(--dim);font-size:18px}
+.rp-row.on>i{color:var(--accent-hi)}
+.rp-nm{flex:1;min-width:0}
+.rp-nm b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rp-nm span{font-size:11px;color:var(--muted)}

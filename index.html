@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#070b1c">
+<title>STANDKNIFE FACEIT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="tournament.css">
+<link rel="stylesheet" href="chat.css">
+<script>
+/* Загрузчик: грузит библиотеки по очереди с таймаутами и запасными CDN,
+   чтобы приложение не зависало на «Подключаемся…», если один из хостов недоступен (часто на ПК/с VPN). */
+(function () {
+  function load(src, ms) {
+    return new Promise(function (resolve, reject) {
+      var el = document.createElement('script'), done = false;
+      var t = setTimeout(function () { if (!done) { done = true; el.remove(); reject(new Error('timeout ' + src)); } }, ms);
+      el.src = src;
+      el.onload = function () { if (!done) { done = true; clearTimeout(t); resolve(); } };
+      el.onerror = function () { if (!done) { done = true; clearTimeout(t); el.remove(); reject(new Error('error ' + src)); } };
+      document.head.appendChild(el);
+    });
+  }
+  function firstOk(list, ms) {
+    return list.reduce(function (p, src) { return p.catch(function () { return load(src, ms); }); }, Promise.reject());
+  }
+  function fail(msg) {
+    var st = document.getElementById('splashStatus'), bt = document.getElementById('splashRetry');
+    if (st) st.textContent = msg;
+    if (bt) bt.hidden = false;
+  }
+  window.__splashFail = fail;
+  var SB = [
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
+    'https://fastly.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
+    'https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
+  ];
+  function start() {
+    var tg = load('https://telegram.org/js/telegram-web-app.js', 8000).catch(function () { /* без Telegram SDK работаем как обычный сайт */ });
+    var sb = firstOk(SB, 7000);
+    Promise.all([tg, sb]).then(function () { return load('app.js', 10000); })
+      .then(function () { return load('tournament.js', 10000).catch(function (e) { console.error('tournament', e); }); })
+      .then(function () { return load('ocr2.js?v=6', 10000).catch(function (e) { console.error('ocr2', e); }); })
+      .then(function () { return load('chat.js', 10000).catch(function (e) { console.error('chat', e); }); })
+      .catch(function (e) {
+        console.error('boot', e);
+        fail('Не удалось загрузить приложение. Проверьте интернет или отключите VPN/блокировщики и повторите.');
+      });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  /* Если что-то зависло уже после загрузки скриптов */
+  setTimeout(function () {
+    var sp = document.getElementById('splash');
+    if (sp && !sp.classList.contains('hide')) fail('Долго грузится… Проверьте интернет/VPN и повторите.');
+  }, 15000);
+  window.addEventListener('error', function (e) {
+    var sp = document.getElementById('splash');
+    if (sp && !sp.classList.contains('hide')) fail('Ошибка запуска: ' + (e && e.message ? e.message : 'неизвестная') );
+  });
+})();
+</script>
+</head>
+<body>
+
+<!-- Загрузка -->
+<div class="splash" id="splash">
+  <div class="splash-ring"></div>
+  <div class="splash-name">STANDKNIFE FACEIT</div>
+  <div class="splash-status" id="splashStatus">Подключаемся…</div>
+  <button class="btn btn-primary" id="splashRetry" type="button" hidden onclick="location.reload()" style="margin-top:16px">Повторить</button>
+</div>
+
+<!-- Уведомление -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-text" id="toastText"></div>
+</div>
+
+<!-- Подтверждение матча -->
+<div class="overlay center" id="confirmModal" aria-hidden="true">
+  <div class="sheet confirm">
+    <div class="ring">
+      <svg viewBox="0 0 170 170"><circle class="track" cx="85" cy="85" r="76"/><circle class="bar" id="confirmBar" cx="85" cy="85" r="76"/></svg>
+      <div class="count" id="confirmTimer">30</div>
+    </div>
+    <h2>Матч найден</h2>
+    <div class="sub" id="confirmSub">Подтвердите участие</div>
+    <div class="slots" id="confirmSlots"></div>
+    <div class="tally"><b id="confirmDone">0</b> из <b id="confirmTotal">0</b> готовы</div>
+    <button class="btn btn-primary btn-xl" id="confirmBtn" data-act="confirm">Подтвердить</button>
+  </div>
+</div>
+
+<!-- Профиль игрока / детали матча -->
+<!-- Просмотр скриншота (админ) -->
+<div class="overlay center" id="shotModal" aria-hidden="true" style="z-index:9400">
+  <div class="shot-view">
+    <button class="sheet-close" data-act="close" data-target="shotModal" aria-label="Закрыть">×</button>
+    <img id="shotImg" alt="Скриншот результата">
+  </div>
+</div>
+
+<!-- Выбор скриншота результата (игрок) -->
+<input type="file" id="shotFile" accept="image/*" hidden>
+
+<div class="overlay" id="profileModal">
+  <div class="sheet">
+    <button class="sheet-close" data-act="close" data-target="profileModal" aria-label="Закрыть">×</button>
+    <div id="profileModalBody"></div>
+  </div>
+</div>
+<div class="overlay" id="matchModal">
+  <div class="sheet">
+    <button class="sheet-close" data-act="close" data-target="matchModal" aria-label="Закрыть">×</button>
+    <div id="matchModalBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="settingsModal">
+  <div class="sheet">
+    <button class="sheet-close" data-act="close" data-target="settingsModal" aria-label="Закрыть">×</button>
+    <h3 class="sheet-title">Настройки</h3>
+    <div class="row link" data-act="nav" data-page="wallet" style="margin-bottom:12px">
+      <div class="row-main"><div class="row-title">Кошелёк</div><div class="row-sub">Баланс и промокоды</div></div>
+      <div class="balance-chip" id="headBalance"><i class="fas fa-coins"></i>0 ₽</div>
+    </div>
+    <div class="row link" data-act="rename" style="margin-bottom:12px">
+      <div class="row-main"><div class="row-title">Сменить никнейм</div><div class="row-sub">Стоимость 25 ₽</div></div>
+      <i class="fas fa-pen" style="color:var(--muted)"></i>
+    </div>
+    <button class="btn btn-danger btn-block" data-act="logout"><i class="fas fa-sign-out-alt"></i> Выйти из аккаунта</button>
+  </div>
+</div>
+<div class="overlay" id="notifModal">
+  <div class="sheet">
+    <button class="sheet-close" data-act="close" data-target="notifModal" aria-label="Закрыть">×</button>
+    <h3 class="sheet-title">Уведомления</h3>
+    <div id="notifBody"></div>
+  </div>
+</div>
+
+<!-- Создание турнира (админ) -->
+<div class="overlay center" id="tourModal" aria-hidden="true">
+  <div class="sheet">
+    <button class="sheet-close" data-act="close" data-target="tourModal" aria-label="Закрыть">×</button>
+    <h3 class="sheet-title">Новый турнир кланов</h3>
+    <div class="field"><label for="trName">Название</label><input class="text-input" id="trName" maxlength="40" placeholder="Турнир кланов" autocomplete="off"></div>
+    <div class="field"><label for="trSlots">Сколько команд</label>
+      <select class="text-input" id="trSlots"><option value="2">2 команды</option><option value="4">4 команды</option><option value="8" selected>8 команд</option><option value="16">16 команд</option></select></div>
+    <div class="field"><label for="trSize">Формат матча</label>
+      <select class="text-input" id="trSize"><option value="1">1 на 1</option><option value="2">2 на 2</option><option value="3">3 на 3</option><option value="4">4 на 4</option><option value="5" selected>5 на 5</option></select></div>
+    <div class="field"><label for="trPrize">Призовой фонд (голда)</label><input class="text-input" id="trPrize" type="number" min="0" inputmode="numeric" placeholder="100000"></div>
+    <button class="btn btn-primary btn-xl" data-act="tr-create"><i class="fas fa-trophy"></i> Создать турнир</button>
+  </div>
+</div>
+
+<!-- Диалог подтверждения / ввода -->
+<div class="overlay center" id="dialog" style="z-index:9500">
+  <div class="sheet">
+    <h3 id="dialogTitle" style="font-size:17px;margin-bottom:6px"></h3>
+    <p id="dialogText" class="muted" style="font-size:14px;margin-bottom:14px"></p>
+    <input class="text-input" id="dialogInput" style="margin-bottom:14px" hidden>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1" id="dialogCancel">Отмена</button>
+      <button class="btn btn-primary" style="flex:1" id="dialogOk">Да</button>
+    </div>
+  </div>
+</div>
+
+<!-- Вход / регистрация -->
+<main class="auth" id="auth" hidden>
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="mark">🚀</div>
+      <h1>STANDKNIFE FACEIT</h1>
+      <p>Рейтинговые матчи по StandKnife</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="active" id="tabLogin" data-act="auth-tab" data-tab="login" role="tab">Вход</button>
+      <button id="tabRegister" data-act="auth-tab" data-tab="register" role="tab">Регистрация</button>
+    </div>
+
+    <form id="loginForm" autocomplete="on">
+      <div class="field"><label for="loginNick">Никнейм</label>
+        <div class="input"><i class="fas fa-user"></i><input id="loginNick" type="text" maxlength="20" placeholder="Ваш ник" autocomplete="username" autocapitalize="off"></div></div>
+      <div class="field"><label for="loginPass">Пароль</label>
+        <div class="input"><i class="fas fa-lock"></i><input id="loginPass" type="password" placeholder="Пароль" autocomplete="current-password"></div></div>
+      <button class="btn btn-primary btn-xl" type="submit" id="loginBtn">Войти</button>
+      <div class="auth-msg" id="loginMsg"></div>
+    </form>
+
+    <form id="registerForm" autocomplete="on" hidden>
+      <div class="field"><label for="regNick">Никнейм</label>
+        <div class="input"><i class="fas fa-user"></i><input id="regNick" type="text" maxlength="20" placeholder="3–20 символов: буквы, цифры, _ и -" autocomplete="username" autocapitalize="off"></div></div>
+      <div class="field"><label for="regGameId">ID аккаунта StandKnife</label>
+        <div class="input"><i class="fas fa-id-badge"></i><input id="regGameId" type="text" maxlength="30" placeholder="Ваш игровой ID" autocomplete="off"></div></div>
+      <div class="field"><label for="regPass">Пароль</label>
+        <div class="input"><i class="fas fa-lock"></i><input id="regPass" type="password" placeholder="Минимум 8 символов" autocomplete="new-password"></div></div>
+      <div class="field"><label for="regPass2">Повторите пароль</label>
+        <div class="input"><i class="fas fa-check-circle"></i><input id="regPass2" type="password" placeholder="Ещё раз" autocomplete="new-password"></div></div>
+      <button class="btn btn-primary btn-xl" type="submit" id="registerBtn">Создать аккаунт</button>
+      <div class="auth-msg" id="registerMsg"></div>
+    </form>
+  </div>
+</main>
+
+<!-- Приложение -->
+<div class="app" id="app" hidden>
+  <header class="app-head">
+    <div class="hd-left">
+      <button class="hd-btn" data-act="settings" aria-label="Настройки"><i class="fas fa-gear"></i></button>
+      <button class="hd-btn" data-act="support" aria-label="Поддержка"><i class="fas fa-headphones"></i></button>
+    </div>
+    <div class="hd-brand" data-act="nav" data-page="home" role="button" aria-label="На главную"><b>STANDKNIFE</b><span>FACEIT</span></div>
+    <button class="hd-btn" data-act="notifs" id="hdBell" aria-label="Уведомления"><i class="fas fa-bell"></i><span class="hd-badge" id="hdBadge" hidden>0</span></button>
+  </header>
+
+  <!-- Главная -->
+  <section class="page" id="page-home">
+    <div class="hero">
+      <h1 class="hero-title">Играй рейтинг. <em>Поднимай уровень.</em></h1>
+      <p class="hero-text">Очередь, подтверждение, бан карт и лобби с чатом — всё в одном приложении.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" data-act="nav" data-page="matches"><i class="fas fa-play"></i> Найти матч</button>
+        <button class="btn btn-ghost" data-act="nav" data-page="profile"><i class="fas fa-user"></i> Профиль</button>
+      </div>
+    </div>
+    <div class="strip">
+      <div><div class="num" id="statSearching">0</div><div class="k">в поиске</div></div>
+      <div><div class="num" id="statInMatch">0</div><div class="k">в матче</div></div>
+      <div><div class="num" id="statMatches">0</div><div class="k">матчей сыграно</div></div>
+    </div>
+    <div class="tr-slot" id="tourSlot"></div>
+    <div class="panel prize">
+      <div class="prize-head">
+        <div class="prize-ico"><i class="fas fa-trophy"></i></div>
+        <div class="prize-ttl"><span>Призовой фонд</span><b>600 000 <i class="fas fa-coins"></i> голды</b></div>
+      </div>
+      <div class="podium">
+        <div class="p2"><div class="medal">2</div><div class="where">2 место</div><div class="sum">150 000</div><div class="cur"><i class="fas fa-coins"></i> голды</div></div>
+        <div class="p1"><i class="fas fa-crown crown"></i><div class="medal">1</div><div class="where">1 место</div><div class="sum">350 000</div><div class="cur"><i class="fas fa-coins"></i> голды</div></div>
+        <div class="p3"><div class="medal">3</div><div class="where">3 место</div><div class="sum">100 000</div><div class="cur"><i class="fas fa-coins"></i> голды</div></div>
+      </div>
+      <p class="prize-note"><i class="fas fa-gem"></i> С 4 по 15 место — Premium статус</p>
+    </div>
+  </section>
+
+  <!-- Играть -->
+  <section class="page" id="page-matches">
+    <div class="lg-top">
+      <div class="lg-ring">
+        <svg viewBox="0 0 80 80"><circle class="t" cx="40" cy="40" r="35"/><circle class="b" id="lgRing" cx="40" cy="40" r="35"/></svg>
+        <div class="hex lg-hex" id="lgHex"><span id="lgLvl">1</span></div>
+      </div>
+      <div class="lg-mid">
+        <div class="lg-elo"><b class="num" id="lgElo">300</b><span class="lg-badge">ELO</span></div>
+        <div class="lg-bar"><i id="lgBar"></i></div>
+        <div class="lg-sub"><span id="lgRange">300 / 400</span><b id="lgNext">100 до уровня</b></div>
+      </div>
+      <div class="lg-side">
+        <div><i class="fas fa-trophy"></i><span>Ранг</span><b id="lgRank">#—</b></div>
+        <div><i class="fas fa-chart-line"></i><span>W/R</span><b id="lgWr">0%</b></div>
+        <div><i class="fas fa-crosshairs"></i><span>K/D</span><b id="lgKd">—</b></div>
+      </div>
+    </div>
+
+    <h3 class="lg-label">Выбор лиги</h3>
+    <div class="lg-card">
+      <div class="lg-tabs">
+        <button class="on" type="button">DEFAULT</button>
+        <button type="button" disabled><i class="fas fa-lock"></i> QUAL</button>
+        <button type="button" disabled><i class="fas fa-lock"></i> PRO</button>
+      </div>
+      <div class="lg-title"><h2>DEFAULT</h2><span class="lg-open">ОТКРЫТА</span></div>
+      <p class="lg-desc">Открытый рейтинговый матчмейкинг</p>
+      <div class="lg-tiles">
+        <div><span><i class="fas fa-user-group"></i> В игре</span><b class="num" id="lgInGame">0</b></div>
+        <div><span><i class="fas fa-magnifying-glass"></i> В поиске</span><b class="num" id="lgSearching">0</b></div>
+        <div><span><i class="far fa-clock"></i> Ожидание</span><b class="num" id="lgWait">—</b></div>
+      </div>
+      <div class="lg-season"><i class="fas fa-chart-line"></i> Матчей в сезоне: <b id="lgSeason">0</b></div>
+      <button class="lg-ladder" type="button" data-act="nav" data-page="top"><i class="fas fa-chart-simple"></i><span>Ежемесячный топ-игроков</span><i class="fas fa-chevron-right"></i></button>
+      <div class="mute-box" id="muteBox" hidden></div>
+      <button class="lg-find" id="btnSearch" type="button" data-act="search-start"><i class="fas fa-search"></i> Найти матч</button>
+      <button class="lg-find cancel" id="btnCancel" type="button" data-act="search-cancel" hidden><i class="fas fa-xmark"></i> Отменить поиск</button>
+      <p class="hint" id="searchHint">Держите приложение открытым — подтверждение придёт сюда.</p>
+    </div>
+    <section class="panel" id="partyPanel" style="margin-top:18px"></section>
+  </section>
+
+  <!-- Матч -->
+  <section class="page" id="page-match">
+    <div class="match-top" id="matchTop">
+      <div class="ttl"><b id="mNum">Матч</b><span id="mSub"></span></div>
+      <span class="pill" id="mStatus">Драфт</span>
+      <button class="icon-btn" data-act="copy-match" aria-label="Скопировать ID матча"><i class="fas fa-copy"></i></button>
+    </div>
+    <div id="voiceMatchBar" hidden></div>
+    <div id="matchBody"></div>
+    <section class="panel" id="chatPanel" hidden>
+      <div class="panel-head"><h3>Чат лобби</h3><span class="aside">все игроки матча</span></div>
+      <div class="chat-body" id="chatBody"></div>
+      <form class="chat-form" id="chatForm" autocomplete="off">
+        <input class="text-input" id="chatInput" maxlength="300" placeholder="Написать…" aria-label="Сообщение">
+        <button class="btn btn-primary" type="submit" aria-label="Отправить"><i class="fas fa-paper-plane"></i></button>
+      </form>
+    </section>
+    <div id="adminMatchBar"></div>
+  </section>
+
+  <!-- Поддержка -->
+  <section class="page" id="page-support">
+    <div id="supportBody"></div>
+  </section>
+
+  <!-- Просмотр сыгранного матча -->
+  <section class="page" id="page-matchview">
+    <div id="matchViewBody"><div class="empty">Загрузка…</div></div>
+  </section>
+
+  <!-- Турнир кланов -->
+  <section class="page" id="page-tournament"><div id="tourBody"></div></section>
+
+  <!-- Профиль -->
+  <section class="page" id="page-clan"><div id="clanBody"></div></section>
+
+  <section class="page" id="page-profile">
+    <div id="profileBody"></div>
+  </section>
+
+  <!-- Профиль другого игрока -->
+  <section class="page" id="page-player">
+    <div id="playerBody"></div>
+  </section>
+
+  <!-- Админ-панель -->
+  <section class="page" id="page-admin">
+    <div id="adminPanel"></div>
+  </section>
+
+  <!-- Друзья -->
+  <section class="page" id="page-friends">
+    <div class="page-head"><h2 class="page-title">Друзья</h2><span class="muted" id="friendsCount">0</span></div>
+    <div class="tabs">
+      <button class="active" id="tabFriends" data-act="friends-tab" data-tab="friends">Друзья</button>
+      <button id="tabRequests" data-act="friends-tab" data-tab="requests">Заявки<span class="tab-badge" id="reqBadge" hidden>0</span></button>
+    </div>
+    <div class="search-line">
+      <input class="text-input" id="friendSearch" type="search" placeholder="Найти игрока по нику" aria-label="Поиск игрока" autocomplete="off">
+    </div>
+    <div class="panel" id="friendsList"></div>
+  </section>
+
+  <!-- Топ -->
+  <section class="page" id="page-top">
+    <div class="page-head"><h2 class="page-title">Топ игроков</h2><span class="rank-chip" id="myRank">#—</span></div>
+    <div class="cl-tabs" id="topTabs"><button class="on" data-act="top-tab" data-tab="players"><i class="fas fa-user"></i> Игроки</button><button data-act="top-tab" data-tab="clans"><i class="fas fa-shield-halved"></i> Кланы</button></div>
+    <div class="panel" id="topList"><div class="empty">Загрузка…</div></div>
+  </section>
+
+  <!-- Кошелёк -->
+  <section class="page" id="page-wallet">
+    <div class="page-head"><h2 class="page-title">Кошелёк</h2></div>
+    <div class="panel wallet"><div class="big" id="walletBalance">0 ₽</div><div class="k">Текущий баланс</div></div>
+    <div class="panel">
+      <div class="panel-head"><h3>Промокод</h3></div>
+      <form class="promo" id="promoForm" autocomplete="off">
+        <input class="text-input" id="promoInput" placeholder="Введите код" maxlength="20" aria-label="Промокод">
+        <button class="btn btn-primary" type="submit" aria-label="Применить"><i class="fas fa-gift"></i></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Магазин -->
+  <section class="page" id="page-shop">
+    <div class="page-head"><h2 class="page-title">Магазин</h2></div>
+    <div id="shopBody"></div>
+  </section>
+
+  <nav class="nav" id="nav" aria-label="Основная навигация">
+    <button data-act="nav" data-page="top"><span class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span><span>Топ</span></button>
+    <button data-act="nav" data-page="friends"><span class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>Друзья</span><span class="dot" id="navFriendDot" hidden>0</span></button>
+    <button data-act="nav" data-page="matches" class="play" id="navPlay"><span class="ni" id="navPlayIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="1.2"/></svg></span><span id="navPlayLabel">Играть</span></button>
+    <button data-act="nav" data-page="shop"><span class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span><span>Магазин</span></button>
+    <button data-act="nav" data-page="profile"><span class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span>Профиль</span></button>
+  </nav>
+  <div id="voiceDock" hidden></div>
+  <div id="voiceAudio" hidden></div>
+</div>
+
+
+<!-- Плашка подписки на Telegram-канал -->
+<div class="tg-wrap" id="tgPromo" hidden>
+  <div class="tg-pill" id="tgPill">
+    <button class="tg-ico" id="tgIco" type="button" aria-label="Открыть канал спонсора"><i class="fas fa-paper-plane"></i></button>
+    <button class="tg-body" id="tgOpen" type="button"><small>Спонсор</small><span>Подпишитесь на ТГК</span></button>
+    <button class="tg-go" id="tgGo" type="button" aria-label="Открыть канал"><i class="fas fa-chevron-right"></i></button>
+    <button class="tg-min" id="tgMin" type="button" aria-label="Закрыть"><i class="fas fa-xmark"></i></button>
+  </div>
+</div>
+</body>
+</html>

@@ -101,20 +101,44 @@
   }
 
   /* ───── анализ одного скриншота ───── */
-  async function analyzeShot(m, src, wNames, wDigits) {
-    const im = await loadImg(src), W = im.naturalWidth, H = im.naturalHeight;
-    const s1 = Math.max(1, Math.min(3, 2200 / W));
-    const p1 = grayCanvas(im, 0, 0, W, H, s1, 'gray');
-    const r1 = await wNames.recognize(p1.canvas);
-    const words = (r1.data.words || []).filter(w => w && w.bbox).map(w => ({ text: w.text, bbox: { x0: (w.bbox.x0 - p1.pad) / s1, x1: (w.bbox.x1 - p1.pad) / s1, y0: (w.bbox.y0 - p1.pad) / s1, y1: (w.bbox.y1 - p1.pad) / s1 } }));
-    if (!words.length) throw new Error('не удалось определить расположение текста');
-    /* app.js ocrAnalyze ждёт структуру {sides:[{players:[{name}]}]} — собираем её из строк слева и справа */
-    const midX = W / 2;
-    const adapt = { sides: [
+  /* Ники: сравниваем два варианта разбиения (по половинам экрана и одной общей колонкой) и берём лучший */
+  function scoreNames(m, words, midX, W) {
+    const split = { sides: [
       { players: sideLinesFull(words, 0, midX).map(l => ({ name: l.text })) },
       { players: sideLinesFull(words, midX, W + 1).map(l => ({ name: l.text })) }
     ] };
-    const an = ocrAnalyze(m, adapt);                // ники, победитель, счёт, карта — прежний код из app.js
+    const whole = { sides: [ { players: sideLinesFull(words, 0, W + 1).map(l => ({ name: l.text })) } ] };
+    const a = ocrAnalyze(m, split), b = ocrAnalyze(m, whole);
+    const na = a.players.filter(p => p.ok).length, nb = b.players.filter(p => p.ok).length;
+    return nb > na ? { n: nb, an: b } : { n: na, an: a };
+  }
+
+  /* ───── анализ одного скриншота ───── */
+  async function analyzeShot(m, src, wNames, wDigits) {
+    const im = await loadImg(src), W = im.naturalWidth, H = im.naturalHeight;
+    const midX = W / 2;
+    /* несколько вариантов картинки для распознавания ников: мелкий текст плохо читается с одного прохода */
+    const variants = [
+      { mode: 'gray', s: Math.max(1, Math.min(3, 2200 / W)) },
+      { mode: 'bin',  s: Math.max(1, Math.min(3, 2200 / W)) },
+      { mode: 'gray', s: Math.max(1, Math.min(4, 3000 / W)) }
+    ];
+    let best = null;
+    for (const v of variants) {
+      const p = grayCanvas(im, 0, 0, W, H, v.s, v.mode);
+      let r;
+      try { r = await wNames.recognize(p.canvas); } catch (e) { continue; }
+      const words = (r.data.words || []).filter(w => w && w.bbox).map(w => ({ text: w.text, bbox: {
+        x0: (w.bbox.x0 - p.pad) / v.s, x1: (w.bbox.x1 - p.pad) / v.s,
+        y0: (w.bbox.y0 - p.pad) / v.s, y1: (w.bbox.y1 - p.pad) / v.s } }));
+      if (!words.length) continue;
+      const cand = scoreNames(m, words, midX, W);
+      console.log('OCR pass', v.mode, v.s.toFixed(2), 'слов:', words.length, 'ников:', cand.n, '\n', words.map(w => w.text).join(' | '));
+      if (!best || cand.n > best.n || (cand.n === best.n && words.length > best.words.length)) best = { n: cand.n, an: cand.an, words };
+    }
+    if (!best) throw new Error('не удалось определить расположение текста');
+    const words = best.words;
+    const an = best.an;   // ники, победитель, счёт, карта — прежний код из app.js
     const mid = W / 2, sidesW = { L: [0, mid], R: [mid, W + 1] };
     const sideLines = { L: sideLinesFull(words, 0, mid), R: sideLinesFull(words, mid, W + 1) };
     const sideOfTeamFn = (() => {

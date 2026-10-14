@@ -278,7 +278,7 @@ async function enterApp() {
     $('app').hidden = false;
     await Promise.all([loadMaps(), loadSettings(), loadBannerCatalog()]);
     renderBalance();
-    await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory(), refreshMe(), loadNews(), loadMyBanners(), loadVerified()]);
+    await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory(), refreshMe(), loadNews(), loadMyBanners(), loadVerified(), loadMute()]);
     if (!(S.match && S.match.status === 'active')) await syncQueue().catch(() => {});
     navigate(S.match && S.match.status === 'active' ? 'match' : 'home');
     startLoops();
@@ -307,6 +307,7 @@ async function pollTick() {
     if (S.tick % 8 === 0) await loadSettings().catch(() => {});
     if (S.tick % 4 === 2) await loadNews().catch(() => {});
     if (S.tick % 10 === 5) await loadVerified().catch(() => {});
+    if (S.tick % 5 === 1) await loadMute().catch(() => {});
   } catch (e) { /* сеть моргнула — повторим */ }
   finally { S.polling = false; }
 }
@@ -499,18 +500,64 @@ function updateSearchUI() {
   $('btnCancel').hidden = !q.searching;
   const start = $('btnSearch');
   start.hidden = q.searching;
-  const wait = S.party && S.party.leader !== S.me.id;
-  start.disabled = !!wait;
-  start.innerHTML = wait ? 'Поиск запускает лидер пати' : '<i class="fas fa-search"></i> Найти матч';
+  const wait = S.party && S.party.leader !== S.me.id, muted = muteLeft() > 0;
+  start.disabled = !!wait || muted;
+  start.innerHTML = muted ? '<i class="fas fa-ban"></i> Поиск недоступен' : wait ? 'Поиск запускает лидер пати' : '<i class="fas fa-search"></i> Найти матч';
+  renderMuteBox();
   setText('searchHint', q.searching
     ? `Ищем ${S.teamSize * 2} игроков. Не закрывайте приложение — подтверждение придёт сюда.`
     : '');
   if (!S.match) setNavMatch(q.searching ? 'searching' : 'idle');
 }
 
+/* ───────────── Муты ───────────── */
+const fmtLeft = sec => {
+  sec = Math.max(0, Math.floor(sec));
+  const d = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+  return d ? `${d} д ${h} ч ${m} мин` : h ? `${h} ч ${m} мин ${s} с` : `${m} мин ${s} с`;
+};
+const muteLeft = () => S.mute ? Math.max(0, Math.ceil((S.mute.until - Date.now()) / 1000)) : 0;
+async function loadMute() {
+  try {
+    const r = await rpc('my_mute');
+    S.mute = r && r.left_sec > 0 ? { until: Date.now() + r.left_sec * 1000, reason: r.reason || '' } : null;
+  } catch (e) { /* SQL с мутами ещё не применён */ }
+  updateSearchUI();
+}
+function renderMuteBox() {
+  const box = $('muteBox'); if (!box) return;
+  if (muteLeft() <= 0) { box.hidden = true; box.dataset.k = ''; return; }
+  const k = S.mute.until + '|' + S.mute.reason;
+  box.hidden = false;
+  if (box.dataset.k === k) return;
+  box.dataset.k = k;
+  box.innerHTML = `<div class="mb-ico"><i class="fas fa-ban"></i></div><div class="mb-body"><b>Вы в муте</b>
+    <div class="mb-time">Поиск матча откроется через <strong id="muteLeft">${fmtLeft(muteLeft())}</strong></div>
+    <div class="mb-reason"><span>Причина</span>${esc(S.mute.reason || 'не указана')}</div></div>`;
+}
+function tickMute() {
+  const left = muteLeft();
+  if (left <= 0) { S.mute = null; updateSearchUI(); return; }
+  setText('muteLeft', fmtLeft(left));
+}
+/* «30м», «2ч», «1д», «1н» — срок задаёт админ; число без буквы = минуты */
+function parseMuteDur(v) {
+  const m = String(v).trim().toLowerCase().replace(',', '.').match(/^(\d+(?:\.\d+)?)\s*([a-zа-яё]*)$/);
+  if (!m) return 0;
+  const n = parseFloat(m[1]), u = m[2];
+  let k = 1;
+  if (/^(ч|час|часа|часов|h|hr|hour|hours)$/.test(u)) k = 60;
+  else if (/^(д|дн|день|дня|дней|d|day|days)$/.test(u)) k = 1440;
+  else if (/^(н|нед|неделя|недели|недель|w|week|weeks)$/.test(u)) k = 10080;
+  else if (u && !/^(м|мин|минута|минуты|минут|m|min|mins|minute|minutes)$/.test(u)) return 0;
+  const min = Math.round(n * k);
+  return min >= 1 && min <= 525600 ? min : 0;
+}
+
 async function startSearch() {
   if (S.match) return navigate('match');
-  await rpc('start_search');
+  if (muteLeft() > 0) return toast('error', 'Вы в муте', 'Поиск откроется через ' + fmtLeft(muteLeft()));
+  try { await rpc('start_search'); } catch (e) { await loadMute(); throw e; }
   await syncQueue();
   toast('info', 'Поиск начат', 'Ищем игроков…');
 }
@@ -896,6 +943,7 @@ async function voteCancel() {
 /* Таймеры интерфейса */
 function uiTick() {
   if (!S.me) return;
+  if (S.mute) tickMute();
   const now = nowMs();
   if (S.queue.searching && S.queue.since) {
     setText('lgWait', mmss(Math.max(0, Math.floor((now - S.queue.since) / 1000))));
@@ -2106,10 +2154,17 @@ async function loadAdminTab() {
   }
 }
 
+const muteRow = p => {
+  const m = (S.admMutes || {})[String(p.id)];
+  return m
+    ? `<div class="mute-row"><div><b><i class="fas fa-ban"></i> Мут: ещё ${esc(fmtLeft(m.left_sec))}</b><span>${esc(m.reason || 'без причины')}</span></div><button class="btn btn-sm btn-ghost" data-act="adm-unmute" data-id="${esc(p.id)}" data-nick="${esc(p.username)}">Снять</button></div>`
+    : `<button class="btn btn-sm btn-ghost btn-block" style="margin-top:10px" data-act="adm-mute" data-id="${esc(p.id)}" data-nick="${esc(p.username)}"><i class="fas fa-ban"></i> Выдать мут</button>`;
+};
 async function fillAdminPlayers() {
   const box = $('admPlayers'); if (!box) return;
   const q = ($('admSearch') || { value: '' }).value.trim();
   const list = (await rpc('admin_players', { p_q: q })) || [];
+  try { S.admMutes = (await rpc('admin_mutes')) || {}; } catch (e) { S.admMutes = {}; }
   box.innerHTML = list.length ? list.map(p => `<div class="am-card pl-card ${p.banned ? 'banned' : ''}">
     <div class="am-top">${avatarHtml(p, 38)}
       <div class="tk-ttl"><b>${esc(p.username)}${vb(p.id)} ${p.isadmin ? '👑' : ''} ${p.banned ? '🚫' : ''}</b><span>ID: ${esc(p.game_id)} · ${p.balance} ₽</span></div>
@@ -2117,7 +2172,7 @@ async function fillAdminPlayers() {
     <div class="adm-btns" style="grid-template-columns:repeat(3,1fr);margin:10px 0 0">
       <button class="btn btn-sm btn-ghost" data-act="adm-rating" data-id="${p.id}" data-nick="${esc(p.username)}" data-elo="${p.elo}"><i class="fas fa-pen"></i> ELO</button>
       <button class="btn btn-sm ${p.banned ? 'btn-ok' : 'btn-danger'}" data-act="adm-ban" data-id="${p.id}" data-value="${p.banned ? 0 : 1}">${p.banned ? 'Разбанить' : 'Бан'}</button>
-      <button class="btn btn-sm btn-ghost" data-act="adm-set-admin" data-id="${p.id}" data-value="${p.isadmin ? 0 : 1}">${p.isadmin ? 'Снять' : 'Админ'}</button></div>${vbPick(p.id)}</div>`).join('')
+      <button class="btn btn-sm btn-ghost" data-act="adm-set-admin" data-id="${p.id}" data-value="${p.isadmin ? 0 : 1}">${p.isadmin ? 'Снять' : 'Админ'}</button></div>${vbPick(p.id)}${muteRow(p)}</div>`).join('')
     : '<div class="empty"><i class="fas fa-users"></i>Никого не нашли</div>';
 }
 
@@ -2365,6 +2420,25 @@ const ACTIONS = {
     await rpc('admin_set_verified', { p_user: String(d.id), p_kind: kind });
     if (kind) S.verified[String(d.id)] = kind; else delete S.verified[String(d.id)];
     toast('success', kind ? 'Галочка выдана' : 'Галочка снята', '');
+    await fillAdminPlayers();
+  },
+  'adm-mute': async d => {
+    const dur = await dialog({ title: 'Мут: ' + d.nick, text: 'На сколько? Например: 30м, 2ч, 1д, 1н (число без буквы — минуты)', input: '', ok: 'Далее' });
+    if (dur === null) return;
+    const min = parseMuteDur(dur);
+    if (!min) return toast('error', 'Не понял срок', 'Напишите, например: 30м, 2ч или 3д (максимум 365 дней)');
+    const reason = await dialog({ title: 'Причина мута', text: 'Игрок увидит её во вкладке «Играть»', input: '', ok: 'Выдать мут', danger: true });
+    if (reason === null) return;
+    if (!String(reason).trim()) return toast('error', 'Укажите причину', '');
+    await rpc('admin_set_mute', { p_user: String(d.id), p_minutes: min, p_reason: String(reason).trim() });
+    toast('success', 'Мут выдан', d.nick + ' · ' + fmtLeft(min * 60));
+    await fillAdminPlayers();
+  },
+  'adm-unmute': async d => {
+    const ok = await dialog({ title: 'Снять мут с ' + d.nick + '?', ok: 'Снять' });
+    if (!ok) return;
+    await rpc('admin_set_mute', { p_user: String(d.id), p_minutes: 0, p_reason: null });
+    toast('success', 'Мут снят', d.nick);
     await fillAdminPlayers();
   },
   'adm-set-admin': async d => {

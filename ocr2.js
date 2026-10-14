@@ -133,7 +133,8 @@
         y0: (w.bbox.y0 - p.pad) / v.s, y1: (w.bbox.y1 - p.pad) / v.s } }));
       if (!words.length) continue;
       const cand = scoreNames(m, words, midX, W);
-      console.log('OCR pass', v.mode, v.s.toFixed(2), 'слов:', words.length, 'ников:', cand.n, '\n', words.map(w => w.text).join(' | '));
+      const line = `[${v.mode} x${v.s.toFixed(2)}] слов: ${words.length}, ников: ${cand.n}\n${words.map(w => w.text).join(' | ')}`;
+      console.log('OCR pass', line); (window.__ocrLog = window.__ocrLog || []).push(line);
       if (!best || cand.n > best.n || (cand.n === best.n && words.length > best.words.length)) best = { n: cand.n, an: cand.an, words };
     }
     if (!best) throw new Error('не удалось определить расположение текста');
@@ -222,6 +223,7 @@
       wD = await Tesseract.createWorker('eng');
       try { await wD.setParameters({ tessedit_pageseg_mode: '7', tessedit_char_whitelist: '0123456789', classify_bln_numeric_mode: '1' }); } catch (e) { /* ок */ }
       S.ocrRes = S.ocrRes || {}; S.ocrRes[id] = [];
+      window.__ocrLog = [];
       const out = [];
       for (const sh of shots) {
         const an = await analyzeShot(m, sh.image, wN, wD);
@@ -240,6 +242,7 @@
           <div class="ocr-th"><span>Игрок</span><span>K / D / A</span></div>${rows}
           <button class="btn btn-primary btn-sm btn-block" style="margin-top:10px" data-act="ocr-apply" data-id="${esc(id)}" data-idx="${o.idx}"><i class="fas fa-pen"></i> Подставить в форму</button></div>`;
       }).join('') + '<div class="ocr-note">Зелёные K/D/A — совпали в нескольких проходах и сходятся со счётом. Жёлтые — сомнительные, сверьте со скриншотом. Пусто — не распознано, ничего не подставляется наугад. «Видно» — сырые числа колонок строки. Зачёт делаете вы.</div>';
+      box.insertAdjacentHTML('beforeend', '<details style="margin-top:10px"><summary style="font-size:12px;opacity:.7">Отладка распознавания</summary><pre style="white-space:pre-wrap;font-size:11px;max-height:240px;overflow:auto;background:#0a0f1e;padding:8px;border-radius:8px">' + esc((window.__ocrLog || []).join('\n\n') || 'лог пуст') + '</pre></details>');
     } catch (e) {
       box.innerHTML = `<div class="am-none">Не получилось: ${esc(errText(e))}</div>`;
     } finally { for (const w of [wN, wD]) if (w) { try { await w.terminate(); } catch (e) { /* ок */ } } }

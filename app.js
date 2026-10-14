@@ -45,7 +45,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 const CFG = { confirmSec: 30, draftSec: 30, lobbySec: 300, pollMs: 2500, framePrice: 25, bannerPrice: 50, cancelVotes: 6, nickPrice: 25 };
 const NICK_RE = /^[A-Za-z0-9А-Яа-яЁё_-]{3,20}$/;
 const PUBLIC_COLS = 'id,username,elo,matches,wins,losses,win_streak,best_streak,kills,deaths,assists,rounds,stat_matches,likes,popularity,isadmin,avatar_url,avatar_frame,registered';
-const PAGES = ['home', 'matches', 'match', 'matchview', 'support', 'profile', 'friends', 'top', 'wallet', 'shop', 'admin'];
+const PAGES = ['home', 'matches', 'match', 'matchview', 'support', 'profile', 'friends', 'top', 'wallet', 'missions', 'shop', 'admin'];
 const SIDE_NAME = { blue: 'Спецназ', orange: 'Террористы' };
 const PARTY_COLORS = ['#f5c451', '#3ddc97', '#38bdf8', '#fb923c'];
 const FRAMES = [
@@ -358,6 +358,24 @@ async function loadHistory() {
   updateFriendBadges();
   if (S.page === 'profile') renderProfile();
 }
+async function renderMissions() {
+  const box = $('missionsBody'); if (!box) return;
+  box.innerHTML = '<div class="empty">Загрузка…</div>';
+  let list;
+  try { list = (await rpc('my_daily_missions')) || []; }
+  catch (e) { box.innerHTML = '<div class="empty">Не получилось загрузить миссии</div>'; return; }
+  box.innerHTML = list.map(m => {
+    const prog = Number(m.progress) || 0;
+    const pct = Math.min(100, Math.round(prog * 100 / m.target));
+    const done = prog >= m.target;
+    const btn = m.claimed
+      ? '<button class="btn btn-ghost btn-block" disabled>Получено</button>'
+      : `<button class="btn ${done ? 'btn-primary' : 'btn-ghost'} btn-block" data-act="mission-claim" data-id="${esc(m.id)}" ${done ? '' : 'disabled'}>${done ? 'Забрать награду' : 'Выполните миссию'}</button>`;
+    return `<div class="panel" style="margin:0"><div class="panel-head"><h3>${esc(m.title)}</h3><span class="pr">+${m.reward} G</span></div>
+      <div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin:8px 0"><i style="display:block;height:100%;width:${pct}%;background:var(--gold)"></i></div>
+      <div class="row-sub" style="margin-bottom:10px">${Math.min(prog, m.target)} / ${m.target}</div>${btn}</div>`;
+  }).join('') || '<div class="empty">Миссий нет</div>';
+}
 function renderBalance() {
   const v = (S.me.balance || 0) + ' ₽';
   $('headBalance').innerHTML = `<i class="fas fa-coins"></i>${v}`;
@@ -387,6 +405,7 @@ function navigate(page) {
   if (page === 'friends') loadFriends().catch(() => {});
   if (page === 'top') renderTop();
   if (page === 'wallet') renderBalance();
+  if (page === 'missions') renderMissions();
   if (page === 'shop') { renderShop(); Promise.all([loadMyBanners(), loadBannerCatalog()]).then(() => { if (S.page === 'shop') renderShop(); }); }
   if (page === 'support') { renderSupport(); loadTickets().then(() => { if (S.page === 'support' && S.sup.view === 'home') renderSupport(); }); }
 }
@@ -408,7 +427,9 @@ function feedItems() {
   const news = S.news.map(n => ({ kind: 'news', ts: toMs(n.created_at), n }));
   const res = S.history.slice(0, 15).map(h => ({ kind: 'result', ts: toMs(h.match_date), h }));
   const gold = (S.goldLog || []).map(g => ({ kind: 'gold', ts: toMs(g.created_at), g }));
-  return [...news, ...res, ...gold].sort((a, b) => b.ts - a.ts).slice(0, 25);
+  const mskDay = new Date(Date.now() + 3 * 3600e3).toISOString().slice(0, 10);
+  const missions = [{ kind: 'missions', ts: Date.parse(mskDay + 'T00:00:00+03:00') }];
+  return [...news, ...res, ...gold, ...missions].sort((a, b) => b.ts - a.ts).slice(0, 25);
 }
 const unreadFeed = () => feedItems().filter(i => i.ts > S.seenAt).length;
 
@@ -453,9 +474,13 @@ function renderNotifs() {
       return `<div class="nt${isNew}"><div class="nt-ico gold"><i class="fas fa-bullhorn"></i></div>
         <div class="nt-main"><b>${esc(it.n.title)}</b><span class="nt-body">${esc(it.n.text)}</span><em>Новости проекта · ${when}</em></div></div>`;
     }
+    if (it.kind === 'missions') {
+      return `<div class="nt${isNew}" data-act="nav" data-page="missions"><div class="nt-ico gold"><i class="fas fa-list-check"></i></div>
+        <div class="nt-main"><b>Новые миссии</b><span>3 ежедневных задания · до 100 G</span><em>Обновляются каждый день в 00:00 МСК · ${when}</em></div><i class="fas fa-chevron-right nt-go"></i></div>`;
+    }
     if (it.kind === 'gold') {
       return `<div class="nt${isNew}"><div class="nt-ico gold"><i class="fas fa-coins"></i></div>
-        <div class="nt-main"><b>Матч сыгран</b><span>+${it.g.amount} G</span><em>Награда за победу · ${when}</em></div></div>`;
+        <div class="nt-main"><b>${esc(it.g.title || 'Матч сыгран')}</b><span>+${it.g.amount} G</span><em>${it.g.title === 'Миссия выполнена' ? 'Миссия' : 'Награда за победу'} · ${when}</em></div></div>`;
     }
     const h = it.h, win = h.result === 'win', d = h.elo_change || 0;
     const kda = h.kills != null ? `${h.kills}/${h.deaths}/${h.assists} · ` : '';
@@ -2473,6 +2498,12 @@ const ACTIONS = {
   'adm-add-admin': async () => {
     await rpc('admin_add_admin', { p_nick: $('admNewAdmin').value });
     toast('success', 'Админ добавлен', ''); await loadAdminTab();
+  },
+  'mission-claim': async d => {
+    const r = await rpc('claim_mission', { p_id: String(d.id) });
+    toast('success', 'Награда получена', '+' + ((r && r.reward) || '') + ' G');
+    await refreshMe();
+    renderMissions();
   },
   'adm-gold-toggle': async () => {
     const on = !S.goldReward;

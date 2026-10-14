@@ -129,6 +129,9 @@
       <div class="row-main"><div class="row-title">Кошелёк</div><div class="row-sub">Баланс и промокоды</div></div>
       <div class="balance-chip" id="headBalance"><i class="fas fa-coins"></i>0 ₽</div>
     </div>
+    <div class="row link" data-act="nav" data-page="missions" style="margin-bottom:12px">
+      <div class="row-main"><div class="row-title">Миссии</div><div class="row-sub">Ежедневные задания за G</div></div>
+    </div>
     <div class="row link" data-act="rename" style="margin-bottom:12px">
       <div class="row-main"><div class="row-title">Сменить никнейм</div><div class="row-sub">Стоимость 25 ₽</div></div>
       <i class="fas fa-pen" style="color:var(--muted)"></i>
@@ -374,6 +377,13 @@
         <button class="btn btn-primary" type="submit" aria-label="Применить"><i class="fas fa-gift"></i></button>
       </form>
     </div>
+  </section>
+
+  <!-- Миссии -->
+  <section class="page" id="page-missions">
+    <div class="page-head"><h2 class="page-title">Миссии</h2></div>
+    <div class="panel"><div class="panel-head"><h3>Ежедневные</h3><span class="aside">обновление 00:00 МСК</span></div>
+      <div id="missionsBody" style="display:grid;gap:12px"></div></div>
   </section>
 
   <!-- Магазин -->

@@ -46,7 +46,6 @@
     var sb = firstOk(SB, 7000);
     Promise.all([tg, sb]).then(function () { return load('app.js', 10000); })
       .then(function () { return load('tournament.js', 10000).catch(function (e) { console.error('tournament', e); }); })
-      .then(function () { return load('ocr2.js?v=7', 10000).catch(function (e) { console.error('ocr2', e); }); })
       .then(function () { return load('chat.js', 10000).catch(function (e) { console.error('chat', e); }); })
       .catch(function (e) {
         console.error('boot', e);
@@ -367,7 +366,7 @@
   <!-- Кошелёк -->
   <section class="page" id="page-wallet">
     <div class="page-head"><h2 class="page-title">Кошелёк</h2></div>
-    <div class="panel wallet"><div class="big" id="walletBalance">0 ₽</div><div class="k">Текущий баланс</div></div>
+    <div class="panel wallet"><div class="big" id="walletBalance">0 ₽</div><div class="k">Текущий баланс</div><div class="big" id="walletGold" style="margin-top:14px">0 G</div><div class="k">Золото</div></div>
     <div class="panel">
       <div class="panel-head"><h3>Промокод</h3></div>
       <form class="promo" id="promoForm" autocomplete="off">

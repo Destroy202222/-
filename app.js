@@ -320,13 +320,17 @@ async function loadMaps() {
 }
 async function loadSettings() {
   const { data } = await sb.from('settings').select('*');
-  (data || []).forEach(r => { if (r.key === 'team_size') S.teamSize = parseInt(r.value) || 3; });
+  (data || []).forEach(r => {
+    if (r.key === 'team_size') S.teamSize = parseInt(r.value) || 3;
+    if (r.key === 'gold_win_reward') S.goldReward = r.value === '1';
+  });
   updateSearchUI();
 }
 async function refreshMe() {
   const me = await rpc('get_me');
   if (me) { S.me = me; renderBalance(); }
   try { S.rank = await rpc('my_rank'); } catch (e) { /* ок */ }
+  try { S.goldLog = (await rpc('my_gold_log')) || []; } catch (e) { S.goldLog = S.goldLog || []; }
 }
 async function fetchUsers(ids, force) {
   const need = [...new Set(ids)].filter(id => force || !S.users[id]);
@@ -358,6 +362,7 @@ function renderBalance() {
   const v = (S.me.balance || 0) + ' ₽';
   $('headBalance').innerHTML = `<i class="fas fa-coins"></i>${v}`;
   setText('walletBalance', v);
+  setText('walletGold', (S.me.gold || 0) + ' G');
 }
 
 /* ───────────── Навигация ───────────── */
@@ -402,7 +407,8 @@ function saveSeen(v) { try { localStorage.setItem('bnk_seen_' + S.me.id, String(
 function feedItems() {
   const news = S.news.map(n => ({ kind: 'news', ts: toMs(n.created_at), n }));
   const res = S.history.slice(0, 15).map(h => ({ kind: 'result', ts: toMs(h.match_date), h }));
-  return [...news, ...res].sort((a, b) => b.ts - a.ts).slice(0, 25);
+  const gold = (S.goldLog || []).map(g => ({ kind: 'gold', ts: toMs(g.created_at), g }));
+  return [...news, ...res, ...gold].sort((a, b) => b.ts - a.ts).slice(0, 25);
 }
 const unreadFeed = () => feedItems().filter(i => i.ts > S.seenAt).length;
 
@@ -446,6 +452,10 @@ function renderNotifs() {
     if (it.kind === 'news') {
       return `<div class="nt${isNew}"><div class="nt-ico gold"><i class="fas fa-bullhorn"></i></div>
         <div class="nt-main"><b>${esc(it.n.title)}</b><span class="nt-body">${esc(it.n.text)}</span><em>Новости проекта · ${when}</em></div></div>`;
+    }
+    if (it.kind === 'gold') {
+      return `<div class="nt${isNew}"><div class="nt-ico gold"><i class="fas fa-coins"></i></div>
+        <div class="nt-main"><b>Матч сыгран</b><span>+${it.g.amount} G</span><em>Награда за победу · ${when}</em></div></div>`;
     }
     const h = it.h, win = h.result === 'win', d = h.elo_change || 0;
     const kda = h.kills != null ? `${h.kills}/${h.deaths}/${h.assists} · ` : '';
@@ -2150,7 +2160,7 @@ async function loadAdminTab() {
     body.innerHTML = `<div class="adm-form"><div class="adm-form-h"><i class="fas fa-sliders"></i> Формат матча</div>
       <label class="row-sub" for="admSize">При смене формата очередь сбросится</label>
       <select class="text-input" id="admSize">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${S.teamSize === n ? 'selected' : ''}>${n} на ${n}</option>`).join('')}</select>
-      <button class="btn btn-primary btn-block" data-act="adm-save-size">Сохранить</button></div>`;
+      <button class="btn btn-primary btn-block" data-act="adm-save-size">Сохранить</button><div class="adm-form-h" style="margin-top:14px"><i class="fas fa-coins"></i> Награда за победу</div><div class="row-sub">${S.goldReward ? 'Включено: за победу +50 G' : 'Выключено: золото не начисляется'}</div><button class="btn ${S.goldReward ? 'btn-ghost' : 'btn-primary'} btn-block" data-act="adm-gold-toggle">${S.goldReward ? 'Выключить' : 'Включить'}</button></div>`;
   }
 }
 
@@ -2463,6 +2473,16 @@ const ACTIONS = {
   'adm-add-admin': async () => {
     await rpc('admin_add_admin', { p_nick: $('admNewAdmin').value });
     toast('success', 'Админ добавлен', ''); await loadAdminTab();
+  },
+  'adm-gold-toggle': async () => {
+    const on = !S.goldReward;
+    const ok = await dialog({ title: on ? 'Включить +50 G за победу?' : 'Выключить награду?',
+      text: on ? 'Новые победы будут начисляться.' : 'Новые победы золото не получат.', ok: on ? 'Включить' : 'Выключить' });
+    if (!ok) return;
+    await rpc('admin_set_gold_reward', { p_on: on });
+    S.goldReward = on;
+    toast('success', 'Награда обновлена', on ? 'Включено' : 'Выключено');
+    await loadAdminTab();
   },
   'adm-save-size': async () => {
     const n = parseInt($('admSize').value, 10);

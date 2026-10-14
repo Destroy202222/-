@@ -127,6 +127,20 @@
     return nb > na ? { n: nb, an: b } : { n: na, an: a };
   }
 
+  /* Строка статистики → {k, a, d, score, ping}. Порядок колонок: У (убийства) П (помощь) С (смерти) Счёт [Пинг]. Деньги отбрасываем. */
+  function parseStats(tokens) {
+    const nums = [];
+    tokens.forEach(t => {
+      const s = String(t || '').trim();
+      if (/[$Ss]$/.test(s) || /^\d{4,}$/.test(s)) return;   // деньги (5600$, 5600S, 5600)
+      if (/^\d{1,3}$/.test(s)) nums.push(Number(s));
+    });
+    if (nums.length < 4) return null;
+    const [k, a, d, score] = nums;
+    if (k > 60 || a > 60 || d > 60 || score > 60) return null;
+    return { k, a, d, score, ping: nums.length > 4 ? nums[4] : null };
+  }
+
   async function analyzeShot(m, src, wNames, wDigits) {
     const im = await loadImg(src), W = im.naturalWidth, H = im.naturalHeight;
     const midX = W / 2;
@@ -178,47 +192,48 @@
         rows.push({ pl, line: best, nums, y0: best.y0, y1: best.y1 });
       });
       if (rows.length < 1) continue;
-      const wsz = rows.flatMap(r => r.nums.map(w => w.bbox.x1 - w.bbox.x0)).sort((a, b) => a - b), mw = wsz.length ? wsz[Math.floor(wsz.length / 2)] : 20;
-      let cols = clusterCols(rows.flatMap(r => r.nums.map(cx)), Math.max(1, Math.ceil(rows.length * 0.35)), Math.max(6, mw * 0.9));
-      if (cols.length < 4) { rows.forEach(r => { r.pl.note = 'колонки не определились'; }); continue; }
-      const nearest = x => { let bi = -1, bd = 1e9; cols.forEach((c, i) => { const d = Math.abs(c.x - x); if (d < bd) { bd = d; bi = i; } }); const sp = cols.length > 1 ? Math.min(...cols.slice(1).map((c, i) => c.x - cols[i].x)) : mw * 2; return bd <= Math.max(mw * 1.2, sp * 0.45) ? bi : -1; };
-      const pad = Math.max(8, mw * 0.8), sx0 = Math.max(0, cols[0].min - pad), sx1 = Math.min(W, cols[cols.length - 1].max + pad);
       for (const r of rows) {
-        r.A = new Array(cols.length).fill(null);
-        r.nums.forEach(w => { const i = nearest(cx(w)); if (i >= 0 && r.A[i] == null) r.A[i] = Number(w.text.trim()); });
-        const hh = r.y1 - r.y0, sy0 = Math.max(0, r.y0 - hh * 0.25), sh = Math.min(H - sy0, hh * 1.5);
-        r.B = [];
+        const player = (team === 'blue' ? m.blue : m.orange).find(x => String(x.id) === String(r.pl.id));
+        const x0 = Math.max(sidesW[sideKey][0], nameEndX(r.line, player ? player.username : '') + 2);
+        const x1 = sidesW[sideKey][1];
+        const hh = r.y1 - r.y0;
+        const sy0 = Math.max(0, r.y0 - hh * 0.3), sh = Math.min(H - sy0, hh * 1.6);
+        const sc = Math.max(2, Math.min(6, 90 / Math.max(10, hh)));
+        const reads = [];
         for (const mode of ['bin', 'gray']) {
-          const sc = Math.max(2, Math.min(6, 90 / Math.max(10, hh)));
-          const cv = grayCanvas(im, sx0, sy0, sx1 - sx0, sh, sc, mode);
-          let out = new Array(cols.length).fill(null);
           try {
+            const cv = grayCanvas(im, x0, sy0, x1 - x0, sh, sc, mode);
             const rr = await wDigits.recognize(cv.canvas);
-            (rr.data.words || []).forEach(w => { if (!w || !w.bbox || !isNum(w.text)) return; const x = sx0 + ((w.bbox.x0 + w.bbox.x1) / 2 - cv.pad) / sc, i = nearest(x); if (i >= 0 && out[i] == null) out[i] = Number(w.text.trim()); });
-          } catch (e) { /* проход не удался — остаётся пусто */ }
-          r.B.push(out);
+            const toks = (rr.data.words || []).filter(w => w && w.bbox).sort((p, q) => p.bbox.x0 - q.bbox.x0).map(w => w.text);
+            reads.push(parseStats(toks));
+          } catch (e) { reads.push(null); }
         }
-        r.v = cols.map((_, i) => { const mj = majority([r.B[0][i], r.B[1][i], r.A[i]]); return mj.n >= 2 ? mj.v : (r.B[0][i] != null ? r.B[0][i] : (r.B[1][i] != null ? r.B[1][i] : r.A[i])); });
-        r.agree = cols.map((_, i) => majority([r.B[0][i], r.B[1][i], r.A[i]]).n >= 2);
+        const [r1, r2] = reads;
+        const same = !!(r1 && r2 && r1.k === r2.k && r1.a === r2.a && r1.d === r2.d);
+        const pick = same ? r1 : (r1 || r2 || null);
+        r.pl.k = pick ? pick.k : null;
+        r.pl.a = pick ? pick.a : null;
+        r.pl.d = pick ? pick.d : null;
+        r.pl.conf = !pick ? null : (same ? 'ok' : 'low');
       }
-      const pick = pickRoles(rows, cols.length); if (!pick) continue;
-      const [ck, ca, cd, cs] = pick.t;
-      rows.forEach(r => {
-        const k = r.v[ck], a = r.v[ca], d = r.v[cd], s = r.v[cs];
-        let okRow = consistent(k, a, s);
-        // пробуем починить сомнительную строку заменой на альтернативу из других проходов
-        if (!okRow && k != null && a != null) {
-          const alt = c => [...new Set([r.v[c], r.B[0][c], r.B[1][c], r.A[c]].filter(x => x != null))];
-          outer: for (const kk of alt(ck)) for (const aa of alt(ca)) for (const ss of alt(cs)) if (consistent(kk, aa, ss)) { r.v[ck] = kk; r.v[ca] = aa; r.v[cs] = ss; okRow = true; break outer; }
-        }
-        const K = r.v[ck], A = r.v[ca], D = r.v[cd];
-        r.pl.k = K != null && K <= 80 ? K : null; r.pl.a = A != null && A <= 80 ? A : null; r.pl.d = D != null && D <= 80 ? D : null;
-        const all3 = r.pl.k != null && r.pl.a != null && r.pl.d != null;
-        r.pl.conf = !all3 ? null : (okRow && r.agree[ck] && r.agree[ca] && r.agree[cd] ? 'ok' : 'low');
-        if (!all3) { r.pl.k = r.pl.a = r.pl.d = null; }
-        r.pl.raw = r.v.map(x => x == null ? '?' : x).join(' ');
-      });
     }
+    /* победитель: слово ПОБЕДА над командой; счёт: цифры рядом с ним по обе стороны от центра */
+    try {
+      const pob = words.find(w => /ПОБЕД/i.test(w.text));
+      if (pob) {
+        const px = (pob.bbox.x0 + pob.bbox.x1) / 2, py = (pob.bbox.y0 + pob.bbox.y1) / 2;
+        const winSide = px < mid ? 'L' : 'R';
+        const leftTeam = sideOfTeamFn.side('blue') === 'L' ? 'blue' : 'orange';
+        const rightTeam = leftTeam === 'blue' ? 'orange' : 'blue';
+        an.win = winSide === 'L' ? leftTeam : rightTeam;
+        const near = words.filter(w => /^\d{1,2}$/.test(w.text.trim()) && Math.abs((w.bbox.y0 + w.bbox.y1) / 2 - py) < 30 * (H / 600));
+        const lw = near.filter(w => (w.bbox.x0 + w.bbox.x1) / 2 < mid).sort((a, b) => b.bbox.x1 - a.bbox.x1)[0];
+        const rw = near.filter(w => (w.bbox.x0 + w.bbox.x1) / 2 >= mid).sort((a, b) => a.bbox.x0 - b.bbox.x0)[0];
+        const sL = lw ? Number(lw.text) : null, sR = rw ? Number(rw.text) : null;
+        an.scBlue = leftTeam === 'blue' ? sL : sR;
+        an.scOrange = leftTeam === 'blue' ? sR : sL;
+      }
+    } catch (e) { /* счёт и победитель — необязательны */ }
     return an;
   }
 
@@ -255,7 +270,7 @@
           <div class="ocr-th"><span>Игрок</span><span>K / D / A</span></div>${rows}
           <button class="btn btn-primary btn-sm btn-block" style="margin-top:10px" data-act="ocr-apply" data-id="${esc(id)}" data-idx="${o.idx}"><i class="fas fa-pen"></i> Подставить в форму</button></div>`;
       }).join('') + '<div class="ocr-note">Зелёные K/D/A — совпали в нескольких проходах и сходятся со счётом. Жёлтые — сомнительные, сверьте со скриншотом. Пусто — не распознано, ничего не подставляется наугад. «Видно» — сырые числа колонок строки. Зачёт делаете вы.</div>';
-      box.insertAdjacentHTML('beforeend', '<details style="margin-top:10px"><summary style="font-size:12px;opacity:.7">Отладка распознавания</summary><pre style="white-space:pre-wrap;font-size:11px;max-height:240px;overflow:auto;background:#0a0f1e;padding:8px;border-radius:8px">' + esc('build: v6-fixed\n\n' + (window.__ocrLog || []).join('\n\n') || 'лог пуст') + '</pre></details>');
+      box.insertAdjacentHTML('beforeend', '<details style="margin-top:10px"><summary style="font-size:12px;opacity:.7">Отладка распознавания</summary><pre style="white-space:pre-wrap;font-size:11px;max-height:240px;overflow:auto;background:#0a0f1e;padding:8px;border-radius:8px">' + esc('build: v7-rows\n\n' + (window.__ocrLog || []).join('\n\n') || 'лог пуст') + '</pre></details>');
     } catch (e) {
       box.innerHTML = `<div class="am-none">Не получилось: ${esc(errText(e))}</div>`;
     } finally { for (const w of [wN, wD]) if (w) { try { await w.terminate(); } catch (e) { /* ок */ } } }

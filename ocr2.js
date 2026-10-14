@@ -22,6 +22,8 @@
   }
   /* Похожесть ника на строку из скриншота, 0..1 (та же логика, что в app.js) */
   const ocrFindName = (name, text) => ocrNameScore(name, text);
+  /* убираем клан-тег в начале строки: «[R7AY] truschka» → «truschka» (и варианты с (…) / {…}) */
+  const cleanTag = t => String(t || '').replace(/^[^\p{L}\p{N}]*[\[\(\{][^\]\)\}]{0,10}[\]\)\}]?\s*/u, '');
   const cx = w => (w.bbox.x0 + w.bbox.x1) / 2, cyy = w => (w.bbox.y0 + w.bbox.y1) / 2;
   const consistent = (k, a, s) => k != null && a != null && s != null && s >= 2 * k + a - 1 && s <= 2 * k + a + 14;
 
@@ -104,10 +106,10 @@
   /* Ники: сравниваем два варианта разбиения (по половинам экрана и одной общей колонкой) и берём лучший */
   function scoreNames(m, words, midX, W) {
     const split = { sides: [
-      { players: sideLinesFull(words, 0, midX).map(l => ({ name: l.text })) },
-      { players: sideLinesFull(words, midX, W + 1).map(l => ({ name: l.text })) }
+      { players: sideLinesFull(words, 0, midX).map(l => ({ name: cleanTag(l.text) })) },
+      { players: sideLinesFull(words, midX, W + 1).map(l => ({ name: cleanTag(l.text) })) }
     ] };
-    const whole = { sides: [ { players: sideLinesFull(words, 0, W + 1).map(l => ({ name: l.text })) } ] };
+    const whole = { sides: [ { players: sideLinesFull(words, 0, W + 1).map(l => ({ name: cleanTag(l.text) })) } ] };
     const a = ocrAnalyze(m, split), b = ocrAnalyze(m, whole);
     const na = a.players.filter(p => p.ok).length, nb = b.players.filter(p => p.ok).length;
     return nb > na ? { n: nb, an: b } : { n: na, an: a };
@@ -144,7 +146,7 @@
     const sideLines = { L: sideLinesFull(words, 0, mid), R: sideLinesFull(words, mid, W + 1) };
     const sideOfTeamFn = (() => {
       const variants = p => [p.username || '', (p.username || '').replace(/\[[^\]]*\]/g, '')];
-      const sim = (p, t) => Math.max(...variants(p).map(n => ocrFindName(n, ocrNorm(t))));
+      const sim = (p, t) => Math.max(...variants(p).map(n => ocrFindName(n, ocrNorm(cleanTag(t)))));
       const cnt = (arr, ls) => arr.filter(p => ls.some(l => sim(p, l.text) > 0)).length;
       const bl = cnt(m.blue, sideLines.L) + cnt(m.orange, sideLines.R), br = cnt(m.blue, sideLines.R) + cnt(m.orange, sideLines.L);
       const blueSide = bl >= br ? 'L' : 'R';

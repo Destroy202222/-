@@ -2630,9 +2630,9 @@ async function renderClanPage() {
     <div class="cl-stats"><div><b>${c.members.length}<small>/${c.max}</small></b><span>Игроков</span></div><div><b>${avg}</b><span>Средний ELO</span></div><div><b>${total}</b><span>Общий ELO</span></div></div>
     <div class="panel"><div class="panel-head"><h3>Участники</h3></div><div class="rows">${c.members.map((m, i) => `<div class="row link ${m.id === S.me.id ? 'me' : ''}" data-act="player" data-id="${m.id}">
       <div class="top-rank ${i < 3 ? 'r' + (i + 1) : ''}">#${i + 1}</div>${avatarHtml(m, 40)}
-      <div class="row-main"><div class="row-title">${esc(m.username)}${vb(m.id)} ${m.isowner ? '<span class="cl-owner"><i class="fas fa-crown"></i> Лидер</span>' : ''}</div><div class="row-sub">ELO ${m.elo}</div></div>${lvlChip(m.elo)}</div>`).join('')}</div></div>
+      <div class="row-main"><div class="row-title">${esc(m.username)}${vb(m.id)} ${m.isowner ? '<span class="cl-owner"><i class="fas fa-crown"></i> Лидер</span>' : ''}</div><div class="row-sub">ELO ${m.elo}</div></div>${lvlChip(m.elo)}${owner && !m.isowner ? `<div class="cl-acts"><button type="button" class="cl-act" data-act="clan-transfer" data-id="${esc(m.id)}" data-nick="${esc(m.username)}" title="Передать клан"><i class="fas fa-crown"></i></button><button type="button" class="cl-act bad" data-act="clan-kick" data-id="${esc(m.id)}" data-nick="${esc(m.username)}" title="Исключить из клана"><i class="fas fa-user-xmark"></i></button></div>` : ''}</div>`).join('')}</div></div>
     ${owner ? '<div class="cl-hint"><i class="fas fa-user-plus"></i> Чтобы пригласить игрока, откройте «Друзья» и нажмите «В клан» у друга.</div>' : ''}
-    ${mine ? '<button class="btn btn-ghost btn-block cl-leave" data-act="clan-leave"><i class="fas fa-right-from-bracket"></i> Покинуть клан</button>' : ''}`;
+    ${owner ? `<div class="cl-hint2">Чтобы выйти из клана, сначала передайте лидерство кнопкой <i class="fas fa-crown"></i> у участника.</div><button class="btn btn-danger btn-block cl-leave" data-act="clan-delete" data-tag="${esc(c.tag)}"><i class="fas fa-trash"></i> Удалить клан</button>` : mine ? '<button class="btn btn-ghost btn-block cl-leave" data-act="clan-leave"><i class="fas fa-right-from-bracket"></i> Покинуть клан</button>' : ''}`;
 }
 function renderClanCreate(body, st, back) {
   const inv = st.invites.map(i => `<div class="row"><div class="row-main" style="display:flex;gap:12px;align-items:center">${clanAvHtml(i, 40)}
@@ -2644,7 +2644,7 @@ function renderClanCreate(body, st, back) {
       <button class="cl-pick" type="button" data-act="clan-av" id="clanPick">${S.clanAv ? `<img src="${S.clanAv}" alt="">` : '<i class="fas fa-camera"></i><span>Аватарка</span>'}</button>
       <input type="file" id="clanFile" accept="image/*" hidden>
       <label class="cl-lbl">Название клана</label><input class="text-input" id="clanName" maxlength="20" placeholder="От 3 до 20 символов" autocomplete="off">
-      <label class="cl-lbl">Тег (5 букв или цифр)</label><input class="text-input cl-taginp" id="clanTag" maxlength="5" placeholder="ABCDE" autocomplete="off" autocapitalize="characters">
+      <label class="cl-lbl">Тег (от 2 до 5 букв или цифр)</label><input class="text-input cl-taginp" id="clanTag" maxlength="5" placeholder="ABC" autocomplete="off" autocapitalize="characters">
       <button class="btn btn-primary btn-block" data-act="clan-create"><i class="fas fa-shield-halved"></i> Создать клан</button>
       <p class="cl-hint2">В клане до 10 игроков. Приглашать можно друзей.</p></div>`;
   const tag = $('clanTag'); if (tag) tag.addEventListener('input', () => { tag.value = tag.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); });
@@ -2659,12 +2659,37 @@ Object.assign(ACTIONS, {
   'clan-open': d => { S.clanView = d.id || null; navigate('clan'); },
   'clan-av': () => { const f = $('clanFile'); if (f) f.click(); },
   'clan-create': async () => {
+    const tg = $('clanTag').value.trim();
+    if (tg.length < 2 || tg.length > 5) return toast('error', 'Тег клана', 'Нужно от 2 до 5 букв или цифр');
     await rpc('create_clan', { p_tag: $('clanTag').value, p_name: $('clanName').value, p_avatar: S.clanAv || null });
     S.clanAv = ''; S.clanView = null; toast('success', 'Клан создан', ''); await renderClanPage();
   },
   'clan-invite': async d => { await rpc('invite_to_clan', { p_friend: d.id }); toast('success', 'Приглашение в клан отправлено', ''); },
   'clan-accept': async d => { await rpc('respond_clan_invite', { p_invite: d.id, p_accept: true }); toast('success', 'Вы вступили в клан', ''); S.clanView = null; await renderClanPage(); },
   'clan-decline': async d => { await rpc('respond_clan_invite', { p_invite: d.id, p_accept: false }); await renderClanPage(); },
+  'clan-kick': async d => {
+    const ok = await dialog({ title: 'Исключить ' + d.nick + ' из клана?', ok: 'Исключить', danger: true });
+    if (!ok) return;
+    await rpc('kick_clan_member', { p_user: String(d.id) });
+    toast('success', 'Игрок исключён', d.nick);
+    await renderClanPage();
+  },
+  'clan-transfer': async d => {
+    const ok = await dialog({ title: 'Передать клан ' + d.nick + '?', text: 'Он станет лидером, а вы — обычным участником. Вернуть лидерство сможет только он.', ok: 'Передать', danger: true });
+    if (!ok) return;
+    await rpc('transfer_clan', { p_user: String(d.id) });
+    toast('success', 'Лидерство передано', d.nick);
+    S.clanState = null; await renderClanPage();
+  },
+  'clan-delete': async d => {
+    const v = await dialog({ title: 'Удалить клан?', text: 'Клан пропадёт у всех участников, это нельзя отменить. Для подтверждения введите тег клана: ' + d.tag, input: '', ok: 'Удалить клан', danger: true });
+    if (v === null) return;
+    if (String(v).trim().toUpperCase() !== String(d.tag).toUpperCase()) return toast('error', 'Тег не совпал', 'Клан не удалён');
+    await rpc('delete_clan');
+    S.clanView = null; S.clanState = null; S.clanTags = {};
+    toast('success', 'Клан удалён', '');
+    navigate('profile');
+  },
   'clan-leave': async () => { if (!confirm('Покинуть клан?')) return; await rpc('leave_clan'); S.clanView = null; S.clanState = null; navigate('profile'); }
 });
 

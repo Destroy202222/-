@@ -278,7 +278,7 @@ async function enterApp() {
     $('app').hidden = false;
     await Promise.all([loadMaps(), loadSettings(), loadBannerCatalog()]);
     renderBalance();
-    await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory(), refreshMe(), loadNews(), loadMyBanners()]);
+    await Promise.allSettled([loadFriends(), loadParty(), syncMatch(), loadStats(), loadHistory(), refreshMe(), loadNews(), loadMyBanners(), loadVerified()]);
     if (!(S.match && S.match.status === 'active')) await syncQueue().catch(() => {});
     navigate(S.match && S.match.status === 'active' ? 'match' : 'home');
     startLoops();
@@ -306,6 +306,7 @@ async function pollTick() {
     voiceSync();
     if (S.tick % 8 === 0) await loadSettings().catch(() => {});
     if (S.tick % 4 === 2) await loadNews().catch(() => {});
+    if (S.tick % 10 === 5) await loadVerified().catch(() => {});
   } catch (e) { /* сеть моргнула — повторим */ }
   finally { S.polling = false; }
 }
@@ -560,7 +561,7 @@ function renderParty() {
     html += '<div class="rows">' + p.members.map(id => {
       const u = S.users[id] || { username: 'Игрок' };
       return `<div class="row">${avatarHtml(u, 38)}
-        <div class="row-main"><div class="row-title">${esc(u.username)} ${id === p.leader ? '<i class="fas fa-crown" style="color:var(--gold);font-size:12px"></i>' : ''}</div>
+        <div class="row-main"><div class="row-title">${esc(u.username)}${vb(id)} ${id === p.leader ? '<i class="fas fa-crown" style="color:var(--gold);font-size:12px"></i>' : ''}</div>
         <div class="row-sub">ELO ${u.elo ?? '—'}</div></div>
         ${iLead && id !== S.me.id ? `<button class="btn btn-danger btn-sm" data-act="party-kick" data-id="${id}">Убрать</button>` : ''}</div>`;
     }).join('') + '</div>';
@@ -697,6 +698,19 @@ function renderMatch(force) {
 
 /* Теги кланов перед ником */
 S.clanTags = S.clanTags || {}; const _tagAsked = new Set();
+/* Галочки у ников (выдаёт админ). Виды можно переименовать/добавить здесь и в style.css (.vb-<вид>) */
+const VB_KINDS = { blue: { t: 'Верифицированный игрок' }, gold: { t: 'Легенда' }, pink: { t: 'Партнёр' } };
+S.verified = S.verified || {};
+const vbIcon = k => `<span class="vb vb-${k}" title="${VB_KINDS[k].t}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12.6l3.1 3.1 7.1-7.1"/></svg></span>`;
+const vb = id => { const k = S.verified[String(id)]; return k && VB_KINDS[k] ? vbIcon(k) : ''; };
+const vbPick = id => {
+  const cur = S.verified[String(id)] || '';
+  return `<div class="vb-pick"><span>Галочка</span><button type="button" class="none ${cur ? '' : 'on'}" data-act="adm-verify" data-id="${esc(id)}" data-kind="">Нет</button>` +
+    Object.keys(VB_KINDS).map(k => `<button type="button" class="${cur === k ? 'on' : ''}" data-act="adm-verify" data-id="${esc(id)}" data-kind="${k}" title="${VB_KINDS[k].t}">${vbIcon(k)}</button>`).join('') + '</div>';
+};
+async function loadVerified() {
+  try { const r = await rpc('verified_users'); S.verified = (r && typeof r === 'object') ? r : {}; } catch (e) { /* SQL ещё не применён */ }
+}
 const ctag = id => (S.clanTags[id] ? `<em class="cl-tag">[${esc(S.clanTags[id])}]</em> ` : '');
 async function loadClanTags(ids) {
   const need = ids.filter(id => id && !_tagAsked.has(id));
@@ -714,7 +728,7 @@ function ensureClanTags(ids) {
 }
 function plHtml(p, isCap, dotColor) {
   return `<div class="pl${bnCls(S.banners[p.id])}" data-act="player" data-id="${esc(p.id)}">${avatarHtml(p, 32)}
-    <div class="body"><div class="nm">${ctag(p.id)}${esc(p.username)}${dotColor ? `<span class="pdot" style="background:${dotColor}" title="Одна пати"></span>` : ''}</div>
+    <div class="body"><div class="nm">${ctag(p.id)}${esc(p.username)}${vb(p.id)}${dotColor ? `<span class="pdot" style="background:${dotColor}" title="Одна пати"></span>` : ''}</div>
     <div class="meta">${isCap ? '<i class="fas fa-crown crown"></i> капитан · ' : ''}ELO ${p.elo ?? 300}</div></div>${lvlChip(p.elo)}</div>`;
 }
 function teamsHtml(m) {
@@ -936,7 +950,7 @@ function renderChat() {
   if (!S.chat.length) { body.innerHTML = '<div class="chat-empty">Сообщений пока нет</div>'; return; }
   const stick = body.scrollHeight - body.scrollTop - body.clientHeight < 80;
   body.innerHTML = S.chat.map(m => `<div class="msg ${m.user_id === S.me.id ? 'me' : ''}">${avatarHtml(m, 28)}
-    <div><div class="who">${esc(m.username)}</div><div class="txt">${esc(m.text)}</div></div></div>`).join('');
+    <div><div class="who">${esc(m.username)}${vb(m.user_id)}</div><div class="txt">${esc(m.text)}</div></div></div>`).join('');
   if (stick) body.scrollTop = body.scrollHeight;
 }
 async function sendChat(e) {
@@ -1003,7 +1017,7 @@ function profileHtml(u, o) {
       <div class="logo">STANDKNIFE<span>FACEIT</span></div>
       <div class="pf-top">${avatarHtml(u, 84)}
         <div class="pf-id"><div class="no">#${o.rank || '—'}</div>
-          <div class="name">${esc(u.username)}${u.isadmin ? ' <i class="fas fa-crown" style="color:var(--gold);font-size:15px"></i>' : ''}</div>
+          <div class="name">${esc(u.username)}${vb(u.id)}${u.isadmin ? ' <i class="fas fa-crown" style="color:var(--gold);font-size:15px"></i>' : ''}</div>
           <div class="gid">ID: ${esc(u.game_id || '—')}</div></div></div>
       <div class="chips"><span class="chip">LVL ${L.lvl}</span>${u.isadmin ? '<span class="chip pr"><i class="fas fa-crown"></i> ADMIN</span>' : ''}<span class="chip">${u.elo} ELO</span></div>
       <div class="dt">${o.isMe || !u.registered ? `${pad(today.getDate())}.${pad(today.getMonth() + 1)}.${today.getFullYear()}` : 'в игре с ' + fmtDay(u.registered)}</div>
@@ -1131,7 +1145,7 @@ async function openMatchDetails(d) {
       const c = p.elo_change, me = p.id === S.me.id, mvp = best && best.id === p.id && (p.kills || 0) > 0;
       return `<div class="mv-pl${bnCls(S.banners[p.id])} ${me ? 'me' : ''}" data-act="player" data-id="${esc(p.id)}">
         <div class="mv-top">${avatarHtml(p, 36)}
-          <div class="mv-nm"><div class="n">${ctag(p.id)}${esc(p.username)}${mvp ? ' <i class="fas fa-star mv-star" title="Лучший по киллам"></i>' : ''}${me ? ' <span class="mv-you">вы</span>' : ''}</div>
+          <div class="mv-nm"><div class="n">${ctag(p.id)}${esc(p.username)}${vb(p.id)}${mvp ? ' <i class="fas fa-star mv-star" title="Лучший по киллам"></i>' : ''}${me ? ' <span class="mv-you">вы</span>' : ''}</div>
             <div class="s">ELO ${p.elo ?? 300}</div></div>
           ${c != null ? `<div class="mv-elo ${c >= 0 ? 'p' : 'n'}">${c >= 0 ? '+' : ''}${c}</div>` : ''}${lvlChip(p.elo)}</div>
         ${hasStats ? `<div class="mv-stats">
@@ -1266,7 +1280,7 @@ function friendRowHtml(u) {
   }
   return `<div class="row" style="flex-wrap:wrap">
     <div class="row link" style="flex:1;min-width:0;border:none;padding:0" data-act="player" data-id="${u.id}">${avatarHtml(u, 44)}
-      <div class="row-main"><div class="row-title">${esc(u.username)} ${u.isadmin ? '👑' : ''}</div><div class="row-sub">ELO ${u.elo}</div></div>${badge}</div>
+      <div class="row-main"><div class="row-title">${esc(u.username)}${vb(u.id)} ${u.isadmin ? '👑' : ''}</div><div class="row-sub">ELO ${u.elo}</div></div>${badge}</div>
     <div class="row-actions" style="width:100%">${acts}</div></div>`;
 }
 function renderFriends() {
@@ -1316,7 +1330,7 @@ async function renderTop() {
     const n = i + 1;
     return `<div class="row link${bnCls(S.banners[u.id])} ${u.id === S.me.id ? 'me' : ''}" data-act="player" data-id="${u.id}">
       <div class="top-rank ${n <= 3 ? 'r' + n : ''}">#${n}</div>${avatarHtml(u, 40)}
-      <div class="row-main"><div class="row-title">${esc(u.username)} ${u.isadmin ? '👑' : ''}</div><div class="row-sub">${u.matches} матчей · ${wr}%</div></div>
+      <div class="row-main"><div class="row-title">${esc(u.username)}${vb(u.id)} ${u.isadmin ? '👑' : ''}</div><div class="row-sub">${u.matches} матчей · ${wr}%</div></div>
       ${lvlChip(u.elo)}<div class="top-elo">${u.elo}<small>ELO</small></div></div>`;
   }).join('') + '</div>';
 }
@@ -2098,12 +2112,12 @@ async function fillAdminPlayers() {
   const list = (await rpc('admin_players', { p_q: q })) || [];
   box.innerHTML = list.length ? list.map(p => `<div class="am-card pl-card ${p.banned ? 'banned' : ''}">
     <div class="am-top">${avatarHtml(p, 38)}
-      <div class="tk-ttl"><b>${esc(p.username)} ${p.isadmin ? '👑' : ''} ${p.banned ? '🚫' : ''}</b><span>ID: ${esc(p.game_id)} · ${p.balance} ₽</span></div>
+      <div class="tk-ttl"><b>${esc(p.username)}${vb(p.id)} ${p.isadmin ? '👑' : ''} ${p.banned ? '🚫' : ''}</b><span>ID: ${esc(p.game_id)} · ${p.balance} ₽</span></div>
       <span class="num pl-elo">${p.elo}</span></div>
     <div class="adm-btns" style="grid-template-columns:repeat(3,1fr);margin:10px 0 0">
       <button class="btn btn-sm btn-ghost" data-act="adm-rating" data-id="${p.id}" data-nick="${esc(p.username)}" data-elo="${p.elo}"><i class="fas fa-pen"></i> ELO</button>
       <button class="btn btn-sm ${p.banned ? 'btn-ok' : 'btn-danger'}" data-act="adm-ban" data-id="${p.id}" data-value="${p.banned ? 0 : 1}">${p.banned ? 'Разбанить' : 'Бан'}</button>
-      <button class="btn btn-sm btn-ghost" data-act="adm-set-admin" data-id="${p.id}" data-value="${p.isadmin ? 0 : 1}">${p.isadmin ? 'Снять' : 'Админ'}</button></div></div>`).join('')
+      <button class="btn btn-sm btn-ghost" data-act="adm-set-admin" data-id="${p.id}" data-value="${p.isadmin ? 0 : 1}">${p.isadmin ? 'Снять' : 'Админ'}</button></div>${vbPick(p.id)}</div>`).join('')
     : '<div class="empty"><i class="fas fa-users"></i>Никого не нашли</div>';
 }
 
@@ -2346,6 +2360,13 @@ const ACTIONS = {
     await rpc('admin_set_banned', { p_user: d.id, p_banned: ban });
     await fillAdminPlayers();
   },
+  'adm-verify': async d => {
+    const kind = d.kind || null;
+    await rpc('admin_set_verified', { p_user: String(d.id), p_kind: kind });
+    if (kind) S.verified[String(d.id)] = kind; else delete S.verified[String(d.id)];
+    toast('success', kind ? 'Галочка выдана' : 'Галочка снята', '');
+    await fillAdminPlayers();
+  },
   'adm-set-admin': async d => {
     const val = d.value === '1';
     const ok = await dialog({ title: val ? 'Сделать админом?' : 'Снять права админа?', ok: 'Да' });
@@ -2535,7 +2556,7 @@ async function renderClanPage() {
     <div class="cl-stats"><div><b>${c.members.length}<small>/${c.max}</small></b><span>Игроков</span></div><div><b>${avg}</b><span>Средний ELO</span></div><div><b>${total}</b><span>Общий ELO</span></div></div>
     <div class="panel"><div class="panel-head"><h3>Участники</h3></div><div class="rows">${c.members.map((m, i) => `<div class="row link ${m.id === S.me.id ? 'me' : ''}" data-act="player" data-id="${m.id}">
       <div class="top-rank ${i < 3 ? 'r' + (i + 1) : ''}">#${i + 1}</div>${avatarHtml(m, 40)}
-      <div class="row-main"><div class="row-title">${esc(m.username)} ${m.isowner ? '<span class="cl-owner"><i class="fas fa-crown"></i> Лидер</span>' : ''}</div><div class="row-sub">ELO ${m.elo}</div></div>${lvlChip(m.elo)}</div>`).join('')}</div></div>
+      <div class="row-main"><div class="row-title">${esc(m.username)}${vb(m.id)} ${m.isowner ? '<span class="cl-owner"><i class="fas fa-crown"></i> Лидер</span>' : ''}</div><div class="row-sub">ELO ${m.elo}</div></div>${lvlChip(m.elo)}</div>`).join('')}</div></div>
     ${owner ? '<div class="cl-hint"><i class="fas fa-user-plus"></i> Чтобы пригласить игрока, откройте «Друзья» и нажмите «В клан» у друга.</div>' : ''}
     ${mine ? '<button class="btn btn-ghost btn-block cl-leave" data-act="clan-leave"><i class="fas fa-right-from-bracket"></i> Покинуть клан</button>' : ''}`;
 }

@@ -539,7 +539,7 @@ function renderNotifs() {
 /* ───────────── Очередь и поиск ───────────── */
 async function syncQueue() {
   const seq = ++S.qSeq, t0 = Date.now();
-  const st = await rpc('queue_state');
+  const st = await rpc('queue_state', { p_size: S.searchSize });
   if (seq !== S.qSeq) return; // пришёл устаревший ответ — игнорируем, иначе кнопки «прыгают»
   if (!st) { saveSession(''); showAuth('Сессия истекла. Войдите снова.'); return; }
   syncClock(st.now, t0, Date.now());
@@ -2417,6 +2417,7 @@ const ACTIONS = {
     S.searchSize = n; S.teamSize = n;
     try { localStorage.setItem('bnk_mode', String(n)); } catch (e) { /* приватный режим */ }
     updateSearchUI();
+    syncQueue().catch(() => {});
   },
   'party-leave': async () => { await rpc('party_leave'); await loadParty(); await syncQueue(); },
   'voice-join': () => { V.dismissed = ''; return voiceJoin(); },

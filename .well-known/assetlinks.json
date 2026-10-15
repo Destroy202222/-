@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "ru.standknife.app",
+    "sha256_cert_fingerprints": ["CE:4B:81:BE:6C:1D:39:E9:AE:35:19:82:77:28:01:B3:1A:05:C3:DA:BB:0B:AA:94:DF:2A:C7:C7:3B:52:4E:9F"]
+  }
+}]

@@ -359,10 +359,10 @@ async function loadHistory() {
   if (S.page === 'profile') renderProfile();
 }
 const SOUNDS = [
-  { id: 'chime', name: 'Сигнал' }, { id: 'bell', name: 'Колокол' }, { id: 'double', name: 'Двойной' }
+  { id: 'found', name: 'Матч найден' }, { id: 'chime', name: 'Сигнал' }, { id: 'bell', name: 'Колокол' }, { id: 'double', name: 'Двойной' }
 ];
 let _actx = null;
-function soundId() { try { return localStorage.getItem('bnk_sound') || 'chime'; } catch (e) { return 'chime'; } }
+function soundId() { try { return localStorage.getItem('bnk_sound') || 'found'; } catch (e) { return 'found'; } }
 function playSound(id) {
   try {
     _actx = _actx || new (window.AudioContext || window.webkitAudioContext)();
@@ -377,7 +377,13 @@ function playSound(id) {
       o.connect(g).connect(_actx.destination);
       o.start(t0 + start); o.stop(t0 + start + dur + 0.05);
     };
-    if (id === 'bell') { tone(1046.5, 0, 1.2); tone(2093, 0, 0.8, 0.12); tone(2637, 0, 0.5, 0.06); }
+    if (id === 'found') {
+      // восходящая мелодия C5-E5-G5-C6 с коротким «блеском» в конце
+      [523.25, 659.25, 783.99].forEach((f, i) => tone(f, i * 0.11, 0.22, 0.22));
+      tone(1046.5, 0.36, 0.7, 0.26);
+      tone(2093, 0.36, 0.5, 0.05);
+    }
+    else if (id === 'bell') { tone(1046.5, 0, 1.2); tone(2093, 0, 0.8, 0.12); tone(2637, 0, 0.5, 0.06); }
     else if (id === 'double') { tone(880, 0, 0.18); tone(880, 0.25, 0.18); tone(1320, 0.5, 0.35); }
     else { tone(659.25, 0, 0.35); tone(880, 0.22, 0.5); }
   } catch (e) { /* звук не поддерживается */ }

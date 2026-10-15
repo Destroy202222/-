@@ -855,10 +855,16 @@ async function loadClanTags(ids) {
 function ensureClanTags(ids) {
   loadClanTags(ids).then(added => { if (added && S.page === 'match') renderMatch(true); });
 }
+function plStats(p) {
+  const k = Number(p.kills) || 0, d = Number(p.deaths) || 0, sm = Number(p.stat_matches) || 0;
+  const kd = d > 0 ? k / d : (k > 0 ? k : null);
+  const avg = sm ? k / sm : null;
+  return `K/D ${kd === null ? '—' : kd.toFixed(2)} · AVG ${avg === null ? '—' : avg.toFixed(1)}`;
+}
 function plHtml(p, isCap, dotColor) {
   return `<div class="pl${bnCls(S.banners[p.id])}" data-act="player" data-id="${esc(p.id)}">${avatarHtml(p, 32)}
     <div class="body"><div class="nm">${ctag(p.id)}${esc(p.username)}${vb(p.id)}${dotColor ? `<span class="pdot" style="background:${dotColor}" title="Одна пати"></span>` : ''}</div>
-    <div class="meta">${isCap ? '<i class="fas fa-crown crown"></i> капитан · ' : ''}ELO ${p.elo ?? 300}</div></div>${lvlChip(p.elo)}</div>`;
+    <div class="meta">${isCap ? '<i class="fas fa-crown crown"></i> капитан · ' : ''}ELO ${p.elo ?? 300} · ${plStats(p)}</div></div>${lvlChip(p.elo)}</div>`;
 }
 function teamsHtml(m) {
   ensureClanTags([...m.blue, ...m.orange].map(p => p.id));

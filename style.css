@@ -1466,3 +1466,16 @@ select.text-input{appearance:auto}
 .cl-act{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;font-size:14px;color:#ffd166;background:rgba(245,196,81,.12);border:1px solid rgba(245,196,81,.3);cursor:pointer}
 .cl-act.bad{color:#ff8fa3;background:rgba(255,77,109,.12);border-color:rgba(255,77,109,.35)}
 .cl-act:active{transform:scale(.94)}
+
+/* ═════ Матч: команды сверху вниз, полные ники, K/D и AVG ═════ */
+.teams{grid-template-columns:1fr;gap:14px}
+.pl{align-items:center;gap:10px}
+.pl .body{flex:1;min-width:0}
+.pl .nm{white-space:normal;overflow:visible;text-overflow:clip;word-break:break-word;line-height:1.25}
+.pl-st{display:flex;gap:6px;flex-shrink:0}
+.pl-st div{min-width:54px;text-align:center;padding:5px 6px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
+.pl-st b{display:block;font-family:var(--f-display);font-size:14px;line-height:1.1}
+.pl-st small{display:block;margin-top:2px;font-size:9px;letter-spacing:.08em;color:var(--muted);font-weight:800;text-transform:uppercase}
+
+/* ники — только в одну строку, полностью */
+.pl .nm{white-space:nowrap;overflow:visible;text-overflow:clip;word-break:normal}

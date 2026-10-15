@@ -358,6 +358,41 @@ async function loadHistory() {
   updateFriendBadges();
   if (S.page === 'profile') renderProfile();
 }
+const SOUNDS = [
+  { id: 'chime', name: 'Сигнал' }, { id: 'bell', name: 'Колокол' }, { id: 'double', name: 'Двойной' }
+];
+let _actx = null;
+function soundId() { try { return localStorage.getItem('bnk_sound') || 'chime'; } catch (e) { return 'chime'; } }
+function playSound(id) {
+  try {
+    _actx = _actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (_actx.state === 'suspended') _actx.resume();
+    const t0 = _actx.currentTime;
+    const tone = (f, start, dur, vol = 0.25) => {
+      const o = _actx.createOscillator(), g = _actx.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t0 + start);
+      g.gain.exponentialRampToValueAtTime(vol, t0 + start + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + start + dur);
+      o.connect(g).connect(_actx.destination);
+      o.start(t0 + start); o.stop(t0 + start + dur + 0.05);
+    };
+    if (id === 'bell') { tone(1046.5, 0, 1.2); tone(2093, 0, 0.8, 0.12); tone(2637, 0, 0.5, 0.06); }
+    else if (id === 'double') { tone(880, 0, 0.18); tone(880, 0.25, 0.18); tone(1320, 0.5, 0.35); }
+    else { tone(659.25, 0, 0.35); tone(880, 0.22, 0.5); }
+  } catch (e) { /* звук не поддерживается */ }
+}
+function renderSoundSettings() {
+  const box = $('soundList'); if (!box) return;
+  const cur = soundId();
+  box.innerHTML = SOUNDS.map(s => `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <span>${esc(s.name)}${s.id === cur ? ' <b style="color:var(--gold)">✓</b>' : ''}</span>
+    <span style="display:flex;gap:6px">
+      <button class="btn btn-ghost" data-act="sound-preview" data-id="${s.id}"><i class="fas fa-play"></i></button>
+      <button class="btn ${s.id === cur ? 'btn-primary' : 'btn-ghost'}" data-act="sound-select" data-id="${s.id}">${s.id === cur ? 'Выбран' : 'Выбрать'}</button>
+    </span></div>`).join('');
+}
+
 async function renderMissions() {
   const box = $('missionsBody'); if (!box) return;
   box.innerHTML = '<div class="empty">Загрузка…</div>';
@@ -690,7 +725,7 @@ function applyMatch(m) {
   S.match = m;
   if (S.queue.searching) { S.queue.searching = false; updateSearchUI(); }
   if (m.status === 'pending') {
-    if (!prev || prev.id !== m.id) { openModal('confirmModal'); try { navigator.vibrate && navigator.vibrate([120, 60, 120]); } catch (e) { /* ок */ } }
+    if (!prev || prev.id !== m.id) { openModal('confirmModal'); playSound(soundId()); try { navigator.vibrate && navigator.vibrate([120, 60, 120]); } catch (e) { /* ок */ } }
     setNavMatch('match');
     renderConfirm();
     return;
@@ -2359,6 +2394,11 @@ const ACTIONS = {
   'party-invite': async d => { await rpc('party_invite', { p_friend: d.id }); toast('success', 'Приглашение отправлено', ''); await loadParty(); renderFriends(); },
   'party-accept': async d => { await rpc('party_accept', { p_invite: d.id }); toast('success', 'Вы в пати', ''); await loadParty(); },
   'party-decline': async d => { await rpc('party_decline', { p_invite: d.id }); await loadParty(); },
+  'sound-preview': d => playSound(d.id),
+  'sound-select': d => {
+    try { localStorage.setItem('bnk_sound', d.id); } catch (e) { /* приватный режим */ }
+    renderSoundSettings(); playSound(d.id);
+  },
   'mode-set': d => {
     if (S.queue && S.queue.searching) return;
     const n = Number(d.size) === 2 ? 2 : 5;
@@ -2586,6 +2626,7 @@ function bindEvents() {
 }
 
 async function init() {
+  renderSoundSettings();
   try {
     const tg = TG;
     if (tg) {

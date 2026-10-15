@@ -63,7 +63,7 @@ const LEVEL_COLORS = ['#9ca3af', '#a1a1d6', '#a78bfa', '#8b5cf6', '#7c6cf0', '#c
 
 /* ───────────── Состояние ───────────── */
 const S = {
-  me: null, maps: [], teamSize: 3, page: 'home',
+  me: null, maps: [], teamSize: 3, searchSize: (function () { try { return Number(localStorage.getItem('bnk_mode')) === 2 ? 2 : 5; } catch (e) { return 5; } })(), page: 'home',
   friends: [], requests: [], sent: [], tab: 'friends', fq: '', fresults: [], fToken: 0,
   party: null, invites: [], users: {},
   queue: { searching: false, since: null, count: 0, need: 6 },
@@ -504,7 +504,7 @@ async function syncQueue() {
   syncClock(st.now, t0, Date.now());
   const was = S.queue.searching;
   S.queue = { searching: !!st.searching, since: toMs(st.since), count: st.count || 0, need: st.need || S.teamSize * 2 };
-  S.teamSize = Math.max(1, Math.round(S.queue.need / 2));
+  S.teamSize = st.searching ? Math.max(1, Math.round(S.queue.need / 2)) : S.searchSize;
   updateSearchUI();
   if (was && !S.queue.searching) await syncMatch(); // очередь сменилась матчем
 }
@@ -527,7 +527,12 @@ function updateSearchUI() {
   setText('lgRank', '#' + (S.rank || '—'));
   setText('lgWr', (u.matches ? Math.round(u.wins / u.matches * 100) : 0) + '%');
   setText('lgKd', st.kd === null ? '—' : st.kd.toFixed(2));
-  setText('searchTitle', S.teamSize + '×' + S.teamSize);
+  setText('searchTitle', S.searchSize + '×' + S.searchSize);
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    const on = Number(b.dataset.size) === S.searchSize;
+    b.classList.toggle('btn-primary', on); b.classList.toggle('btn-ghost', !on);
+    b.disabled = !!q.searching;
+  });
   setText('lgInGame', S.stats.in_match);
   setText('lgSearching', q.searching ? Math.max(q.count, 1) : q.count);
   setText('lgSeason', S.stats.matches);
@@ -540,7 +545,7 @@ function updateSearchUI() {
   start.innerHTML = muted ? '<i class="fas fa-ban"></i> Поиск недоступен' : wait ? 'Поиск запускает лидер пати' : '<i class="fas fa-search"></i> Найти матч';
   renderMuteBox();
   setText('searchHint', q.searching
-    ? `Ищем ${S.teamSize * 2} игроков. Не закрывайте приложение — подтверждение придёт сюда.`
+    ? `Ищем ${q.need || S.searchSize * 2} игроков. Не закрывайте приложение — подтверждение придёт сюда.`
     : '');
   if (!S.match) setNavMatch(q.searching ? 'searching' : 'idle');
 }
@@ -592,7 +597,7 @@ function parseMuteDur(v) {
 async function startSearch() {
   if (S.match) return navigate('match');
   if (muteLeft() > 0) return toast('error', 'Вы в муте', 'Поиск откроется через ' + fmtLeft(muteLeft()));
-  try { await rpc('start_search'); } catch (e) { await loadMute(); throw e; }
+  try { await rpc('start_search', { p_size: S.searchSize }); } catch (e) { await loadMute(); throw e; }
   await syncQueue();
   toast('info', 'Поиск начат', 'Ищем игроков…');
 }
@@ -763,7 +768,8 @@ function renderMatch(force) {
   if (!force && sig === S.sig) return;
   S.sig = sig;
   setText('mNum', 'Матч #' + (m.match_number || '—'));
-  setText('mSub', S.teamSize + '×' + S.teamSize + ' · рейтинг');
+  const msz = (S.match && S.match.size) || S.teamSize;
+  setText('mSub', msz + '×' + msz + ' · рейтинг');
   const st = $('mStatus');
   st.textContent = ds.complete ? 'Идёт игра' : 'Бан карт';
   st.className = 'pill' + (ds.complete ? ' live' : '');
@@ -2353,6 +2359,13 @@ const ACTIONS = {
   'party-invite': async d => { await rpc('party_invite', { p_friend: d.id }); toast('success', 'Приглашение отправлено', ''); await loadParty(); renderFriends(); },
   'party-accept': async d => { await rpc('party_accept', { p_invite: d.id }); toast('success', 'Вы в пати', ''); await loadParty(); },
   'party-decline': async d => { await rpc('party_decline', { p_invite: d.id }); await loadParty(); },
+  'mode-set': d => {
+    if (S.queue && S.queue.searching) return;
+    const n = Number(d.size) === 2 ? 2 : 5;
+    S.searchSize = n; S.teamSize = n;
+    try { localStorage.setItem('bnk_mode', String(n)); } catch (e) { /* приватный режим */ }
+    updateSearchUI();
+  },
   'party-leave': async () => { await rpc('party_leave'); await loadParty(); await syncQueue(); },
   'voice-join': () => { V.dismissed = ''; return voiceJoin(); },
   'voice-leave': () => voiceLeave(),

@@ -1,0 +1,20 @@
+{
+  "name": "standknife",
+  "version": "1.0.0",
+  "description": "StandKnife — FACEIT",
+  "main": "main.js",
+  "scripts": {
+    "build:exe": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "31.7.7",
+    "electron-builder": "24.13.3"
+  },
+  "build": {
+    "appId": "ru.standknife.app",
+    "productName": "StandKnife",
+    "files": ["main.js", "package.json"],
+    "win": { "target": ["portable"] },
+    "portable": { "artifactName": "StandKnife.exe" }
+  }
+}

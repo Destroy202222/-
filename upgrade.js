@@ -1,10 +1,10 @@
 /* ══════════════════════════════════════════════════════════════════════
-   UPGRADER v6 — открывается как отдельный полноэкранный слой
-   Никак не связан с navigate() и PAGES из app.js
+   UPGRADER v7 — берёт баланс напрямую через RPC get_me
+   Никак не зависит от window.S и app.js
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  console.log('[UPGRADER] v6 загружен');
+  console.log('[UPGRADER] v7 загружен');
 
   var MULTS = [
     { mult: 1.5, chance: 0.65, label: 'x1.5' },
@@ -14,13 +14,44 @@
   var SEED = [1.5, 0, 2, 0, 5, 0, 1.5, 0, 2, 0, 1.5, 0, 2, 0, 1.5, 0, 2, 0, 5, 0, 1.5, 0, 2, 0, 1.5, 0, 2, 0, 1.5, 0];
   var SEGS = SEED.length;
   var SEG_ANGLE = 2 * Math.PI / SEGS;
-  var U = { mult: 2, stake: 100, spinning: false, feed: [], feedTimer: null, wheelAngle: 0, open: false };
+  var U = {
+    mult: 2, stake: 100, spinning: false,
+    feed: [], feedTimer: null, wheelAngle: 0,
+    open: false, gold: 0
+  };
 
   /* ─── CSS ─── */
   if (!document.getElementById('upgStyle')) {
     var l = document.createElement('link');
     l.id = 'upgStyle'; l.rel = 'stylesheet'; l.href = 'upgrade.css';
     document.head.appendChild(l);
+  }
+
+  /* ─── Обёртка RPC: использует глобальный sb из app.js, либо свой fetch ─── */
+  var SB_URL = 'https://ggjkivobmwwqgzkaaihx.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdnamtpdm9ibXd3cWd6a2FhaWh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NzQzODcsImV4cCI6MjEwNzE1MDM4N30.flfcDmjp9riwZe9N4xCqX9CzIo6D9x9SeeQB3YU7254';
+
+  function getSession() {
+    /* Токен хранится в localStorage под ключом bnk_session (так делает app.js) */
+    try { return localStorage.getItem('bnk_session') || ''; } catch (e) { return ''; }
+  }
+
+  function callRpc(name, args) {
+    var token = getSession();
+    return fetch(SB_URL + '/rest/v1/rpc/' + name, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'X-Client-Info': 'bnk/' + token,
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(args || {})
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error('RPC ' + name + ': ' + t.slice(0, 120)); });
+      return r.json();
+    });
   }
 
   /* ─── Полноэкранный оверлей ─── */
@@ -49,7 +80,9 @@
     var sm = document.getElementById('settingsModal');
     if (sm) { sm.classList.remove('active'); sm.setAttribute('aria-hidden', 'true'); }
     console.log('[UPGRADER] открыт');
-    setTimeout(renderPage, 20);
+    /* Сразу рисуем скелет с загрузкой, потом грузим баланс */
+    renderPage();
+    loadGold();
   }
 
   function closeOverlay() {
@@ -57,6 +90,21 @@
     var ov = document.getElementById('upgOverlay');
     if (ov) ov.classList.remove('show');
     document.body.style.overflow = '';
+  }
+
+  function loadGold() {
+    callRpc('get_me')
+      .then(function (me) {
+        U.gold = (me && me.gold) || 0;
+        if (U.stake > U.gold) U.stake = Math.max(10, U.gold);
+        renderPage();
+      })
+      .catch(function (e) {
+        console.warn('[UPGRADER] не получили баланс', e);
+        /* Всё равно рисуем — с 0, чтобы кнопка не висела вечно */
+        U.gold = 0;
+        renderPage();
+      });
   }
 
   /* ─── Карточка в настройках ─── */
@@ -74,23 +122,17 @@
     var wallet = sheet.querySelector('[data-page="wallet"]');
     if (wallet) wallet.insertAdjacentElement('afterend', card);
     else sheet.insertBefore(card, sheet.children[1] || null);
-    console.log('[UPGRADER] карточка добавлена');
     return true;
   }
 
-  /* ─── Все клики — свои, в capture-фазе, чтобы никто не перехватил ─── */
+  /* ─── Клики ─── */
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
 
-    /* Открыть */
-    var open = t.closest('.settings-upg');
-    if (open) { e.preventDefault(); e.stopPropagation(); openOverlay(); return; }
+    if (t.closest('.settings-upg')) { e.preventDefault(); e.stopPropagation(); return openOverlay(); }
+    if (t.closest('[data-upg-act="close"]')) { e.preventDefault(); e.stopPropagation(); return closeOverlay(); }
 
-    /* Закрыть */
-    if (t.closest('[data-upg-act="close"]')) { e.preventDefault(); e.stopPropagation(); closeOverlay(); return; }
-
-    /* Множитель */
     var m = t.closest('[data-upg-act="mult"]');
     if (m) {
       if (U.spinning) return;
@@ -98,22 +140,17 @@
       if (MULTS.some(function (x) { return x.mult === mv; })) { U.mult = mv; renderPage(); }
       return;
     }
-
-    /* Быстрые ставки */
     var q = t.closest('[data-upg-act="quick"]');
     if (q) {
       if (U.spinning) return;
-      var gold = (window.S && window.S.me && window.S.me.gold) || 0;
       var val = q.dataset.value, v;
-      if (val === 'max') v = gold;
-      else if (val === 'half') v = Math.floor(gold / 2);
+      if (val === 'max') v = U.gold;
+      else if (val === 'half') v = Math.floor(U.gold / 2);
       else v = parseInt(val, 10) || 0;
-      U.stake = Math.max(10, Math.min(gold, v));
+      U.stake = Math.max(10, Math.min(U.gold, v));
       renderPage();
       return;
     }
-
-    /* Спин */
     if (t.closest('[data-upg-act="spin"]')) { e.preventDefault(); e.stopPropagation(); spin(); return; }
   }, true);
 
@@ -121,12 +158,7 @@
   function renderPage() {
     var box = document.getElementById('upgBody');
     if (!box) return;
-    if (!window.S || !window.S.me) {
-      box.innerHTML = '<div class="upg-empty">Загрузка профиля…</div>';
-      setTimeout(renderPage, 300);
-      return;
-    }
-    var gold = window.S.me.gold || 0;
+    var gold = U.gold;
     var cfg = MULTS.filter(function (x) { return x.mult === U.mult; })[0] || MULTS[1];
     var maxStake = Math.max(10, gold);
     if (U.stake > maxStake) U.stake = maxStake;
@@ -162,7 +194,7 @@
         '</button>' +
         '<div class="upg-hint">Выигрыш: <b>' + payout + ' G</b> · Шанс: <b>' + Math.round(cfg.chance * 100) + '%</b><br>Баланс: <b>' + gold + ' G</b> · минимальная ставка 10 G</div>' +
       '</div>' +
-      '<div class="panel" style="margin:0 16px 24px"><div class="upg-feed-title"><span>Лента выигрышей</span><b>LIVE</b></div>' +
+      '<div class="panel" style="margin:0 0 24px"><div class="upg-feed-title"><span>Лента выигрышей</span><b>LIVE</b></div>' +
       '<div class="upg-feed" id="upgFeed">' + feedHtml() + '</div></div>';
 
     var slider = document.getElementById('upgSlider');
@@ -178,7 +210,6 @@
     if (rotor && U.wheelAngle) rotor.setAttribute('transform', 'rotate(' + (U.wheelAngle * 180 / Math.PI).toFixed(2) + ' 100 100)');
     if (!U.feed.length) loadFeed();
     if (!U.feedTimer) U.feedTimer = setInterval(function () { if (U.open) loadFeed(); }, 15000);
-    console.log('[UPGRADER] отрисован');
   }
 
   function wheelSvg() {
@@ -220,19 +251,21 @@
   function segCenterAngle(i) { return -i * SEG_ANGLE; }
 
   function spin() {
-    if (U.spinning || !window.S || !window.S.me) return;
-    if ((window.S.me.gold || 0) < U.stake) { if (window.toast) window.toast('error', 'Недостаточно голды', ''); return; }
+    if (U.spinning) return;
+    if (U.gold < U.stake) { alert('Недостаточно голды'); return; }
     U.spinning = true;
     var btn = document.getElementById('upgSpin'), res = document.getElementById('upgResult');
     if (btn) { btn.disabled = true; btn.classList.add('spinning'); btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Крутим…'; }
     if (res) { res.classList.remove('show', 'lose-in'); var ri = res.querySelector('.upg-result-in'); if (ri) ri.textContent = ''; }
-    window.rpc('upgrade_spin', { p_stake: U.stake, p_mult: U.mult })
-      .then(function (r) { if (!r) throw new Error('Пусто'); doSpinAnimation(!!r.win, Number(r.mult) || U.mult, r); })
+    callRpc('upgrade_spin', { p_stake: U.stake, p_mult: U.mult })
+      .then(function (r) {
+        if (!r) throw new Error('Пустой ответ');
+        doSpinAnimation(!!r.win, Number(r.mult) || U.mult, r);
+      })
       .catch(function (e) {
         U.spinning = false;
-        if (btn) { btn.disabled = false; btn.classList.remove('spinning'); }
-        if (window.toast) window.toast('error', 'Ошибка', (e && e.message) || String(e));
-        renderPage();
+        if (btn) { btn.disabled = false; btn.classList.remove('spinning'); btn.innerHTML = '<i class="fas fa-arrow-trend-up"></i> КРУТИТЬ · выигрыш ' + Math.floor(U.stake * U.mult) + ' G'; }
+        alert('Ошибка: ' + ((e && e.message) || e));
       });
   }
 
@@ -272,23 +305,20 @@
       var amount = (result && result.payout) || Math.floor(U.stake * mult);
       if (resIn) resIn.textContent = '+' + amount + ' G · x' + mult;
       if (resBox) { resBox.classList.remove('lose-in'); resBox.classList.add('show'); }
-      if (window.playSound) window.playSound('found');
     } else {
       if (resIn) resIn.textContent = '−' + U.stake + ' G';
       if (resBox) { resBox.classList.add('lose-in', 'show'); }
-      if (window.playSound) window.playSound('chime');
     }
+    /* Баланс пришёл в ответе */
+    if (result && result.gold != null) U.gold = result.gold;
     setTimeout(function () {
       if (resBox) resBox.classList.remove('show');
-      if (result && result.gold != null && window.S && window.S.me) window.S.me.gold = result.gold;
-      if (window.renderBalance) window.renderBalance();
       renderPage();
     }, 2200);
   }
 
   function loadFeed() {
-    if (!window.rpc) return;
-    window.rpc('upgrade_feed', { p_limit: 15 })
+    callRpc('upgrade_feed', { p_limit: 15 })
       .then(function (rows) { U.feed = rows || []; var b = document.getElementById('upgFeed'); if (b) b.innerHTML = feedHtml(); })
       .catch(function () { var b = document.getElementById('upgFeed'); if (b && !U.feed.length) b.innerHTML = '<div class="upg-feed-empty">Лента пока пуста</div>'; });
   }
@@ -302,9 +332,9 @@
     }).join('');
   }
 
-  /* ─── Автозапуск: карточка ─── */
+  /* ─── Автозапуск ─── */
   var cardWait = setInterval(function () { if (ensureSettingsCard()) clearInterval(cardWait); }, 300);
   try { new MutationObserver(function () { ensureSettingsCard(); }).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) { /* ok */ }
   ensureSettingsCard();
-  console.log('[UPGRADER] v6 установлен');
+  console.log('[UPGRADER] v7 установлен');
 })();

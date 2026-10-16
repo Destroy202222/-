@@ -1,6 +1,13 @@
 /* ═══════════════════════════════════════════════════════════
-   UPGRADER v8 — стрелка + заливка процента
+   UPGRADER v12 — короткая стрелка за кольцом
    ═══════════════════════════════════════════════════════════ */
+
+/* Никакого горизонтального скролла */
+html, body{
+  overflow-x:hidden !important;
+  max-width:100vw !important;
+  overscroll-behavior-x:none !important;
+}
 
 .settings-upg{
   position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;
@@ -36,9 +43,9 @@
 .upg-overlay-bar{
   position:relative;z-index:2;flex-shrink:0;
   display:flex;align-items:center;justify-content:space-between;
-  padding:calc(14px + var(--safe-t)) 14px 12px;
+  padding:calc(14px + env(safe-area-inset-top, 0px)) 14px 12px;
   background:rgba(9,14,38,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
+  border-bottom:1px solid rgba(130,190,255,.16);
 }
 .upg-overlay-bar > span{
   font-family:var(--f-display);font-weight:700;font-size:16px;letter-spacing:.04em;
@@ -51,8 +58,10 @@
 }
 .upg-overlay-back:active{transform:scale(.94)}
 .upg-overlay-scroll{
-  position:relative;z-index:2;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:16px 16px calc(24px + var(--safe-b));
+  position:relative;z-index:2;flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:16px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+  max-width:100vw;
 }
 
 /* Карточка */
@@ -62,74 +71,106 @@
   border:1px solid rgba(245,196,81,.22);
 }
 
-/* Колесо */
+/* ─── Колесо ─── */
 .upg-wheel-wrap{
-  position:relative;width:100%;max-width:300px;aspect-ratio:1;
-  margin:6px auto 22px;
+  position:relative;
+  width:100%;
+  max-width:280px;
+  aspect-ratio:1;
+  margin:24px auto 40px;
+  overflow:visible;
 }
 .upg-wheel{position:absolute;inset:0}
-.upg-wheel svg{width:100%;height:100%;display:block}
+.upg-wheel svg{width:100%;height:100%;display:block;overflow:visible}
 
-/* Стрелка — вращается вокруг центра */
-.upg-arrow{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  transform-origin:50% 50%;
+/* ─── Короткая стрелка ───
+   Маленький треугольник, торчит за зелёным кольцом.
+   Вращается вокруг центра колеса через transform-origin 0 0, где контейнер
+   маркера позиционирован точно в центре колеса. */
+.upg-marker{
+  position:absolute;
+  left:50%;top:50%;
+  width:0;height:0;
+  transform-origin:0 0;
+  transform:rotate(0deg);
+  z-index:6;
+  pointer-events:none;
   will-change:transform;
+}
+.upg-marker::before{
+  content:'';
+  position:absolute;
+  left:-9px;
+  top:-140px;          /* от центра вверх на радиус круга ~128-140px */
+  width:0;height:0;
+  border-left:9px solid transparent;
+  border-right:9px solid transparent;
+  border-top:16px solid #f5c451; /* острие смотрит вниз (внутрь колеса) */
+  filter:drop-shadow(0 0 6px rgba(245,196,81,.95)) drop-shadow(0 2px 3px rgba(0,0,0,.75));
+}
+
+/* Проценты вокруг колеса */
+.upg-pct-labels{
+  position:relative;
+  max-width:280px;
+  margin:-30px auto 0;
+  height:0;
   pointer-events:none;
 }
-.upg-arrow svg{width:14%;height:100%;display:block}
-
-/* Иголка сверху, чтобы было видно «0°» */
-.upg-marker{
-  position:absolute;top:-6px;left:50%;transform:translateX(-50%);
-  width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;
-  border-top:12px solid var(--gold);
-  filter:drop-shadow(0 0 6px rgba(245,196,81,.8));
+.upg-pct-labels span{
+  position:absolute;
+  font-size:11px;font-weight:800;color:#9fb0d6;
+  letter-spacing:.03em;
 }
+.upg-pct-labels .pct-top{top:-250px;left:50%;transform:translateX(-50%)}
+.upg-pct-labels .pct-bottom{top:-40px;left:50%;transform:translateX(-50%)}
+.upg-pct-labels .pct-left{top:-150px;left:-42px}
+.upg-pct-labels .pct-right{top:-150px;right:-42px}
 
-/* Ползунки */
+/* Центральный текст */
+.upg-center-txt{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font-family:var(--f-display);font-weight:800;font-size:32px;color:#f3f7ff;
+  letter-spacing:-.02em;text-align:center;pointer-events:none;z-index:3;
+  text-shadow:0 2px 8px rgba(0,0,0,.6);
+  transition:color .25s,font-size .25s;
+}
+.upg-center-txt.win{color:#8bf5c6;font-size:26px;text-shadow:0 0 18px rgba(61,220,151,.85),0 2px 8px rgba(0,0,0,.6)}
+.upg-center-txt.lose{color:#ff8fa3;font-size:26px;text-shadow:0 0 18px rgba(255,77,109,.85),0 2px 8px rgba(0,0,0,.6)}
+
+/* Строки «Шанс / Ставка» */
 .upg-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-.upg-row label{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
-.upg-row .val{font-family:var(--f-display);font-weight:800;font-size:22px;color:var(--gold);letter-spacing:-.02em}
+.upg-row label{font-size:12px;font-weight:800;color:#9fb0d6;letter-spacing:.06em;text-transform:uppercase}
+.upg-row .val{font-family:var(--f-display);font-weight:800;font-size:22px;color:#f5c451;letter-spacing:-.02em}
 .upg-row .val small{font-size:13px;opacity:.7;margin-left:3px}
 
-.upg-slider{
-  width:100%;height:28px;-webkit-appearance:none;appearance:none;background:transparent;touch-action:pan-y;
-}
-.upg-slider::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--gold))}
-.upg-slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--gold);box-shadow:0 3px 10px rgba(0,0,0,.5)}
-.upg-slider::-moz-range-track{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--gold))}
-.upg-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--gold)}
+.upg-slider{width:100%;height:28px;-webkit-appearance:none;appearance:none;background:transparent;touch-action:pan-y}
+.upg-slider::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:linear-gradient(90deg,#4f8cff,#f5c451)}
+.upg-slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid #f5c451;box-shadow:0 3px 10px rgba(0,0,0,.5)}
+.upg-slider::-moz-range-track{height:6px;border-radius:6px;background:linear-gradient(90deg,#4f8cff,#f5c451)}
+.upg-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid #f5c451}
 
-.upg-slider-green::-webkit-slider-runnable-track{background:linear-gradient(90deg,#3ddc97,var(--gold))}
+.upg-slider-green::-webkit-slider-runnable-track{background:linear-gradient(90deg,#3ddc97,#f5c451)}
 .upg-slider-green::-webkit-slider-thumb{border-color:#3ddc97}
-.upg-slider-green::-moz-range-track{background:linear-gradient(90deg,#3ddc97,var(--gold))}
+.upg-slider-green::-moz-range-track{background:linear-gradient(90deg,#3ddc97,#f5c451)}
 .upg-slider-green::-moz-range-thumb{border-color:#3ddc97}
 
-.upg-marks{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:-4px;font-weight:700}
-
-/* Быстрые ставки */
 .upg-quick{display:flex;gap:6px;margin-top:10px}
-.upg-quick button{flex:1;min-height:36px;border-radius:var(--r-sm);font-size:12px;font-weight:800;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+.upg-quick button{flex:1;min-height:36px;border-radius:10px;font-size:12px;font-weight:800;background:#172046;border:1px solid rgba(130,190,255,.16);color:#9fb0d6;cursor:pointer}
 .upg-quick button:active{transform:scale(.96)}
 
-/* Информация о выигрыше */
-.upg-info{
-  display:flex;gap:10px;margin:16px 0 12px;
-}
+.upg-info{display:flex;gap:10px;margin:16px 0 12px}
 .upg-info > div{
-  flex:1;padding:10px 12px;border-radius:var(--r-md);
+  flex:1;padding:10px 12px;border-radius:14px;
   background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.05);
   display:flex;flex-direction:column;gap:2px;
 }
-.upg-info span{font-size:11px;color:var(--muted);font-weight:700}
-.upg-info b{font-family:var(--f-display);font-weight:800;font-size:18px;color:var(--gold)}
-.upg-info > div:nth-child(2) b{color:var(--accent-hi)}
+.upg-info span{font-size:11px;color:#9fb0d6;font-weight:700}
+.upg-info b{font-family:var(--f-display);font-weight:800;font-size:18px;color:#f5c451}
+.upg-info > div:nth-child(2) b{color:#8fd0ff}
 
-/* Кнопка */
 .upg-spin{
-  width:100%;min-height:60px;border-radius:var(--r-lg);
+  width:100%;min-height:60px;border-radius:20px;
   font-size:18px;font-weight:800;letter-spacing:.04em;color:#1a1a1a;
   display:flex;align-items:center;justify-content:center;gap:10px;
   background:linear-gradient(180deg,#ffe27a,#f5c451);border:1px solid rgba(255,255,255,.4);
@@ -140,7 +181,6 @@
 .upg-spin:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
 .upg-spin.spinning{background:linear-gradient(180deg,#8fd0ff,#4f8cff);color:#fff}
 
-/* Вспышка результата */
 .upg-flash{
   position:absolute;inset:0;z-index:9;
   display:flex;align-items:center;justify-content:center;
@@ -151,272 +191,39 @@
 .upg-flash-in{
   text-align:center;padding:28px 34px;border-radius:26px;
   background:linear-gradient(180deg,rgba(23,32,70,.98),rgba(15,22,51,.98));
-  border:2px solid var(--win);box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 40px rgba(61,220,151,.35);
+  border:2px solid #3ddc97;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 40px rgba(61,220,151,.35);
   transform:scale(.9);animation:upgPop .4s cubic-bezier(.2,1.3,.4,1) forwards;
 }
-.upg-flash.lose .upg-flash-in{border-color:var(--live);box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 40px rgba(255,77,109,.35)}
+.upg-flash.lose .upg-flash-in{border-color:#ff4d6d;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 40px rgba(255,77,109,.35)}
 @keyframes upgPop{to{transform:scale(1)}}
-.upg-flash-ico{font-size:52px;color:var(--win);margin-bottom:8px}
-.upg-flash.lose .upg-flash-ico{color:var(--live)}
+.upg-flash-ico{font-size:52px;color:#3ddc97;margin-bottom:8px}
+.upg-flash.lose .upg-flash-ico{color:#ff4d6d}
 .upg-flash-t{font-family:var(--f-display);font-weight:800;font-size:24px;letter-spacing:.06em;color:#fff;margin-bottom:4px}
-.upg-flash-s{font-family:var(--f-display);font-weight:800;font-size:20px;color:var(--win)}
-.upg-flash.lose .upg-flash-s{color:var(--live)}
+.upg-flash-s{font-family:var(--f-display);font-weight:800;font-size:20px;color:#3ddc97}
+.upg-flash.lose .upg-flash-s{color:#ff4d6d}
 
-/* Лента */
-.upg-feed-title{display:flex;justify-content:space-between;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-.upg-feed{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto}
-.upg-feed-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);font-size:13px}
-.upg-feed-item.win{border-left:4px solid var(--win)}
-.upg-feed-item.lose{border-left:4px solid var(--live)}
+.upg-feed-title{display:flex;justify-content:space-between;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#9fb0d6;margin-bottom:10px}
+.upg-feed{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;overflow-x:hidden}
+.upg-feed-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:14px;background:#0f1633;border:1px solid rgba(130,190,255,.16);font-size:13px}
+.upg-feed-item.win{border-left:4px solid #3ddc97}
+.upg-feed-item.lose{border-left:4px solid #ff4d6d}
 .upg-feed-item .who{flex:1;min-width:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.upg-feed-item .meta{font-size:11px;color:var(--muted);font-weight:700}
-.upg-feed-item .mult{font-family:var(--f-display);font-weight:800;font-size:12px;padding:2px 8px;border-radius:99px;background:rgba(61,220,151,.15);color:var(--win)}
+.upg-feed-item .meta{font-size:11px;color:#9fb0d6;font-weight:700}
+.upg-feed-item .mult{font-family:var(--f-display);font-weight:800;font-size:12px;padding:2px 8px;border-radius:99px;background:rgba(61,220,151,.15);color:#3ddc97}
 .upg-feed-item.lose .mult{background:rgba(255,77,109,.15);color:#ff8fa3}
 .upg-feed-item .pay{font-family:var(--f-display);font-weight:800;font-size:14px}
-.upg-feed-item.win .pay{color:var(--win)}
+.upg-feed-item.win .pay{color:#3ddc97}
 .upg-feed-item.lose .pay{color:#ff8fa3}
-.upg-feed-empty{text-align:center;color:var(--dim);font-size:12px;padding:18px}
-/* ─── Фикс: настройки прокручиваются всегда ─── */
+.upg-feed-empty{text-align:center;color:#6879a6;font-size:12px;padding:18px}
+
+/* Фикс настроек: прокрутка */
 .overlay#settingsModal{
   align-items:flex-end !important;
   padding:16px 10px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
   overflow-y:auto !important;
-  -webkit-overflow-scrolling:touch !important;
 }
 .overlay#settingsModal .sheet{
   max-height:85vh !important;
-  height:auto !important;
   overflow-y:auto !important;
-  -webkit-overflow-scrolling:touch !important;
-  overscroll-behavior:contain !important;
   padding-bottom:70px !important;
 }
-.overlay#settingsModal.active{display:flex !important}
-/* ═════════ UPGRADER v9 — новое колесо ═════════ */
-
-.upg-wheel-wrap{
-  position:relative;width:100%;max-width:280px;aspect-ratio:1;
-  margin:6px auto 40px;
-}
-.upg-wheel{position:absolute;inset:0}
-.upg-wheel svg{width:100%;height:100%;display:block;overflow:visible}
-
-/* Стрелка сверху: плоский треугольник, вращается вокруг центра колеса */
-.upg-marker{
-  position:absolute;
-  top:50%;left:50%;
-  width:0;height:0;
-  transform-origin:0 0;
-  transform:rotate(0deg);
-  pointer-events:none;
-  z-index:5;
-  /* Стрелка отрисовывается псевдоэлементом, чтобы её можно было вращать */
-}
-.upg-marker::before{
-  content:'';
-  position:absolute;
-  left:-10px;        /* половина ширины стрелки */
-  top:-92px;         /* на радиусе колеса (92px при viewBox 200) → около края */
-  width:0;height:0;
-  border-left:10px solid transparent;
-  border-right:10px solid transparent;
-  border-top:22px solid #f5c451;
-  filter:drop-shadow(0 0 8px rgba(245,196,81,.85)) drop-shadow(0 2px 3px rgba(0,0,0,.6));
-}
-.upg-marker::after{
-  content:'';
-  position:absolute;
-  left:-2px;top:-72px;
-  width:4px;height:70px;
-  background:linear-gradient(180deg,var(--gold),rgba(245,196,81,0));
-  border-radius:2px;
-  opacity:.55;
-}
-
-/* Подписи процентов вокруг колеса */
-.upg-pct-labels{
-  position:relative;
-  max-width:280px;
-  margin:-30px auto 0;
-  height:0;
-  pointer-events:none;
-}
-.upg-pct-labels span{
-  position:absolute;
-  font-size:11px;font-weight:800;color:var(--muted);
-  letter-spacing:.03em;
-}
-.upg-pct-labels .pct-top{top:-250px;left:50%;transform:translateX(-50%)}
-.upg-pct-labels .pct-bottom{top:-40px;left:50%;transform:translateX(-50%)}
-.upg-pct-labels .pct-left{top:-150px;left:-42px}
-.upg-pct-labels .pct-right{top:-150px;right:-42px}
-
-/* Центральный текст внутри колеса */
-.upg-center-txt{
-  position:absolute;
-  left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  font-family:var(--f-display);
-  font-weight:800;
-  font-size:32px;
-  color:var(--text);
-  letter-spacing:-.02em;
-  text-align:center;
-  pointer-events:none;
-  z-index:3;
-  text-shadow:0 2px 8px rgba(0,0,0,.6);
-  transition:color .25s,font-size .25s;
-}
-.upg-center-txt.win{
-  color:#8bf5c6;font-size:26px;
-  text-shadow:0 0 18px rgba(61,220,151,.85),0 2px 8px rgba(0,0,0,.6);
-}
-.upg-center-txt.lose{
-  color:#ff8fa3;font-size:26px;
-  text-shadow:0 0 18px rgba(255,77,109,.85),0 2px 8px rgba(0,0,0,.6);
-}
-/* ═════════ UPGRADER v10 — маленькая стрелка за кольцом ═════════ */
-
-.upg-wheel-wrap{
-  position:relative;width:100%;max-width:280px;aspect-ratio:1;
-  margin:6px auto 40px;
-}
-
-.upg-wheel{position:absolute;inset:0}
-.upg-wheel svg{width:100%;height:100%;display:block;overflow:visible}
-
-/* Стрелка — маленький треугольник на верхней кромке круга.
-   transform-origin = центр колеса. Позиционируется абсолютно по центру-верху
-   и вращается вокруг центра контейнера. */
-.upg-marker{
-  position:absolute;
-  left:50%;
-  top:0;
-  width:0;height:0;
-  transform-origin:50% 140px;  /* 50% ширины контейнера по X, 140px = радиус wrap (280/2) по Y */
-  transform:translate(-50%, 0) rotate(0deg);
-  z-index:6;
-  pointer-events:none;
-  will-change:transform;
-}
-.upg-marker::before{
-  content:'';
-  position:absolute;
-  left:-9px;
-  top:-10px;
-  width:0;height:0;
-  border-left:9px solid transparent;
-  border-right:9px solid transparent;
-  border-bottom:14px solid #f5c451;
-  filter:drop-shadow(0 0 6px rgba(245,196,81,.9)) drop-shadow(0 2px 3px rgba(0,0,0,.7));
-}
-
-/* Подписи процентов вокруг колеса */
-.upg-pct-labels{
-  position:relative;
-  max-width:280px;
-  margin:-30px auto 0;
-  height:0;
-  pointer-events:none;
-}
-.upg-pct-labels span{
-  position:absolute;
-  font-size:11px;font-weight:800;color:var(--muted);
-  letter-spacing:.03em;
-}
-.upg-pct-labels .pct-top{top:-250px;left:50%;transform:translateX(-50%)}
-.upg-pct-labels .pct-bottom{top:-40px;left:50%;transform:translateX(-50%)}
-.upg-pct-labels .pct-left{top:-150px;left:-42px}
-.upg-pct-labels .pct-right{top:-150px;right:-42px}
-
-/* Центральный текст */
-.upg-center-txt{
-  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  font-family:var(--f-display);font-weight:800;font-size:32px;color:var(--text);
-  letter-spacing:-.02em;text-align:center;pointer-events:none;z-index:3;
-  text-shadow:0 2px 8px rgba(0,0,0,.6);
-  transition:color .25s,font-size .25s;
-}
-.upg-center-txt.win{color:#8bf5c6;font-size:26px;text-shadow:0 0 18px rgba(61,220,151,.85),0 2px 8px rgba(0,0,0,.6)}
-.upg-center-txt.lose{color:#ff8fa3;font-size:26px;text-shadow:0 0 18px rgba(255,77,109,.85),0 2px 8px rgba(0,0,0,.6)}
-/* ═════════ UPGRADER v11 — короткая стрелка + no-x-scroll ═════════ */
-
-/* Никакого горизонтального скролла нигде */
-html, body{
-  overflow-x:hidden !important;
-  max-width:100vw !important;
-  overscroll-behavior-x:none !important;
-  touch-action:pan-y !important;
-}
-#upgOverlay, #upgOverlay *{ touch-action:pan-y !important; }
-
-.upg-wheel-wrap{
-  position:relative;
-  width:100%;
-  max-width:280px;
-  aspect-ratio:1;
-  margin:24px auto 40px;
-  overflow:visible;
-}
-
-.upg-wheel{ position:absolute; inset:0; }
-.upg-wheel svg{ width:100%; height:100%; display:block; overflow:visible; }
-
-/* ─── Стрелка ───
-   Маленький жёлтый треугольник, торчащий наружу за кольцо.
-   Контейнер 280×280, центр колеса в точке (50%, 50%) = (140, 140) px.
-   Стрелка позиционируется абсолютно в центре, transform-origin = 0 0,
-   а сама стрелка смещена вверх на радиус кольца. */
-.upg-marker{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:0;
-  height:0;
-  transform-origin:0 0;             /* центр колеса */
-  transform:rotate(0deg);
-  z-index:6;
-  pointer-events:none;
-  will-change:transform;
-}
-.upg-marker::before{
-  content:'';
-  position:absolute;
-  /* от центра вверх на радиус кольца (в координатах wrap 280px радиус = ~92% / 2 = 128px) */
-  left:-9px;
-  top:-135px;                        /* немного выше самого кольца, чтобы торчала снаружи */
-  width:0;height:0;
-  border-left:9px solid transparent;
-  border-right:9px solid transparent;
-  border-top:16px solid #f5c451;     /* острие смотрит ВНИЗ — внутрь колеса */
-  filter:drop-shadow(0 0 6px rgba(245,196,81,.95)) drop-shadow(0 2px 3px rgba(0,0,0,.75));
-}
-
-/* Подписи процентов вокруг колеса */
-.upg-pct-labels{
-  position:relative;
-  max-width:280px;
-  margin:-30px auto 0;
-  height:0;
-  pointer-events:none;
-}
-.upg-pct-labels span{
-  position:absolute;
-  font-size:11px;font-weight:800;color:var(--muted);
-  letter-spacing:.03em;
-}
-.upg-pct-labels .pct-top{top:-250px;left:50%;transform:translateX(-50%)}
-.upg-pct-labels .pct-bottom{top:-40px;left:50%;transform:translateX(-50%)}
-.upg-pct-labels .pct-left{top:-150px;left:-42px}
-.upg-pct-labels .pct-right{top:-150px;right:-42px}
-
-/* Центральный текст */
-.upg-center-txt{
-  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  font-family:var(--f-display);font-weight:800;font-size:32px;color:var(--text);
-  letter-spacing:-.02em;text-align:center;pointer-events:none;z-index:3;
-  text-shadow:0 2px 8px rgba(0,0,0,.6);
-  transition:color .25s,font-size .25s;
-}
-.upg-center-txt.win{color:#8bf5c6;font-size:26px;text-shadow:0 0 18px rgba(61,220,151,.85),0 2px 8px rgba(0,0,0,.6)}
-.upg-center-txt.lose{color:#ff8fa3;font-size:26px;text-shadow:0 0 18px rgba(255,77,109,.85),0 2px 8px rgba(0,0,0,.6)}

@@ -1,13 +1,9 @@
 /* ══════════════════════════════════════════════════════════════════════
    UPGRADER — рулетка на голду
-   Не полагаемся на порядок загрузки скриптов.
-   Вместо этого ставим MutationObserver на #settingsModal и вставляем
-   карточку при каждом её открытии. Регистрацию действий делаем, как
-   только app.js создаст window.ACTIONS (проверяем через setInterval).
+   v3: чиню открытие вкладки и закрытие настроек.
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-
   console.log('[UPGRADER] файл загружен');
 
   var MULTS = [
@@ -18,14 +14,8 @@
   var SEED = [1.5, 0, 2, 0, 5, 0, 1.5, 0, 2, 0, 1.5, 0, 2, 0, 1.5, 0, 2, 0, 5, 0, 1.5, 0, 2, 0, 1.5, 0, 2, 0, 1.5, 0];
   var SEGS = SEED.length;
   var SEG_ANGLE = 2 * Math.PI / SEGS;
+  var U = { mult: 2, stake: 100, spinning: false, feed: [], feedTimer: null, wheelAngle: 0 };
 
-  var U = {
-    mult: 2, stake: 100, spinning: false,
-    feed: [], feedTimer: null, wheelAngle: 0,
-    actionsInstalled: false, pageInstalled: false
-  };
-
-  /* ─── CSS ─── */
   function ensureStyle() {
     if (document.getElementById('upgStyle')) return;
     var link = document.createElement('link');
@@ -35,7 +25,24 @@
     document.head.appendChild(link);
   }
 
-  /* ─── Карточка в настройках ─── */
+  function ensurePage() {
+    if (document.getElementById('page-upgrader')) return true;
+    var app = document.getElementById('app');
+    if (!app) return false;
+    var section = document.createElement('section');
+    section.className = 'page';
+    section.id = 'page-upgrader';
+    section.innerHTML = '<div id="upgBody"></div>';
+    var nav = app.querySelector('.nav');
+    if (nav) app.insertBefore(section, nav);
+    else app.appendChild(section);
+    if (Array.isArray(window.PAGES) && window.PAGES.indexOf('upgrader') === -1) {
+      window.PAGES.push('upgrader');
+    }
+    console.log('[UPGRADER] страница создана');
+    return true;
+  }
+
   function ensureSettingsCard() {
     var sheet = document.querySelector('#settingsModal .sheet');
     if (!sheet) return false;
@@ -59,69 +66,73 @@
       if (title) title.insertAdjacentElement('afterend', card);
       else sheet.appendChild(card);
     }
-    console.log('[UPGRADER] карточка добавлена в настройки');
+    console.log('[UPGRADER] карточка добавлена');
     return true;
   }
 
-  /* ─── Страница ─── */
-  function ensurePage() {
-    if (document.getElementById('page-upgrader')) return true;
-    var app = document.getElementById('app');
-    if (!app) return false;
-    var section = document.createElement('section');
-    section.className = 'page';
-    section.id = 'page-upgrader';
-    section.innerHTML = '<div id="upgBody"></div>';
-    var nav = app.querySelector('.nav');
-    if (nav) app.insertBefore(section, nav);
-    else app.appendChild(section);
-    if (Array.isArray(window.PAGES) && window.PAGES.indexOf('upgrader') === -1) {
-      window.PAGES.push('upgrader');
+  /* ─── Открыть страницу UPGRADER, не ломая app.js ─── */
+  function openUpgrader() {
+    console.log('[UPGRADER] открываем');
+    /* Закрываем настройки */
+    var sm = document.getElementById('settingsModal');
+    if (sm) { sm.classList.remove('active'); sm.setAttribute('aria-hidden', 'true'); }
+    /* Переключаем страницы вручную — так надёжнее, чем надеяться на navigate */
+    try {
+      var pages = document.querySelectorAll('.page');
+      pages.forEach(function (p) { p.classList.remove('active'); });
+      var up = document.getElementById('page-upgrader');
+      if (up) up.classList.add('active');
+      if (window.S) window.S.page = 'upgrader';
+      /* Подсвечиваем активный пункт меню — снимаем у всех, ставим ни на что (не в меню) */
+      document.querySelectorAll('#nav button').forEach(function (b) { b.classList.remove('active'); });
+      /* Прокручиваем вверх */
+      window.scrollTo({ top: 0 });
+      renderPage();
+    } catch (e) {
+      console.error('[UPGRADER] open error', e);
     }
-    console.log('[UPGRADER] страница #page-upgrader создана');
-    return true;
   }
 
-  /* ─── Регистрация действий (ждёт app.js) ─── */
-  function installActions() {
-    if (U.actionsInstalled) return true;
-    if (!window.ACTIONS || !window.S || !window.rpc || !window.navigate) return false;
-    U.actionsInstalled = true;
-    console.log('[UPGRADER] app.js найден, регистрируем действия');
+  /* Обработчик клика — вешаем свой, чтобы не зависеть от app.js */
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest && e.target.closest('[data-act="upg-open"]');
+    if (el) {
+      e.preventDefault();
+      e.stopPropagation();
+      openUpgrader();
+      return;
+    }
+    /* Обработка остальных upg-* действий */
+    var el2 = e.target.closest && e.target.closest('[data-act^="upg-"]');
+    if (el2) {
+      var act = el2.dataset.act;
+      if (act === 'upg-open') return;
+      if (act === 'upg-mult') {
+        if (U.spinning) return;
+        var m = parseFloat(el2.dataset.mult);
+        if (!MULTS.some(function (x) { return x.mult === m; })) return;
+        U.mult = m; renderPage();
+        return;
+      }
+      if (act === 'upg-stake-quick') {
+        if (U.spinning) return;
+        var gold = (window.S && window.S.me && window.S.me.gold) || 0;
+        var val = el2.dataset.value;
+        var v;
+        if (val === 'max') v = gold;
+        else if (val === 'half') v = Math.floor(gold / 2);
+        else v = parseInt(val, 10) || 0;
+        U.stake = Math.max(10, Math.min(gold, v));
+        renderPage();
+        return;
+      }
+      if (act === 'upg-spin') {
+        spin();
+        return;
+      }
+    }
+  }, true);
 
-    /* Перехват navigate — при заходе на upgrader рисуем страницу */
-    var _nav = window.navigate;
-    window.navigate = function (page) {
-      _nav.apply(this, arguments);
-      if (page === 'upgrader') renderPage();
-    };
-
-    window.ACTIONS['upg-open'] = function () {
-      if (window.closeModal) window.closeModal('settingsModal');
-      window.navigate('upgrader');
-    };
-    window.ACTIONS['upg-mult'] = function (d) {
-      if (U.spinning) return;
-      var m = parseFloat(d.mult);
-      if (!MULTS.some(function (x) { return x.mult === m; })) return;
-      U.mult = m;
-      renderPage();
-    };
-    window.ACTIONS['upg-stake-quick'] = function (d) {
-      if (U.spinning) return;
-      var gold = (window.S.me && window.S.me.gold) || 0;
-      var v;
-      if (d.value === 'max') v = gold;
-      else if (d.value === 'half') v = Math.floor(gold / 2);
-      else v = parseInt(d.value, 10) || 0;
-      U.stake = Math.max(10, Math.min(gold, v));
-      renderPage();
-    };
-    window.ACTIONS['upg-spin'] = spin;
-    return true;
-  }
-
-  /* ─── Отрисовка страницы UPGRADER ─── */
   function renderPage() {
     var box = document.getElementById('upgBody');
     if (!box || !window.S || !window.S.me) return;
@@ -134,7 +145,7 @@
 
     box.innerHTML =
       '<div class="upg-head">' +
-        '<button class="icon-btn" data-act="nav" data-page="home" aria-label="Назад"><i class="fas fa-chevron-left"></i></button>' +
+        '<button class="icon-btn" data-act="upg-back" aria-label="Назад"><i class="fas fa-chevron-left"></i></button>' +
         '<div><h2>UPGRADER</h2><p>Баланс: <b style="color:var(--gold)">' + gold + ' G</b></p></div>' +
       '</div>' +
       '<div class="upg-card">' +
@@ -189,16 +200,14 @@
         if (hint) hint.innerHTML = 'Выигрыш: <b>' + Math.floor(U.stake * U.mult) + ' G</b> · Шанс: <b>' + Math.round(cfg.chance * 100) + '%</b><br>Минимальная ставка — 10 G';
       });
     }
-
     var rotor = document.getElementById('upgRotor');
     if (rotor && U.wheelAngle) {
       rotor.setAttribute('transform', 'rotate(' + (U.wheelAngle * 180 / Math.PI).toFixed(2) + ' 100 100)');
     }
-
     if (!U.feed.length) loadFeed();
     if (!U.feedTimer) {
       U.feedTimer = setInterval(function () {
-        if (window.S.page === 'upgrader') loadFeed();
+        if (window.S && window.S.page === 'upgrader') loadFeed();
       }, 15000);
     }
   }
@@ -255,7 +264,7 @@
 
   function spin() {
     if (U.spinning) return;
-    var me = window.S.me;
+    var me = window.S && window.S.me;
     if (!me) return;
     if ((me.gold || 0) < U.stake) {
       window.toast('error', 'Недостаточно голды', 'Уменьшите ставку');
@@ -278,8 +287,7 @@
       .catch(function (e) {
         U.spinning = false;
         if (btn) { btn.disabled = false; btn.classList.remove('spinning'); }
-        var msg = (e && e.message) || String(e);
-        window.toast('error', 'Не удалось прокрутить', msg);
+        window.toast('error', 'Не удалось прокрутить', (e && e.message) || String(e));
         renderPage();
       });
   }
@@ -336,7 +344,7 @@
     }
     setTimeout(function () {
       if (resBox) resBox.classList.remove('show');
-      if (result && result.gold != null && window.S.me) window.S.me.gold = result.gold;
+      if (result && result.gold != null && window.S && window.S.me) window.S.me.gold = result.gold;
       if (window.renderBalance) window.renderBalance();
       renderPage();
     }, 2200);
@@ -372,38 +380,32 @@
     }).join('');
   }
 
+  /* ─── Кнопка «Назад» на странице UPGRADER ─── */
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest && e.target.closest('[data-act="upg-back"]');
+    if (el) {
+      e.preventDefault();
+      var pages = document.querySelectorAll('.page');
+      pages.forEach(function (p) { p.classList.remove('active'); });
+      var home = document.getElementById('page-home');
+      if (home) home.classList.add('active');
+      if (window.S) window.S.page = 'home';
+      document.querySelectorAll('#nav button').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.page === 'home');
+      });
+      window.scrollTo({ top: 0 });
+    }
+  }, true);
+
   /* ─── Автозапуск ─── */
   ensureStyle();
-
-  /* 1. Ждём появления #app и создаём в нём страницу */
-  var appWait = setInterval(function () {
-    if (ensurePage()) clearInterval(appWait);
-  }, 300);
-
-  /* 2. Ждём появления #settingsModal .sheet и вставляем карточку */
-  var cardWait = setInterval(function () {
-    if (ensureSettingsCard()) clearInterval(cardWait);
-  }, 300);
-
-  /* 3. Ждём, пока app.js создаст window.ACTIONS и т.д., и регистрируем действия */
-  var actionsWait = setInterval(function () {
-    if (installActions()) clearInterval(actionsWait);
-  }, 200);
-
-  /* 4. MutationObserver — страховка: если настройки открылись, а карточки нет — добавим */
+  var appWait = setInterval(function () { if (ensurePage()) clearInterval(appWait); }, 300);
+  var cardWait = setInterval(function () { if (ensureSettingsCard()) clearInterval(cardWait); }, 300);
   try {
-    var obs = new MutationObserver(function () {
-      ensureSettingsCard();
-    });
+    var obs = new MutationObserver(function () { ensureSettingsCard(); });
     obs.observe(document.documentElement, { childList: true, subtree: true });
-  } catch (e) {
-    /* очень старый браузер */
-  }
-
-  /* 5. Прогон на случай, если уже всё готово */
+  } catch (e) { /* ок */ }
   ensurePage();
   ensureSettingsCard();
-  installActions();
-
   console.log('[UPGRADER] установлен');
 })();

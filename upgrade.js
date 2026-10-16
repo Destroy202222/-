@@ -390,3 +390,4 @@
   ensureSettingsCard();
   console.log('[UPGRADER] v11 установлен');
 })();
+ 

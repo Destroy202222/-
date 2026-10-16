@@ -150,3 +150,14 @@
   #page-upgrader{max-width:560px;margin-left:auto;margin-right:auto}
   .upg-wheel-wrap{max-width:360px}
 }
+/* ─── Фикс: показываем страницу, как остальные .page ─── */
+#page-upgrader{padding-top:4px}
+#page-upgrader.active{display:block;animation:pageIn .25s ease-out}
+
+/* ─── Фикс: настройки прокручиваются ─── */
+#settingsModal{align-items:flex-end !important;padding:16px 10px calc(12px + var(--safe-b)) !important}
+#settingsModal .sheet{max-height:88vh !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch;padding-bottom:60px !important}
+@media (min-width:520px){
+  #settingsModal{align-items:center !important}
+  #settingsModal .sheet{max-height:calc(100vh - 60px) !important;padding-bottom:20px !important}
+}

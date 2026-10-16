@@ -176,3 +176,19 @@
 .upg-feed-item.win .pay{color:var(--win)}
 .upg-feed-item.lose .pay{color:#ff8fa3}
 .upg-feed-empty{text-align:center;color:var(--dim);font-size:12px;padding:18px}
+/* ─── Фикс: настройки прокручиваются всегда ─── */
+.overlay#settingsModal{
+  align-items:flex-end !important;
+  padding:16px 10px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+.overlay#settingsModal .sheet{
+  max-height:85vh !important;
+  height:auto !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior:contain !important;
+  padding-bottom:70px !important;
+}
+.overlay#settingsModal.active{display:flex !important}

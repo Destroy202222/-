@@ -1,25 +1,36 @@
- /* ══════════════════════════════════════════════════════════════════════
-   UPGRADER v10 — маленькая стрелка-треугольник за кольцом
+/* ══════════════════════════════════════════════════════════════════════
+   UPGRADER v11 — короткая стрелка + плавное замедление + no-x-scroll
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  console.log('[UPGRADER] v10 загружен');
+  console.log('[UPGRADER] v11 загружен');
 
   var U = {
-    stake: 10,
-    chance: 50,
-    spinning: false,
-    angle: 0,
-    feed: [],
-    feedTimer: null,
-    gold: 0,
-    open: false,
-    lastResult: null
+    stake: 10, chance: 50, spinning: false, angle: 0,
+    feed: [], feedTimer: null, gold: 0, open: false, lastResult: null
   };
+  var MIN_CHANCE = 1, MAX_CHANCE = 85, MIN_STAKE = 10;
 
-  var MIN_CHANCE = 1;
-  var MAX_CHANCE = 85;
-  var MIN_STAKE  = 10;
+  /* ─── Запрет горизонтального скролла страницы ─── */
+  (function blockXScroll() {
+    if (document.getElementById('upgNoXScroll')) return;
+    var s = document.createElement('style');
+    s.id = 'upgNoXScroll';
+    s.textContent = 'html,body{overflow-x:hidden !important;max-width:100vw !important}';
+    document.head.appendChild(s);
+    /* touch: если свайп строго горизонтальный — гасим */
+    document.addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1) return;
+      this._x0 = e.touches[0].clientX;
+      this._y0 = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchmove', function (e) {
+      if (e.touches.length !== 1 || this._x0 == null) return;
+      var dx = Math.abs(e.touches[0].clientX - this._x0);
+      var dy = Math.abs(e.touches[0].clientY - this._y0);
+      if (dx > dy && dx > 12) e.preventDefault();
+    }, { passive: false });
+  })();
 
   if (!document.getElementById('upgStyle')) {
     var l = document.createElement('link');
@@ -69,6 +80,7 @@
     var ov = ensureOverlay();
     ov.classList.add('show');
     document.body.style.overflow = 'hidden';
+    document.body.style.overflowX = 'hidden';
     var sm = document.getElementById('settingsModal');
     if (sm) { sm.classList.remove('active'); sm.setAttribute('aria-hidden', 'true'); }
     renderPage();
@@ -154,7 +166,6 @@
     if (btn) btn.innerHTML = '<i class="fas fa-play"></i> КРУТИТЬ · выигрыш ' + payout() + ' G';
   }
 
-  /* Заливка колеса */
   function updateWheel() {
     var arc = document.getElementById('upgWinArc');
     if (arc) {
@@ -189,17 +200,14 @@
     box.innerHTML =
       '<div class="upg-card">' +
         '<div class="upg-wheel-wrap">' +
-          /* стрелка — маленький треугольник снаружи за зелёным кольцом */
           '<div class="upg-marker" id="upgMarker"></div>' +
           '<div class="upg-wheel" id="upgWheel">' +
             '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">' +
-              '<defs>' +
-                '<linearGradient id="ringGrad" x1="0" y1="1" x2="0" y2="0">' +
-                  '<stop offset="0" stop-color="#ff4d6d"/>' +
-                  '<stop offset="0.5" stop-color="#f5c451"/>' +
-                  '<stop offset="1" stop-color="#3ddc97"/>' +
-                '</linearGradient>' +
-              '</defs>' +
+              '<defs><linearGradient id="ringGrad" x1="0" y1="1" x2="0" y2="0">' +
+                '<stop offset="0" stop-color="#ff4d6d"/>' +
+                '<stop offset="0.5" stop-color="#f5c451"/>' +
+                '<stop offset="1" stop-color="#3ddc97"/>' +
+              '</linearGradient></defs>' +
               '<circle cx="100" cy="100" r="92" fill="none" stroke="#1a1440" stroke-width="6"/>' +
               '<circle cx="100" cy="100" r="92" fill="none" stroke="url(#ringGrad)" stroke-width="3" opacity=".85"/>' +
               '<circle cx="100" cy="100" r="78" fill="#0f1633" stroke="rgba(255,255,255,.08)" stroke-width="1"/>' +
@@ -249,18 +257,16 @@
       '<div class="panel" style="margin:14px 0 0"><div class="upg-feed-title"><span>Последние спины</span></div>' +
       '<div class="upg-feed" id="upgFeed">' + feedHtml() + '</div></div>';
 
-    /* Сразу ставим стрелку на текущий угол */
     setMarkerAngle(U.angle);
     updateWheel();
     if (!U.feed.length) loadFeed();
     if (!U.feedTimer) U.feedTimer = setInterval(function () { if (U.open) loadFeed(); }, 15000);
   }
 
-  /* Угол стрелки в градусах от верха по часовой */
   function setMarkerAngle(deg) {
     var m = document.getElementById('upgMarker');
     if (!m) return;
-    m.style.transform = 'translate(-50%, 0) rotate(' + deg + 'deg)';
+    m.style.transform = 'rotate(' + deg + 'deg)';
   }
 
   function spin() {
@@ -275,54 +281,51 @@
     callRpc('upgrade_spin', { p_stake: U.stake, p_chance: U.chance })
       .then(function (r) { if (!r) throw new Error('Пустой ответ'); doSpin(!!r.win, r); })
       .catch(function (e) {
-        U.spinning = false;
-        U.lastResult = null;
-        updateWheel();
+        U.spinning = false; U.lastResult = null; updateWheel();
         if (btn) { btn.disabled = false; btn.classList.remove('spinning'); btn.innerHTML = '<i class="fas fa-play"></i> КРУТИТЬ · выигрыш ' + payout() + ' G'; }
         alert('Ошибка: ' + ((e && e.message) || e));
       });
   }
 
+  /* Плавное замедление — easeOutQuint, длится 6 секунд,
+     стрелка долго катится на последних 30% и мягко останавливается. */
   function doSpin(win, result) {
     var chanceAngle = U.chance * 3.6;
     var half = chanceAngle / 2;
 
     var targetDeg;
     if (win) {
-      var lo = 180 - half + 3;
-      var hi = 180 + half - 3;
+      var lo = 180 - half + 3, hi = 180 + half - 3;
       if (hi < lo) { var t = lo; lo = hi; hi = t; }
       targetDeg = lo + Math.random() * (hi - lo);
     } else {
-      var top1 = 180 - half;
-      var bot = 180 + half;
-      var span1 = Math.max(0, top1);
-      var span2 = Math.max(0, 360 - bot);
-      var total = span1 + span2;
-      var r = Math.random() * total;
-      if (r < span1) targetDeg = r;
-      else targetDeg = bot + (r - span1);
+      var top1 = 180 - half, bot = 180 + half;
+      var span1 = Math.max(0, top1), span2 = Math.max(0, 360 - bot);
+      var total = span1 + span2, r = Math.random() * total;
+      targetDeg = r < span1 ? r : bot + (r - span1);
     }
 
     var start = U.angle;
-    var loops = 4 + Math.floor(Math.random() * 2);
+    var loops = 5 + Math.floor(Math.random() * 3);      // 5-7 полных оборотов
     var baseTarget = ((targetDeg - (start % 360)) + 360) % 360;
     var end = start + loops * 360 + baseTarget;
-    var overshoot = end + 8;
-    var backOff = end + Math.random() * 1.5;
+    var overshoot = end + 10;                             // «байтит» на +10°
+    var backOff = end + 1 + Math.random() * 1.5;
 
-    var duration = 4200;
+    var duration = 6000;                                  // 6 секунд — долгое плавное замедление
     var startTime = performance.now();
-    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    /* easeOutQuint — очень плавно тормозит в конце */
+    function easeOutQuint(t) { return 1 - Math.pow(1 - t, 5); }
 
     function frame(now) {
       var t = Math.min(1, (now - startTime) / duration);
-      var eased = easeOutCubic(t);
+      var eased = easeOutQuint(t);
       var a;
-      if (eased < 0.94) {
-        a = start + (overshoot - start) * (eased / 0.94);
+      if (eased < 0.96) {
+        a = start + (overshoot - start) * (eased / 0.96);
       } else {
-        var t2 = (eased - 0.94) / 0.06;
+        var t2 = (eased - 0.96) / 0.04;
         a = overshoot + (backOff - overshoot) * t2;
       }
       U.angle = a % 360;
@@ -360,9 +363,7 @@
 
     setTimeout(function () {
       if (U.open) {
-        U.lastResult = null;
-        updateWheel();
-        renderPage();
+        U.lastResult = null; updateWheel(); renderPage();
       }
     }, 2600);
   }
@@ -387,5 +388,5 @@
   var cardWait = setInterval(function () { if (ensureSettingsCard()) clearInterval(cardWait); }, 300);
   try { new MutationObserver(function () { ensureSettingsCard(); }).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) { /* ok */ }
   ensureSettingsCard();
-  console.log('[UPGRADER] v10 установлен');
+  console.log('[UPGRADER] v11 установлен');
 })();

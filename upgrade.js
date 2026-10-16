@@ -1,9 +1,10 @@
 /* ══════════════════════════════════════════════════════════════════════
-   UPGRADER v5 — работает через штатный navigate() из app.js
+   UPGRADER v6 — открывается как отдельный полноэкранный слой
+   Никак не связан с navigate() и PAGES из app.js
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  console.log('[UPGRADER] v5 загружен');
+  console.log('[UPGRADER] v6 загружен');
 
   var MULTS = [
     { mult: 1.5, chance: 0.65, label: 'x1.5' },
@@ -13,7 +14,7 @@
   var SEED = [1.5, 0, 2, 0, 5, 0, 1.5, 0, 2, 0, 1.5, 0, 2, 0, 1.5, 0, 2, 0, 5, 0, 1.5, 0, 2, 0, 1.5, 0, 2, 0, 1.5, 0];
   var SEGS = SEED.length;
   var SEG_ANGLE = 2 * Math.PI / SEGS;
-  var U = { mult: 2, stake: 100, spinning: false, feed: [], feedTimer: null, wheelAngle: 0 };
+  var U = { mult: 2, stake: 100, spinning: false, feed: [], feedTimer: null, wheelAngle: 0, open: false };
 
   /* ─── CSS ─── */
   if (!document.getElementById('upgStyle')) {
@@ -22,24 +23,40 @@
     document.head.appendChild(l);
   }
 
-  /* ─── Страница: создаём ровно так, как app.js ожидает (.page) ─── */
-  function ensurePage() {
-    if (document.getElementById('page-upgrader')) return true;
-    var app = document.getElementById('app');
-    if (!app) return false;
-    var section = document.createElement('section');
-    section.className = 'page';
-    section.id = 'page-upgrader';
-    section.innerHTML = '<div id="upgBody"></div>';
-    var nav = app.querySelector('.nav');
-    if (nav) app.insertBefore(section, nav);
-    else app.appendChild(section);
-    /* Дописываем в список страниц app.js, иначе navigate отбросит её */
-    if (Array.isArray(window.PAGES) && window.PAGES.indexOf('upgrader') === -1) {
-      window.PAGES.push('upgrader');
-      console.log('[UPGRADER] страница добавлена в PAGES');
-    }
-    return true;
+  /* ─── Полноэкранный оверлей ─── */
+  function ensureOverlay() {
+    var ov = document.getElementById('upgOverlay');
+    if (ov) return ov;
+    ov = document.createElement('div');
+    ov.id = 'upgOverlay';
+    ov.innerHTML =
+      '<div class="upg-overlay-bar">' +
+        '<button class="upg-overlay-back" data-upg-act="close" aria-label="Назад"><i class="fas fa-chevron-left"></i></button>' +
+        '<span>UPGRADER</span>' +
+        '<span style="width:40px"></span>' +
+      '</div>' +
+      '<div class="upg-overlay-scroll"><div id="upgBody"></div></div>';
+    document.body.appendChild(ov);
+    return ov;
+  }
+
+  function openOverlay() {
+    if (U.open) return;
+    U.open = true;
+    var ov = ensureOverlay();
+    ov.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    var sm = document.getElementById('settingsModal');
+    if (sm) { sm.classList.remove('active'); sm.setAttribute('aria-hidden', 'true'); }
+    console.log('[UPGRADER] открыт');
+    setTimeout(renderPage, 20);
+  }
+
+  function closeOverlay() {
+    U.open = false;
+    var ov = document.getElementById('upgOverlay');
+    if (ov) ov.classList.remove('show');
+    document.body.style.overflow = '';
   }
 
   /* ─── Карточка в настройках ─── */
@@ -48,8 +65,8 @@
     if (!sheet || sheet.querySelector('.settings-upg')) return !!sheet;
     var card = document.createElement('div');
     card.className = 'settings-upg';
-    card.setAttribute('data-act', 'upg-open');
     card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
     card.innerHTML =
       '<div class="ico"><i class="fas fa-arrow-trend-up"></i></div>' +
       '<div class="main"><b>UPGRADER</b><span>Прокрути голду — умножь её в 1.5, 2 или 5 раз</span></div>' +
@@ -61,65 +78,54 @@
     return true;
   }
 
-  /* ─── Открыть страницу через штатный navigate ─── */
-  function openUpgrader() {
-    console.log('[UPGRADER] открываем');
-    var sm = document.getElementById('settingsModal');
-    if (sm) { sm.classList.remove('active'); sm.setAttribute('aria-hidden', 'true'); }
-    if (window.S) {
-      /* Вручную переключаем классы и вызываем renderPage */
-      document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
-      var up = document.getElementById('page-upgrader');
-      if (up) up.classList.add('active');
-      window.S.page = 'upgrader';
-    }
-    window.scrollTo({ top: 0 });
-    /* Небольшая задержка, чтобы DOM успел примениться */
-    setTimeout(renderPage, 30);
-  }
-
-  /* ─── Делегирование кликов ─── */
+  /* ─── Все клики — свои, в capture-фазе, чтобы никто не перехватил ─── */
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
-    var el;
 
-    if ((el = t.closest('[data-act="upg-open"]'))) { e.preventDefault(); e.stopPropagation(); return openUpgrader(); }
-    if ((el = t.closest('[data-act="upg-back"]'))) {
-      e.preventDefault(); e.stopPropagation();
-      document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
-      var home = document.getElementById('page-home');
-      if (home) home.classList.add('active');
-      if (window.S) window.S.page = 'home';
-      document.querySelectorAll('#nav button').forEach(function (b) { b.classList.toggle('active', b.dataset.page === 'home'); });
-      window.scrollTo({ top: 0 });
-      return;
-    }
-    if ((el = t.closest('[data-act="upg-mult"]'))) {
+    /* Открыть */
+    var open = t.closest('.settings-upg');
+    if (open) { e.preventDefault(); e.stopPropagation(); openOverlay(); return; }
+
+    /* Закрыть */
+    if (t.closest('[data-upg-act="close"]')) { e.preventDefault(); e.stopPropagation(); closeOverlay(); return; }
+
+    /* Множитель */
+    var m = t.closest('[data-upg-act="mult"]');
+    if (m) {
       if (U.spinning) return;
-      var m = parseFloat(el.dataset.mult);
-      if (MULTS.some(function (x) { return x.mult === m; })) { U.mult = m; renderPage(); }
+      var mv = parseFloat(m.dataset.mult);
+      if (MULTS.some(function (x) { return x.mult === mv; })) { U.mult = mv; renderPage(); }
       return;
     }
-    if ((el = t.closest('[data-act="upg-stake-quick"]'))) {
+
+    /* Быстрые ставки */
+    var q = t.closest('[data-upg-act="quick"]');
+    if (q) {
       if (U.spinning) return;
       var gold = (window.S && window.S.me && window.S.me.gold) || 0;
-      var v = el.dataset.value, val;
-      if (v === 'max') val = gold;
-      else if (v === 'half') val = Math.floor(gold / 2);
-      else val = parseInt(v, 10) || 0;
-      U.stake = Math.max(10, Math.min(gold, val));
+      var val = q.dataset.value, v;
+      if (val === 'max') v = gold;
+      else if (val === 'half') v = Math.floor(gold / 2);
+      else v = parseInt(val, 10) || 0;
+      U.stake = Math.max(10, Math.min(gold, v));
       renderPage();
       return;
     }
-    if ((el = t.closest('[data-act="upg-spin"]'))) { e.preventDefault(); spin(); return; }
+
+    /* Спин */
+    if (t.closest('[data-upg-act="spin"]')) { e.preventDefault(); e.stopPropagation(); spin(); return; }
   }, true);
 
-  /* ─── Отрисовка страницы ─── */
+  /* ─── Отрисовка ─── */
   function renderPage() {
     var box = document.getElementById('upgBody');
-    if (!box) { console.warn('[UPGRADER] нет #upgBody'); return; }
-    if (!window.S || !window.S.me) { console.warn('[UPGRADER] S.me нет'); return; }
+    if (!box) return;
+    if (!window.S || !window.S.me) {
+      box.innerHTML = '<div class="upg-empty">Загрузка профиля…</div>';
+      setTimeout(renderPage, 300);
+      return;
+    }
     var gold = window.S.me.gold || 0;
     var cfg = MULTS.filter(function (x) { return x.mult === U.mult; })[0] || MULTS[1];
     var maxStake = Math.max(10, gold);
@@ -127,14 +133,10 @@
     var payout = Math.floor(U.stake * U.mult);
 
     box.innerHTML =
-      '<div class="upg-head">' +
-        '<button class="icon-btn" data-act="upg-back" aria-label="Назад"><i class="fas fa-chevron-left"></i></button>' +
-        '<div><h2>UPGRADER</h2><p>Баланс: <b style="color:var(--gold)">' + gold + ' G</b></p></div>' +
-      '</div>' +
       '<div class="upg-card">' +
         '<div class="upg-mults">' +
           MULTS.map(function (m) {
-            return '<div class="upg-mult ' + (m.mult === U.mult ? 'on' : '') + '" data-act="upg-mult" data-mult="' + m.mult + '">' +
+            return '<div class="upg-mult ' + (m.mult === U.mult ? 'on' : '') + '" data-upg-act="mult" data-mult="' + m.mult + '">' +
               '<b>' + m.label + '</b><span>×' + m.mult + '</span>' +
               '<span class="chance">' + Math.round(m.chance * 100) + '% шанс</span></div>';
           }).join('') +
@@ -148,19 +150,19 @@
           '<div class="upg-stake-row"><label>Ставка</label><div class="val" id="upgStakeVal">' + U.stake + '<small>G</small></div></div>' +
           '<input class="upg-slider" type="range" id="upgSlider" min="10" max="' + maxStake + '" step="10" value="' + Math.min(U.stake, maxStake) + '">' +
           '<div class="upg-quick">' +
-            '<button type="button" data-act="upg-stake-quick" data-value="100">100</button>' +
-            '<button type="button" data-act="upg-stake-quick" data-value="500">500</button>' +
-            '<button type="button" data-act="upg-stake-quick" data-value="1000">1000</button>' +
-            '<button type="button" data-act="upg-stake-quick" data-value="half">½</button>' +
-            '<button type="button" data-act="upg-stake-quick" data-value="max">Всё</button>' +
+            '<button type="button" data-upg-act="quick" data-value="100">100</button>' +
+            '<button type="button" data-upg-act="quick" data-value="500">500</button>' +
+            '<button type="button" data-upg-act="quick" data-value="1000">1000</button>' +
+            '<button type="button" data-upg-act="quick" data-value="half">½</button>' +
+            '<button type="button" data-upg-act="quick" data-value="max">Всё</button>' +
           '</div>' +
         '</div>' +
-        '<button class="upg-spin" id="upgSpin" type="button" data-act="upg-spin"' + (gold < 10 ? ' disabled' : '') + '>' +
+        '<button class="upg-spin" id="upgSpin" type="button" data-upg-act="spin"' + (gold < 10 ? ' disabled' : '') + '>' +
           '<i class="fas fa-arrow-trend-up"></i> КРУТИТЬ · выигрыш ' + payout + ' G' +
         '</button>' +
-        '<div class="upg-hint" id="upgHint">Выигрыш: <b>' + payout + ' G</b> · Шанс: <b>' + Math.round(cfg.chance * 100) + '%</b><br>Минимальная ставка — 10 G</div>' +
+        '<div class="upg-hint">Выигрыш: <b>' + payout + ' G</b> · Шанс: <b>' + Math.round(cfg.chance * 100) + '%</b><br>Баланс: <b>' + gold + ' G</b> · минимальная ставка 10 G</div>' +
       '</div>' +
-      '<div class="panel"><div class="upg-feed-title"><span>Лента выигрышей</span><b>LIVE</b></div>' +
+      '<div class="panel" style="margin:0 16px 24px"><div class="upg-feed-title"><span>Лента выигрышей</span><b>LIVE</b></div>' +
       '<div class="upg-feed" id="upgFeed">' + feedHtml() + '</div></div>';
 
     var slider = document.getElementById('upgSlider');
@@ -175,8 +177,8 @@
     var rotor = document.getElementById('upgRotor');
     if (rotor && U.wheelAngle) rotor.setAttribute('transform', 'rotate(' + (U.wheelAngle * 180 / Math.PI).toFixed(2) + ' 100 100)');
     if (!U.feed.length) loadFeed();
-    if (!U.feedTimer) U.feedTimer = setInterval(function () { if (window.S && window.S.page === 'upgrader') loadFeed(); }, 15000);
-    console.log('[UPGRADER] страница отрисована');
+    if (!U.feedTimer) U.feedTimer = setInterval(function () { if (U.open) loadFeed(); }, 15000);
+    console.log('[UPGRADER] отрисован');
   }
 
   function wheelSvg() {
@@ -300,11 +302,9 @@
     }).join('');
   }
 
-  /* ─── Автозапуск ─── */
-  var appWait = setInterval(function () { if (ensurePage()) clearInterval(appWait); }, 300);
+  /* ─── Автозапуск: карточка ─── */
   var cardWait = setInterval(function () { if (ensureSettingsCard()) clearInterval(cardWait); }, 300);
   try { new MutationObserver(function () { ensureSettingsCard(); }).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) { /* ok */ }
-  ensurePage();
   ensureSettingsCard();
-  console.log('[UPGRADER] v5 установлен');
+  console.log('[UPGRADER] v6 установлен');
 })();

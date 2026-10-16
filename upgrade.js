@@ -1,9 +1,12 @@
-  /* ══════════════════════════════════════════════════════════════════════
-   UPGRADER v11 — короткая стрелка + плавное замедление + no-x-scroll
+/* ══════════════════════════════════════════════════════════════════════
+   UPGRADER v12 — финальная версия
+   · короткая стрелка (треугольник за кольцом)
+   · плавное длинное замедление (6 сек, easeOutQuint)
+   · запрет горизонтального скролла
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  console.log('[UPGRADER] v11 загружен');
+  console.log('[UPGRADER] v12 загружен');
 
   var U = {
     stake: 10, chance: 50, spinning: false, angle: 0,
@@ -11,33 +14,37 @@
   };
   var MIN_CHANCE = 1, MAX_CHANCE = 85, MIN_STAKE = 10;
 
-  /* ─── Запрет горизонтального скролла страницы ─── */
+  /* ─── Запрет горизонтального скролла ─── */
   (function blockXScroll() {
     if (document.getElementById('upgNoXScroll')) return;
     var s = document.createElement('style');
     s.id = 'upgNoXScroll';
-    s.textContent = 'html,body{overflow-x:hidden !important;max-width:100vw !important}';
+    s.textContent = 'html,body{overflow-x:hidden !important;max-width:100vw !important;overscroll-behavior-x:none !important}';
     document.head.appendChild(s);
-    /* touch: если свайп строго горизонтальный — гасим */
+    var x0 = null, y0 = null;
     document.addEventListener('touchstart', function (e) {
-      if (e.touches.length !== 1) return;
-      this._x0 = e.touches[0].clientX;
-      this._y0 = e.touches[0].clientY;
+      if (e.touches.length !== 1) { x0 = null; return; }
+      x0 = e.touches[0].clientX;
+      y0 = e.touches[0].clientY;
     }, { passive: true });
     document.addEventListener('touchmove', function (e) {
-      if (e.touches.length !== 1 || this._x0 == null) return;
-      var dx = Math.abs(e.touches[0].clientX - this._x0);
-      var dy = Math.abs(e.touches[0].clientY - this._y0);
-      if (dx > dy && dx > 12) e.preventDefault();
+      if (e.touches.length !== 1 || x0 == null) return;
+      var dx = Math.abs(e.touches[0].clientX - x0);
+      var dy = Math.abs(e.touches[0].clientY - y0);
+      if (dx > dy && dx > 10) e.preventDefault();
     }, { passive: false });
   })();
 
+  /* ─── CSS с cache-buster ─── */
   if (!document.getElementById('upgStyle')) {
     var l = document.createElement('link');
-    l.id = 'upgStyle'; l.rel = 'stylesheet'; l.href = 'upgrade.css';
+    l.id = 'upgStyle';
+    l.rel = 'stylesheet';
+    l.href = 'upgrade.css?v=12';
     document.head.appendChild(l);
   }
 
+  /* ─── RPC ─── */
   var SB_URL = 'https://ggjkivobmwwqgzkaaihx.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdnamtpdm9ibXd3cWd6a2FhaWh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NzQzODcsImV4cCI6MjEwNzE1MDM4N30.flfcDmjp9riwZe9N4xCqX9CzIo6D9x9SeeQB3YU7254';
   function getSession() { try { return localStorage.getItem('bnk_session') || ''; } catch (e) { return ''; } }
@@ -58,6 +65,7 @@
     });
   }
 
+  /* ─── Оверлей ─── */
   function ensureOverlay() {
     var ov = document.getElementById('upgOverlay');
     if (ov) return ov;
@@ -105,6 +113,7 @@
 
   function payout() { return Math.max(1, Math.floor(U.stake * 100 / U.chance)); }
 
+  /* ─── Карточка в настройках ─── */
   function ensureSettingsCard() {
     var sheet = document.querySelector('#settingsModal .sheet');
     if (!sheet || sheet.querySelector('.settings-upg')) return !!sheet;
@@ -121,6 +130,7 @@
     return true;
   }
 
+  /* ─── Клики ─── */
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
@@ -140,6 +150,7 @@
     if (t.closest('[data-upg-act="spin"]')) { e.preventDefault(); e.stopPropagation(); spin(); return; }
   }, true);
 
+  /* ─── Слайдеры ─── */
   document.addEventListener('input', function (e) {
     if (!e.target || !e.target.dataset) return;
     if (e.target.dataset.upgAct === 'stake-slider') {
@@ -166,6 +177,7 @@
     if (btn) btn.innerHTML = '<i class="fas fa-play"></i> КРУТИТЬ · выигрыш ' + payout() + ' G';
   }
 
+  /* ─── Отрисовка колеса (заливка снизу) ─── */
   function updateWheel() {
     var arc = document.getElementById('upgWinArc');
     if (arc) {
@@ -190,6 +202,7 @@
     }
   }
 
+  /* ─── Страница ─── */
   function renderPage() {
     var box = document.getElementById('upgBody');
     if (!box) return;
@@ -287,12 +300,10 @@
       });
   }
 
-  /* Плавное замедление — easeOutQuint, длится 6 секунд,
-     стрелка долго катится на последних 30% и мягко останавливается. */
+  /* ─── Спин: 6 секунд, easeOutQuint — очень плавно ─── */
   function doSpin(win, result) {
     var chanceAngle = U.chance * 3.6;
     var half = chanceAngle / 2;
-
     var targetDeg;
     if (win) {
       var lo = 180 - half + 3, hi = 180 + half - 3;
@@ -306,28 +317,22 @@
     }
 
     var start = U.angle;
-    var loops = 5 + Math.floor(Math.random() * 3);      // 5-7 полных оборотов
+    var loops = 5 + Math.floor(Math.random() * 3);
     var baseTarget = ((targetDeg - (start % 360)) + 360) % 360;
     var end = start + loops * 360 + baseTarget;
-    var overshoot = end + 10;                             // «байтит» на +10°
+    var overshoot = end + 10;
     var backOff = end + 1 + Math.random() * 1.5;
 
-    var duration = 6000;                                  // 6 секунд — долгое плавное замедление
+    var duration = 6000;
     var startTime = performance.now();
-
-    /* easeOutQuint — очень плавно тормозит в конце */
     function easeOutQuint(t) { return 1 - Math.pow(1 - t, 5); }
 
     function frame(now) {
       var t = Math.min(1, (now - startTime) / duration);
       var eased = easeOutQuint(t);
       var a;
-      if (eased < 0.96) {
-        a = start + (overshoot - start) * (eased / 0.96);
-      } else {
-        var t2 = (eased - 0.96) / 0.04;
-        a = overshoot + (backOff - overshoot) * t2;
-      }
+      if (eased < 0.96) a = start + (overshoot - start) * (eased / 0.96);
+      else { var t2 = (eased - 0.96) / 0.04; a = overshoot + (backOff - overshoot) * t2; }
       U.angle = a % 360;
       setMarkerAngle(a);
       if (t < 1) requestAnimationFrame(frame);
@@ -362,9 +367,7 @@
     setTimeout(function () { flash.remove(); }, 1700);
 
     setTimeout(function () {
-      if (U.open) {
-        U.lastResult = null; updateWheel(); renderPage();
-      }
+      if (U.open) { U.lastResult = null; updateWheel(); renderPage(); }
     }, 2600);
   }
 
@@ -385,9 +388,9 @@
     }).join('');
   }
 
+  /* ─── Автозапуск ─── */
   var cardWait = setInterval(function () { if (ensureSettingsCard()) clearInterval(cardWait); }, 300);
   try { new MutationObserver(function () { ensureSettingsCard(); }).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) { /* ok */ }
   ensureSettingsCard();
-  console.log('[UPGRADER] v11 установлен');
+  console.log('[UPGRADER] v12 установлен');
 })();
- 

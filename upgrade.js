@@ -1,19 +1,20 @@
 /* ══════════════════════════════════════════════════════════════════════
-   UPGRADER v8 — выбор процента, движется стрелка, колесо стоит
+   UPGRADER v9 — заливка снизу в обе стороны, стрелка сверху по часовой
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  console.log('[UPGRADER] v8 загружен');
+  console.log('[UPGRADER] v9 загружен');
 
   var U = {
     stake: 10,
-    chance: 50,      // 1..85
+    chance: 50,
     spinning: false,
-    angle: 0,        // угол стрелки в градусах (0 = верх)
+    angle: 0,          // угол стрелки в градусах, 0 = верх, по часовой
     feed: [],
     feedTimer: null,
     gold: 0,
-    open: false
+    open: false,
+    lastResult: null   // 'win' | 'lose' | null — что показать в центре
   };
 
   var MIN_CHANCE = 1;
@@ -43,7 +44,7 @@
       },
       body: JSON.stringify(args || {})
     }).then(function (r) {
-      if (!r.ok) return r.text().then(function (t) { throw new Error('RPC ' + name + ': ' + t.slice(0, 120)); });
+      if (!r.ok) return r.text().then(function (t) { throw new Error('RPC ' + name + ': ' + t.slice(0, 140)); });
       return r.json();
     });
   }
@@ -93,11 +94,7 @@
       .catch(function () { U.gold = U.gold || 0; renderPage(); });
   }
 
-  /* ─── Потенциальный выигрыш ─── */
-  function payout() {
-    /* payout = stake * 100 / chance, округляем вниз */
-    return Math.max(1, Math.floor(U.stake * 100 / U.chance));
-  }
+  function payout() { return Math.max(1, Math.floor(U.stake * 100 / U.chance)); }
 
   /* ─── Карточка в настройках ─── */
   function ensureSettingsCard() {
@@ -137,7 +134,6 @@
     if (t.closest('[data-upg-act="spin"]')) { e.preventDefault(); e.stopPropagation(); spin(); return; }
   }, true);
 
-  /* Слайдеры ставки и шанса */
   document.addEventListener('input', function (e) {
     if (!e.target || !e.target.dataset) return;
     if (e.target.dataset.upgAct === 'stake-slider') {
@@ -148,13 +144,11 @@
     if (e.target.dataset.upgAct === 'chance-slider') {
       if (U.spinning) return;
       U.chance = Math.max(MIN_CHANCE, Math.min(MAX_CHANCE, parseInt(e.target.value, 10) || MIN_CHANCE));
-      /* перерисовываем только заливку колеса и текст */
-      updateWheelFill();
+      updateWheel();
       updateLabels();
     }
   }, true);
 
-  /* ─── Только текстовые лейблы (без перерисовки DOM) ─── */
   function updateLabels() {
     var sv = document.getElementById('upgStakeVal');
     if (sv) sv.innerHTML = U.stake + '<small>G</small>';
@@ -166,20 +160,44 @@
     if (btn) btn.innerHTML = '<i class="fas fa-play"></i> КРУТИТЬ · выигрыш ' + payout() + ' G';
   }
 
-  /* ─── Сектор заливки на колесе ─── */
-  function updateWheelFill() {
+  /* ─── Отрисовка колеса ───
+     Система координат: 0° = верх, отсчёт по часовой.
+     Победная зона — от 180° (низ) в обе стороны на chanceAngle/2.
+     chanceAngle = chance * 3.6 (например, 50% = 180°). */
+  function updateWheel() {
+    /* заливка */
     var arc = document.getElementById('upgWinArc');
-    if (!arc) return;
-    var cx = 100, cy = 100, r = 88;
-    var startA = -Math.PI / 2;                        // верх
-    var endA = startA + (U.chance / 100) * Math.PI * 2;
-    var x0 = cx + r * Math.cos(startA), y0 = cy + r * Math.sin(startA);
-    var x1 = cx + r * Math.cos(endA),   y1 = cy + r * Math.sin(endA);
-    var largeArc = U.chance >= 50 ? 1 : 0;
-    /* Путь: от центра к началу сектора, дуга, обратно к центру */
-    var d = 'M' + cx + ',' + cy + ' L' + x0.toFixed(2) + ',' + y0.toFixed(2) +
-            ' A' + r + ',' + r + ' 0 ' + largeArc + ' 1 ' + x1.toFixed(2) + ',' + y1.toFixed(2) + ' Z';
-    arc.setAttribute('d', d);
+    if (arc) {
+      var cx = 100, cy = 100, r = 78;
+      var chanceAngle = U.chance * 3.6;
+      var half = chanceAngle / 2;
+      /* углы в радианах, от вертикали вверх (0 = -PI/2 в стандратной SVG-системе) */
+      var startA = (180 - half) * Math.PI / 180 - Math.PI / 2;
+      var endA   = (180 + half) * Math.PI / 180 - Math.PI / 2;
+      var x0 = cx + r * Math.cos(startA), y0 = cy + r * Math.sin(startA);
+      var x1 = cx + r * Math.cos(endA),   y1 = cy + r * Math.sin(endA);
+      var largeArc = chanceAngle > 180 ? 1 : 0;
+      var d = 'M' + cx + ',' + cy + ' L' + x0.toFixed(2) + ',' + y0.toFixed(2) +
+              ' A' + r + ',' + r + ' 0 ' + largeArc + ' 1 ' + x1.toFixed(2) + ',' + y1.toFixed(2) + ' Z';
+      arc.setAttribute('d', d);
+    }
+    /* подпись по центру */
+    var txt = document.getElementById('upgCenterTxt');
+    if (txt) {
+      if (U.spinning) {
+        txt.textContent = 'Крутим…';
+        txt.className = 'upg-center-txt';
+      } else if (U.lastResult === 'win') {
+        txt.textContent = 'ПОБЕДА';
+        txt.className = 'upg-center-txt win';
+      } else if (U.lastResult === 'lose') {
+        txt.textContent = 'ПРОИГРЫШ';
+        txt.className = 'upg-center-txt lose';
+      } else {
+        txt.textContent = U.chance + '%';
+        txt.className = 'upg-center-txt';
+      }
+    }
   }
 
   /* ─── Рендер страницы ─── */
@@ -193,44 +211,63 @@
     box.innerHTML =
       '<div class="upg-card">' +
 
-        /* Колесо со стрелкой */
+        /* Колесо */
         '<div class="upg-wheel-wrap">' +
+
+          /* стрелка сверху */
+          '<div class="upg-marker"></div>' +
+
+          /* круг */
           '<div class="upg-wheel" id="upgWheel">' +
             '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">' +
               '<defs>' +
-                '<radialGradient id="hubG" cx="0.4" cy="0.3" r="0.8"><stop offset="0" stop-color="#fff3b0"/><stop offset="1" stop-color="#a16207"/></radialGradient>' +
+                '<linearGradient id="ringGrad" x1="0" y1="1" x2="0" y2="0">' +
+                  '<stop offset="0" stop-color="#ff4d6d"/>' +
+                  '<stop offset="0.5" stop-color="#f5c451"/>' +
+                  '<stop offset="1" stop-color="#3ddc97"/>' +
+                '</linearGradient>' +
               '</defs>' +
-              /* фон круга */
-              '<circle cx="100" cy="100" r="88" fill="#0f1633" stroke="rgba(255,255,255,.12)" stroke-width="2"/>' +
-              /* сектор выигрыша */
-              '<path id="upgWinArc" fill="#3ddc97" d="M100,100 L100,12 A88,88 0 1 1 100,12 Z" opacity=".85"/>' +
-              /* оставшийся сектор — проигрыш */
-              '<circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,77,109,.28)" stroke-width="2"/>' +
+
+              /* внешнее кольцо — фон */
+              '<circle cx="100" cy="100" r="92" fill="none" stroke="#1a1440" stroke-width="6"/>' +
+              '<circle cx="100" cy="100" r="92" fill="none" stroke="url(#ringGrad)" stroke-width="3" opacity=".85"/>' +
+
+              /* тёмный круг внутри */
+              '<circle cx="100" cy="100" r="78" fill="#0f1633" stroke="rgba(255,255,255,.08)" stroke-width="1"/>' +
+              /* сектор проигрыша — красноватая подсветка сверху */
+              '<circle cx="100" cy="100" r="78" fill="none" stroke="rgba(255,77,109,.15)" stroke-width="2"/>' +
+
+              /* заливка выигрыша */
+              '<path id="upgWinArc" fill="#2a8a5e" d="M100,100 L100,22 A78,78 0 1 1 100,22 Z" opacity=".9"/>' +
+              /* зелёный контур заливки */
+              '<path id="upgWinEdge" fill="none" stroke="#3ddc97" stroke-width="1.5" opacity=".6" d=""/>' +
+
               /* hub */
-              '<circle cx="100" cy="100" r="18" fill="url(#hubG)" stroke="#7a4a05" stroke-width="2"/>' +
-              '<circle cx="100" cy="100" r="8" fill="#0d1128" stroke="#7a4a05" stroke-width="1.5"/>' +
+              '<circle cx="100" cy="100" r="26" fill="rgba(7,11,28,.6)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>' +
             '</svg>' +
+
+            /* центральный текст */
+            '<div class="upg-center-txt" id="upgCenterTxt">' + U.chance + '%</div>' +
           '</div>' +
-          /* стрелка вращается вокруг центра */
-          '<div class="upg-arrow" id="upgArrow">' +
-            '<svg viewBox="0 0 40 200" xmlns="http://www.w3.org/2000/svg">' +
-              '<polygon points="20,10 32,40 26,40 26,190 14,190 14,40 8,40" fill="#f5c451" stroke="#7a4a05" stroke-width="1.5"/>' +
-            '</svg>' +
-          '</div>' +
-          /* маркер-иголка сверху */
-          '<div class="upg-marker"></div>' +
         '</div>' +
 
-        /* Процент */
-        '<div class="upg-row">' +
+        /* Проценты вокруг колеса */
+        '<div class="upg-pct-labels">' +
+          '<span class="pct-top">100%</span>' +
+          '<span class="pct-left">50%</span>' +
+          '<span class="pct-right">50%</span>' +
+          '<span class="pct-bottom">0%</span>' +
+        '</div>' +
+
+        /* Шанс */
+        '<div class="upg-row" style="margin-top:14px">' +
           '<label>Шанс победы</label>' +
           '<div class="val" id="upgChanceVal">' + U.chance + '%</div>' +
         '</div>' +
         '<input type="range" class="upg-slider upg-slider-green" min="' + MIN_CHANCE + '" max="' + MAX_CHANCE + '" step="1" value="' + U.chance + '" data-upg-act="chance-slider">' +
-        '<div class="upg-marks"><span>1%</span><span>85%</span></div>' +
 
         /* Ставка */
-        '<div class="upg-row" style="margin-top:16px">' +
+        '<div class="upg-row" style="margin-top:14px">' +
           '<label>Ставка</label>' +
           '<div class="val" id="upgStakeVal">' + U.stake + '<small>G</small></div>' +
         '</div>' +
@@ -243,7 +280,7 @@
           '<button type="button" data-upg-act="stake-quick" data-value="max">Всё</button>' +
         '</div>' +
 
-        /* Информация */
+        /* Инфо */
         '<div class="upg-info">' +
           '<div><span>Выигрыш при победе</span><b id="upgPayout">' + payout() + ' G</b></div>' +
           '<div><span>Баланс</span><b>' + gold + ' G</b></div>' +
@@ -257,13 +294,7 @@
       '<div class="panel" style="margin:14px 0 0"><div class="upg-feed-title"><span>Последние спины</span></div>' +
       '<div class="upg-feed" id="upgFeed">' + feedHtml() + '</div></div>';
 
-    /* Начальная позиция стрелки */
-    var arrow = document.getElementById('upgArrow');
-    if (arrow) arrow.style.transform = 'rotate(' + U.angle + 'deg)';
-
-    /* Заливка колеса */
-    updateWheelFill();
-
+    updateWheel();
     if (!U.feed.length) loadFeed();
     if (!U.feedTimer) U.feedTimer = setInterval(function () { if (U.open) loadFeed(); }, 15000);
   }
@@ -273,73 +304,78 @@
     if (U.spinning) return;
     if (U.gold < U.stake) { alert('Недостаточно голды'); return; }
     U.spinning = true;
+    U.lastResult = null;
+    updateWheel();
     var btn = document.getElementById('upgSpin');
     if (btn) { btn.disabled = true; btn.classList.add('spinning'); btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Крутим…'; }
 
-    /* Спрашиваем сервер, но сразу запускаем анимацию — она доведёт до правильного сектора */
     callRpc('upgrade_spin', { p_stake: U.stake, p_chance: U.chance })
-      .then(function (r) {
-        if (!r) throw new Error('Пустой ответ');
-        doSpin(!!r.win, r);
-      })
+      .then(function (r) { if (!r) throw new Error('Пустой ответ'); doSpin(!!r.win, r); })
       .catch(function (e) {
         U.spinning = false;
+        U.lastResult = null;
+        updateWheel();
         if (btn) { btn.disabled = false; btn.classList.remove('spinning'); btn.innerHTML = '<i class="fas fa-play"></i> КРУТИТЬ · выигрыш ' + payout() + ' G'; }
         alert('Ошибка: ' + ((e && e.message) || e));
       });
   }
 
-  /* Как выглядит колесо:
-     - сектор победы от 12 часов по часовой стрелке до U.chance% круга
-     - сектор проигрыша — остаток
-     Целевой угол для стрелки:
-     - если победа → случайный угол в [0..chance% * 360)
-     - если проигрыш → случайный угол в [chance% * 360 .. 360)
-     Угол 0 = верх, по часовой. */
+  /* Углы: стрелка идёт по часовой от верха.
+     Победа — стрелка встаёт в полукруг СНИЗУ: [180 - half, 180 + half].
+     Проигрыш — стрелка встаёт в верхнем полукруге: вне этого диапазона. */
   function doSpin(win, result) {
-    var arrow = document.getElementById('upgArrow');
-    if (!arrow) { finishSpin(win, result); return; }
+    var marker = document.getElementById('upgMarker');
+    var chanceAngle = U.chance * 3.6;
+    var half = chanceAngle / 2;
 
-    var chanceAngle = (U.chance / 100) * 360;
-    /* где должна встать стрелка */
     var targetDeg;
-    if (win) targetDeg = Math.random() * (chanceAngle - 4) + 2;
-    else     targetDeg = chanceAngle + 2 + Math.random() * (360 - chanceAngle - 4);
-    if (targetDeg < 0) targetDeg = 0;
-    if (targetDeg > 359) targetDeg = 359;
+    if (win) {
+      /* низ ± half, с небольшим отступом от края чтобы не «на грани» */
+      var lo = 180 - half + 3;
+      var hi = 180 + half - 3;
+      if (hi < lo) { var t = lo; lo = hi; hi = t; }
+      targetDeg = lo + Math.random() * (hi - lo);
+    } else {
+      /* верхний полукруг: [0, 180-half) ∪ (180+half, 360) */
+      var top1 = 180 - half;      // от 0 до top1
+      var bot = 180 + half;        // от bot до 360
+      var span1 = Math.max(0, top1);
+      var span2 = Math.max(0, 360 - bot);
+      var total = span1 + span2;
+      var r = Math.random() * total;
+      if (r < span1) targetDeg = r;
+      else targetDeg = bot + (r - span1);
+    }
 
-    /* текущий угол */
     var start = U.angle;
-    /* куда крутим: минимум 4 полных оборота + до цели */
+    /* всегда по часовой, минимум 4 полных оборота */
     var loops = 4 + Math.floor(Math.random() * 2);
-    var total = start + loops * 360 + ((targetDeg - (start % 360)) + 360) % 360;
-    var end = total;
-    /* лёгкое «байтит» в конце — стрелка замедляется и слегка откатывает назад */
-    var overshoot = end + 6 + Math.random() * 6;
-    var backOff = end - 1 - Math.random() * 3;
+    var baseTarget = ((targetDeg - (start % 360)) + 360) % 360;
+    var end = start + loops * 360 + baseTarget;
+    /* байтинг — слегка перескакиваем и возвращаемся */
+    var overshoot = end + 8;
+    var backOff = end + (Math.random() * 1.5); // небольшой откат назад, «на грани сектора»
 
     var duration = 4200;
     var startTime = performance.now();
-
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
     function frame(now) {
       var t = Math.min(1, (now - startTime) / duration);
       var eased = easeOutCubic(t);
       var a;
-      /* сначала к overshoot, потом слегка назад к target — эффект «байтинга» */
-      if (eased < 0.93) {
-        a = start + (overshoot - start) * (eased / 0.93);
+      if (eased < 0.94) {
+        a = start + (overshoot - start) * (eased / 0.94);
       } else {
-        var t2 = (eased - 0.93) / 0.07;
+        var t2 = (eased - 0.94) / 0.06;
         a = overshoot + (backOff - overshoot) * t2;
       }
       U.angle = a % 360;
-      arrow.style.transform = 'rotate(' + a + 'deg)';
+      if (marker) marker.style.transform = 'rotate(' + a + 'deg)';
       if (t < 1) requestAnimationFrame(frame);
       else {
-        U.angle = end % 360;
-        arrow.style.transform = 'rotate(' + end + 'deg)';
+        U.angle = backOff % 360;
+        if (marker) marker.style.transform = 'rotate(' + backOff + 'deg)';
         finishSpin(win, result);
       }
     }
@@ -348,11 +384,14 @@
 
   function finishSpin(win, result) {
     U.spinning = false;
+    U.lastResult = win ? 'win' : 'lose';
     var btn = document.getElementById('upgSpin');
     if (btn) { btn.disabled = false; btn.classList.remove('spinning'); }
     if (result && result.gold != null) U.gold = result.gold;
 
-    /* Вспышка результата на весь оверлей */
+    updateWheel();
+
+    /* вспышка на весь оверлей */
     var flash = document.createElement('div');
     flash.className = 'upg-flash ' + (win ? 'win' : 'lose');
     flash.innerHTML =
@@ -366,15 +405,14 @@
     setTimeout(function () { flash.classList.add('out'); }, 1300);
     setTimeout(function () { flash.remove(); }, 1700);
 
-    /* Перерисовываем страницу с новым балансом */
+    /* через 2.5 сек вернём центральный текст к «X%» */
     setTimeout(function () {
       if (U.open) {
+        U.lastResult = null;
+        updateWheel();
         renderPage();
-        /* Возвращаем стрелку в то же положение, чтобы визуально не прыгала */
-        var arrow = document.getElementById('upgArrow');
-        if (arrow) arrow.style.transform = 'rotate(' + U.angle + 'deg)';
       }
-    }, 1700);
+    }, 2600);
   }
 
   /* ─── Лента ─── */
@@ -399,5 +437,5 @@
   var cardWait = setInterval(function () { if (ensureSettingsCard()) clearInterval(cardWait); }, 300);
   try { new MutationObserver(function () { ensureSettingsCard(); }).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) { /* ok */ }
   ensureSettingsCard();
-  console.log('[UPGRADER] v8 установлен');
+  console.log('[UPGRADER] v9 установлен');
 })();

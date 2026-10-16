@@ -438,4 +438,4 @@
   try { new MutationObserver(function () { ensureSettingsCard(); }).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) { /* ok */ }
   ensureSettingsCard();
   console.log('[UPGRADER] v9 установлен');
-})();
+})(); 

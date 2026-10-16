@@ -48,6 +48,7 @@
     Promise.all([tg, sb]).then(function () { return load('app.js', 10000); })
       .then(function () { return load('tournament.js', 10000).catch(function (e) { console.error('tournament', e); }); })
       .then(function () { return load('chat.js', 10000).catch(function (e) { console.error('chat', e); }); })
+      .then(function () { return load('upgrade.js', 10000).catch(function (e) { console.error('upgrader', e); }); })
       .catch(function (e) {
         console.error('boot', e);
         fail('Не удалось загрузить приложение. Проверьте интернет или отключите VPN/блокировщики и повторите.');

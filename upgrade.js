@@ -1,10 +1,9 @@
 /* ══════════════════════════════════════════════════════════════════════
-   UPGRADER — рулетка на голду
-   v3: чиню открытие вкладки и закрытие настроек.
+   UPGRADER v4 — фикс пустой страницы
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  console.log('[UPGRADER] файл загружен');
+  console.log('[UPGRADER] v4 загружен');
 
   var MULTS = [
     { mult: 1.5, chance: 0.65, label: 'x1.5' },
@@ -39,7 +38,6 @@
     if (Array.isArray(window.PAGES) && window.PAGES.indexOf('upgrader') === -1) {
       window.PAGES.push('upgrader');
     }
-    console.log('[UPGRADER] страница создана');
     return true;
   }
 
@@ -51,7 +49,6 @@
     card.className = 'settings-upg';
     card.setAttribute('data-act', 'upg-open');
     card.setAttribute('role', 'button');
-    card.setAttribute('tabindex', '0');
     card.innerHTML =
       '<div class="ico"><i class="fas fa-arrow-trend-up"></i></div>' +
       '<div class="main">' +
@@ -61,81 +58,88 @@
       '<i class="fas fa-chevron-right"></i>';
     var wallet = sheet.querySelector('[data-page="wallet"]');
     if (wallet) wallet.insertAdjacentElement('afterend', card);
-    else {
-      var title = sheet.querySelector('.sheet-title');
-      if (title) title.insertAdjacentElement('afterend', card);
-      else sheet.appendChild(card);
-    }
-    console.log('[UPGRADER] карточка добавлена');
+    else sheet.insertBefore(card, sheet.children[1] || null);
     return true;
   }
 
-  /* ─── Открыть страницу UPGRADER, не ломая app.js ─── */
+  /* ─── Открыть страницу UPGRADER ─── */
   function openUpgrader() {
     console.log('[UPGRADER] открываем');
     /* Закрываем настройки */
     var sm = document.getElementById('settingsModal');
     if (sm) { sm.classList.remove('active'); sm.setAttribute('aria-hidden', 'true'); }
-    /* Переключаем страницы вручную — так надёжнее, чем надеяться на navigate */
-    try {
-      var pages = document.querySelectorAll('.page');
-      pages.forEach(function (p) { p.classList.remove('active'); });
-      var up = document.getElementById('page-upgrader');
-      if (up) up.classList.add('active');
-      if (window.S) window.S.page = 'upgrader';
-      /* Подсвечиваем активный пункт меню — снимаем у всех, ставим ни на что (не в меню) */
-      document.querySelectorAll('#nav button').forEach(function (b) { b.classList.remove('active'); });
-      /* Прокручиваем вверх */
-      window.scrollTo({ top: 0 });
+    /* Скрываем ВСЕ страницы, показываем upgrader */
+    document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
+    var up = document.getElementById('page-upgrader');
+    if (up) up.classList.add('active');
+    if (window.S) window.S.page = 'upgrader';
+    document.querySelectorAll('#nav button').forEach(function (b) { b.classList.remove('active'); });
+    window.scrollTo({ top: 0 });
+    /* Рендерим сразу, если S.me готов, иначе ждём */
+    if (window.S && window.S.me) {
       renderPage();
-    } catch (e) {
-      console.error('[UPGRADER] open error', e);
+    } else {
+      var tries = 0;
+      var iv = setInterval(function () {
+        tries++;
+        if ((window.S && window.S.me) || tries > 40) {
+          clearInterval(iv);
+          renderPage();
+        }
+      }, 100);
     }
   }
 
-  /* Обработчик клика — вешаем свой, чтобы не зависеть от app.js */
+  /* ─── Уходим на главную/профиль ─── */
+  function goBack() {
+    document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
+    var home = document.getElementById('page-profile');
+    if (!home) home = document.getElementById('page-home');
+    if (home) home.classList.add('active');
+    if (window.S) window.S.page = 'profile';
+    document.querySelectorAll('#nav button').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.page === 'profile');
+    });
+    window.scrollTo({ top: 0 });
+  }
+
+  /* ─── Один общий обработчик кликов ─── */
   document.addEventListener('click', function (e) {
-    var el = e.target.closest && e.target.closest('[data-act="upg-open"]');
-    if (el) {
-      e.preventDefault();
-      e.stopPropagation();
-      openUpgrader();
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var open = t.closest('[data-act="upg-open"]');
+    if (open) { e.preventDefault(); e.stopPropagation(); openUpgrader(); return; }
+    var back = t.closest('[data-act="upg-back"]');
+    if (back) { e.preventDefault(); e.stopPropagation(); goBack(); return; }
+    var mult = t.closest('[data-act="upg-mult"]');
+    if (mult) {
+      if (U.spinning) return;
+      var m = parseFloat(mult.dataset.mult);
+      if (MULTS.some(function (x) { return x.mult === m; })) { U.mult = m; renderPage(); }
       return;
     }
-    /* Обработка остальных upg-* действий */
-    var el2 = e.target.closest && e.target.closest('[data-act^="upg-"]');
-    if (el2) {
-      var act = el2.dataset.act;
-      if (act === 'upg-open') return;
-      if (act === 'upg-mult') {
-        if (U.spinning) return;
-        var m = parseFloat(el2.dataset.mult);
-        if (!MULTS.some(function (x) { return x.mult === m; })) return;
-        U.mult = m; renderPage();
-        return;
-      }
-      if (act === 'upg-stake-quick') {
-        if (U.spinning) return;
-        var gold = (window.S && window.S.me && window.S.me.gold) || 0;
-        var val = el2.dataset.value;
-        var v;
-        if (val === 'max') v = gold;
-        else if (val === 'half') v = Math.floor(gold / 2);
-        else v = parseInt(val, 10) || 0;
-        U.stake = Math.max(10, Math.min(gold, v));
-        renderPage();
-        return;
-      }
-      if (act === 'upg-spin') {
-        spin();
-        return;
-      }
+    var quick = t.closest('[data-act="upg-stake-quick"]');
+    if (quick) {
+      if (U.spinning) return;
+      var gold = (window.S && window.S.me && window.S.me.gold) || 0;
+      var val = quick.dataset.value;
+      var v;
+      if (val === 'max') v = gold;
+      else if (val === 'half') v = Math.floor(gold / 2);
+      else v = parseInt(val, 10) || 0;
+      U.stake = Math.max(10, Math.min(gold, v));
+      renderPage();
+      return;
     }
+    var spinBtn = t.closest('[data-act="upg-spin"]');
+    if (spinBtn) { e.preventDefault(); spin(); return; }
   }, true);
 
+  /* ─── Отрисовка ─── */
   function renderPage() {
     var box = document.getElementById('upgBody');
-    if (!box || !window.S || !window.S.me) return;
+    if (!box) { console.warn('[UPGRADER] нет #upgBody'); return; }
+    if (!window.S || !window.S.me) { console.warn('[UPGRADER] S.me не готов'); return; }
     var me = window.S.me;
     var gold = me.gold || 0;
     var cfg = MULTS.filter(function (x) { return x.mult === U.mult; })[0] || MULTS[1];
@@ -210,6 +214,7 @@
         if (window.S && window.S.page === 'upgrader') loadFeed();
       }, 15000);
     }
+    console.log('[UPGRADER] страница отрисована');
   }
 
   function wheelSvg() {
@@ -267,7 +272,7 @@
     var me = window.S && window.S.me;
     if (!me) return;
     if ((me.gold || 0) < U.stake) {
-      window.toast('error', 'Недостаточно голды', 'Уменьшите ставку');
+      if (window.toast) window.toast('error', 'Недостаточно голды', 'Уменьшите ставку');
       return;
     }
     U.spinning = true;
@@ -287,7 +292,7 @@
       .catch(function (e) {
         U.spinning = false;
         if (btn) { btn.disabled = false; btn.classList.remove('spinning'); }
-        window.toast('error', 'Не удалось прокрутить', (e && e.message) || String(e));
+        if (window.toast) window.toast('error', 'Не удалось прокрутить', (e && e.message) || String(e));
         renderPage();
       });
   }
@@ -351,6 +356,7 @@
   }
 
   function loadFeed() {
+    if (!window.rpc) return;
     window.rpc('upgrade_feed', { p_limit: 15 })
       .then(function (rows) {
         U.feed = rows || [];
@@ -380,32 +386,14 @@
     }).join('');
   }
 
-  /* ─── Кнопка «Назад» на странице UPGRADER ─── */
-  document.addEventListener('click', function (e) {
-    var el = e.target.closest && e.target.closest('[data-act="upg-back"]');
-    if (el) {
-      e.preventDefault();
-      var pages = document.querySelectorAll('.page');
-      pages.forEach(function (p) { p.classList.remove('active'); });
-      var home = document.getElementById('page-home');
-      if (home) home.classList.add('active');
-      if (window.S) window.S.page = 'home';
-      document.querySelectorAll('#nav button').forEach(function (b) {
-        b.classList.toggle('active', b.dataset.page === 'home');
-      });
-      window.scrollTo({ top: 0 });
-    }
-  }, true);
-
   /* ─── Автозапуск ─── */
   ensureStyle();
   var appWait = setInterval(function () { if (ensurePage()) clearInterval(appWait); }, 300);
   var cardWait = setInterval(function () { if (ensureSettingsCard()) clearInterval(cardWait); }, 300);
   try {
-    var obs = new MutationObserver(function () { ensureSettingsCard(); });
-    obs.observe(document.documentElement, { childList: true, subtree: true });
+    new MutationObserver(function () { ensureSettingsCard(); }).observe(document.documentElement, { childList: true, subtree: true });
   } catch (e) { /* ок */ }
   ensurePage();
   ensureSettingsCard();
-  console.log('[UPGRADER] установлен');
+  console.log('[UPGRADER] v4 установлен');
 })();

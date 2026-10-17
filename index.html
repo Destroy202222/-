@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="tournament.css">
 <link rel="stylesheet" href="chat.css">
+<link rel="stylesheet" href="desktop.css" media="(min-width:1024px)">
 <script>
 /* Загрузчик: грузит библиотеки по очереди с таймаутами и запасными CDN,
    чтобы приложение не зависало на «Подключаемся…», если один из хостов недоступен (часто на ПК/с VPN). */
@@ -227,7 +228,9 @@
       <button class="hd-btn" data-act="support" aria-label="Поддержка"><i class="fas fa-headphones"></i></button>
     </div>
     <div class="hd-brand" data-act="nav" data-page="home" role="button" aria-label="На главную"><b>STANDKNIFE</b><span>FACEIT</span></div>
+    <div class="hd-bal" id="hdBal"><span><i class="fas fa-coins"></i><b id="hdBalRub">0 ₽</b></span><span><i class="fas fa-gem"></i><b id="hdBalGold">0 G</b></span></div>
     <button class="hd-btn" data-act="notifs" id="hdBell" aria-label="Уведомления"><i class="fas fa-bell"></i><span class="hd-badge" id="hdBadge" hidden>0</span></button>
+    <div class="hd-user" id="hdUser" data-act="nav" data-page="profile" role="button" tabindex="0" aria-label="Мой профиль"></div>
   </header>
 
   <!-- Главная -->
@@ -453,6 +456,12 @@
     <button data-act="nav" data-page="matches" class="play" id="navPlay"><span class="ni" id="navPlayIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="1.2"/></svg></span><span id="navPlayLabel">Играть</span></button>
     <button data-act="nav" data-page="shop"><span class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span><span>Магазин</span></button>
     <button data-act="nav" data-page="profile"><span class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span>Профиль</span></button>
+    <div class="nav-sep">АККАУНТ</div>
+    <button class="dsk" data-act="nav" data-page="missions"><span class="ni"><i class="fas fa-list-check"></i></span><span>Миссии</span></button>
+    <button class="dsk" data-act="nav" data-page="wallet"><span class="ni"><i class="fas fa-wallet"></i></span><span>Кошелёк</span></button>
+    <button class="dsk" data-act="support"><span class="ni"><i class="fas fa-headset"></i></span><span>Поддержка</span></button>
+    <button class="dsk" data-act="settings"><span class="ni"><i class="fas fa-gear"></i></span><span>Настройки</span></button>
+    <div class="nav-cta" data-act="nav" data-page="matches" role="button" tabindex="0"><b>Рейтинговый матч</b><span>Очередь, бан карт и лобби с чатом.</span><em>Найти матч</em></div>
   </nav>
   <div id="voiceDock" hidden></div>
   <div id="voiceAudio" hidden></div>

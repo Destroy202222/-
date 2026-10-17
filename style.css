@@ -1422,4 +1422,4 @@ select.text-input{appearance:auto}
 .nav .ni{align-items:center;justify-content:center}
 .nav .ni i{font-size:17px}
 .hd-user .av{--s:34px}
-@media (min-width:1024px){.nav::after{display:none}.nav .ni i{font-size:18px}}
+@media (min-width:900px){.nav::after{display:none}.nav .ni i{font-size:18px}}

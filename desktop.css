@@ -148,3 +148,23 @@ body{overflow-y:scroll}
 .overlay{align-items:center}
 .sheet{max-width:540px}
 .tg-wrap{bottom:24px;padding:0 28px}
+
+/* ═════ Адаптация под узкие окна и планшеты (900–1279px) ═════ */
+#page-home .hero-title{font-size:clamp(30px,3.3vw,46px)}
+.prize-ttl b{font-size:clamp(16px,1.7vw,22px)}
+@media (min-width:900px) and (max-width:1279px){
+  :root{--side-w:232px}
+  .app-head{padding:0 20px}
+  .page{padding:24px 24px 60px}
+  .nav{padding:20px 12px 18px}
+  .nav button{padding:12px 14px}
+  /* всё в одну колонку, чтобы ничего не наезжало */
+  #page-home.active{grid-template-columns:minmax(0,1fr)}
+  #page-home .prize{grid-column:1;grid-row:auto}
+  #page-matches.active{grid-template-columns:minmax(0,1fr)}
+  #page-matches .lg-top,#page-matches .lg-label,#page-matches .lg-card,#page-matches #partyPanel{grid-column:1;grid-row:auto}
+  #page-matches .lg-label{margin:6px 4px 0}
+  #profileBody,#playerBody,#shopBody{column-count:1}
+  #missionsBody{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  #page-wallet.active{grid-template-columns:1fr}
+}

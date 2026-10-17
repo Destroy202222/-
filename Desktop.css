@@ -1,0 +1,150 @@
+/* =====================================================================
+   STANDKNIFE FACEIT — desktop.css
+   Подключается только на экранах от 1024px: <link media="(min-width:1024px)">.
+   Телефон и приложение остаются без изменений.
+   ===================================================================== */
+:root{--side-w:272px;--top-h:76px}
+html{scrollbar-color:var(--surface-3) transparent}
+body{overflow-y:scroll}
+
+/* ───────── Каркас: шапка сверху, меню слева, контент справа ───────── */
+.app{
+  max-width:none;margin:0;padding:0;
+  display:grid;
+  grid-template-columns:var(--side-w) minmax(0,1fr);
+  grid-template-rows:var(--top-h) minmax(calc(100vh - var(--top-h)),auto);
+}
+
+/* ───────── Шапка ───────── */
+.app-head{
+  grid-column:1 / -1;grid-row:1;position:sticky;top:0;z-index:1200;
+  height:var(--top-h);padding:0 32px;display:flex;align-items:center;gap:14px;
+  background:rgba(8,12,34,.84);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+}
+.hd-brand{position:static;left:auto;top:auto;transform:none;align-items:flex-start;margin-right:auto;order:0}
+.hd-brand b{font-size:21px}
+.hd-brand span{margin-right:0}
+.hd-left{display:none}                       /* настройки и поддержка переехали в левое меню */
+.app .hd-bal{display:flex;order:1;gap:10px}
+.hd-bal span{
+  display:flex;align-items:center;gap:8px;padding:9px 15px;border-radius:99px;
+  background:var(--surface-2);border:1px solid var(--line);font-size:13px;font-weight:800;
+}
+.hd-bal span i{color:var(--gold)}
+#hdBell{order:2;width:46px;height:46px}
+.app .hd-user{
+  display:flex;order:3;align-items:center;gap:10px;padding:6px 16px 6px 6px;border-radius:16px;
+  background:var(--surface-2);border:1px solid var(--line);font-weight:800;font-size:14px;cursor:pointer;
+  transition:border-color .15s,background .15s;
+}
+.hd-user:hover{border-color:var(--line-strong);background:var(--surface-3)}
+.hd-user > span{display:flex}
+
+/* ───────── Левое меню ───────── */
+.nav{
+  position:sticky;top:var(--top-h);left:auto;bottom:auto;transform:none;
+  grid-column:1;grid-row:2;align-self:start;z-index:20;
+  width:auto;max-width:none;height:calc(100vh - var(--top-h));
+  display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;
+  padding:26px 16px 22px;border-radius:0;border:0;border-right:1px solid var(--line);
+  background:rgba(9,14,38,.72);box-shadow:none;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  overflow-y:auto;
+}
+.nav::before{
+  content:'МЕНЮ';padding:0 16px 12px;font-size:11px;font-weight:800;letter-spacing:.22em;color:var(--dim);order:0;
+}
+.nav button{
+  position:relative;flex:none;flex-direction:row;justify-content:flex-start;align-items:center;gap:14px;
+  padding:13px 16px;border-radius:14px;font-size:14px;font-weight:700;color:var(--muted);
+  border:1px solid transparent;transition:background .15s,color .15s,border-color .15s;
+}
+.nav button:hover{background:rgba(79,140,255,.08);color:var(--text)}
+.nav button.active{
+  color:#fff;background:linear-gradient(135deg,rgba(79,140,255,.30),rgba(236,72,153,.16));
+  border-color:var(--line-strong);box-shadow:inset 3px 0 0 var(--accent-hi);
+}
+.nav button.active::before{display:none}
+.nav .ni{width:22px;height:22px;flex:none}
+.nav button.active .ni{filter:drop-shadow(0 0 6px rgba(79,140,255,.7))}
+.nav button.play{margin-top:0}
+.nav button.play.live{color:#ff8fa3}
+.nav .dot{top:50%;left:auto;right:14px;transform:translateY(-50%)}
+/* порядок как в макете: профиль → играть → топ → друзья → магазин → аккаунт */
+.nav button[data-page="profile"]{order:1}
+.nav button.play{order:2}
+.nav button[data-page="top"]{order:3}
+.nav button[data-page="friends"]{order:4}
+.nav button[data-page="shop"]{order:5}
+.app .nav .nav-sep{display:block;order:6;padding:22px 16px 8px;font-size:11px;font-weight:800;letter-spacing:.22em;color:var(--dim)}
+.app .nav button.dsk{display:flex}
+.nav button[data-page="missions"]{order:7}
+.nav button[data-page="wallet"]{order:8}
+.nav button[data-act="support"]{order:9}
+.nav button[data-act="settings"]{order:10}
+/* карточка внизу меню */
+.app .nav .nav-cta{
+  display:flex;order:11;flex-direction:column;gap:6px;margin-top:auto;padding:16px;border-radius:18px;cursor:pointer;
+  background:linear-gradient(160deg,rgba(79,140,255,.20),rgba(236,72,153,.14));border:1px solid var(--line-strong);
+  transition:transform .15s,border-color .15s;
+}
+.nav-cta:hover{transform:translateY(-2px);border-color:var(--accent-hi)}
+.nav-cta b{font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+.nav-cta span{font-size:12px;color:var(--muted);line-height:1.4}
+.nav-cta em{font-style:normal;margin-top:6px;padding:10px 12px;border-radius:12px;text-align:center;font-size:12px;font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 8px 22px rgba(236,72,153,.32)}
+
+/* ───────── Контент ───────── */
+.page{grid-column:2;grid-row:2;align-self:start;min-width:0;width:100%;max-width:1360px;margin:0 auto;padding:30px 40px 60px}
+.page-head{margin:0 0 22px}
+.page-title{font-size:30px}
+.panel{margin-bottom:0}
+
+/* Главная: слева приветствие, справа призовой фонд */
+#page-home.active{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px 28px;align-items:start;align-content:start}
+#page-home .hero{
+  grid-column:1;padding:34px 36px;border-radius:26px;
+  background:linear-gradient(135deg,rgba(79,140,255,.18),rgba(236,72,153,.10));border:1px solid var(--line-strong);
+}
+#page-home .hero-title{font-size:46px}
+#page-home .hero-text{max-width:46ch;font-size:16px}
+#page-home .hero-actions .btn{flex:none;min-width:190px}
+#page-home .strip{grid-column:1;margin:0;border:1px solid var(--line);border-radius:20px;background:rgba(15,22,51,.6)}
+#page-home .tr-slot{grid-column:1}
+#page-home .tr-slot:empty{display:none}
+#page-home .prize{grid-column:2;grid-row:1 / span 3;margin:0}
+
+/* Профиль и профиль игрока: баннер на всю ширину, карточки в две колонки */
+#profileBody,#playerBody{column-count:2;column-gap:24px}
+#profileBody > *,#playerBody > *{break-inside:avoid;-webkit-column-break-inside:avoid;margin-bottom:20px}
+#profileBody > .pf-banner,#playerBody > .pf-banner{column-span:all;min-height:230px}
+#profileBody > .btn,#playerBody > .btn{display:flex;column-span:all;max-width:360px;margin-left:auto;margin-right:auto}
+
+/* Играть: слева рейтинг и пати, справа лига и поиск */
+#page-matches.active{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:20px 28px;align-items:start;align-content:start}
+#page-matches .lg-top{grid-column:1;grid-row:1}
+#page-matches .lg-label{grid-column:2;grid-row:1;align-self:end;margin:0}
+#page-matches .lg-card{grid-column:2;grid-row:2 / span 2}
+#page-matches #partyPanel{grid-column:1;grid-row:2;margin-top:0 !important}
+
+/* Узкие списки по центру */
+#page-top,#page-friends,#page-support{max-width:980px}
+#page-match,#page-matchview{max-width:940px}
+#page-clan{max-width:1000px}
+
+/* Кошелёк: баланс и промокод рядом */
+#page-wallet.active{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:980px;align-items:start;align-content:start}
+#page-wallet .page-head{grid-column:1 / -1;margin-bottom:2px}
+
+/* Миссии: три карточки в ряд */
+#page-missions{max-width:1100px}
+#missionsBody{grid-template-columns:repeat(3,minmax(0,1fr)) !important}
+
+/* Магазин в две колонки */
+#shopBody{column-count:2;column-gap:24px}
+#shopBody > *{break-inside:avoid;margin-bottom:20px}
+
+/* ───────── Окна и подсказки ───────── */
+.overlay{align-items:center}
+.sheet{max-width:540px}
+.tg-wrap{bottom:24px;padding:0 28px}

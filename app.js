@@ -422,6 +422,15 @@ function renderBalance() {
   $('headBalance').innerHTML = `<i class="fas fa-coins"></i>${v}`;
   setText('walletBalance', v);
   setText('walletGold', (S.me.gold || 0) + ' G');
+  setText('hdBalRub', v);
+  setText('hdBalGold', (S.me.gold || 0) + ' G');
+  renderHeadUser();
+}
+/* Аватар и ник в шапке (видны на ПК) */
+function renderHeadUser() {
+  const el = $('hdUser'); if (!el || !S.me) return;
+  const html = avatarHtml(S.me, 34) + `<span>${esc(S.me.username)}${vb(S.me.id)}</span>`;
+  if (el._h !== html) { el._h = html; el.innerHTML = html; }
 }
 
 /* ───────────── Навигация ───────────── */
@@ -433,7 +442,7 @@ function navigate(page) {
   PAGES.forEach(p => $('page-' + p).classList.toggle('active', p === page));
   document.querySelectorAll('#nav button').forEach(b => {
     const bp = b.dataset.page;
-    b.classList.toggle('active', bp === page || (bp === 'matches' && page === 'match') || (bp === 'profile' && (page === 'matchview' || page === 'admin')));
+    b.classList.toggle('active', bp === page || (b.dataset.act === 'support' && page === 'support') || (bp === 'matches' && page === 'match') || (bp === 'profile' && (page === 'matchview' || page === 'admin')));
   });
   window.scrollTo({ top: 0 });
   voiceRender();
@@ -1688,6 +1697,7 @@ async function uploadAvatar(file) {
   const dataUrl = await resizeToDataUrl(file);
   await rpc('set_avatar', { p_url: dataUrl });
   S.me.avatar_url = dataUrl;
+  renderHeadUser();
   toast('success', 'Аватар обновлён', '');
   renderShop();
 }
@@ -1696,6 +1706,7 @@ async function removeAvatar() {
   if (!ok) return;
   await rpc('set_avatar', { p_url: '' });
   S.me.avatar_url = '';
+  renderHeadUser();
   renderShop();
 }
 async function buyFrame(d) {

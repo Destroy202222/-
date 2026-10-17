@@ -396,53 +396,6 @@
       <div id="missionsBody" style="display:grid;gap:12px"></div></div>
   </section>
 
-  <!-- Upgrader -->
-  <section class="page" id="page-upgrader">
-    <div class="page-head"><h2 class="page-title">Upgrader</h2><div class="balance-chip" id="upgGoldChip"><i class="fas fa-coins"></i><span id="upgGold">0 G</span></div></div>
-    <div class="panel upg-panel">
-      <div class="upg-wheel">
-      <svg viewBox="0 0 300 300" class="upg-svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="upgGradWin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3ddc97"/><stop offset="1" stop-color="#4dabf7"/></linearGradient>
-          <linearGradient id="upgGradNeedle" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ec4899"/></linearGradient>
-          <radialGradient id="upgGradHub" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#232c5e"/><stop offset="1" stop-color="#090e24"/></radialGradient>
-          <filter id="upgGlow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <circle cx="150" cy="150" r="147" class="upg-halo"/>
-        <g><line x1="150.0" y1="17.0" x2="150.0" y2="8.0" class="tk M"/><line x1="161.9" y1="13.5" x2="162.4" y2="8.5" class="tk"/><line x1="173.8" y1="15.1" x2="174.7" y2="10.2" class="tk"/><line x1="185.5" y1="17.7" x2="186.8" y2="12.8" class="tk"/><line x1="196.9" y1="21.3" x2="198.6" y2="16.6" class="tk"/><line x1="207.9" y1="25.8" x2="210.0" y2="21.3" class="tk"/><line x1="216.5" y1="34.8" x2="221.0" y2="27.0" class="tk M"/><line x1="228.6" y1="37.8" x2="231.4" y2="33.7" class="tk"/><line x1="238.1" y1="45.1" x2="241.3" y2="41.2" class="tk"/><line x1="246.9" y1="53.1" x2="250.4" y2="49.6" class="tk"/><line x1="254.9" y1="61.9" x2="258.8" y2="58.7" class="tk"/><line x1="262.2" y1="71.4" x2="266.3" y2="68.6" class="tk"/><line x1="265.2" y1="83.5" x2="273.0" y2="79.0" class="tk M"/><line x1="274.2" y1="92.1" x2="278.7" y2="90.0" class="tk"/><line x1="278.7" y1="103.1" x2="283.4" y2="101.4" class="tk"/><line x1="282.3" y1="114.5" x2="287.2" y2="113.2" class="tk"/><line x1="284.9" y1="126.2" x2="289.8" y2="125.3" class="tk"/><line x1="286.5" y1="138.1" x2="291.5" y2="137.6" class="tk"/><line x1="283.0" y1="150.0" x2="292.0" y2="150.0" class="tk M"/><line x1="286.5" y1="161.9" x2="291.5" y2="162.4" class="tk"/><line x1="284.9" y1="173.8" x2="289.8" y2="174.7" class="tk"/><line x1="282.3" y1="185.5" x2="287.2" y2="186.8" class="tk"/><line x1="278.7" y1="196.9" x2="283.4" y2="198.6" class="tk"/><line x1="274.2" y1="207.9" x2="278.7" y2="210.0" class="tk"/><line x1="265.2" y1="216.5" x2="273.0" y2="221.0" class="tk M"/><line x1="262.2" y1="228.6" x2="266.3" y2="231.4" class="tk"/><line x1="254.9" y1="238.1" x2="258.8" y2="241.3" class="tk"/><line x1="246.9" y1="246.9" x2="250.4" y2="250.4" class="tk"/><line x1="238.1" y1="254.9" x2="241.3" y2="258.8" class="tk"/><line x1="228.6" y1="262.2" x2="231.4" y2="266.3" class="tk"/><line x1="216.5" y1="265.2" x2="221.0" y2="273.0" class="tk M"/><line x1="207.9" y1="274.2" x2="210.0" y2="278.7" class="tk"/><line x1="196.9" y1="278.7" x2="198.6" y2="283.4" class="tk"/><line x1="185.5" y1="282.3" x2="186.8" y2="287.2" class="tk"/><line x1="173.8" y1="284.9" x2="174.7" y2="289.8" class="tk"/><line x1="161.9" y1="286.5" x2="162.4" y2="291.5" class="tk"/><line x1="150.0" y1="283.0" x2="150.0" y2="292.0" class="tk M"/><line x1="138.1" y1="286.5" x2="137.6" y2="291.5" class="tk"/><line x1="126.2" y1="284.9" x2="125.3" y2="289.8" class="tk"/><line x1="114.5" y1="282.3" x2="113.2" y2="287.2" class="tk"/><line x1="103.1" y1="278.7" x2="101.4" y2="283.4" class="tk"/><line x1="92.1" y1="274.2" x2="90.0" y2="278.7" class="tk"/><line x1="83.5" y1="265.2" x2="79.0" y2="273.0" class="tk M"/><line x1="71.4" y1="262.2" x2="68.6" y2="266.3" class="tk"/><line x1="61.9" y1="254.9" x2="58.7" y2="258.8" class="tk"/><line x1="53.1" y1="246.9" x2="49.6" y2="250.4" class="tk"/><line x1="45.1" y1="238.1" x2="41.2" y2="241.3" class="tk"/><line x1="37.8" y1="228.6" x2="33.7" y2="231.4" class="tk"/><line x1="34.8" y1="216.5" x2="27.0" y2="221.0" class="tk M"/><line x1="25.8" y1="207.9" x2="21.3" y2="210.0" class="tk"/><line x1="21.3" y1="196.9" x2="16.6" y2="198.6" class="tk"/><line x1="17.7" y1="185.5" x2="12.8" y2="186.8" class="tk"/><line x1="15.1" y1="173.8" x2="10.2" y2="174.7" class="tk"/><line x1="13.5" y1="161.9" x2="8.5" y2="162.4" class="tk"/><line x1="17.0" y1="150.0" x2="8.0" y2="150.0" class="tk M"/><line x1="13.5" y1="138.1" x2="8.5" y2="137.6" class="tk"/><line x1="15.1" y1="126.2" x2="10.2" y2="125.3" class="tk"/><line x1="17.7" y1="114.5" x2="12.8" y2="113.2" class="tk"/><line x1="21.3" y1="103.1" x2="16.6" y2="101.4" class="tk"/><line x1="25.8" y1="92.1" x2="21.3" y2="90.0" class="tk"/><line x1="34.8" y1="83.5" x2="27.0" y2="79.0" class="tk M"/><line x1="37.8" y1="71.4" x2="33.7" y2="68.6" class="tk"/><line x1="45.1" y1="61.9" x2="41.2" y2="58.7" class="tk"/><line x1="53.1" y1="53.1" x2="49.6" y2="49.6" class="tk"/><line x1="61.9" y1="45.1" x2="58.7" y2="41.2" class="tk"/><line x1="71.4" y1="37.8" x2="68.6" y2="33.7" class="tk"/><line x1="83.5" y1="34.8" x2="79.0" y2="27.0" class="tk M"/><line x1="92.1" y1="25.8" x2="90.0" y2="21.3" class="tk"/><line x1="103.1" y1="21.3" x2="101.4" y2="16.6" class="tk"/><line x1="114.5" y1="17.7" x2="113.2" y2="12.8" class="tk"/><line x1="126.2" y1="15.1" x2="125.3" y2="10.2" class="tk"/><line x1="138.1" y1="13.5" x2="137.6" y2="8.5" class="tk"/></g>
-        <circle cx="150" cy="150" r="112" class="upg-track"/>
-        <g id="upgZone" style="transform-origin:150px 150px"><path id="upgWin" class="upg-win" stroke="url(#upgGradWin)" filter="url(#upgGlow)"/></g>
-        <circle cx="150" cy="150" r="96" class="upg-inner"/>
-        <g id="upgArrow" style="transform-origin:150px 150px;transform:rotate(0deg)"><polygon points="150,22 140,120 160,120" fill="url(#upgGradNeedle)" filter="url(#upgGlow)"/></g>
-        <circle cx="150" cy="150" r="52" fill="url(#upgGradHub)" class="upg-hub"/>
-        <text id="upgPct" x="150" y="153" class="upg-pct">50%</text>
-        <text id="upgMult" x="150" y="174" class="upg-mult">x1.9</text>
-      </svg>
-      </div>
-      <div class="upg-res" id="upgResult"><small>ВЫИГРЫШ</small><b>—</b><em>Выберите шанс и ставку</em></div>
-      <div class="upg-label">Шанс</div>
-      <div class="upg-ch-row" id="upgChances"></div>
-      <div class="upg-label">Ставка, G</div>
-      <div class="upg-bet">
-        <input class="text-input" id="upgBet" type="number" inputmode="numeric" min="10" max="10000" value="100" aria-label="Ставка в G">
-        <div class="upg-chips">
-          <button type="button" data-act="upg-bet" data-v="50">50</button>
-          <button type="button" data-act="upg-bet" data-v="100">100</button>
-          <button type="button" data-act="upg-bet" data-v="500">500</button>
-          <button type="button" data-act="upg-bet" data-v="half">½</button>
-          <button type="button" data-act="upg-bet" data-v="max">MAX</button>
-        </div>
-      </div>
-      <div class="upg-info" id="upgInfo"></div>
-      <button type="button" class="upg-spin" id="upgSpin" data-act="upg-spin"><i class="fas fa-bolt"></i> КРУТИТЬ</button>
-    </div>
-    <div class="panel">
-      <div class="panel-head"><h3>Последние попытки</h3></div>
-      <div class="upg-hist" id="upgHist"></div>
-    </div>
-    <div class="row-sub upg-foot">Результат определяется на сервере. Множитель = 95 / шанс. Только игровая валюта G.</div>
-  </section>
-
   <!-- Магазин -->
   <section class="page" id="page-shop">
     <div class="page-head"><h2 class="page-title">Магазин</h2></div>

@@ -1,4 +1,7 @@
-# Vercel Python function: GET /api/profile?id=<uuid>  ->  картинка-карточка профиля игрока (JPEG).
+# Vercel Python function (JPEG-карточки для бота):
+#   /api/profile?id=<uuid>   профиль игрока
+#   /api/profile?type=queue  поиск матча: сколько в очереди 2×2 / 5×5 и в матчах
+#   /api/profile?type=top    топ-15 игроков
 # Данные берёт из Supabase (функция profile_card), рисует Pillow. Бот шлёт эту ссылку в sendPhoto.
 import io, os, re, json, time, base64, math, urllib.request, urllib.parse
 from concurrent.futures import ThreadPoolExecutor
@@ -89,9 +92,9 @@ def font(kind, size):
 
 
 # ───────────────────────── данные и картинки ─────────────────────────
-def fetch_card(uid):
-    body = json.dumps({'p_id': uid}).encode()
-    req = urllib.request.Request(SUPABASE_URL + '/rest/v1/rpc/profile_card', data=body, method='POST', headers={
+def fetch_card(uid, fn='profile_card', args=None):
+    body = json.dumps(args if args is not None else {'p_id': uid}).encode()
+    req = urllib.request.Request(SUPABASE_URL + '/rest/v1/rpc/' + fn, data=body, method='POST', headers={
         'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json'})
     with urllib.request.urlopen(req, timeout=6) as r:
         return json.loads(r.read().decode())
@@ -113,8 +116,9 @@ def get_image(src):
 
 # ───────────────────────── рисование ─────────────────────────
 class Cv:
-    def __init__(self):
-        self.im = Image.new('RGB', (W * K, H * K), BG)
+    def __init__(self, w=W, h=H):
+        self.w, self.h = w, h
+        self.im = Image.new('RGB', (w * K, h * K), BG)
         self.d = ImageDraw.Draw(self.im)
 
     def b(self, box): return tuple(int(v * K) for v in box)
@@ -474,6 +478,140 @@ def render(card, imgs):
     return cv.im.resize((W, H), Image.LANCZOS)
 
 
+
+def fetch_rpc(name, args=None):
+    body = json.dumps(args or {}).encode()
+    req = urllib.request.Request(SUPABASE_URL + '/rest/v1/rpc/' + name, data=body, method='POST', headers={
+        'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json'})
+    with urllib.request.urlopen(req, timeout=6) as r:
+        return json.loads(r.read().decode())
+
+
+def avatar_at(cv, img, cx, cy, r, ring, letter='?', ring_w=4):
+    cv.d.ellipse([(cx - r - ring_w) * K, (cy - r - ring_w) * K, (cx + r + ring_w) * K, (cy + r + ring_w) * K], fill=ring)
+    cv.d.ellipse([(cx - r - 1) * K, (cy - r - 1) * K, (cx + r + 1) * K, (cy + r + 1) * K], fill=BG)
+    if img is not None:
+        sz = int(r * 2 * K); sc = max(sz / img.width, sz / img.height)
+        a = img.resize((int(img.width * sc + .5), int(img.height * sc + .5)), Image.LANCZOS)
+        l, t = (a.width - sz) // 2, (a.height - sz) // 2; a = a.crop((l, t, l + sz, t + sz))
+        m = Image.new('L', (sz, sz), 0); ImageDraw.Draw(m).ellipse((0, 0, sz - 1, sz - 1), fill=255)
+        cv.im.paste(a, (int((cx - r) * K), int((cy - r) * K)), m)
+    else:
+        cv.d.ellipse([(cx - r) * K, (cy - r) * K, (cx + r) * K, (cy + r) * K], fill=(38, 54, 120))
+        cv.text((cx, cy + 1), (letter or '?')[:1].upper(), font('disp', int(r * .9)), TEXT, anchor='mm')
+
+
+def header(cv, title, sub, now_txt):
+    cv.panel((22, 22, cv.w - 22, 150), r=34)
+    cv.glow(1000, 80, 260, (70, 40, 140), .45); 
+    cv.panel((22, 22, cv.w - 22, 150), r=34)
+    cv.text((56, 62), 'STANDKNIFE', font('disp', 15), TEXT, spacing=3)
+    cv.text((56, 86), 'F A C E I T', font('semi', 12), HI, spacing=4)
+    cv.text((cv.w // 2, 86), title, font('disp', 38), TEXT, anchor='mm')
+    cv.text((cv.w // 2, 122), sub, font('semi', 15), MUTED, anchor='mm', spacing=1.5)
+    cv.text((cv.w - 56, 62), now_txt, font('bold', 16), MUTED, anchor='ra')
+    cv.d.ellipse([(cv.w - 68) * K, (92) * K, (cv.w - 56) * K, (104) * K], fill=WIN)
+    cv.text((cv.w - 78, 98), 'LIVE', font('disp', 12), WIN, anchor='rm', spacing=2)
+
+
+def render_queue(q):
+    h = 880
+    cv = Cv(W, h)
+    cv.glow(160, 180, 480, (24, 44, 120), .7); cv.glow(1150, 760, 520, (96, 24, 76), .5)
+    now = datetime.now(timezone(timedelta(hours=3)))
+    header(cv, 'ПОИСК МАТЧА', 'ОЧЕРЕДА ОБЩАЯ С САЙТОМ', now.strftime('%H:%M:%S МСК'))
+    modes = [(2, int(q.get('q2') or 0), int(q.get('m2') or 0), 22), (5, int(q.get('q5') or 0), int(q.get('m5') or 0), 648)]
+    for n, cnt, mm, x0 in modes:
+        need = n * 2; box = (x0, 170, x0 + 610, 620)
+        cv.panel(box, r=34)
+        cv.text((x0 + 36, 214), f'{n} × {n}', font('disp', 46), TEXT, anchor='lm')
+        cv.pill((x0 + 574, 196), 'В ОЧЕРЕДИ', font('disp', 12), HI, SURF2, outline=LINE, padx=14, h=36, anchor='r')
+        cx, cy = x0 + 305, 390
+        cv.ring(cx, cy, 108, min(1, cnt / need), th=18)
+        cv.text((cx, cy - 20), str(cnt), font('disp', 70), TEXT, anchor='mm')
+        cv.text((cx, cy + 40), f'из {need} игроков', font('semi', 16), MUTED, anchor='mm')
+        left = need - cnt
+        msg = 'Матч собирается!' if left <= 0 else (f'Не хватает {left} {"игрока" if 1 < left < 5 or left == 1 else "игроков"}' if left > 0 else '')
+        cv.rr((x0 + 36, 540, x0 + 574, 596), 28, fill=SURF2, outline=LINE, width=1)
+        cv.text((x0 + 305, 568), msg, font('bold', 20), WIN if left <= 0 else TEXT, anchor='mm')
+    # матчи
+    cv.panel((22, 640, W - 22, 836), r=34)
+    cv.head(56, 668, 'СЕЙЧАС В МАТЧАХ', 16, MUTED, spacing=3)
+    tot_m = int(q.get('m2') or 0) + int(q.get('m5') or 0); pin = int(q.get('p_in') or 0)
+    cells = [('МАТЧЕЙ', str(tot_m), ACC2), ('ИГРОКОВ В ИГРЕ', str(pin), HI), ('МАТЧЕЙ 2×2', str(int(q.get('m2') or 0)), TEXT), ('МАТЧЕЙ 5×5', str(int(q.get('m5') or 0)), TEXT)]
+    cw = (W - 44 - 72) / 4
+    for i, (lab, val, col) in enumerate(cells):
+        x0 = 36 + i * (cw + 12) + 12
+        cv.rr((x0, 704, x0 + cw - 12, 818), 24, fill=SURF2, outline=LINE, width=1)
+        cv.text((x0 + 22, 724), lab, font('semi', 13), MUTED, spacing=2.4)
+        cv.text((x0 + 22, 790), val, font('disp', 40), col, anchor='ls')
+    cv.text((640, 858), '@skfaceitbot', font('semi', 16), MUTED, anchor='mm', spacing=1.5)
+    return cv.im.resize((W, h), Image.LANCZOS)
+
+
+def render_top(rows, imgs):
+    h = 1250
+    cv = Cv(W, h)
+    cv.glow(160, 200, 500, (24, 44, 120), .7); cv.glow(1150, 1000, 520, (96, 24, 76), .5); cv.glow(640, 330, 380, (80, 50, 20), .3)
+    now = datetime.now(timezone(timedelta(hours=3)))
+    header(cv, 'ТОП ИГРОКОВ', f'ЛУЧШИЕ {len(rows)} ПО ELO', now.strftime('%d.%m.%Y'))
+    medals = [GOLD, (200, 210, 230), (205, 127, 80)]
+
+    def person(i, x0, y0, w, hh, r_av, big):
+        p = rows[i]; col = medals[i]; elo = int(p.get('elo') or 0)
+        cv.rr((x0, y0, x0 + w, y0 + hh), 32, fill=SURF, outline=mix(LINE, col, .55), width=2)
+        cv.glow(x0 + w / 2, y0 + 60, 150, mix(BG, col, .5), .35)
+        cv.rr((x0, y0, x0 + w, y0 + hh), 32, outline=mix(LINE, col, .55), width=2)
+        ay = y0 + 28 + r_av
+        avatar_at(cv, imgs.get(i), x0 + w / 2, ay, r_av, col, p.get('username'), 5)
+        # номер места
+        bx, by = x0 + w / 2, ay + r_av + 4
+        cv.d.ellipse([(bx - 22) * K, (by - 22) * K, (bx + 22) * K, (by + 22) * K], fill=col)
+        cv.text((bx, by + 1), str(i + 1), font('disp', 22), (20, 20, 30), anchor='mm')
+        t, tf = cv.fit(str(p.get('username') or '—'), 'disp', 24 if big else 20, w - 40, 12)
+        cv.text((x0 + w / 2, by + 52), t, tf, TEXT, anchor='mm')
+        cv.text((x0 + w / 2, by + 100), str(elo), font('disp', 44 if big else 36), col, anchor='mm')
+        cv.text((x0 + w / 2, by + 136), 'ELO', font('semi', 14), MUTED, anchor='mm', spacing=3)
+        m = int(p.get('matches') or 0); wr = round((p.get('wins') or 0) * 100 / m) if m else 0
+        cv.text((x0 + w / 2, by + 164), f'{m} матч. · {wr}% побед', font('semi', 15), MUTED, anchor='mm')
+
+    if len(rows) > 1: person(1, 22, 232, 398, 360, 56, False)
+    if len(rows) > 0: person(0, 440, 170, 400, 422, 68, True)
+    if len(rows) > 2: person(2, 860, 232, 398, 360, 56, False)
+
+    rest = rows[3:15]
+    for j, p in enumerate(rest):
+        col_i, row_i = j // 6, j % 6
+        x0 = 22 + col_i * 628; y0 = 616 + row_i * 94; rank = j + 4
+        cv.rr((x0, y0, x0 + 610, y0 + 84), 26, fill=SURF2, outline=LINE, width=1)
+        cv.text((x0 + 38, y0 + 42), str(rank), font('disp', 20), MUTED, anchor='mm')
+        lvl = level_of(int(p.get('elo') or 0))[0]
+        avatar_at(cv, imgs.get(rank - 1), x0 + 100, y0 + 42, 26, hexc(LVL_COL[lvl - 1]), p.get('username'), 3)
+        t, tf = cv.fit(str(p.get('username') or '—'), 'bold', 21, 280, 12)
+        cv.text((x0 + 148, y0 + 24), t, tf, TEXT)
+        m = int(p.get('matches') or 0); w_ = int(p.get('wins') or 0); l_ = int(p.get('losses') or 0)
+        wr = round(w_ * 100 / m) if m else 0
+        cv.text((x0 + 148, y0 + 54), f'W {w_}  L {l_}  ·  {wr}%', font('semi', 14), MUTED)
+        cv.text((x0 + 586, y0 + 30), str(int(p.get('elo') or 0)), font('disp', 24), HI, anchor='ra')
+        cv.text((x0 + 586, y0 + 58), f'LVL {lvl}', font('bold', 14), hexc(LVL_COL[lvl - 1]), anchor='ra')
+    if not rows:
+        cv.text((640, 600), 'Пока нет игроков', font('bold', 22), MUTED, anchor='mm')
+    cv.text((640, 1222), '@skfaceitbot', font('semi', 16), MUTED, anchor='mm', spacing=1.5)
+    return cv.im.resize((W, h), Image.LANCZOS)
+
+
+def build_queue():
+    return render_queue(fetch_rpc('queue_card') or {})
+
+
+def build_top():
+    rows = fetch_rpc('top_card', {'p_limit': 15}) or []
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        res = list(ex.map(get_image, [r.get('avatar_url') for r in rows]))
+    return render_top(rows, {i: im for i, im in enumerate(res)})
+
+
+
 def build(uid):
     card = fetch_card(uid)
     if not card: return None
@@ -493,8 +631,12 @@ class handler(BaseHTTPRequestHandler):
         q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         uid = (q.get('id') or [''])[0]
         try:
-            if not UUID_RE.match(uid): raise ValueError('bad id')
-            im = build(uid)
+            kind = (q.get('type') or [''])[0]
+            if kind == 'queue': im = build_queue()
+            elif kind == 'top': im = build_top()
+            else:
+                if not UUID_RE.match(uid): raise ValueError('bad id')
+                im = build(uid)
             if im is None: raise LookupError('not found')
             buf = io.BytesIO(); im.save(buf, 'JPEG', quality=90, optimize=False)
             body = buf.getvalue(); code = 200; ctype = 'image/jpeg'
